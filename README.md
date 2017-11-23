@@ -1,6 +1,4 @@
-# MIB
-
-Math Identifier Database, a standard django application
+# MemberManagement
 
 ## Setup
 
