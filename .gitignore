@@ -102,3 +102,6 @@ ENV/
 
 # the database
 db.sqlite3
+
+# Stupid jetbrains stuff
+.idea/
