@@ -1,5 +1,6 @@
 from django import forms
-from alumni.models import Alumni
+from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
+    JobInformation
 from django.contrib.auth.models import User
 import datetime
 
@@ -50,3 +51,37 @@ class RegistrationForm(forms.ModelForm):
             raise forms.ValidationError("Please correct the error below.")
 
         return super(RegistrationForm, self).clean()
+
+
+class AddressForm(forms.ModelForm):
+    """ A form for saving the users address """
+
+    class Meta:
+        model = Address
+        fields = ['address_line_1', 'address_line_2', 'city', 'zip', 'state',
+                  'country']
+
+
+class JacobsForm(forms.ModelForm):
+    """ A form for saving the users Jacobs Data """
+
+    class Meta:
+        model = JacobsData
+        fields = ['college', 'graduation', 'major']
+
+
+# TODO: Check that social media links are actually valid links for the platform
+class SocialMediaForm(forms.ModelForm):
+    """ A form for saving the users Social Media Data """
+
+    class Meta:
+        model = SocialMedia
+        fields = ['facebook', 'twitter', 'linkedin', 'instagram', 'homepage']
+
+
+class JobInformationForm(forms.ModelForm):
+    """ A form for saving the users Job Information Data """
+
+    class Meta:
+        model = JobInformation
+        fields = ['employer', 'position', 'industry', 'job']

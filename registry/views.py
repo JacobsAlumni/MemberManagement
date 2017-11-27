@@ -7,7 +7,12 @@ from .forms import RegistrationForm
 def home(request):
     """ Renders either the home page or the portal. """
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and request.user.alumni:
+        unset = request.user.alumni.get_first_unset_approval()
+
+        if unset is not None:
+            return redirect('/setup/')
+
         return render(request, 'registry/portal/index.html',
                       {'user': request.user})
     else:
@@ -51,4 +56,4 @@ def register(request):
         form = RegistrationForm()
 
     # and return the request
-    return render(request, 'registration/register.html', {'form': form})
+    return render(request, 'registry/register.html', {'form': form})

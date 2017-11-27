@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 from django_countries.fields import CountryField
 from . import fields
-
 
 class Alumni(models.Model):
     """ The information about an Alumni Member """
@@ -28,9 +28,27 @@ class Alumni(models.Model):
     # kind
     category = fields.AlumniCategoryField()
 
+    def get_first_unset_approval(self):
+        """ Gets the first unset component or returns None if it already exists. """
+
+        # Get the approval object
+        try:
+            approval = self.approval
+        except ObjectDoesNotExist:
+            approval = None
+
+        # Create it if it doesn't exist
+        if approval is None:
+            approval = Approval.objects.create(member=self)
+            approval.save()
+
+        return approval.get_first_unset()
+
+
+
+
     def __str__(self):
-        return "Alumni [{} {} {}]".format(self.firstName, self.middleName,
-                                          self.lastName)
+        return "Alumni [{} {} {}]".format(self.firstName, self.middleName, self.lastName)
 
 
 class Approval(models.Model):
@@ -39,15 +57,55 @@ class Approval(models.Model):
 
     approval = models.BooleanField(default=False,
                                    help_text="Has the user been approved by an admin?")
-    set_address = models.BooleanField(default=False,
-                                      help_text="Did the user provide their address?")
-    set_jacobs = models.BooleanField(default=False,
-                                     help_text="Did the user provide out the jacobs details?")
-    set_social = models.BooleanField(default=False,
-                                     help_text="Did the user provide out the social details?")
 
-    set_job = models.BooleanField(default=False,
-                                  help_text="Did the user provide their job details?")
+    def set_address(self):
+        """ Checks if this member has inputted an address """
+        try:
+            _ = self.member.address
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    def set_jacobs(self):
+        """ Checks if this member has inputted Jacobs Data """
+        try:
+            _ = self.member.jacobs
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    def set_social(self):
+        """ Checks if this member has inputted Social Media Information """
+        try:
+            _ = self.member.social
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    def set_job(self):
+        """ Checks if this member has inputted a Job """
+        try:
+            _ = self.member.job
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    def get_first_unset(self):
+        """ Gets a string of the first unset item or None"""
+
+        if not self.set_address():
+            return 'address'
+
+        if not self.set_jacobs():
+            return 'jacobs'
+
+        if not self.set_social():
+            return 'social'
+
+        if not self.set_social():
+            return 'job'
+
+        return None
 
 
 class SocialMedia(models.Model):
@@ -97,7 +155,7 @@ class Address(models.Model):
 class JobInformation(models.Model):
     """ The jobs of an Alumni Member"""
 
-    member = models.OneToOneField(Alumni)
+    member = models.OneToOneField(Alumni, related_name='job')
 
     employer = models.CharField(max_length=255, null=True, blank=True,
                                 help_text="Your employer (optional)")
