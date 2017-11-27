@@ -1,0 +1,21 @@
+{% extends "base/base.html" %}
+
+{% block title %}Membership Portal - Jacobs University Bremen Alumni {% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 class="uk-article-title">
+        Jacobs Alumni Membership Portal
+    </h1>
+
+    <div>
+        <a href="/logout/" style="color: black; ">
+            <button class="uk-button uk-width-1-1" type="button">Logout</button>
+        </a>
+    </div>
+
+    <div>
+        Hey {{ user.alumni.firstName }}!
+    </div>
+</article>
+{% endblock %}

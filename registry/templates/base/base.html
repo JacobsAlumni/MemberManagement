@@ -1,0 +1,32 @@
+{% load static %}
+<html>
+    <head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Language" content="en" />
+    <meta name="viewport" content="width=device-width" />
+
+    <meta name="description" content="The Jacobs Alumni Association is the growing network of former Jacobs University students and friends." />
+    <meta name="keywords" content="Jacobs Alumni Association, Jacobs University Bremen, Jacobs University, Alumni Association, Jacobs, Alumni, Association, Bremen" />
+
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&amp;subset=cyrillic,cyrillic-ext,latin-ext" rel="stylesheet" />
+    <link href="{% static "uikit/css/style.css" %}" rel="stylesheet" />
+
+    {% block head %}
+    {% endblock %}
+    </head>
+    <body>
+        <div class="main-container uk-padding">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+
+        {% block scripts %}
+            <script src="{% static "uikit/js/uikit.js" %}" type="text/javascript"></script>
+            <script src="{% static "uikit/js/uikit-icons.js" %}" type="text/javascript"></script>
+        {% endblock %}
+    </body>
+</html>

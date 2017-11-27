@@ -1,4 +1,4 @@
-"""MemberManagement URL Configuration
+"""Registry URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -14,9 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
-from django.contrib import admin
+from django.contrib.auth import views as auth_views
+
+from . import views
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^', include('registry.urls'))
+    # The Portal home page
+    url(r'^$', views.home, name='portal'),
+
+    # TODO: The five portal edit views
+
+    # Login / Logout
+    url(r'^login/$', auth_views.login, name='login'),
+    url('^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
+
+    # Registration
+    url('^register/$', views.register, name='register'),
 ]

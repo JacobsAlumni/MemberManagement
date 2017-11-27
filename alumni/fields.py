@@ -8,8 +8,8 @@ class GenderField(models.CharField):
     SEX_CHOICES = (
         (FEMALE, 'Female'),
         (MALE, 'Male'),
-        (OTHER, 'Other'),
-        (UNSPECIFIED, 'Unspecified'),
+        (OTHER, 'Non-binary'),
+        (UNSPECIFIED, 'Prefer not to say'),
     )
 
     def __init__(self, **kwargs):

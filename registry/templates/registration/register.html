@@ -1,0 +1,19 @@
+{% extends "base/base.html" %}
+
+{% block title %}Membership Portal - Register{% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 class="uk-article-title">
+        Registration for new users
+    </h1>
+
+    <div>
+        <form class="uk-form" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="uk-button" value="Register">
+        </form>
+    </div>
+</article>
+{% endblock %}
