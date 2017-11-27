@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django_countries.fields import CountryField
 from . import fields
 
+
 class Alumni(models.Model):
     """ The information about an Alumni Member """
 
@@ -20,7 +21,8 @@ class Alumni(models.Model):
 
     # gender, nationality, birthday
     sex = fields.GenderField()
-    birthday = models.DateField(help_text="Your birthday in the format YYYY-MM-DD")
+    birthday = models.DateField(
+        help_text="Your birthday in the format YYYY-MM-DD")
 
     # TODO: Better handling of multiple nationalities
     nationality = CountryField(help_text="Your nationality", multiple=True)
@@ -44,11 +46,9 @@ class Alumni(models.Model):
 
         return approval.get_first_unset()
 
-
-
-
     def __str__(self):
-        return "Alumni [{} {} {}]".format(self.firstName, self.middleName, self.lastName)
+        return "Alumni [{} {} {}]".format(self.firstName, self.middleName,
+                                          self.lastName)
 
 
 class Approval(models.Model):
@@ -90,6 +90,14 @@ class Approval(models.Model):
         except ObjectDoesNotExist:
             return False
 
+    def set_payment(self):
+        """ Checks if this member has inputted payment information """
+        try:
+            _ = self.member.payment
+            return True
+        except ObjectDoesNotExist:
+            return False
+
     def get_first_unset(self):
         """ Gets a string of the first unset item or None"""
 
@@ -104,6 +112,9 @@ class Approval(models.Model):
 
         if not self.set_social():
             return 'job'
+
+        if not self.set_payment():
+            return 'payment'
 
         return None
 
@@ -163,3 +174,12 @@ class JobInformation(models.Model):
                                 help_text="Your position (optional)")
     industry = fields.IndustryField()
     job = fields.JobField()
+
+
+class PaymentInformation(models.Model):
+    """ The payment information of an Alumni Member """
+
+    member = models.OneToOneField(Alumni, related_name='payment')
+
+    tier = fields.TierField(help_text='The type of your membership')
+    token = models.CharField(max_length=255, null=True, blank=True)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Alumni, Address, JobInformation, SocialMedia, \
-    JacobsData, Approval
+    JacobsData, Approval, PaymentInformation
 
 
 class AlumniJacobsDataInline(admin.StackedInline):
@@ -22,22 +22,28 @@ class AlumniJobsInline(admin.StackedInline):
 class AlumniApprovalInline(admin.StackedInline):
     model = Approval
 
+class PaymentInline(admin.StackedInline):
+    model = PaymentInformation
+
 
 class AlumniAdmin(admin.ModelAdmin):
-    inlines = [AlumniApprovalInline, AlumniAddressInline, AlumniJacobsDataInline, AlumniJobsInline,
-               AlumniSocialMediaInline]
+    inlines = [AlumniApprovalInline, AlumniAddressInline,
+               AlumniJacobsDataInline, AlumniJobsInline,
+               AlumniSocialMediaInline, PaymentInline]
 
     list_display = (
         # basic information
         'fullName', 'email', 'userApproval', 'sex', 'birthday', 'category',
+        'paymentTier',
 
         # Jacobs information
         'jacobs_degree', 'jacobs_graduation', 'jacobs_major', 'jacobs_college',
     )
 
     list_filter = (
-    'approval__approval', 'category', 'jacobs__degree', 'jacobs__graduation',
-    'jacobs__major')
+        'approval__approval', 'category', 'jacobs__degree',
+        'jacobs__graduation',
+        'jacobs__major', 'payment__tier')
 
     def fullName(self, x):
         return '{} {} {}'.format(x.firstName, x.middleName, x.lastName)
@@ -46,8 +52,15 @@ class AlumniAdmin(admin.ModelAdmin):
 
     def userApproval(self, x):
         return x.approval.approval
+
     userApproval.short_description = 'Approval'
     userApproval.admin_order_field = 'approval__approval'
+
+    def paymentTier(self, x):
+        return x.payment.tier
+
+    paymentTier.short_description = 'Tier'
+    paymentTier.admin_order_field = 'payment__tier'
 
     def jacobs_degree(self, x):
         return x.jacobs.degree

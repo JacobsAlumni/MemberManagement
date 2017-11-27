@@ -1,8 +1,7 @@
 from django import forms
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
-    JobInformation
+    JobInformation, PaymentInformation
 from django.contrib.auth.models import User
-import datetime
 
 
 class RegistrationForm(forms.ModelForm):
@@ -92,3 +91,11 @@ class JobInformationForm(forms.ModelForm):
     class Meta:
         model = JobInformation
         fields = ['employer', 'position', 'industry', 'job']
+
+
+class PaymentInformationForm(forms.ModelForm):
+    """ A form for editing payment information"""
+
+    class Meta:
+        model = PaymentInformation
+        fields = ['tier', 'token']

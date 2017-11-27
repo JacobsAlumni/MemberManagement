@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm
+    JobInformationForm, PaymentInformationForm
 
 
 def register(request):
@@ -109,3 +109,4 @@ address = setupViewFactory('address', AddressForm, 'Address Information')
 jacobs = setupViewFactory('jacobs', JacobsForm, 'Jacobs Data')
 social = setupViewFactory('social', SocialMediaForm, 'Social Media')
 job = setupViewFactory('job', JobInformationForm, 'Job Information')
+payment = setupViewFactory('payment', PaymentInformationForm, 'Payment Information')

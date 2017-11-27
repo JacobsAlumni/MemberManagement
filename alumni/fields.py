@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class GenderField(models.CharField):
     FEMALE = 'fe'
     MALE = 'ma'
@@ -647,3 +648,21 @@ class JobField(models.IntegerField):
         kwargs['choices'] = JobField.JOB_CHOICES
         kwargs['default'] = JobField.UNEMPLOYED
         super(JobField, self).__init__(*args, **kwargs)
+
+
+class TierField(models.CharField):
+    STARTER = 'st'
+    CONTRIBUTOR = 'co'
+    PATRON = 'pa'
+
+    TIER_CHOICES = (
+        (STARTER, 'Starter'),
+        (CONTRIBUTOR, 'Contributor'),
+        (PATRON, 'Patron'),
+    )
+
+    def __init__(self, **kwargs):
+        kwargs['max_length'] = 2
+        kwargs['choices'] = TierField.TIER_CHOICES
+        kwargs['default'] = TierField.STARTER
+        super(TierField, self).__init__(**kwargs)

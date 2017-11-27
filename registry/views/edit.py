@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 
 from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm
+    JobInformationForm, PaymentInformationForm
 
 
 def editViewFactory(prop, FormClass, name):
@@ -54,3 +54,4 @@ address = editViewFactory('address', AddressForm, 'Address')
 jacobs = editViewFactory('jacobs', JacobsForm, 'Jacobs Data')
 social = editViewFactory('social', SocialMediaForm, 'Social Media')
 job = editViewFactory('job', JobInformationForm, 'Job Information')
+payment = editViewFactory('payment', PaymentInformationForm, 'Payment Information')

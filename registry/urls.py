@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^setup/jacobs/$', setup_views.jacobs, name='setup_jacobs'),
     url(r'^setup/social/$', setup_views.social, name='setup_social'),
     url(r'^setup/job/$', setup_views.job, name='setup_job'),
+    url(r'^setup/payment/$', setup_views.payment, name='setup_payment'),
 
     # the portal for the user
     url(r'portal/', registry_views.portal, name='portal'),
@@ -48,5 +49,6 @@ urlpatterns = [
     url(r'^edit/address/$', edit_views.address, name='edit_address'),
     url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
     url(r'^edit/social/$', edit_views.social, name='edit_social'),
-    url(r'^edit/job/$', edit_views.job, name='edit_job')
+    url(r'^edit/job/$', edit_views.job, name='edit_job'),
+    url(r'^edit/payment/$', edit_views.payment, name='edit_payment')
 ]
