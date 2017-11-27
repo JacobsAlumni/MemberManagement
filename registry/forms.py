@@ -59,18 +59,22 @@ class AlumniForm(forms.ModelForm):
         fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
                   'birthday', 'nationality', 'category']
 
-class AlumniForm(forms.ModelForm):
+
+class AddressForm(forms.ModelForm):
+    """ A form for the Address of an Alumni """
+
     class Meta:
-        model = Alumni
-        fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
-                  'birthday', 'nationality', 'category']
+        model = Address
+        fields = ['address_line_1', 'address_line_2', 'zip', 'city', 'state',
+                  'country']
+
 
 class JacobsForm(forms.ModelForm):
     """ A form for saving the users Jacobs Data """
 
     class Meta:
         model = JacobsData
-        fields = ['college', 'graduation', 'major']
+        fields = ['college', 'degree', 'graduation', 'major']
 
 
 # TODO: Check that social media links are actually valid links for the platform

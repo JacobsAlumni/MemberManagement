@@ -1,59 +1,27 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from ..forms import RegistrationForm
+from django.urls import reverse
 
 
 def home(request):
     """ Renders either the home page or the portal. """
 
+    # if the user is signed in, redirect to the main portal
     if request.user.is_authenticated() and request.user.alumni:
-        unset = request.user.alumni.get_first_unset_approval()
+        return redirect(reverse('portal'))
 
-        if unset is not None:
-            return redirect('/setup/')
-
-        return render(request, 'registry/portal/index.html',
-                      {'user': request.user})
-    else:
-        return render(request, 'registry/index.html')
+    # else render the home page
+    return render(request, 'registry/index.html')
 
 
-def register(request):
-    """ Implements the new Alumni Registration Page"""
+@login_required
+def portal(request):
+    # check if we have anything left to setup
+    unset = request.user.alumni.get_first_unset_approval()
 
-    # not for already logged in users
-    if request.user.is_authenticated():
-        return redirect('/')
+    # and redirect there
+    if unset is not None:
+        return redirect(reverse('setup'))
 
-    if request.method == 'POST':
-        # load the form
-        form = RegistrationForm(request.POST)
-
-        # check that the form is valid
-        if form.is_valid():
-            form.clean()
-
-            # create a user object and save it
-            username, password = \
-                form.cleaned_data['username'], form.cleaned_data['password1']
-            user = User.objects.create_user(username, None, password=password)
-            user.save()
-
-            # Create the Alumni Data Object
-            instance = form.save(commit=False)
-            instance.profile = user
-            instance.save()
-
-            # Authenticate the user for this request
-            login(request, user)
-
-            # and then redirect the user to the main profile page
-            return redirect('/')
-
-    # if we did not have any post data, simply create a new form
-    else:
-        form = RegistrationForm()
-
-    # and return the request
-    return render(request, 'registry/register.html', {'form': form})
+    # and render the portal
+    return render(request, 'portal/index.html', {'user': request.user})

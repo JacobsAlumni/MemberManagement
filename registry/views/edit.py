@@ -1,27 +1,27 @@
 from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import FormView
+from django.urls import reverse
 from django.shortcuts import render, redirect
 
-from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, JobInformationForm
+from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
+    JobInformationForm
+
 
 def editViewFactory(prop, FormClass, name):
     """ Generates an edit view for a given section of the profile """
 
-    if prop is None:
-        url = '/edit/'
-    else:
-        url = '/edit/{}/'.format(prop)
-
-
     @login_required
     def edit(request):
+        # figure out the edit url to redirect to
+        if prop is None:
+            url = reverse('edit')
+        else:
+            url = reverse('edit_{}'.format(prop))
 
         # load the instance
         if prop is None:
             instance = request.user.alumni
         else:
             instance = getattr(request.user.alumni, prop)
-
 
         if request.method == 'POST':
             # load the form
@@ -43,10 +43,11 @@ def editViewFactory(prop, FormClass, name):
             form = FormClass(instance=instance)
 
         # and return the request
-        return render(request, 'registry/portal/edit.html',
+        return render(request, 'portal/edit.html',
                       {'form': form, 'name': name})
 
     return edit
+
 
 edit = editViewFactory(None, AlumniForm, 'General Information')
 address = editViewFactory('address', AddressForm, 'Address')

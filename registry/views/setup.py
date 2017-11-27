@@ -1,7 +1,51 @@
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from django.urls import reverse
 
-from ..forms import AddressForm, JacobsForm, SocialMediaForm, JobInformationForm
+from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
+    JobInformationForm
+
+
+def register(request):
+    """ Implements the new Alumni Registration Page"""
+
+    # not for already logged in users
+    if request.user.is_authenticated():
+        return redirect('/')
+
+    if request.method == 'POST':
+        # load the form
+        form = RegistrationForm(request.POST)
+
+        # check that the form is valid
+        if form.is_valid():
+            form.clean()
+
+            # create a user object and save it
+            username, password = \
+                form.cleaned_data['username'], form.cleaned_data['password1']
+            user = User.objects.create_user(username, None, password=password)
+            user.save()
+
+            # Create the Alumni Data Object
+            instance = form.save(commit=False)
+            instance.profile = user
+            instance.save()
+
+            # Authenticate the user for this request
+            login(request, user)
+
+            # and then redirect the user to the main setup page
+            return redirect(reverse('setup'))
+
+    # if we did not have any post data, simply create a new form
+    else:
+        form = RegistrationForm()
+
+    # and return the request
+    return render(request, 'setup/register.html', {'form': form})
 
 
 @login_required
@@ -10,143 +54,58 @@ def setup(request):
 
     component = request.user.alumni.get_first_unset_approval()
 
-    # if we finished all components, redirect to '/'
+    # if we have finished everything, return the all done page
     if component is None:
-        return redirect('/')
+        return render(request, 'setup/finished.html',
+                      {'user': request.user})
 
-    # else setup the appropriate component
-
-    if component == 'address':
-        return setup_address(request)
-
-    if component == 'jacobs':
-        return setup_jacobs(request)
-
-    if component == 'social':
-        return setup_social(request)
-
-    if component == 'job':
-        return setup_job(request)
-
-    # and redirect to / in the fallback case
-    return render(request, 'registry/portal/done.html')
-
-
-def setup_address(request):
-    """ Sets up a setup form for an address. """
-
-    if request.method == 'POST':
-        # load the form
-        form = AddressForm(request.POST)
-
-        # check that the form is valid
-        if form.is_valid():
-            form.clean()
-
-            # Create the Address form
-            instance = form.save(commit=False)
-            instance.member = request.user.alumni
-            instance.save()
-
-            request.user.alumni.approval.save()
-
-            # and then continue to the main portal page.
-            return redirect('/setup/')
-
-    # if we did not have any post data, simply create a new form
+    # else redirect to the setup page.
     else:
-        form = AddressForm()
-
-    # and return the request
-    return render(request, 'registry/portal/setup.html',
-                  {'form': form, 'name': 'Address Information'})
+        return redirect(reverse('setup_{}'.format(component)))
 
 
-def setup_jacobs(request):
-    """ Sets up a bootstrap form for jacobs data. """
+def setupViewFactory(prop, FormClass, name):
+    """ Generates a setup view for a given section of the profile """
 
-    if request.method == 'POST':
-        # load the form
-        form = JacobsForm(request.POST)
+    @login_required
+    def setup(request):
 
-        # check that the form is valid
-        if form.is_valid():
-            form.clean()
+        # reverse the url to redirect to
+        url = reverse('setup')
 
-            # Create the Address form
-            instance = form.save(commit=False)
-            instance.member = request.user.alumni
-            instance.save()
+        # If we do not have the right component, redirect to the setup page
+        component = request.user.alumni.get_first_unset_approval()
+        if component != prop:
+            return redirect(url)
 
-            request.user.alumni.approval.save()
+        if request.method == 'POST':
+            # load the form
+            form = FormClass(request.POST)
 
-            # and then continue to the main portal page.
-            return redirect('/setup/')
+            # check that the form is valid
+            if form.is_valid():
+                form.clean()
 
-    # if we did not have any post data, simply create a new form
-    else:
-        form = JacobsForm()
+                # Create the data instance
+                instance = form.save(commit=False)
+                instance.member = request.user.alumni
+                instance.save()
 
-    # and return the request
-    return render(request, 'registry/portal/setup.html',
-                  {'form': form, 'name': 'Jacobs Data'})
+                # and then continue to the main setup page
+                return redirect(url)
 
+        # if we did not have any post data, simply create a new form
+        else:
+            form = FormClass()
 
-def setup_social(request):
-    """ Sets up a bootstrap form for social media. """
+        # and return the request
+        return render(request, 'setup/setup.html',
+                      {'form': form, 'name': name})
 
-    if request.method == 'POST':
-        # load the form
-        form = SocialMediaForm(request.POST)
-
-        # check that the form is valid
-        if form.is_valid():
-            form.clean()
-
-            # Create the Address form
-            instance = form.save(commit=False)
-            instance.member = request.user.alumni
-            instance.save()
-
-            request.user.alumni.approval.save()
-
-            # and then continue to the main portal page.
-            return redirect('/setup/')
-
-    # if we did not have any post data, simply create a new form
-    else:
-        form = SocialMediaForm()
-
-    # and return the request
-    return render(request, 'registry/portal/setup.html',
-                  {'form': form, 'name': 'Social Media'})
+    return setup
 
 
-def setup_job(request):
-    """ Sets up a bootstrap form for job information. """
-
-    if request.method == 'POST':
-        # load the form
-        form = JobInformationForm(request.POST)
-
-        # check that the form is valid
-        if form.is_valid():
-            form.clean()
-
-            # Create the Address form
-            instance = form.save(commit=False)
-            instance.member = request.user.alumni
-            instance.save()
-
-            request.user.alumni.approval.save()
-
-            # and then continue to the main portal page.
-            return redirect('/setup/')
-
-    # if we did not have any post data, simply create a new form
-    else:
-        form = JobInformationForm()
-
-    # and return the request
-    return render(request, 'registry/portal/setup.html',
-                  {'form': form, 'name': 'Job Information'})
+address = setupViewFactory('address', AddressForm, 'Address Information')
+jacobs = setupViewFactory('jacobs', JacobsForm, 'Jacobs Data')
+social = setupViewFactory('social', SocialMediaForm, 'Social Media')
+job = setupViewFactory('job', JobInformationForm, 'Job Information')

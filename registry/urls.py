@@ -13,29 +13,40 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import include, url
+from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 
-from .views import registry, setup, edit
+from .views import registry as registry_views
+from .views import setup as setup_views
+from .views import edit as edit_views
+
 
 urlpatterns = [
     # The Portal home page
-    url(r'^$', registry.home, name='portal'),
-
-    # TODO: The five portal edit views
+    url(r'^$', registry_views.home, name='portal'),
 
     # Login / Logout
-    url(r'^login/$', auth_views.login, name='login'),
+    url(r'^login/$', auth_views.login, {'template_name': 'auth/login.html'},
+        name='login'),
     url('^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 
-    # Registration and Initial Setup
-    url('^register/$', registry.register, name='register'),
-    url('^setup/$', setup.setup, name='setup'),
+    # Registration
+    url('^register/$', setup_views.register, name='register'),
+
+    # Initial data Setup
+    url(r'^setup/$', setup_views.setup, name='setup'),
+    url(r'^setup/address/$', setup_views.address, name='setup_address'),
+    url(r'^setup/jacobs/$', setup_views.jacobs, name='setup_jacobs'),
+    url(r'^setup/social/$', setup_views.social, name='setup_social'),
+    url(r'^setup/job/$', setup_views.job, name='setup_job'),
+
+    # the portal for the user
+    url(r'portal/', registry_views.portal, name='portal'),
 
     # Edit views
-    url(r'^edit/$', edit.edit),
-    url(r'^edit/address/$', edit.address),
-    url(r'^edit/jacobs/$', edit.jacobs),
-    url(r'^edit/social/$', edit.social),
-    url(r'^edit/job/$', edit.job)
+    url(r'^edit/$', edit_views.edit, name='edit'),
+    url(r'^edit/address/$', edit_views.address, name='edit_address'),
+    url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
+    url(r'^edit/social/$', edit_views.social, name='edit_social'),
+    url(r'^edit/job/$', edit_views.job, name='edit_job')
 ]
