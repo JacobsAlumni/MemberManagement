@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+
+{% block title %}Membership Portal - Edit - {{ name }} {% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 class="uk-article-title">
+        Edit Data - {{ name }}
+    </h1>
+
+    <div>
+        <a href="/" style="color: black; ">
+            <button class="uk-button uk-width-1-1" type="button">Back to Portal</button>
+        </a>
+    </div>
+
+    <div>
+        <form class="uk-form" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="uk-button" value="Update">
+        </form>
+    </div>
+</article>
+{% endblock %}

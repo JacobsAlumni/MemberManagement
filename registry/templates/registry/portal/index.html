@@ -15,7 +15,38 @@
     </div>
 
     <div>
-        Hey {{ user.alumni.firstName }}!
+        Hey {{ user.alumni.firstName }}! You can edit your data here.
     </div>
+
+    <div>
+        <a href="/edit/" style="color: black; ">
+            <button class="uk-button uk-width-1-1" type="button">Edit General Information</button>
+        </a>
+    </div>
+
+    <div>
+        <a href="/edit/address/" style="color: black; ">
+            <button class="uk-button uk-width-1-1" type="button">Edit Address</button>
+        </a>
+    </div>
+
+    <div>
+        <a href="/edit/jacobs/" style="color: black; ">
+            <button class="uk-button uk-width-1-1" type="button">Edit Jacobs Data</button>
+        </a>
+    </div>
+
+    <div>
+        <a href="/edit/social/" style="color: black; ">
+            <button class="uk-button uk-width-1-1" type="button">Edit Social Media Links</button>
+        </a>
+    </div>
+
+    <div>
+        <a href="/edit/job/" style="color: black; ">
+            <button class="uk-button uk-width-1-1" type="button">Edit Job Information</button>
+        </a>
+    </div>
+
 </article>
 {% endblock %}

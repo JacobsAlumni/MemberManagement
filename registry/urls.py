@@ -16,12 +16,11 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
 
-from . import views
-from .setup import views as setup_views
+from .views import registry, setup, edit
 
 urlpatterns = [
     # The Portal home page
-    url(r'^$', views.home, name='portal'),
+    url(r'^$', registry.home, name='portal'),
 
     # TODO: The five portal edit views
 
@@ -30,6 +29,13 @@ urlpatterns = [
     url('^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 
     # Registration and Initial Setup
-    url('^register/$', views.register, name='register'),
-    url('^setup/$', setup_views.setup, name='setup'),
+    url('^register/$', registry.register, name='register'),
+    url('^setup/$', setup.setup, name='setup'),
+
+    # Edit views
+    url(r'^edit/$', edit.edit),
+    url(r'^edit/address/$', edit.address),
+    url(r'^edit/jacobs/$', edit.jacobs),
+    url(r'^edit/social/$', edit.social),
+    url(r'^edit/job/$', edit.job)
 ]

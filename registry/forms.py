@@ -53,14 +53,17 @@ class RegistrationForm(forms.ModelForm):
         return super(RegistrationForm, self).clean()
 
 
-class AddressForm(forms.ModelForm):
-    """ A form for saving the users address """
-
+class AlumniForm(forms.ModelForm):
     class Meta:
-        model = Address
-        fields = ['address_line_1', 'address_line_2', 'city', 'zip', 'state',
-                  'country']
+        model = Alumni
+        fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
+                  'birthday', 'nationality', 'category']
 
+class AlumniForm(forms.ModelForm):
+    class Meta:
+        model = Alumni
+        fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
+                  'birthday', 'nationality', 'category']
 
 class JacobsForm(forms.ModelForm):
     """ A form for saving the users Jacobs Data """
