@@ -1,3 +1,4 @@
+import collections
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,6 +18,17 @@ class Alumni(models.Model):
                                   help_text="Your middle names (optional)")
     lastName = models.CharField(max_length=255, help_text="Your last name")
 
+    @property
+    def fullName(self):
+        names = [self.firstName]
+
+        if self.middleName is not None:
+            names.append(self.middleName)
+
+        names.append(self.lastName)
+
+        return ' '.join(names)
+
     email = models.EmailField(help_text="Your private email address")
 
     # gender, nationality, birthday
@@ -30,25 +42,71 @@ class Alumni(models.Model):
     # kind
     category = fields.AlumniCategoryField()
 
-    def get_first_unset_approval(self):
-        """ Gets the first unset component or returns None if it already exists. """
+    #
+    # COMPONENTS MANAGEMENT
+    #
 
-        # Get the approval object
+    # The list of components know to this class
+    components = collections.OrderedDict()
+
+    @classmethod
+    def register_component(cls, f):
+        """ A decorator to add a component to the list of components """
+
+        name = f.member.field.remote_field.name
+        cls.components[name] = f
+        return f
+
+    def has_component(self, component):
+        """ Checks if this alumni has a given component"""
         try:
-            approval = self.approval
+            _ = getattr(self, component)
+            return True
         except ObjectDoesNotExist:
-            approval = None
+            return False
 
-        # Create it if it doesn't exist
-        if approval is None:
-            approval = Approval.objects.create(member=self)
-            approval.save()
+    def get_first_unset_component(self):
+        """ Gets the first unset component or returns None if it
+        already exists. """
 
-        return approval.get_first_unset()
+        for c in self.__class__.components.keys():
+            if not self.has_component(c):
+                return c
+
+        return None
 
     def __str__(self):
-        return "Alumni [{} {} {}]".format(self.firstName, self.middleName,
-                                          self.lastName)
+        return "Alumni [{}]".format(self.fullName)
+
+
+@Alumni.register_component
+class Address(models.Model):
+    """ The address of an Alumni Member """
+
+    member = models.OneToOneField(Alumni, related_name='address')
+
+    address_line_1 = models.CharField(max_length=255,
+                                      help_text="E.g. Campus Ring 1")
+    address_line_2 = models.CharField(max_length=255, blank=True, null=True,
+                                      help_text="E.g. Apt 007 (optional)")
+    city = models.CharField(max_length=255, help_text="E.g. Bremen")
+    zip = models.CharField(max_length=255, help_text="E.g. 28759")
+    state = models.CharField(max_length=255, blank=True, null=True,
+                             help_text="E.g. Bremen (optional)")
+    country = CountryField()
+
+
+@Alumni.register_component
+class JacobsData(models.Model):
+    """ The jacobs data of an Alumni Member"""
+
+    member = models.OneToOneField(Alumni, related_name='jacobs')
+
+    college = fields.CollegeField(null=True, blank=True)
+    graduation = fields.ClassField()
+    degree = fields.DegreeField(null=True, blank=True)
+    major = fields.MajorField()
+
 
 
 class Approval(models.Model):
@@ -58,67 +116,8 @@ class Approval(models.Model):
     approval = models.BooleanField(default=False,
                                    help_text="Has the user been approved by an admin?")
 
-    def set_address(self):
-        """ Checks if this member has inputted an address """
-        try:
-            _ = self.member.address
-            return True
-        except ObjectDoesNotExist:
-            return False
 
-    def set_jacobs(self):
-        """ Checks if this member has inputted Jacobs Data """
-        try:
-            _ = self.member.jacobs
-            return True
-        except ObjectDoesNotExist:
-            return False
-
-    def set_social(self):
-        """ Checks if this member has inputted Social Media Information """
-        try:
-            _ = self.member.social
-            return True
-        except ObjectDoesNotExist:
-            return False
-
-    def set_job(self):
-        """ Checks if this member has inputted a Job """
-        try:
-            _ = self.member.job
-            return True
-        except ObjectDoesNotExist:
-            return False
-
-    def set_payment(self):
-        """ Checks if this member has inputted payment information """
-        try:
-            _ = self.member.payment
-            return True
-        except ObjectDoesNotExist:
-            return False
-
-    def get_first_unset(self):
-        """ Gets a string of the first unset item or None"""
-
-        if not self.set_address():
-            return 'address'
-
-        if not self.set_jacobs():
-            return 'jacobs'
-
-        if not self.set_social():
-            return 'social'
-
-        if not self.set_job():
-            return 'job'
-
-        if not self.set_payment():
-            return 'payment'
-
-        return None
-
-
+@Alumni.register_component
 class SocialMedia(models.Model):
     """ The social media data of a Jacobs Alumni """
 
@@ -136,33 +135,7 @@ class SocialMedia(models.Model):
                                help_text="Your Homepage or Blog")
 
 
-class JacobsData(models.Model):
-    """ The jacobs data of an Alumni Member"""
-
-    member = models.OneToOneField(Alumni, related_name='jacobs')
-
-    college = fields.CollegeField(null=True, blank=True)
-    graduation = fields.ClassField()
-    degree = fields.DegreeField(null=True, blank=True)
-    major = fields.MajorField()
-
-
-class Address(models.Model):
-    """ The address of an Alumni Member """
-
-    member = models.OneToOneField(Alumni, related_name='address')
-
-    address_line_1 = models.CharField(max_length=255,
-                                      help_text="E.g. Campus Ring 1")
-    address_line_2 = models.CharField(max_length=255, blank=True, null=True,
-                                      help_text="E.g. Apt 007 (optional)")
-    city = models.CharField(max_length=255, help_text="E.g. Bremen")
-    zip = models.CharField(max_length=255, help_text="E.g. 28759")
-    state = models.CharField(max_length=255, blank=True, null=True,
-                             help_text="E.g. Bremen (optional)")
-    country = CountryField()
-
-
+@Alumni.register_component
 class JobInformation(models.Model):
     """ The jobs of an Alumni Member"""
 
@@ -176,6 +149,7 @@ class JobInformation(models.Model):
     job = fields.JobField()
 
 
+@Alumni.register_component
 class PaymentInformation(models.Model):
     """ The payment information of an Alumni Member """
 

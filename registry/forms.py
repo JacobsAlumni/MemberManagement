@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth import password_validation
+
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
     JobInformation, PaymentInformation
 from django.contrib.auth.models import User
@@ -9,15 +11,26 @@ class RegistrationForm(forms.ModelForm):
     """ A form for registering users """
     username = forms.SlugField(label='Username',
                                help_text='A username for the admin portal. ')
-    password1 = forms.CharField(widget=forms.PasswordInput, min_length=8,
-                                label='Password',
-                                help_text="Pick a password of at least 8 characters")
-    password2 = forms.CharField(widget=forms.PasswordInput, min_length=8,
-                                label='Password (again)',
-                                help_text="Re-enter your password")
+    password1 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput,
+        strip=False,
+        help_text=password_validation.password_validators_help_text_html(),
+    )
+    password2 = forms.CharField(
+        label="Password Confirmation",
+        strip=False,
+        widget=forms.PasswordInput,
+        help_text='Re-enter your password'
+    )
 
+    _tos_help_text = 'I confirm that I have read and agree to the ' \
+                     '<a target="_blank" href="/privacy">Terms and Conditions' \
+                     '</a>, the <a target="_blank" href="' \
+                     'https://jacobs-alumni.de/charter">Charter</a>, and the ' \
+                     '<a target="_blank" href="https://www.jacobs-alumni.de/by-laws">Contributions By-Laws</a>. '
     tos = forms.BooleanField(label='Terms and Conditions',
-                             help_text="I confirm that I have read and accepted the Terms and Conditions. ")
+                             help_text=_tos_help_text)
 
     class Meta:
         model = Alumni

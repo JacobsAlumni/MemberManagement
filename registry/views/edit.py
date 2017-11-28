@@ -1,9 +1,12 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
+
+from registry.views.registry import default_alternative
+from ..decorators import require_setup_completed
 
 from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, PaymentInformationForm
@@ -12,12 +15,8 @@ from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
 def editViewFactory(prop, FormClass, name):
     """ Generates an edit view for a given section of the profile """
 
-    @login_required
+    @require_setup_completed(default_alternative)
     def edit(request):
-
-        # if we have something that needs to be setup return to the main page
-        if request.user.alumni.get_first_unset_approval() is not None:
-            return redirect(reverse('portal'))
 
         # figure out the edit url to redirect to
         if prop is None:
@@ -55,7 +54,11 @@ def editViewFactory(prop, FormClass, name):
 
         # and return the request
         return render(request, 'portal/edit.html',
-                      {'form': form, 'name': name})
+                      {
+                          'form': form,
+                          'name': name,
+                          'messsages': get_messages(request)
+                      })
 
     return edit
 
@@ -68,11 +71,11 @@ job = editViewFactory('job', JobInformationForm, 'Job Information')
 payment = editViewFactory('payment', PaymentInformationForm,
                           'Payment Information')
 
-@login_required
-def password(request):
 
+@require_setup_completed(default_alternative)
+def password(request):
     # if we have something that needs to be setup return to the main page
-    if request.user.alumni.get_first_unset_approval() is not None:
+    if request.user.alumni.get_first_unset_component() is not None:
         return redirect(reverse('portal'))
 
     if request.method == 'POST':
@@ -88,5 +91,6 @@ def password(request):
         form = PasswordChangeForm(request.user)
     return render(request, 'portal/edit.html', {
         'form': form,
-        'name': 'Password'
+        'name': 'Password',
+        'messsages': get_messages(request)
     })

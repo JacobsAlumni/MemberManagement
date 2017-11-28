@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from registry.decorators import require_unset_component
+from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, PaymentInformationForm
 
@@ -52,7 +54,7 @@ def register(request):
 def setup(request):
     """ Generates a setup page according to the given component. """
 
-    component = request.user.alumni.get_first_unset_approval()
+    component = request.user.alumni.get_first_unset_component()
 
     # if we have finished everything, return the all done page
     if component is None:
@@ -67,16 +69,11 @@ def setup(request):
 def setupViewFactory(prop, FormClass, name):
     """ Generates a setup view for a given section of the profile """
 
-    @login_required
+    @require_unset_component(prop, default_alternative)
     def setup(request):
 
         # reverse the url to redirect to
         url = reverse('setup')
-
-        # If we do not have the right component, redirect to the setup page
-        component = request.user.alumni.get_first_unset_approval()
-        if component != prop:
-            return redirect(url)
 
         if request.method == 'POST':
             # load the form
@@ -109,4 +106,5 @@ address = setupViewFactory('address', AddressForm, 'Address Information')
 jacobs = setupViewFactory('jacobs', JacobsForm, 'Jacobs Data')
 social = setupViewFactory('social', SocialMediaForm, 'Social Media')
 job = setupViewFactory('job', JobInformationForm, 'Job Information')
-payment = setupViewFactory('payment', PaymentInformationForm, 'Payment Information')
+payment = setupViewFactory('payment', PaymentInformationForm,
+                           'Payment Information')

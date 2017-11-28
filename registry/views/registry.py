@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from registry.decorators import require_setup_completed
+
 
 def home(request):
     """ Renders either the home page or the portal. """
@@ -14,14 +16,14 @@ def home(request):
     return render(request, 'registry/index.html')
 
 
-@login_required
+@require_setup_completed(lambda request: redirect(reverse('setup')))
 def portal(request):
-    # check if we have anything left to setup
-    unset = request.user.alumni.get_first_unset_approval()
-
-    # and redirect there
-    if unset is not None:
-        return redirect(reverse('setup'))
 
     # and render the portal
     return render(request, 'portal/index.html', {'user': request.user})
+
+
+def default_alternative(request):
+    """ A view representing the default redirect representation"""
+
+    return redirect(reverse('portal'))
