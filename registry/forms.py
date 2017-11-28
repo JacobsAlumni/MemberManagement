@@ -124,3 +124,7 @@ class PaymentInformationForm(forms.ModelForm):
     class Meta:
         model = PaymentInformation
         fields = ['tier', 'token']
+
+
+class StripeForm(forms.Form):
+    stripe_token = forms.CharField()
