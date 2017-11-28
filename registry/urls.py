@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 
 from .views import registry as registry_views
 from .views import setup as setup_views
@@ -24,6 +25,10 @@ from .views import edit as edit_views
 urlpatterns = [
     # The Portal home page
     url(r'^$', registry_views.home, name='portal'),
+
+    # Static requirements
+    url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html")),
+    url(r'^privacy/$', TemplateView.as_view(template_name="static/privacy.html")),
 
     # Login / Logout
     url(r'^login/$', auth_views.login, {'template_name': 'auth/login.html'},

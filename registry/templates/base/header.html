@@ -1,0 +1,33 @@
+{% load staticfiles %}
+<header class="uk-sticky uk-sticky-fixed uk-width-1-1" style="position: fixed; top: 0; width: 100%; ">
+  <div class="uk-navbar-container navbar uk-dark">
+    <nav class="uk-navbar">
+      <div class="uk-navbar-left">
+        <a href="/" class="uk-navbar-item uk-logo">
+          <span class="logo-button uk-margin-small-right">
+            <img src="{%  static "media/favicon.png" %}" />
+          </span>
+          <span class="uk-visible">Jacobs Alumni Membership Management</span>
+        </a>
+      </div>
+      <div class="uk-navbar-right">
+        <ul class="uk-navbar-nav uk-visible@l">
+            <li><a class="uk-active" href="/">Home</a></li>
+            {% if not user.is_authenticated %}<li><a class="uk-active" href="/login/">Login</a></li>{% endif %}
+            {% if user.is_staff %}<li><a class="uk-active" href="/admin/">Admin</a></li>{% endif %}
+        </ul>
+        <div class="uk-navbar-item">
+            {% if user.is_authenticated %}
+                <a href="/logout/" class="uk-button uk-button-primary rounded bg-transparent uk-text-primary">
+                    Logout
+                </a>
+            {% else %}
+                <a href="/register/" class="uk-button uk-button-primary rounded bg-transparent uk-text-primary">
+                    Register
+                </a>
+            {% endif %}
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
