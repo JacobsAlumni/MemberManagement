@@ -110,7 +110,7 @@ class Approval(models.Model):
         if not self.set_social():
             return 'social'
 
-        if not self.set_social():
+        if not self.set_job():
             return 'job'
 
         if not self.set_payment():
