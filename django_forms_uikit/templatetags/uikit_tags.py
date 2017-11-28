@@ -16,10 +16,9 @@ register = template.Library()
 def _get_widget_class(name):
     if name.startswith('checkbox'):
         return 'uk-checkbox'
-    if name.startswith('select'):
+    if name.startswith('select') or name.startswith('lazyselectmultiple'):
         return 'uk-select'
     if name.startswith('radio'):
-        print(name)
         return 'uk-radio'
     if name.startswith('textarea'):
         return 'uk-textarea'

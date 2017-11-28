@@ -2,6 +2,7 @@ from django import forms
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
     JobInformation, PaymentInformation
 from django.contrib.auth.models import User
+from django_forms_uikit.widgets import DatePickerInput
 
 
 class RegistrationForm(forms.ModelForm):
@@ -22,6 +23,9 @@ class RegistrationForm(forms.ModelForm):
         model = Alumni
         fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
                   'birthday', 'nationality', 'category']
+        widgets = {
+            'birthday': DatePickerInput()
+        }
         labels = {
             "firstName": "First Name",
             "middleName": "Middle Name",
@@ -62,6 +66,9 @@ class AlumniForm(forms.ModelForm):
         model = Alumni
         fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
                   'birthday', 'nationality', 'category']
+        widgets = {
+            'birthday': DatePickerInput()
+        }
 
 
 class AddressForm(forms.ModelForm):
