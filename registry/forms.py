@@ -22,6 +22,11 @@ class RegistrationForm(forms.ModelForm):
         model = Alumni
         fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
                   'birthday', 'nationality', 'category']
+        labels = {
+            "firstName": "First Name",
+            "middleName": "Middle Name",
+            "lastName": "Last Name"
+        }
 
     def clean(self):
         cleaned_data = self.cleaned_data  # individual field's clean methods have already been called

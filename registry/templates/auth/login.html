@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load uikit_tags %}
 
 {% block title %}Membership Portal - Jacobs University Bremen Alumni {% endblock %}
 
@@ -9,9 +10,9 @@
     </h1>
 
     <div>
-        <form class="uk-form" method="POST">
+        <form class="uk-form-horizontal" method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form | as_uikit_form }}
             <input type="submit" class="uk-button" value="Login">
         </form>
     </div>

@@ -1,0 +1,34 @@
+{% load uikit_tags %}
+
+{% if field.is_hidden %}
+    {{ field }}
+{% else %}
+    <div id="div_{{ field.auto_id }}" class="{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
+        {% if field.label %}
+            <label for="{{ field.auto_id }}" class="uk-form-label">
+                {{ field.label|safe }}
+            </label>
+        {% endif %}
+
+        {% if field|css_class == 'checkboxinput' %}
+            <div class="uk-form-controls uk-form-controls-text">
+                {{ field|safe }}
+                {{ field.help_text|safe }}
+            </div>
+
+            <div class="uk-form-controls uk-form-controls-text">
+                {% include "uikit/_field_errors.html" %}
+                <p></p>
+            </div>
+        {% else %}
+            <div class="uk-form-controls uk-form-controls-text">
+                {{ field|safe }}
+            </div>
+
+            <div class="uk-form-controls uk-form-controls-text">
+                {% include "uikit/_field_errors.html" %}
+                <p>{{ field.help_text|safe }}</p>
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
