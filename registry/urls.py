@@ -51,6 +51,7 @@ urlpatterns = [
 
     # Edit views
     url(r'^edit/$', edit_views.edit, name='edit'),
+    url(r'^edit/password/$', edit_views.password, name='edit_password'),
     url(r'^edit/address/$', edit_views.address, name='edit_address'),
     url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
     url(r'^edit/social/$', edit_views.social, name='edit_social'),
