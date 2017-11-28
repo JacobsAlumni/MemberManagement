@@ -11,6 +11,11 @@ def editViewFactory(prop, FormClass, name):
 
     @login_required
     def edit(request):
+
+        # if we have something that needs to be setup return to the main page
+        if request.user.alumni.get_first_unset_approval() is not None:
+            return redirect(reverse('portal'))
+
         # figure out the edit url to redirect to
         if prop is None:
             url = reverse('edit')

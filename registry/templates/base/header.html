@@ -14,7 +14,7 @@
         <ul class="uk-navbar-nav uk-visible@l">
             <li><a class="uk-active" href="/">Home</a></li>
             {% if not user.is_authenticated %}<li><a class="uk-active" href="/login/">Login</a></li>{% endif %}
-            {% if user.is_staff %}<li><a class="uk-active" href="/admin/">Admin</a></li>{% endif %}
+            {% if user.is_staff %}<li><a class="uk-active" href="/admin/">Django Admin</a></li>{% endif %}
         </ul>
         <div class="uk-navbar-item">
             {% if user.is_authenticated %}
