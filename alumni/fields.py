@@ -23,14 +23,10 @@ class GenderField(models.CharField):
 class AlumniCategoryField(models.CharField):
     REGULAR = 're'
     FACULTY = 'fa'
-    STAFF = 'st'
-    HOST_FAMILY = 'hf'
     FRIEND = 'fr'
     CATEGORY_CHOICES = (
         (REGULAR, 'Alumni (Former Student)'),
-        (FACULTY, 'Faculty'),
-        (STAFF, 'Staff'),
-        (HOST_FAMILY, 'Host Family'),
+        (FACULTY, 'Faculty or Staff'),
         (FRIEND, 'Friend Of The Association')
     )
 

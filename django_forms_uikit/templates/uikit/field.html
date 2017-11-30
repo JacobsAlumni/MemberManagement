@@ -6,7 +6,7 @@
     <div id="div_{{ field.auto_id }}" class="{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
         {% if field.label %}
             <label for="{{ field.auto_id }}" class="uk-form-label">
-                {{ field.label|safe }}
+                {{ field.label|safe }} {% if field.field.required %}*{% endif %}
             </label>
         {% endif %}
 

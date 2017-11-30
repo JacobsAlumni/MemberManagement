@@ -11,9 +11,15 @@
 
     <div>
         <form class="uk-form-horizontal" method="POST">
-            {% csrf_token %}
-            {{ form | as_uikit_form }}
-            <input type="submit" class="uk-button" value="Register">
+            <fieldset class="uk-fieldset uk-margin" style="">
+                <legend class="uk-legend uk-margin-bottom">
+                    Enter your General Information
+                    <span class="uk-text-muted"></span>
+                </legend>
+                {% csrf_token %}
+                {{ form | as_uikit_form }}
+                <input type="submit" class="uk-button" value="Register">
+            </fieldset>
         </form>
     </div>
 </article>
