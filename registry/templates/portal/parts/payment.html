@@ -1,0 +1,20 @@
+{% load registry_display %}
+
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">My Membership</h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <tbody>
+                <tr>
+                    <td>Tier</td>
+                    <td>{{ user.alumni.payment |get_choice_field:"tier" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="uk-card-footer">
+        <a href="/edit/" class="uk-button uk-button-text">Edit Payment Information</a>
+    </div>
+</div>

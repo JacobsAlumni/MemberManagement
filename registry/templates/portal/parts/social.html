@@ -1,0 +1,44 @@
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">My Social Media Links</h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <tbody>
+                {% if user.alumni.social.facebook %}
+                    <tr>
+                        <td>Facebook</td>
+                        <td>{{ user.alumni.social.facebook|safe }}</td>
+                    </tr>
+                {% endif %}
+                {% if user.alumni.social.twitter %}
+                    <tr>
+                        <td>Twitter</td>
+                        <td>{{ user.alumni.social.twitter|safe }}</td>
+                    </tr>
+                {% endif %}
+                {% if user.alumni.social.linkedin %}
+                    <tr>
+                        <td>LinkedIn</td>
+                        <td>{{ user.alumni.social.linkedin|safe }}</td>
+                    </tr>
+                {% endif %}
+                {% if user.alumni.social.instagram %}
+                    <tr>
+                        <td>Instagram</td>
+                        <td>{{ user.alumni.social.instagram|safe }}</td>
+                    </tr>
+                {% endif %}
+                {% if user.alumni.social.homepage %}
+                    <tr>
+                        <td>Homepage</td>
+                        <td>{{ user.alumni.social.homepage|safe }}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="uk-card-footer">
+        <a href="/edit/social/" class="uk-button uk-button-text">Edit Social Media Links</a>
+    </div>
+</div>

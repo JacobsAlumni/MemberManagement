@@ -1,0 +1,40 @@
+{% load registry_display %}
+
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">My Address</h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <tbody>
+                <tr>
+                    <td>Address</td>
+                    <td>
+                        {{ user.alumni.address.address_line_1|safe }}
+
+                        {% if user.alumni.address.address_line_2 %}
+                            <br />
+                            {{ user.alumni.address.address_line_2|safe }}
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>ZIP</td>
+                    <td>{{ user.alumni.address.zip | safe }}</td>
+                </tr>
+                <tr>
+                    <td>City</td>
+                    <td>{{ user.alumni.address.city | safe }}</td>
+                </tr>
+
+                <tr>
+                    <td>Country</td>
+                    <td>{{ user.alumni.address |get_choice_field:"country"|safe }}</td>
+            </tbody>
+        </table>
+    </div>
+    <div class="uk-card-footer">
+        <a href="/edit/address/" class="uk-button uk-button-text">Edit Address</a>
+    </div>
+</div>

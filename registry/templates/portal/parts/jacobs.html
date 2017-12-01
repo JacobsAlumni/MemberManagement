@@ -1,0 +1,36 @@
+{% load registry_display %}
+
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">My Jacobs Data</h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <tbody>
+                {% if user.alumni.jacobs.college %}
+                    <tr>
+                        <td>College</td>
+                        <td>{{ user.alumni.jacobs|get_choice_field:"college"|safe }}</td>
+                    </tr>
+                {% endif %}
+                {% if user.alumni.jacobs.degree %}
+                    <tr>
+                        <td>Degree</td>
+                        <td>{{ user.alumni.jacobs|get_choice_field:"degree"|safe }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td>Graduation</td>
+                    <td>{{ user.alumni.jacobs|get_choice_field:"graduation"|safe }}</td>
+                </tr>
+                <tr>
+                    <td>Major</td>
+                    <td>{{ user.alumni.jacobs|get_choice_field:"major"|safe }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="uk-card-footer">
+        <a href="/edit/jacobs/" class="uk-button uk-button-text">Edit Jacobs Data</a>
+    </div>
+</div>

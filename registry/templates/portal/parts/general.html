@@ -1,0 +1,58 @@
+{% load registry_display %}
+
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">My Data</h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <caption>General Information</caption>
+            <tbody>
+                <tr>
+                    <td>First Name</td>
+                    <td>{{ user.alumni.firstName | safe }}</td>
+                </tr>
+
+                {% if user.alumni.middleName is not None %}
+                    <tr>
+                        <td>Middle Name</td>
+                        <td>{{ user.alumni.middleName | safe }}</td>
+                    </tr>
+                {% endif %}
+
+                <tr>
+                    <td>Last Name</td>
+                    <td>{{ user.alumni.lastName|safe }}</td>
+                </tr>
+
+                <tr>
+                    <td>E-Mail</td>
+                    <td>{{ user.alumni.email|safe }}</td>
+                </tr>
+
+                <tr>
+                    <td>Sex</td>
+                    <td>{{ user.alumni|get_choice_field:"sex"}}</td>
+                </tr>
+
+                <tr>
+                    <td>Birthday</td>
+                    <td>{{ user.alumni.birthday|safe }}</td>
+                </tr>
+
+                <tr>
+                    <td>Nationality</td>
+                    <td>{{ user.alumni |get_choice_field:"nationality"|join:"\n"|safe }}</td>
+                </tr>
+
+                <tr>
+                    <td>Category</td>
+                    <td>{{ user.alumni |get_choice_field:"category"|safe }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="uk-card-footer">
+        <a href="/edit/" class="uk-button uk-button-text">Edit General Information</a>
+    </div>
+</div>

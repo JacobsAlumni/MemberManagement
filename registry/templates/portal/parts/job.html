@@ -1,0 +1,40 @@
+{% load registry_display %}
+
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">My Job Information</h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <tbody>
+                    {% if user.alumni.job.employer %}
+                        <tr>
+                            <td>Employer</td>
+                            <td>{{ user.alumni.job.employer|safe }}</td>
+                        </tr>
+                    {% endif %}
+
+                    {% if user.alumni.job.position %}
+                        <tr>
+                            <td>Position</td>
+                            <td>{{ user.alumni.job.position|safe }}</td>
+                        </tr>
+                    {% endif %}
+
+                    <tr>
+                        <td>Job</td>
+                        <td>{{ user.alumni.job|get_choice_field:"job"|safe }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Industry</td>
+                        <td>{{ user.alumni.job|get_choice_field:"industry"|safe }}</td>
+                    </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="uk-card-footer">
+        <a href="/edit/job/" class="uk-button uk-button-text">Edit Job Information</a>
+    </div>
+</div>
