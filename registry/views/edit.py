@@ -121,7 +121,7 @@ class SubscribeView(FormView):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         tier = form.cleaned_data['tier']
         customer_data = {
-            'description': 'Some Customer Data',
+            'description': subscription_plans[tier].name,
             'card': form.cleaned_data['token']
         }
         customer = stripe.Customer.create(**customer_data)

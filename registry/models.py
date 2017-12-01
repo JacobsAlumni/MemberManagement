@@ -8,10 +8,11 @@ class SubscriptionPlan(object):
         self.name = name
         self.stripe_id = stripe_id
         self.cost = cost
+        self.currency = currency
 
 # The subscription values are in Euro-Cents :)
 subscription_plans = {
-    "st": SubscriptionPlan("Starter Subscription", "starter-subscription", 100, "EUR"),
-    "co": SubscriptionPlan("Contributor Subscription", "contributor-subscription", 4900, "EUR"),
-    "pa": SubscriptionPlan("Patron Subscription", "patron-subscription", 24900, "EUR"),
+    "st": SubscriptionPlan("Starter Membership", "starter-membership", 100, "EUR"),
+    "co": SubscriptionPlan("Contributor Membership", "contributor-membership", 4900, "EUR"),
+    "pa": SubscriptionPlan("Patron Membership", "patron-membership", 24900, "EUR"),
 }

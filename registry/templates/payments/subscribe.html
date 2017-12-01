@@ -44,7 +44,7 @@
         });
 
         function stripeTokenHandler(token) {
-            document.getElementById('id_token').value = token;
+            document.getElementById('id_token').value = token.id;
             document.getElementById("payment-form").submit();
         }
 
