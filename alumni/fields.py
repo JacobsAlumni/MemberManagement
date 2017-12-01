@@ -652,9 +652,9 @@ class TierField(models.CharField):
     PATRON = 'pa'
 
     TIER_CHOICES = (
-        (STARTER, 'Starter'),
-        (CONTRIBUTOR, 'Contributor'),
-        (PATRON, 'Patron'),
+        (STARTER, "Starter (1€ per year)"),
+        (CONTRIBUTOR, "Contributor (49€ per year)"),
+        (PATRON, 'Patron (249€ per year)'),
     )
 
     def __init__(self, **kwargs):
