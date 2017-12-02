@@ -15,7 +15,7 @@ class Alumni(models.Model):
     # name and basic contact information
     firstName = models.CharField(max_length=255, help_text="Your first name")
     middleName = models.CharField(max_length=255, blank=True, null=True,
-                                  help_text="Your middle names (optional)")
+                                  help_text="Your middle name(s)")
     lastName = models.CharField(max_length=255, help_text="Your last name")
 
     @property
@@ -34,7 +34,7 @@ class Alumni(models.Model):
     # gender, nationality, birthday
     sex = fields.GenderField()
     birthday = models.DateField(
-        help_text="Your birthday in the format YYYY-MM-DD")
+        help_text="Your birthday")
 
     # TODO: Better handling of multiple nationalities
     nationality = CountryField(help_text="Your nationality", multiple=True)

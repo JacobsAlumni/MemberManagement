@@ -10,7 +10,7 @@ from django_forms_uikit.widgets import DatePickerInput
 class RegistrationForm(forms.ModelForm):
     """ A form for registering users """
     username = forms.SlugField(label='Username',
-                               help_text='A username for the admin portal. ')
+                               help_text='A username for the membership portal')
     password1 = forms.CharField(
         label="Password",
         widget=forms.PasswordInput,

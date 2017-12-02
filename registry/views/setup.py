@@ -51,7 +51,12 @@ def register(request):
         form = RegistrationForm()
 
     # and return the request
-    return render(request, 'setup/register.html', {'form': form})
+    return render(request, 'setup/setup.html', {
+        'form': form,
+        'title': 'Register -  Enter your General Information',
+        'subtitle': 'just the basics',
+        'next_text': 'Join the Alumni Association'
+    })
 
 
 @login_required
@@ -70,7 +75,7 @@ def setup(request):
         return redirect(reverse('setup_{}'.format(component)))
 
 
-def setupViewFactory(prop, FormClass, name):
+def setupViewFactory(prop, FormClass, name, subtitle):
     """ Generates a setup view for a given section of the profile """
 
     @require_unset_component(prop, default_alternative)
@@ -101,15 +106,21 @@ def setupViewFactory(prop, FormClass, name):
 
         # and return the request
         return render(request, 'setup/setup.html',
-                      {'form': form, 'name': name})
+                      {
+                          'form': form,
+                          'title': 'Initial Setup - {}'.format(name),
+                          'subtitle': subtitle,
+                          'next_text': 'Continue'
+                      })
 
     return setup
 
 
-address = setupViewFactory('address', AddressForm, 'Address Information')
-jacobs = setupViewFactory('jacobs', JacobsForm, 'Jacobs Data')
-social = setupViewFactory('social', SocialMediaForm, 'Social Media')
-job = setupViewFactory('job', JobInformationForm, 'Job Information')
+address = setupViewFactory('address', AddressForm, 'Residential Address',
+                           'so that we can contact you if needed')
+jacobs = setupViewFactory('jacobs', JacobsForm, 'Jacobs Data', '')
+social = setupViewFactory('social', SocialMediaForm, 'Social Media', '')
+job = setupViewFactory('job', JobInformationForm, 'Job Information', '')
 
 
 class SubscribeView(FormView):
