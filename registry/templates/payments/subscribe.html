@@ -141,7 +141,10 @@
                 {% csrf_token %}
 
                 {{ form | as_uikit_form }}
-                <span id="description"></span>
+                <div>
+                    <div id="description" class="uk-form-controls uk-form-controls-text">
+                    </div>
+                </div>
 
                 <div>
                     <label for="card-element" class="uk-form-label">
@@ -160,7 +163,6 @@
                             Your payment info is sent directly to <a href="https://stripe.com/"
                                                                      target="_blank">Stripe</a> via your browser
                             and never reaches Jacobs Alumni Servers.
-                            Your card will not be charged until the yearly payment of all members is collected.
                         </p>
                     </div>
                 </div>
