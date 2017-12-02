@@ -9,6 +9,8 @@
         Edit Data - {{ name }}
     </h1>
 
+    {% include "portal/approval_warning.html" %}
+
     {% if messages %}
         {% for message in messages %}
             <div class="uk-alert{% if message.tags %}-{{ message.tags }}{% endif %}" uk-alert>

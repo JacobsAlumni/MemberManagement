@@ -46,7 +46,7 @@ class AlumniAdmin(admin.ModelAdmin):
         'jacobs__major', 'payment__tier')
 
     def fullName(self, x):
-        return '{} {} {}'.format(x.firstName, x.middleName, x.lastName)
+        return x.fullName
 
     fullName.short_description = 'Full Name'
 

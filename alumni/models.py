@@ -26,7 +26,6 @@ class Alumni(models.Model):
             names.append(self.middleName)
 
         names.append(self.lastName)
-
         return ' '.join(names)
 
     email = models.EmailField(help_text="Your private email address")
@@ -113,8 +112,10 @@ class Approval(models.Model):
     """ The approval status of a member """
     member = models.OneToOneField(Alumni, related_name='approval')
 
-    approval = models.BooleanField(default=False,
+    approval = models.BooleanField(default=False, blank=True,
                                    help_text="Has the user been approved by an admin?")
+
+    gsuite = models.EmailField(blank=True, null=True, help_text="The G-Suite E-Mail of the user")
 
 
 @Alumni.register_component
@@ -158,5 +159,5 @@ class PaymentInformation(models.Model):
     tier = fields.TierField(help_text='Membership Tier')
 
     token = models.CharField(max_length=255, null=True, blank=True, help_text='The stripe card token for the user')
-    customer = models.CharField(max_length=255, null=True, blank=True, help_text='The stripe cusomter id for the user')
+    customer = models.CharField(max_length=255, null=True, blank=True, help_text='The stripe customer id for the user')
     subscription = models.CharField(max_length=255, null=True, blank=True, help_text='The payment token for the customer')

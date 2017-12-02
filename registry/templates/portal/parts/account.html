@@ -17,7 +17,12 @@
 
                 <tr>
                     <td>G-Suite E-Mail</td>
-                    <td><i>(unassigned)</i></td>
+                    <td>
+                        {% if user.alumni.approval.gsuite %}
+                            {{ user.alumni.approval.gsuite }}
+                        {% else %}
+                            <i>(unassigned)</i></td>
+                        {% endif %}
                 </tr>
             </tbody>
         </table>
