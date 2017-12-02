@@ -44,7 +44,7 @@ urlpatterns = [
     url(r'^setup/jacobs/$', setup_views.jacobs, name='setup_jacobs'),
     url(r'^setup/social/$', setup_views.social, name='setup_social'),
     url(r'^setup/job/$', setup_views.job, name='setup_job'),
-    url(r'^setup/payment/$', setup_views.SubscribeView.as_view(), name='setup_payment'),
+    url(r'^setup/payment/$', setup_views.SubscribeView.as_safe_view(), name='setup_payment'),
 
     # the portal for the user
     url(r'portal/', registry_views.portal, name='portal'),

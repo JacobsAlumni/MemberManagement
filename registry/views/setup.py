@@ -161,11 +161,7 @@ class SubscribeView(FormView):
         return super(SubscribeView, self).form_valid(form)
 
     @classmethod
-    def as_view(cls, **initkwargs):
-        superview = FormView.as_view(**initkwargs)
-
-        @require_unset_component('payment', default_alternative)
-        def view(*args, **kwargs):
-            return superview(*args, **kwargs)
-
-        return view
+    def as_safe_view(cls, **initkwargs):
+        dec = require_unset_component('payment', default_alternative)
+        view = cls.as_view(**initkwargs)
+        return dec(view)
