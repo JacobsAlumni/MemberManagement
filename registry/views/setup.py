@@ -144,4 +144,8 @@ class SubscribeView(FormView):
         customer = stripe.Customer.create(**customer_data)
         customer.subscriptions.create(plan=subscription_plans[tier].stripe_id)
 
+        # store card_token
+        # store cusp,ter_id
+        # store subscription id
+
         return super(SubscribeView, self).form_valid(form)
