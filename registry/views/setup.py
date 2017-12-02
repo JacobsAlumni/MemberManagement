@@ -118,7 +118,7 @@ def setupViewFactory(prop, FormClass, name, subtitle):
 
 address = setupViewFactory('address', AddressForm, 'Residential Address',
                            'so that we can contact you if needed')
-jacobs = setupViewFactory('jacobs', JacobsForm, 'Jacobs Data', '')
+jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data', 'tell us what you did at Jacobs')
 social = setupViewFactory('social', SocialMediaForm, 'Social Media', '')
 job = setupViewFactory('job', JobInformationForm, 'Job Information', '')
 
