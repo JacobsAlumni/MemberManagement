@@ -118,7 +118,8 @@ def setupViewFactory(prop, FormClass, name, subtitle):
 
 address = setupViewFactory('address', AddressForm, 'Residential Address',
                            'so that we can contact you if needed')
-jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data', 'tell us what you did at Jacobs')
+jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data',
+                          'tell us what you did at Jacobs')
 social = setupViewFactory('social', SocialMediaForm, 'Social Media', '')
 job = setupViewFactory('job', JobInformationForm, 'Job Information', '')
 
@@ -141,11 +142,30 @@ class SubscribeView(FormView):
             'description': subscription_plans[tier].name,
             'card': form.cleaned_data['token']
         }
-        customer = stripe.Customer.create(**customer_data)
-        customer.subscriptions.create(plan=subscription_plans[tier].stripe_id)
 
-        # store card_token
-        # store cusp,ter_id
-        # store subscription id
+        try:
+            customer = stripe.Customer.create(**customer_data)
+            subscription = customer.subscriptions.create(plan=subscription_plans[tier].stripe_id)
+        except Exception:
+            form.add_error(None, 'Something went wrong trying to process your payment. Please try again. ')
+            return self.form_invalid(form)
 
+        # Create an instance for the payment in the database
+        instance = form.save(commit=False)
+        instance.member = self.request.alumni
+        instance.customer = customer.stripe_id
+        instance.subscription = subscription.stripe_id
+
+        # and save it
+        instance.save()
         return super(SubscribeView, self).form_valid(form)
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        superview = FormView.as_view(**initkwargs)
+
+        @require_unset_component('payment', default_alternative)
+        def view(*args, **kwargs):
+            return superview(*args, **kwargs)
+
+        return view

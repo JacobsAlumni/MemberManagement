@@ -156,4 +156,7 @@ class PaymentInformation(models.Model):
     member = models.OneToOneField(Alumni, related_name='payment')
 
     tier = fields.TierField(help_text='Membership Tier')
-    token = models.CharField(max_length=255, null=True, blank=True)
+
+    token = models.CharField(max_length=255, null=True, blank=True, help_text='The stripe card token for the user')
+    customer = models.CharField(max_length=255, null=True, blank=True, help_text='The stripe cusomter id for the user')
+    subscription = models.CharField(max_length=255, null=True, blank=True, help_text='The payment token for the customer')
