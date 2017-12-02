@@ -4,18 +4,13 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
-from django.conf import settings
-from django.views.generic import FormView, TemplateView
-from django.core.urlresolvers import reverse_lazy
-
+from django.views.generic import TemplateView
 
 from registry.views.registry import default_alternative
 from ..decorators import require_setup_completed
 
 from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, PaymentInformationForm
-from ..models import subscription_plans
-import stripe
 
 
 def editViewFactory(prop, FormClass, name):
@@ -101,30 +96,3 @@ def password(request):
         'messsages': get_messages(request)
     })
 
-
-class SuccessView(TemplateView):
-    template_name = 'store/thank_you.html'
-
-
-class SubscribeView(FormView):
-    template_name = 'payments/subscribe.html'
-    form_class = PaymentInformationForm
-    success_url = reverse_lazy('portal')
-    publishable_key = settings.STRIPE_PUBLISHABLE_KEY
-
-    def get_context_data(self, **kwargs):
-        context = super(SubscribeView, self).get_context_data(**kwargs)
-        context['publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
-        return context
-
-    def form_valid(self, form):
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        tier = form.cleaned_data['tier']
-        customer_data = {
-            'description': subscription_plans[tier].name,
-            'card': form.cleaned_data['token']
-        }
-        customer = stripe.Customer.create(**customer_data)
-        customer.subscriptions.create(plan=subscription_plans[tier].stripe_id)
-
-        return super(SubscribeView, self).form_valid(form)

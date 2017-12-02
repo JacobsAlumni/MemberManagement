@@ -155,5 +155,5 @@ class PaymentInformation(models.Model):
 
     member = models.OneToOneField(Alumni, related_name='payment')
 
-    tier = fields.TierField(help_text='The type of your membership')
+    tier = fields.TierField(help_text='Membership Tier')
     token = models.CharField(max_length=255, null=True, blank=True)

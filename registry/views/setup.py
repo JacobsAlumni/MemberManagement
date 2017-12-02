@@ -1,10 +1,14 @@
+import stripe
+from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.views.generic import FormView
 
 from registry.decorators import require_unset_component
+from registry.models import subscription_plans
 from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, PaymentInformationForm
@@ -106,5 +110,27 @@ address = setupViewFactory('address', AddressForm, 'Address Information')
 jacobs = setupViewFactory('jacobs', JacobsForm, 'Jacobs Data')
 social = setupViewFactory('social', SocialMediaForm, 'Social Media')
 job = setupViewFactory('job', JobInformationForm, 'Job Information')
-payment = setupViewFactory('payment', PaymentInformationForm,
-                           'Payment Information')
+
+
+class SubscribeView(FormView):
+    template_name = 'payments/subscribe.html'
+    form_class = PaymentInformationForm
+    success_url = reverse_lazy('portal')
+    publishable_key = settings.STRIPE_PUBLISHABLE_KEY
+
+    def get_context_data(self, **kwargs):
+        context = super(SubscribeView, self).get_context_data(**kwargs)
+        context['publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
+        return context
+
+    def form_valid(self, form):
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        tier = form.cleaned_data['tier']
+        customer_data = {
+            'description': subscription_plans[tier].name,
+            'card': form.cleaned_data['token']
+        }
+        customer = stripe.Customer.create(**customer_data)
+        customer.subscriptions.create(plan=subscription_plans[tier].stripe_id)
+
+        return super(SubscribeView, self).form_valid(form)

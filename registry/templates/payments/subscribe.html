@@ -31,15 +31,25 @@
         };
         // Create an instance of the card Element
         var card = elements.create('card', {style: style});
-// Add an instance of the card Element into the `card-element` <div>
+
+        // Add an instance of the card Element into the `card-element` <div>
         card.mount('#card-element');
+
         // Handle real-time validation errors from the card Element.
         card.addEventListener('change', function (event) {
             var displayError = document.getElementById('card-errors');
+
+            // if there was an error, show it
             if (event.error) {
-                displayError.textContent = event.error.message;
+                errorElement.style.display = 'block';
+                errorElement.style.visibility = 'visible';
+                errorElement.textContent = event.error.message;
+
+            // else hide the error message
             } else {
-                displayError.textContent = '';
+                errorElement.style.display = 'none';
+                errorElement.style.visibility = 'hidden';
+                errorElement.textContent = '';
             }
         });
 
@@ -48,15 +58,26 @@
             document.getElementById("payment-form").submit();
         }
 
-// Handle form submission
+        // the element displaying errors
+        var errorElement = document.getElementById('card-errors');
+        errorElement.style.display = 'none';
+        errorElement.style.visibility = 'hidden';
+
+        // Handle form submission
         var form = document.getElementById('payment-form');
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
+            // hide the error message (if any)
+            errorElement.style.display = 'none';
+            errorElement.style.visibility = 'hidden';
+
             stripe.createToken(card).then(function (result) {
+                console.log(result);
                 if (result.error) {
                     // Inform the user if there was an error
-                    var errorElement = document.getElementById('card-errors');
+                    errorElement.style.display = 'block';
+                    errorElement.style.visibility = 'visible'; 
                     errorElement.textContent = result.error.message;
                 } else {
                     // Send the token to your server
@@ -97,24 +118,40 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <form action="/setup/payment/" method="post" id="payment-form">
-        {% csrf_token %}
-        <label for="tier">Membership Tier</label>
-        {{ form | as_uikit_form }}
-        <div class="form-row">
-            <label for="card-element">
-                Credit or debit card
-            </label>
-            <div id="card-element">
-                <!-- a Stripe Element will be inserted here. -->
+<article class="uk-article">
+    <h1 class="uk-article-title">
+    Initial Setup - Tier Selection
+    </h1>
+
+    <div>
+        <form action="/setup/payment/" method="post" id="payment-form" class="uk-form-horizontal">
+            {% csrf_token %}
+
+            {{ form | as_uikit_form }}
+
+            <div>
+                <label for="card-element" class="uk-form-label">
+                    Credit or debit card *
+                </label>
+                <div id="card-element" class="uk-form-controls uk-form-controls-text">
+                    <!-- a Stripe Element will be inserted here. -->
+                </div>
+
+                <!-- Used to display form errors -->
+                <div role="alert" class="uk-form-controls uk-form-controls-text">
+                    <div class="uk-alert-danger" id="card-errors" uk-alert>
+                        You need to enable JavaScript for this to work. 
+                    </div>
+                    <p>
+                        Your payment info is sent directly to <a href="https://stripe.com/" target="_blank">Stripe</a> via your browser
+                        and never reaches Jacobs Alumni Servers.
+                        Your card will not be charged until the yearly payment of all members is collected. 
+                    </p>
+                </div>
             </div>
 
-            <!-- Used to display form errors -->
-            <div id="card-errors" role="alert"></div>
-        </div>
-
-        <button>Submit Payment</button>
-    </form>
-</div>
+            <button class="uk-button">Submit Payment</button>
+        </form>
+    </div>
+</article>
 {% endblock %}
