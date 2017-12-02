@@ -2,156 +2,171 @@
 {% load uikit_tags %}
 
 {% block head %}
-<script src="https://js.stripe.com/v3/"></script>
-<script type="text/javascript">
-    window.onload = function () {
-        // Create a Stripe client
-        var stripe = Stripe('{{ publishable_key }}');
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.js"
+            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+            crossorigin="anonymous"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            var membership_options = {
+                "st": "This is a starter membership",
+                "co": "This is a contributor membership",
+                "pa": "This is a patron membership"
+            };
+            // Create a Stripe client
+            var stripe = Stripe('{{ publishable_key }}');
 
-        // Create an instance of Elements
-        var elements = stripe.elements();
+            // Create an instance of Elements
+            var elements = stripe.elements();
 
-        // Custom styling can be passed to options when creating an Element.
-        // (Note that this demo uses a wider set of styles than the guide below.)
-        var style = {
-            base: {
-                color: '#32325d',
-                lineHeight: '18px',
-                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                fontSmoothing: 'antialiased',
-                fontSize: '16px',
-                '::placeholder': {
-                    color: '#aab7c4'
+            // Custom styling can be passed to options when creating an Element.
+            // (Note that this demo uses a wider set of styles than the guide below.)
+            var style = {
+                base: {
+                    color: '#32325d',
+                    lineHeight: '18px',
+                    fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    fontSize: '16px',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a'
                 }
-            },
-            invalid: {
-                color: '#fa755a',
-                iconColor: '#fa755a'
             }
-        };
-        // Create an instance of the card Element
-        var card = elements.create('card', {style: style});
+            // Create an instance of the card Element
+            var card = elements.create('card', {style: style});
 
-        // Add an instance of the card Element into the `card-element` <div>
-        card.mount('#card-element');
+            // Add an instance of the card Element into the `card-element` <div>
+            card.mount('#card-element');
 
-        // Handle real-time validation errors from the card Element.
-        card.addEventListener('change', function (event) {
-            var displayError = document.getElementById('card-errors');
+            // Handle real-time validation errors from the card Element.
+            card.addEventListener('change', function (event) {
+                var displayError = document.getElementById('card-errors');
 
-            // if there was an error, show it
-            if (event.error) {
-                errorElement.style.display = 'block';
-                errorElement.style.visibility = 'visible';
-                errorElement.textContent = event.error.message;
+                // if there was an error, show it
+                if (event.error) {
+                    errorElement.style.display = 'block';
+                    errorElement.style.visibility = 'visible';
+                    errorElement.textContent = event.error.message;
 
-            // else hide the error message
-            } else {
-                errorElement.style.display = 'none';
-                errorElement.style.visibility = 'hidden';
-                errorElement.textContent = '';
+                    // else hide the error message
+                } else {
+                    errorElement.style.display = 'none';
+                    errorElement.style.visibility = 'hidden';
+                    errorElement.textContent = '';
+                }
+            });
+
+            function stripeTokenHandler(token) {
+                document.getElementById('id_token').value = token.id;
+                document.getElementById("payment-form").submit();
             }
-        });
 
-        function stripeTokenHandler(token) {
-            document.getElementById('id_token').value = token.id;
-            document.getElementById("payment-form").submit();
-        }
-
-        // the element displaying errors
-        var errorElement = document.getElementById('card-errors');
-        errorElement.style.display = 'none';
-        errorElement.style.visibility = 'hidden';
-
-        // Handle form submission
-        var form = document.getElementById('payment-form');
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            // hide the error message (if any)
+            // the element displaying errors
+            var errorElement = document.getElementById('card-errors');
             errorElement.style.display = 'none';
             errorElement.style.visibility = 'hidden';
 
-            stripe.createToken(card).then(function (result) {
-                console.log(result);
-                if (result.error) {
-                    // Inform the user if there was an error
-                    errorElement.style.display = 'block';
-                    errorElement.style.visibility = 'visible'; 
-                    errorElement.textContent = result.error.message;
-                } else {
-                    // Send the token to your server
-                    stripeTokenHandler(result.token);
-                }
+            // Handle form submission
+            var form = document.getElementById('payment-form');
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                // hide the error message (if any)
+                errorElement.style.display = 'none';
+                errorElement.style.visibility = 'hidden';
+
+                stripe.createToken(card).then(function (result) {
+                    console.log(result);
+                    if (result.error) {
+                        // Inform the user if there was an error
+                        errorElement.style.display = 'block';
+                        errorElement.style.visibility = 'visible';
+                        errorElement.textContent = result.error.message;
+                    } else {
+                        // Send the token to your server
+                        stripeTokenHandler(result.token);
+                    }
+                });
             });
-        });
-    };
-</script>
+            $('#id_tier').change(function () {
+                var selected = $(this).find(':selected');
+                $('#description').html(membership_options[selected[0].value]);
+            }).trigger('change');
+        }
+    </script>
     <style>
-    /**
- * The CSS shown here will not be introduced in the Quickstart guide, but shows
- * how you can use CSS to style your Element's container.
- */
-.StripeElement {
-  background-color: white;
-  height: 40px;
-  padding: 10px 12px;
-  border-radius: 4px;
-  border: 1px solid transparent;
-  box-shadow: 0 1px 3px 0 #e6ebf1;
-  -webkit-transition: box-shadow 150ms ease;
-  transition: box-shadow 150ms ease;
-}
+        /**
+     * The CSS shown here will not be introduced in the Quickstart guide, but shows
+     * how you can use CSS to style your Element's container.
+     */
+        .StripeElement {
+            background-color: white;
+            height: 40px;
+            padding: 10px 12px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            box-shadow: 0 1px 3px 0 #e6ebf1;
+            -webkit-transition: box-shadow 150ms ease;
+            transition: box-shadow 150ms ease;
+        }
 
-.StripeElement--focus {
-  box-shadow: 0 1px 3px 0 #cfd7df;
-}
+        .StripeElement--focus {
+            box-shadow: 0 1px 3px 0 #cfd7df;
+        }
 
-.StripeElement--invalid {
-  border-color: #fa755a;
-}
+        .StripeElement--invalid {
+            border-color: #fa755a;
+        }
 
-.StripeElement--webkit-autofill {
-  background-color: #fefde5 !important;
-}
+        .StripeElement--webkit-autofill {
+            background-color: #fefde5 !important;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
-<article class="uk-article">
-    <h1 class="uk-article-title">
-    Initial Setup - Tier Selection
-    </h1>
+    <article class="uk-article">
+        <h1 class="uk-article-title">
+            Initial Setup - Tier Selection
+        </h1>
 
-    <div>
-        <form action="/setup/payment/" method="post" id="payment-form" class="uk-form-horizontal">
-            {% csrf_token %}
+        <div>
+            <form action="/setup/payment/" method="post" id="payment-form" class="uk-form-horizontal">
+                {% csrf_token %}
 
-            {{ form | as_uikit_form }}
+                {{ form | as_uikit_form }}
+                <span id="description"></span>
 
-            <div>
-                <label for="card-element" class="uk-form-label">
-                    Credit or debit card *
-                </label>
-                <div id="card-element" class="uk-form-controls uk-form-controls-text">
-                    <!-- a Stripe Element will be inserted here. -->
-                </div>
-
-                <!-- Used to display form errors -->
-                <div role="alert" class="uk-form-controls uk-form-controls-text">
-                    <div class="uk-alert-danger" id="card-errors" uk-alert>
-                        You need to enable JavaScript for this to work. 
+                <div>
+                    <label for="card-element" class="uk-form-label">
+                        Credit or debit card *
+                    </label>
+                    <div id="card-element" class="uk-form-controls uk-form-controls-text">
+                        <!-- a Stripe Element will be inserted here. -->
                     </div>
-                    <p>
-                        Your payment info is sent directly to <a href="https://stripe.com/" target="_blank">Stripe</a> via your browser
-                        and never reaches Jacobs Alumni Servers.
-                        Your card will not be charged until the yearly payment of all members is collected. 
-                    </p>
-                </div>
-            </div>
 
-            <button class="uk-button">Submit Payment</button>
-        </form>
-    </div>
-</article>
+                    <!-- Used to display form errors -->
+                    <div role="alert" class="uk-form-controls uk-form-controls-text">
+                        <div class="uk-alert-danger" id="card-errors" uk-alert>
+                            You need to enable JavaScript for this to work.
+                        </div>
+                        <p>
+                            Your payment info is sent directly to <a href="https://stripe.com/"
+                                                                     target="_blank">Stripe</a> via your browser
+                            and never reaches Jacobs Alumni Servers.
+                            Your card will not be charged until the yearly payment of all members is collected.
+                        </p>
+                    </div>
+                </div>
+
+                <button class="uk-button">Submit Payment</button>
+            </form>
+        </div>
+    </article>
 {% endblock %}

@@ -660,5 +660,5 @@ class TierField(models.CharField):
     def __init__(self, **kwargs):
         kwargs['max_length'] = 2
         kwargs['choices'] = TierField.TIER_CHOICES
-        kwargs['default'] = TierField.STARTER
+        kwargs['default'] = TierField.CONTRIBUTOR
         super(TierField, self).__init__(**kwargs)
