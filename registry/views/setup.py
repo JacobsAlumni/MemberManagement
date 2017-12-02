@@ -152,7 +152,7 @@ class SubscribeView(FormView):
 
         # Create an instance for the payment in the database
         instance = form.save(commit=False)
-        instance.member = self.request.alumni
+        instance.member = self.request.user.alumni
         instance.customer = customer.stripe_id
         instance.subscription = subscription.stripe_id
 
