@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Alumni, Address, JobInformation, SocialMedia, \
-    JacobsData, Approval, PaymentInformation
+    JacobsData, Approval, PaymentInformation, Skills
 
 
 class AlumniJacobsDataInline(admin.StackedInline):
@@ -22,14 +22,19 @@ class AlumniJobsInline(admin.StackedInline):
 class AlumniApprovalInline(admin.StackedInline):
     model = Approval
 
+
 class PaymentInline(admin.StackedInline):
     model = PaymentInformation
 
 
+class SkillsInline(admin.StackedInline):
+    model = Skills
+
+
 class AlumniAdmin(admin.ModelAdmin):
     inlines = [AlumniApprovalInline, AlumniAddressInline,
-               AlumniJacobsDataInline, AlumniJobsInline,
-               AlumniSocialMediaInline, PaymentInline]
+               AlumniSocialMediaInline, AlumniJacobsDataInline,
+               AlumniJobsInline, SkillsInline, PaymentInline]
 
     list_display = (
         # basic information

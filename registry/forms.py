@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import password_validation
 
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
-    JobInformation, PaymentInformation
+    JobInformation, PaymentInformation, Skills
 from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
 
@@ -35,7 +35,8 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Alumni
-        fields = ['firstName', 'middleName', 'lastName', 'email', 'existingEmail', 'sex',
+        fields = ['firstName', 'middleName', 'lastName', 'email',
+                  'existingEmail', 'sex',
                   'birthday', 'birthdayVisible', 'nationality', 'category']
         widgets = {
             'birthday': DatePickerInput()
@@ -91,7 +92,8 @@ class AddressForm(forms.ModelForm):
 
     class Meta:
         model = Address
-        fields = ['address_line_1', 'address_line_2', 'zip', 'city', 'addressVisible', 'state',
+        fields = ['address_line_1', 'address_line_2', 'zip', 'city',
+                  'addressVisible', 'state',
                   'country']
         labels = {
             'addressVisible': ''
@@ -120,6 +122,24 @@ class SocialMediaForm(forms.ModelForm):
     class Meta:
         model = SocialMedia
         fields = ['facebook', 'linkedin', 'twitter', 'instagram', 'homepage']
+
+
+class SkillsForm(forms.ModelForm):
+    """ A form for saving the users Skills Data """
+
+    class Meta:
+        model = Skills
+        fields = [
+            'otherDegrees', 'spokenLanguages', 'programmingLanguages',
+            'areasOfInterest', 'alumniMentor'
+        ]
+        labels = {
+            'otherDegrees': 'Degrees from other instiutions:',
+            'spokenLanguages': 'Spoken Languages:',
+            'programmingLanguages': 'Programming Languages',
+            'areasOfInterest': 'Areas of interest/expertise',
+            'alumniMentor': ''
+        }
 
 
 class JobInformationForm(forms.ModelForm):

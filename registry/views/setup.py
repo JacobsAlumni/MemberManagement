@@ -12,7 +12,7 @@ from registry.decorators import require_unset_component
 from registry.models import subscription_plans
 from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm, PaymentInformationForm
+    JobInformationForm, PaymentInformationForm, SkillsForm
 
 
 def register(request):
@@ -124,6 +124,7 @@ jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data',
                           'tell us what you did at Jacobs')
 job = setupViewFactory('job', JobInformationForm, 'Professional information',
                        'What did you do after Jacobs?')
+skills = setupViewFactory('skills', SkillsForm, 'Education and Skills', '')
 
 
 class SubscribeView(FormView):

@@ -162,6 +162,21 @@ class JobInformation(models.Model):
 
 
 @Alumni.register_component
+class Skills(models.Model):
+    """ The skills of an Alumni member """
+
+    member = models.OneToOneField(Alumni, related_name='skills')
+
+    otherDegrees = models.TextField(null=True, blank=True)
+    spokenLanguages = models.TextField(null=True, blank=True)
+    programmingLanguages = models.TextField(null=True, blank=True)
+    areasOfInterest = models.TextField(null=True, blank=True,
+                                       help_text="E.g. Start-Ups, Surfing, Big Data, Human Rights, etc")
+    alumniMentor = models.BooleanField(default=False, blank=True,
+                                       help_text="I would like to sign up as an alumni mentor")
+
+
+@Alumni.register_component
 class PaymentInformation(models.Model):
     """ The payment information of an Alumni Member """
 
