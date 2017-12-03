@@ -54,8 +54,8 @@ def register(request):
     # and return the request
     return render(request, 'setup/setup.html', {
         'form': form,
-        'title': 'Register -  Enter your General Information',
-        'subtitle': 'just the basics',
+        'title': 'Register',
+        'subtitle': 'Enter your General Information - just the basics',
         'next_text': 'Join the Alumni Association'
     })
 
@@ -117,8 +117,7 @@ def setupViewFactory(prop, FormClass, name, subtitle):
     return setup
 
 
-address = setupViewFactory('address', AddressForm, 'Residential Address',
-                           'so that we can contact you if needed')
+address = setupViewFactory('address', AddressForm, 'General Information - Residential Address', '')
 jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data',
                           'tell us what you did at Jacobs')
 social = setupViewFactory('social', SocialMediaForm, 'Social Media', '')

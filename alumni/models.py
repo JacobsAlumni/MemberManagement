@@ -29,14 +29,16 @@ class Alumni(models.Model):
         return ' '.join(names)
 
     email = models.EmailField(help_text="Your private email address")
+    existingEmail = models.EmailField(blank=True, null=True, help_text="Existing <em>@jacobs-alumni.de</em> email address (if you have one)")
 
     # gender, nationality, birthday
     sex = fields.GenderField()
     birthday = models.DateField(
         help_text="Your birthday")
+    birthdayVisible = models.BooleanField(default=False, blank=True, help_text="Make birthday visible to others")
 
     # TODO: Better handling of multiple nationalities
-    nationality = CountryField(help_text="Your nationality", multiple=True)
+    nationality = CountryField(help_text="You can select multiple options by holding the <em>Ctrl</em> key (or <em>Command</em> on Mac) while clicking", multiple=True)
 
     # kind
     category = fields.AlumniCategoryField()

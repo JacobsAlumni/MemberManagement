@@ -10,7 +10,8 @@ from django_forms_uikit.widgets import DatePickerInput
 class RegistrationForm(forms.ModelForm):
     """ A form for registering users """
     username = forms.SlugField(label='Username',
-                               help_text='A username for the membership portal')
+                               help_text='Select your username for the membership portal. '
+                                         'We recommend your alumni email username, e.g. <em>ppan</em> for <em>Peter Pan</em>')
     password1 = forms.CharField(
         label="Password",
         widget=forms.PasswordInput,
@@ -34,15 +35,16 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Alumni
-        fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
-                  'birthday', 'nationality', 'category']
+        fields = ['firstName', 'middleName', 'lastName', 'email', 'existingEmail', 'sex',
+                  'birthday', 'birthdayVisible', 'nationality', 'category']
         widgets = {
             'birthday': DatePickerInput()
         }
         labels = {
             "firstName": "First Name",
             "middleName": "Middle Name",
-            "lastName": "Last Name"
+            "lastName": "Last Name",
+            "birthdayVisible": ""
         }
 
     def clean(self):
