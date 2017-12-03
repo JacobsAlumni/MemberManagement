@@ -1,3 +1,10 @@
-django==1.11.7
+certifi==2017.11.5
+chardet==3.0.4
+Django==1.11.7
 django-countries==5.0
-stripe>=1.75.0
+idna==2.6
+pytz==2017.3
+raven==6.3.0
+requests==2.18.4
+stripe==1.75.1
+urllib3==1.22
