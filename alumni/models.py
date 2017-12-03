@@ -184,6 +184,9 @@ class PaymentInformation(models.Model):
 
     tier = fields.TierField(help_text='Membership Tier')
 
+    starterReason = models.TextField(null=True, blank=True,
+        help_text="Please provide a short explanation on why you choose the starter plan. ")
+
     token = models.CharField(max_length=255, null=True, blank=True,
                              help_text='The stripe card token for the user')
     customer = models.CharField(max_length=255, null=True, blank=True,

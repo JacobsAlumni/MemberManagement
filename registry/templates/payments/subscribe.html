@@ -1,6 +1,8 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
 
+{% block title %}Membership Data{% endblock %}
+
 {% block head %}
     <script
             src="https://code.jquery.com/jquery-3.2.1.js"
@@ -10,10 +12,12 @@
     <script type="text/javascript">
         window.onload = function () {
             var membership_options = {
-                "st": "This is a starter membership",
-                "co": "This is a contributor membership",
-                "pa": "This is a patron membership"
+                "st": "<b>Starter</b> – Our membership for fresh graduates (graduation not more than two years ago) or those who are unable to financially contribute. <br /> We want all alumni to connect via the Association and don’t exclude anyone based on their financial situation. If you are unable to pay for the Contributor membership, you can apply for free membership for a year. Please note that this option grants you access to the Jacobs Alumni Association for one year only and will require a symbolic fee of 0.01€. <br />",
+                "co": "<b>Contributor</b> – Our standard membership for alumni and associate members, who are part of the Jacobs community. With an equivalent to 3,25€ per month you enjoy <ul><li>Google account <em>@jacobs-alumni.de</em> e-mail, access to various apps, and unlimited Google Drive space. </li><li>Stay in touch with the University via regular newsletters</li><li>More easily connect with other alumni via our membership portal</li><li>Lifelong career services in collaboration with the University</li><li>Invitations to University events and alumni events</li></ul>",
+                "pa": "<b>Patron</b> - Our membership for senior alumni and friends who want to give back even more and love to see the Jacobs spirit grow! <ul><li>Includes all benefits of the Contributor membership PLUS:</li><li>After three years of patron membership, engraved alumni brick (on the path in front of the IRC)</li><li>Special mention in the Association’s newsletter after joining</li><li>Special mention in yearly newsletter every year of membership</li><li>Enables the Alumni Association to help young and future alumni grow and really make a difference in their lives</li></ul>"
             };
+
+
             // Create a Stripe client
             var stripe = Stripe('{{ publishable_key }}');
 
@@ -95,8 +99,13 @@
                 });
             });
             $('#id_tier').change(function () {
-                var selected = $(this).find(':selected');
-                $('#description').html(membership_options[selected[0].value]);
+                var selected = $(this).find(':selected').val();
+                $('#id_tier').parent().next().html(membership_options[selected]);
+                if(selected === 'st'){
+                    $("#div_id_starterReason").show()
+                } else {
+                    $("#div_id_starterReason").hide()
+                }
             }).trigger('change');
         }
     </script>
@@ -133,8 +142,26 @@
 {% block content %}
     <article class="uk-article">
         <h1 class="uk-article-title">
-            Initial Setup - Tier Selection
+            Membership Data
         </h1>
+
+        <div class="uk-text-lead">
+            <p>
+                All membership fees and donations go towards the non-profit purpose of the Association (see §3 of our
+                <a href="https://jacobs-alumni.de/charter/" target="'_blank">charter</a>).
+            </p>
+
+            <p>
+                Your contributions make the Association an autonomous organization and help achieve our mission to make a difference for our alma mater and
+                our growing global network.
+                In particular, you are supporting scholarships to Jacobs students and the many projects we have in our pipeline!
+            </p>
+
+            <p>
+                Alumni membership can be deducted from (German) taxes.
+            </p>
+
+        </div>
 
         <div>
             <form action="/setup/payment/" method="post" id="payment-form" class="uk-form-horizontal">
@@ -167,7 +194,26 @@
                     </div>
                 </div>
 
-                <button class="uk-button">Submit Payment</button>
+                <div>
+                    <div class="uk-form-controls uk-form-controls-text">
+                        <ul>
+                            <li>
+                                Your payment will be due immediately and recurring annually.
+                            </li>
+                            <li>
+                                The system will notify you before any further payments are due.
+                            </li>
+                            <li>
+                                You can always change your membership in the membership portal.
+                            </li>
+                            <li>
+                                If you run into any trouble, please drop as an e-mail at <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="uk-button uk-button-primary">Confirm Membership &amp; Pay Now</button>
             </form>
         </div>
     </article>
