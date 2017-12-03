@@ -1,0 +1,44 @@
+{% load registry_display %}
+
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">Education and Skills</h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <tbody>
+                <tr>
+                    <td>Alumni Mentor</td>
+                    <td>{{ user.alumni.skills.mentor|print_boolean }}</td>
+                </tr>
+                {% if user.alumni.skills.otherDegrees %}
+                    <tr>
+                        <td>Other Degrees</td>
+                        <td>{{ user.alumni.skills.otherDegrees|safe }}</td>
+                    </tr>
+                {% endif %}
+                {% if user.alumni.skills.spokenLanguages %}
+                    <tr>
+                        <td>Spoken Languages</td>
+                        <td>{{ user.alumni.skills.spokenLanguages|safe }}</td>
+                    </tr>
+                {% endif %}
+                {% if user.alumni.skills.programmingLanguages %}
+                    <tr>
+                        <td>Programming Languages</td>
+                        <td>{{ user.alumni.skills.programmingLanguages|safe }}</td>
+                    </tr>
+                {% endif %}
+                {% if user.alumni.skills.areasOfInterest %}
+                    <tr>
+                        <td>Areas of Interest</td>
+                        <td>{{ user.alumni.skills.areasOfInterest|safe }}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="uk-card-footer">
+        <a href="/edit/skills/" class="uk-button uk-button-text">Edit Education and Skills</a>
+    </div>
+</div>
