@@ -22,10 +22,5 @@ class Migration(migrations.Migration):
             model_name='alumni',
             name='existingEmail',
             field=models.EmailField(blank=True, help_text='Existing <em>@jacobs-alumni.de</em> email address (if you have one)', max_length=254, null=True),
-        ),
-        migrations.AlterField(
-            model_name='alumni',
-            name='nationality',
-            field=django_countries.fields.CountryField(help_text='You can select multiple options by holding the <em>Ctrl</em> key (or <em>Command</em> on Mac) while clicking', max_length=746, multiple=True),
-        ),
+        )
     ]
