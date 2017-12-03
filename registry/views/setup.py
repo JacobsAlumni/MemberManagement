@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView
+from raven.contrib.django.raven_compat.models import client
 
 from registry.decorators import require_unset_component
 from registry.models import subscription_plans
@@ -148,6 +149,7 @@ class SubscribeView(FormView):
             subscription = customer.subscriptions.create(
                 plan=subscription_plans[tier].stripe_id)
         except stripe.error.CardError as e:
+            client.captureException()
             # Since it's a decline, stripe.error.CardError will be caught
             body = e.json_body
             err = body.get('error', {})
@@ -157,27 +159,32 @@ class SubscribeView(FormView):
                                err.get('message')))
             return self.form_invalid(form)
         except stripe.error.RateLimitError as e:
+            client.captureException()
             # Too many requests made to the API too quickly
             form.add_error(None,
                            'Unable to communicate with our service payment provider (stripe.error.RateLimitError). Please try again later or contact support. ')
             return self.form_invalid(form)
         except stripe.error.InvalidRequestError as e:
+            client.captureException()
             # Invalid parameters were supplied to Stripe's API
             form.add_error(None,
                            'Unable to communicate with our service payment provider (stripe.error.InvalidRequestError). Please try again later or contact support. ')
             return self.form_invalid(form)
         except stripe.error.AuthenticationError as e:
+            client.captureException()
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
             form.add_error(None,
                            'Unable to communicate with our service payment provider (stripe.error.AuthenticationError). Please try again later or contact support. ')
             return self.form_invalid(form)
         except stripe.error.APIConnectionError as e:
+            client.captureException()
             # Network communication with Stripe failed
             form.add_error(None,
                            'Unable to communicate with our service payment provider (stripe.error.APIConnectionError). Please try again later or contact support. ')
             return self.form_invalid(form)
         except stripe.error.StripeError as e:
+            client.captureException()
             # Display a very generic error to the user, and maybe send
             # yourself an email
             form.add_error(None,
