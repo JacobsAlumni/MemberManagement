@@ -28,7 +28,7 @@ class Alumni(models.Model):
         names.append(self.lastName)
         return ' '.join(names)
 
-    email = models.EmailField(help_text="Your private email address")
+    email = models.EmailField(help_text="Your private email address", unique=True)
     existingEmail = models.EmailField(blank=True, null=True,
                                       help_text="Existing <em>@jacobs-alumni.de</em> email address (if you have one)")
 
@@ -144,7 +144,7 @@ class Approval(models.Model):
                                    help_text="Has the user been approved by an admin?")
 
     gsuite = models.EmailField(blank=True, null=True,
-                               help_text="The G-Suite E-Mail of the user")
+                               help_text="The G-Suite E-Mail of the user", unique=True)
 
 
 @Alumni.register_component
