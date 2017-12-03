@@ -142,7 +142,7 @@ class SubscribeView(FormView):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         tier = form.cleaned_data['tier']
         customer_data = {
-            'description': subscription_plans[tier].name,
+            'description': "Jacobs Alumni {} for {} ({})".format(subscription_plans[tier].name, self.request.user.alumni.fullName, self.request.user.alumni.email),
             'card': form.cleaned_data['token']
         }
 
@@ -191,6 +191,9 @@ class SubscribeView(FormView):
             # yourself an email
             form.add_error(None,
                            'Something went wrong trying to process your payment. Please try again later. ')
+            return self.form_invalid(form)
+        except Exception as e:
+            form.add_error(None, 'Something went wrong trying to process your payment. Please try again. ')
             return self.form_invalid(form)
 
         # Create an instance for the payment in the database
