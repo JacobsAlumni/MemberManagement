@@ -39,6 +39,10 @@
                     <td>Birthday</td>
                     <td>{{ user.alumni.birthday|safe }}</td>
                 </tr>
+                <tr>
+                    <td>Birthday Visible to others</td>
+                    <td>{{ user.alumni.birthdayVisible|print_boolean }}</td>
+                </tr>
 
                 <tr>
                     <td>Nationality</td>

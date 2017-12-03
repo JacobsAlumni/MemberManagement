@@ -27,6 +27,13 @@
                     <td>Major</td>
                     <td>{{ user.alumni.jacobs|get_choice_field:"major"|safe }}</td>
                 </tr>
+
+                {% if user.alumni.comments %}
+                    <tr>
+                        <td>Comments</td>
+                        <td>{{ user.alumni.comments|safe }}</td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
