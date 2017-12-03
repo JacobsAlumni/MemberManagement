@@ -35,7 +35,7 @@ class Alumni(models.Model):
     # gender, nationality, birthday
     sex = fields.GenderField()
     birthday = models.DateField(
-        help_text="Your birthday")
+        help_text="Your birthday in YYYY-MM-DD format")
     birthdayVisible = models.BooleanField(default=False, blank=True,
                                           help_text="Make birthday visible to others")
 
