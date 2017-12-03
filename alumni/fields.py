@@ -170,6 +170,7 @@ class MajorField(models.CharField):
     PSYCHOLOGY = "PSY"
     SMART_SYSTEMS = "SS"
     VISUAL_COMMUNICATION_AND_EXPERTISE = "VCAE"
+    OTHER = "OTHER"
 
     MAJOR_CHOICES = (
         (APPLIED_COMPUTATIONAL_MATHEMATICS,
@@ -240,11 +241,13 @@ class MajorField(models.CharField):
         (SMART_SYSTEMS, "Smart Systems"),
         (VISUAL_COMMUNICATION_AND_EXPERTISE,
          "Visual Communication and Expertise"),
+        (OTHER, "Other (Please specify in comments)"),
     )
 
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 7
         kwargs['choices'] = MajorField.MAJOR_CHOICES
+        kwargs['default'] = MajorField.OTHER
         super(MajorField, self).__init__(*args, **kwargs)
 
 
