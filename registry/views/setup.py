@@ -109,7 +109,7 @@ def setupViewFactory(prop, FormClass, name, subtitle):
         return render(request, 'setup/setup.html',
                       {
                           'form': form,
-                          'title': 'Initial Setup - {}'.format(name),
+                          'title': name,
                           'subtitle': subtitle,
                           'next_text': 'Continue'
                       })
@@ -117,11 +117,13 @@ def setupViewFactory(prop, FormClass, name, subtitle):
     return setup
 
 
-address = setupViewFactory('address', AddressForm, 'General Information - Residential Address', '')
+address = setupViewFactory('address', AddressForm,
+                           'General Information - Residential Address', '')
+social = setupViewFactory('social', SocialMediaForm, 'Social Media Data', '')
 jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data',
                           'tell us what you did at Jacobs')
-social = setupViewFactory('social', SocialMediaForm, 'Social Media', '')
-job = setupViewFactory('job', JobInformationForm, 'Job Information', '')
+job = setupViewFactory('job', JobInformationForm, 'Professional information',
+                       'What did you do after Jacobs?')
 
 
 class SubscribeView(FormView):

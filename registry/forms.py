@@ -91,8 +91,11 @@ class AddressForm(forms.ModelForm):
 
     class Meta:
         model = Address
-        fields = ['address_line_1', 'address_line_2', 'zip', 'city', 'state',
+        fields = ['address_line_1', 'address_line_2', 'zip', 'city', 'addressVisible', 'state',
                   'country']
+        labels = {
+            'addressVisible': ''
+        }
 
 
 class JacobsForm(forms.ModelForm):
@@ -100,7 +103,14 @@ class JacobsForm(forms.ModelForm):
 
     class Meta:
         model = JacobsData
-        fields = ['college', 'degree', 'graduation', 'major']
+        fields = ['college', 'degree', 'graduation', 'major', 'comments']
+        labels = {
+            'college': 'College',
+            'degree': 'Degree',
+            'graduation': 'Class (first graduation)',
+            'major': 'Major',
+            'comments': 'Comments'
+        }
 
 
 # TODO: Check that social media links are actually valid links for the platform
@@ -109,7 +119,7 @@ class SocialMediaForm(forms.ModelForm):
 
     class Meta:
         model = SocialMedia
-        fields = ['facebook', 'twitter', 'linkedin', 'instagram', 'homepage']
+        fields = ['facebook', 'linkedin', 'twitter', 'instagram', 'homepage']
 
 
 class JobInformationForm(forms.ModelForm):

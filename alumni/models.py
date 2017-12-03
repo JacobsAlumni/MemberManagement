@@ -29,16 +29,20 @@ class Alumni(models.Model):
         return ' '.join(names)
 
     email = models.EmailField(help_text="Your private email address")
-    existingEmail = models.EmailField(blank=True, null=True, help_text="Existing <em>@jacobs-alumni.de</em> email address (if you have one)")
+    existingEmail = models.EmailField(blank=True, null=True,
+                                      help_text="Existing <em>@jacobs-alumni.de</em> email address (if you have one)")
 
     # gender, nationality, birthday
     sex = fields.GenderField()
     birthday = models.DateField(
         help_text="Your birthday")
-    birthdayVisible = models.BooleanField(default=False, blank=True, help_text="Make birthday visible to others")
+    birthdayVisible = models.BooleanField(default=False, blank=True,
+                                          help_text="Make birthday visible to others")
 
     # TODO: Better handling of multiple nationalities
-    nationality = CountryField(help_text="You can select multiple options by holding the <em>Ctrl</em> key (or <em>Command</em> on Mac) while clicking", multiple=True)
+    nationality = CountryField(
+        help_text="You can select multiple options by holding the <em>Ctrl</em> key (or <em>Command</em> on Mac) while clicking",
+        multiple=True)
 
     # kind
     category = fields.AlumniCategoryField()
@@ -96,6 +100,27 @@ class Address(models.Model):
                              help_text="E.g. Bremen (optional)")
     country = CountryField()
 
+    addressVisible = models.BooleanField(default=False, blank=True,
+                                         help_text="Include me on the alumni map (only your city will be visible to others)")
+
+
+@Alumni.register_component
+class SocialMedia(models.Model):
+    """ The social media data of a Jacobs Alumni """
+
+    member = models.OneToOneField(Alumni, related_name='social')
+
+    facebook = models.URLField(null=True, blank=True,
+                               help_text="Your Facebook Profile (optional)")
+    linkedin = models.URLField(null=True, blank=True,
+                               help_text="Your LinkedIn Profile (optional)")
+    twitter = models.URLField(null=True, blank=True,
+                              help_text="Your Twitter Account (optional)")
+    instagram = models.URLField(null=True, blank=True,
+                                help_text="Your Instagram (optional)")
+    homepage = models.URLField(null=True, blank=True,
+                               help_text="Your Homepage or Blog")
+
 
 @Alumni.register_component
 class JacobsData(models.Model):
@@ -107,7 +132,8 @@ class JacobsData(models.Model):
     graduation = fields.ClassField()
     degree = fields.DegreeField(null=True, blank=True)
     major = fields.MajorField()
-
+    comments = models.TextField(null=True, blank=True,
+                                help_text="e.g. exchange semester, several degrees etc.")
 
 
 class Approval(models.Model):
@@ -117,25 +143,8 @@ class Approval(models.Model):
     approval = models.BooleanField(default=False, blank=True,
                                    help_text="Has the user been approved by an admin?")
 
-    gsuite = models.EmailField(blank=True, null=True, help_text="The G-Suite E-Mail of the user")
-
-
-@Alumni.register_component
-class SocialMedia(models.Model):
-    """ The social media data of a Jacobs Alumni """
-
-    member = models.OneToOneField(Alumni, related_name='social')
-
-    facebook = models.URLField(null=True, blank=True,
-                               help_text="Your Facebook Profile (optional)")
-    twitter = models.URLField(null=True, blank=True,
-                              help_text="Your Twitter Account (optional)")
-    linkedin = models.URLField(null=True, blank=True,
-                               help_text="Your LinkedIn Profile (optional)")
-    instagram = models.URLField(null=True, blank=True,
-                                help_text="Your Instagram (optional)")
-    homepage = models.URLField(null=True, blank=True,
-                               help_text="Your Homepage or Blog")
+    gsuite = models.EmailField(blank=True, null=True,
+                               help_text="The G-Suite E-Mail of the user")
 
 
 @Alumni.register_component
@@ -160,6 +169,9 @@ class PaymentInformation(models.Model):
 
     tier = fields.TierField(help_text='Membership Tier')
 
-    token = models.CharField(max_length=255, null=True, blank=True, help_text='The stripe card token for the user')
-    customer = models.CharField(max_length=255, null=True, blank=True, help_text='The stripe customer id for the user')
-    subscription = models.CharField(max_length=255, null=True, blank=True, help_text='The payment token for the customer')
+    token = models.CharField(max_length=255, null=True, blank=True,
+                             help_text='The stripe card token for the user')
+    customer = models.CharField(max_length=255, null=True, blank=True,
+                                help_text='The stripe customer id for the user')
+    subscription = models.CharField(max_length=255, null=True, blank=True,
+                                    help_text='The payment token for the customer')
