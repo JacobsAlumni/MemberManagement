@@ -76,16 +76,21 @@
             errorElement.style.display = 'none';
             errorElement.style.visibility = 'hidden';
 
+            var block = false;
+
             // Handle form submission
             var form = document.getElementById('payment-form');
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
+                if(block){return; }
+                block = true;
 
                 // hide the error message (if any)
                 errorElement.style.display = 'none';
                 errorElement.style.visibility = 'hidden';
 
                 stripe.createToken(card).then(function (result) {
+                    block = false;
                     console.log(result);
                     if (result.error) {
                         // Inform the user if there was an error
@@ -213,7 +218,7 @@
                     </div>
                 </div>
 
-                <button class="uk-button uk-button-primary">Confirm Membership &amp; Pay Now</button>
+                <button class="uk-button uk-button-primary" id="submit">Confirm Membership &amp; Pay Now</button>
             </form>
         </div>
     </article>
