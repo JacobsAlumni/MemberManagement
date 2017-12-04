@@ -66,12 +66,9 @@
                 }
             });
 
-            var done = false;
-
             function stripeTokenHandler(token) {
-                done = true;
                 document.getElementById('id_token').value = token.id;
-                $("#payment-form").submit();
+                document.getElementById("payment-form").submit();
             }
 
             // the element displaying errors
@@ -79,14 +76,10 @@
             errorElement.style.display = 'none';
             errorElement.style.visibility = 'hidden';
 
-            var block = false;
-
             // Handle form submission
             var form = document.getElementById('payment-form');
             form.addEventListener('submit', function (event) {
-                if(done) { return; }
                 event.preventDefault();
-                $("#submit").attr('disabled', 'disabled');
 
                 // hide the error message (if any)
                 errorElement.style.display = 'none';
@@ -99,8 +92,6 @@
                         errorElement.style.display = 'block';
                         errorElement.style.visibility = 'visible';
                         errorElement.textContent = result.error.message;
-                        $("#submit").removeAttr('disabled');
-
                     } else {
                         // Send the token to your server
                         stripeTokenHandler(result.token);
@@ -222,7 +213,7 @@
                     </div>
                 </div>
 
-                <button class="uk-button uk-button-primary" id="submit">Confirm Membership &amp; Pay Now</button>
+                <button class="uk-button uk-button-primary">Confirm Membership &amp; Pay Now</button>
             </form>
         </div>
     </article>
