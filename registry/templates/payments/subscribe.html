@@ -52,6 +52,8 @@
             card.addEventListener('change', function (event) {
                 var displayError = document.getElementById('card-errors');
 
+                $("#submit").attr('disabled', 'disabled');
+
                 // if there was an error, show it
                 if (event.error) {
                     errorElement.style.display = 'block';
@@ -82,15 +84,12 @@
             var form = document.getElementById('payment-form');
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
-                if(block){return; }
-                block = true;
 
                 // hide the error message (if any)
                 errorElement.style.display = 'none';
                 errorElement.style.visibility = 'hidden';
 
                 stripe.createToken(card).then(function (result) {
-                    block = false;
                     console.log(result);
                     if (result.error) {
                         // Inform the user if there was an error
