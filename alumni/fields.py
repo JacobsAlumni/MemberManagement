@@ -57,6 +57,7 @@ class CollegeField(models.IntegerField):
 
 
 class ClassField(models.IntegerField):
+    OTHER = 0000
     C_2004 = 2004
     C_2005 = 2005
     C_2006 = 2006
@@ -72,6 +73,7 @@ class ClassField(models.IntegerField):
     C_2016 = 2016
     C_2017 = 2017
     CLASS_CHOICES = (
+        (OTHER, 'Other (please specifiy in comments)'),
         (C_2004, 'Class of 2004'),
         (C_2005, 'Class of 2005'),
         (C_2006, 'Class of 2006'),
@@ -90,6 +92,7 @@ class ClassField(models.IntegerField):
 
     def __init__(self, *args, **kwargs):
         kwargs['choices'] = ClassField.CLASS_CHOICES
+        kwargs['default'] = ClassField.OTHER
         super(ClassField, self).__init__(*args, **kwargs)
 
 
