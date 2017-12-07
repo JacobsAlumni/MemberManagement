@@ -8,6 +8,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView
 from raven.contrib.django.raven_compat.models import client
 
+from alumni.models import Approval
 from registry.decorators import require_unset_component
 from registry.models import subscription_plans
 from registry.views.registry import default_alternative
@@ -40,6 +41,10 @@ def register(request):
             instance = form.save(commit=False)
             instance.profile = user
             instance.save()
+
+            # create an empty approval object
+            approval = Approval(member=instance, approval=False, gsuite=None)
+            approval.save()
 
             # Authenticate the user for this request
             login(request, user)
