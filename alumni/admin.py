@@ -40,8 +40,8 @@ class AlumniAdmin(admin.ModelAdmin):
 
     list_display = (
         # basic information
-        'fullName', 'email', 'userApproval', 'sex', 'birthday', 'category',
-        'paymentTier',
+        'fullName', 'email', 'userApproval', 'userGSuite', 'sex', 'birthday',
+        'category', 'paymentTier',
 
         # Jacobs information
         'jacobs_degree', 'jacobs_graduation', 'jacobs_major', 'jacobs_college',
@@ -52,7 +52,9 @@ class AlumniAdmin(admin.ModelAdmin):
         'jacobs__graduation',
         'jacobs__major', 'payment__tier')
 
-    actions = [export_as_csv_action("Export as CSV", fields=list_display)]
+    actions = [export_as_csv_action("Export as CSV", fields=list_display + (
+        'existingEmail', 'resetExistingEmailPassword'
+    ))]
 
     def fullName(self, x):
         return x.fullName
@@ -64,6 +66,13 @@ class AlumniAdmin(admin.ModelAdmin):
 
     userApproval.short_description = 'Approval'
     userApproval.admin_order_field = 'approval__approval'
+
+    def userGSuite(self, x):
+        return x.approval.gsuite
+
+    userGSuite.short_description = 'Alumni E-Mail'
+    userGSuite.admin_order_field = 'approval__gsuite'
+
 
     def paymentTier(self, x):
         return x.payment.tier
