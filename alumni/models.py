@@ -31,6 +31,7 @@ class Alumni(models.Model):
     email = models.EmailField(help_text="Your private email address", unique=True)
     existingEmail = models.EmailField(blank=True, null=True,
                                       help_text="Existing <em>@jacobs-alumni.de</em> email address (if you have one)")
+    resetExistingEmailPassword = models.BooleanField(blank=True, default=False, help_text='Reset password to existing email address')
 
     # gender, nationality, birthday
     sex = fields.GenderField()

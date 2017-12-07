@@ -36,7 +36,7 @@ class RegistrationForm(forms.ModelForm):
     class Meta:
         model = Alumni
         fields = ['firstName', 'middleName', 'lastName', 'email',
-                  'existingEmail', 'sex',
+                  'existingEmail', 'resetExistingEmailPassword', 'sex',
                   'birthday', 'birthdayVisible', 'nationality', 'category']
         widgets = {
             'birthday': DatePickerInput()
@@ -45,7 +45,9 @@ class RegistrationForm(forms.ModelForm):
             "firstName": "First Name",
             "middleName": "Middle Name",
             "lastName": "Last Name",
-            "birthdayVisible": ""
+            "birthdayVisible": "",
+            "existingEmail": "",
+            "resetExistingEmailPassword": ""
         }
 
     def clean(self):
