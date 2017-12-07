@@ -8,3 +8,4 @@ raven==6.3.0
 requests==2.18.4
 stripe==1.75.1
 urllib3==1.22
+unicodecsv==0.14.1

@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from alumni.actions import export_as_csv_action
 from .models import Alumni, Address, JobInformation, SocialMedia, \
     JacobsData, Approval, PaymentInformation, Skills
 
@@ -49,6 +51,8 @@ class AlumniAdmin(admin.ModelAdmin):
         'approval__approval', 'category', 'jacobs__degree',
         'jacobs__graduation',
         'jacobs__major', 'payment__tier')
+
+    actions = [export_as_csv_action("Export as CSV", fields=list_display)]
 
     def fullName(self, x):
         return x.fullName
