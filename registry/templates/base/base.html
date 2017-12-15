@@ -24,14 +24,18 @@
             {% endblock %}
 
             <div class="main-container uk-padding header-top-margin">
+                {% include "base/devel.html" %}
+
                 {% block content %}
                 {% endblock %}
+
+                {% include "base/devel.html" %}
             </div>
         </div>
 
         <div class="uk-offcanvas-content">
             {% block footer %}
-                    {% include "base/footer.html" %}
+                {% include "base/footer.html" %}
             {% endblock %}
         </div>
 
