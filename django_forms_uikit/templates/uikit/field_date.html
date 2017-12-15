@@ -1,1 +1,27 @@
 <input type="date" name="{{ widget.name }}"{% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %} data-uk-datepicker="{format:'YYYY-MM-DD'}" />
+<script id="date_hack_{{widget.id}}">
+    (function(){
+        // create an <input type='date'>
+        var input = document.createElement('input');
+        input.setAttribute('type','date');
+
+        // and set the value to something that is not a date
+        var notADateValue = 'not-a-date';
+        input.setAttribute('value', notADateValue);
+
+        // if that succeeds, then <input type='date'> is not supported
+        if(input.value === notADateValue){
+
+            // and we create some help text
+            var infoRow = document.createElement("div");
+            infoRow.setAttribute('class', 'uk-form-controls uk-form-controls-text');
+
+            var infoText = document.createElement('p');
+            infoText.textContent = "Use the YYYY-MM-DD format when entering dates. ";
+            infoRow.appendChild(infoText);
+
+            var currentRow = document.getElementById("date_hack_{{ widget.id|escapejs}}").parentElement;
+            currentRow.parentElement.insertBefore(infoRow, currentRow.nextSibling);
+        }
+    })();
+</script>

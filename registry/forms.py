@@ -49,6 +49,9 @@ class RegistrationForm(forms.ModelForm):
             "existingEmail": "",
             "resetExistingEmailPassword": ""
         }
+        help_texts = {
+            "birthday": "",
+        }
 
     def clean(self):
         cleaned_data = self.cleaned_data  # individual field's clean methods have already been called
@@ -86,6 +89,9 @@ class AlumniForm(forms.ModelForm):
                   'birthday', 'nationality', 'category']
         widgets = {
             'birthday': DatePickerInput()
+        }
+        help_texts = {
+            "birthday": "",
         }
 
 
