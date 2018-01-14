@@ -38,6 +38,9 @@ class AlumniAdmin(admin.ModelAdmin):
                AlumniSocialMediaInline, AlumniJacobsDataInline,
                AlumniJobsInline, SkillsInline, PaymentInline]
 
+    # search through names and emails
+    search_fields = ['firstName', 'middleName', 'lastName', 'email', 'existingEmail', 'approval__gsuite']
+
     list_display = (
         # basic information
         'fullName', 'email', 'userApproval', 'userGSuite', 'sex', 'birthday',
