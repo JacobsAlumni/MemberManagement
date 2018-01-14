@@ -1,13 +1,18 @@
 {% load staticfiles %}
 <header class="uk-sticky uk-sticky-fixed uk-width-1-1" style="position: fixed; top: 0; width: 100%; ">
   <div class="uk-navbar-container navbar uk-dark">
-    <nav class="uk-navbar">
+    <nav class="uk-navbar" {% if show_devel_warning %}style="background-color: #fef4f6; "{% endif %}">
       <div class="uk-navbar-left">
         <a href="/" class="uk-navbar-item uk-logo">
           <span class="logo-button uk-margin-small-right">
             <img src="{%  static "media/favicon.png" %}" />
           </span>
-          <span class="uk-visible">Jacobs Alumni Membership Management</span>
+          <span class="uk-visible">
+              Jacobs Alumni Membership Management
+                {% if show_devel_warning %}
+                - <span class="uk-visible" style="color: #f0506e">Testing Site</span>
+                {% endif %}
+          </span>
         </a>
       </div>
       <div class="uk-navbar-right">
