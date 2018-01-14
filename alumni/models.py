@@ -3,7 +3,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
-from django_countries.fields import CountryField
 from . import fields
 
 
@@ -41,7 +40,7 @@ class Alumni(models.Model):
                                           help_text="Make birthday visible to others")
 
     # TODO: Better handling of multiple nationalities
-    nationality = CountryField(
+    nationality = fields.CountryField(
         help_text="You can select multiple options by holding the <em>Ctrl</em> key (or <em>Command</em> on Mac) while clicking",
         multiple=True)
 
@@ -99,7 +98,7 @@ class Address(models.Model):
     zip = models.CharField(max_length=255, help_text="E.g. 28759")
     state = models.CharField(max_length=255, blank=True, null=True,
                              help_text="E.g. Bremen (optional)")
-    country = CountryField()
+    country = fields.CountryField()
 
     addressVisible = models.BooleanField(default=False, blank=True,
                                          help_text="Include me on the alumni map (only your city will be visible to others)")

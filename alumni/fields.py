@@ -1,4 +1,14 @@
 from django.db import models
+from django_countries.fields import CountryField as OriginalCountryField
+
+
+class CountryField(OriginalCountryField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def value_to_string(self, obj):
+        value = self.value_from_object(obj)
+        return self.get_prep_value(value)
 
 
 class GenderField(models.CharField):
@@ -183,7 +193,8 @@ class MajorField(models.CharField):
         (ATTITUDE_FORMATION, "Attitude Formation"),
         (BIOCHEMICAL_ENGINEERING, "Biochemical Engineering"),
         (BIOCHEMISTRY, "Biochemistry"),
-        (BIOCHEMISTRY_AND_CELL_BIOLOGY, "Biochemistry and Cell Biology (BCCB)"),
+        (
+        BIOCHEMISTRY_AND_CELL_BIOLOGY, "Biochemistry and Cell Biology (BCCB)"),
         (BIOINFORMATICS_AND_COMPUTATIONAL_BIOLOGY,
          "Bioinformatics and Computational Biology"),
         (BIOLOGICAL_RECOGNITION, "Biological Recognition"),
@@ -507,7 +518,8 @@ class IndustryField(models.IntegerField):
         (NANOTECHNOLOGY, "Nanotechnology"),
         (NEWSPAPERS, "Newspapers"),
         (
-        NONPROFIT_ORGANIZATION_MANAGEMENT, "Nonprofit Organization Management"),
+            NONPROFIT_ORGANIZATION_MANAGEMENT,
+            "Nonprofit Organization Management"),
         (OIL_ENERGY, "Oil & Energy"),
         (ONLINE_MEDIA, "Online Media"),
         (OTHER, "Other"),
@@ -657,9 +669,12 @@ class TierField(models.CharField):
     PATRON = 'pa'
 
     TIER_CHOICES = (
-        (CONTRIBUTOR, "Contributor (Standard package for graduation before 2016): 39€ p.a."),
-        (PATRON, "Patron (Premium package for those who want to contribute more): 249€ p.a. "),
-        (STARTER, "Starter (For graduation after 2016 or unable to financially contribute): 1 symbolic cent p.a."),
+        (CONTRIBUTOR,
+         "Contributor (Standard package for graduation before 2016): 39€ p.a."),
+        (PATRON,
+         "Patron (Premium package for those who want to contribute more): 249€ p.a. "),
+        (STARTER,
+         "Starter (For graduation after 2016 or unable to financially contribute): 1 symbolic cent p.a."),
     )
 
     def __init__(self, **kwargs):
