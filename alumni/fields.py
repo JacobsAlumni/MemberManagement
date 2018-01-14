@@ -1,5 +1,6 @@
 from django.db import models
 from django_countries.fields import CountryField as OriginalCountryField
+from django_countries.fields import Country
 
 
 class CountryField(OriginalCountryField):
@@ -9,6 +10,12 @@ class CountryField(OriginalCountryField):
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.get_clean_value(value)
+
+    def to_python(self, value):
+        return self.get_clean_value(value)
 
 
 class GenderField(models.CharField):
