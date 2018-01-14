@@ -24,6 +24,7 @@ SECRET_KEY = 'wn_2m*p3v6i&+!cjf-%6j0yc1a3g2j%h@h865@=wcons^4skox'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ENABLE_DEVEL_WARNING = True
 
 ALLOWED_HOSTS = []
 
@@ -134,3 +135,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+# Import Local settings if available
+try:
+    from local_settings import *
+except ImportError:
+    pass
