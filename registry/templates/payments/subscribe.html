@@ -167,7 +167,7 @@
         </div>
 
         <div>
-            <form action="/setup/payment/" method="post" id="payment-form" class="uk-form-horizontal">
+            <form action="{% url 'setup_payment' %}" method="post" id="payment-form" class="uk-form-horizontal">
                 {% csrf_token %}
 
                 {{ form | as_uikit_form }}

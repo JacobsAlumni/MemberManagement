@@ -27,8 +27,8 @@ urlpatterns = [
     url(r'^$', registry_views.home, name='portal'),
 
     # Static requirements
-    url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html")),
-    url(r'^privacy/$', TemplateView.as_view(template_name="static/privacy.html")),
+    url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
+    url(r'^privacy/$', TemplateView.as_view(template_name="static/privacy.html"), name='privacy'),
 
     # Login / Logout
     url(r'^login/$', auth_views.login, {'template_name': 'auth/login.html'},
