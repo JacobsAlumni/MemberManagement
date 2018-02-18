@@ -9,6 +9,7 @@ from django.views.generic import FormView
 from raven.contrib.django.raven_compat.models import client
 
 from alumni.models import Approval
+from alumni.fields import PaymentTypeField
 from registry.decorators import require_unset_component
 from registry.models import subscription_plans
 from registry.views.registry import default_alternative
@@ -146,10 +147,16 @@ class SubscribeView(FormView):
     def form_valid(self, form):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         tier = form.cleaned_data['tier']
+        token = form.cleaned_data['token']
         customer_data = {
             'description': "Jacobs Alumni {} for {} ({})".format(subscription_plans[tier].name, self.request.user.alumni.fullName, self.request.user.alumni.email),
-            'card': form.cleaned_data['token']
+            'email': self.request.user.email,
         }
+
+        if form.cleaned_data['payment_type'] == PaymentTypeField.SEPA:
+            customer_data["source"] = form.cleaned_data[token]
+        else:
+            customer_data["card"] = form.cleaned_data[token]
 
         try:
             customer = stripe.Customer.create(**customer_data)

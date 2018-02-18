@@ -787,3 +787,20 @@ class TierField(models.CharField):
         del kwargs['default']
         return name, path, args, kwargs
 
+
+class PaymentTypeField(models.CharField):
+    CARD = 'card'
+    SEPA = 'sepa'
+
+    PAYMENT_CHOICES = (
+        (CARD,
+         "Credit or Debit Card"),
+        (SEPA,
+         "SEPA bank transfer"),
+    )
+
+    def __init__(self, **kwargs):
+        kwargs['max_length'] = 4
+        kwargs['choices'] = PaymentTypeField.PAYMENT_CHOICES
+        kwargs['default'] = PaymentTypeField.CARD
+        super(PaymentTypeField, self).__init__(**kwargs)

@@ -184,6 +184,8 @@ class PaymentInformation(models.Model):
 
     tier = fields.TierField(help_text='Membership Tier')
 
+    payment_type = fields.PaymentTypeField(help_text='Payment Type')
+
     starterReason = models.TextField(null=True, blank=True,
         help_text="Please provide a short explanation on why you choose the starter plan. ")
 
