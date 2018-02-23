@@ -36,6 +36,13 @@ class GenderField(models.CharField):
         kwargs['default'] = GenderField.UNSPECIFIED
         super(GenderField, self).__init__(**kwargs)
 
+    def deconstruct(self):
+        name, path, args, kwargs = super(GenderField, self).deconstruct()
+        del kwargs["max_length"]
+        del kwargs['choices']
+        del kwargs['default']
+        return name, path, args, kwargs
+
 
 class AlumniCategoryField(models.CharField):
     REGULAR = 're'
@@ -52,6 +59,14 @@ class AlumniCategoryField(models.CharField):
         kwargs['choices'] = AlumniCategoryField.CATEGORY_CHOICES
         kwargs['default'] = AlumniCategoryField.REGULAR
         super(AlumniCategoryField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(AlumniCategoryField,
+                                         self).deconstruct()
+        del kwargs["max_length"]
+        del kwargs['choices']
+        del kwargs['default']
+        return name, path, args, kwargs
 
 
 class CollegeField(models.IntegerField):
@@ -71,6 +86,11 @@ class CollegeField(models.IntegerField):
     def __init__(self, *args, **kwargs):
         kwargs['choices'] = CollegeField.COLLEGE_CHOICES
         super(CollegeField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(CollegeField, self).deconstruct()
+        del kwargs['choices']
+        return name, path, args, kwargs
 
 
 class ClassField(models.IntegerField):
@@ -112,6 +132,12 @@ class ClassField(models.IntegerField):
         kwargs['default'] = ClassField.OTHER
         super(ClassField, self).__init__(*args, **kwargs)
 
+    def deconstruct(self):
+        name, path, args, kwargs = super(ClassField, self).deconstruct()
+        del kwargs['choices']
+        del kwargs['default']
+        return name, path, args, kwargs
+
 
 class DegreeField(models.CharField):
     BACHELOR_ARTS = 'ba'
@@ -134,6 +160,12 @@ class DegreeField(models.CharField):
         kwargs['max_length'] = 3
         kwargs['choices'] = DegreeField.DEGREE_CHOICES
         super(DegreeField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(DegreeField, self).deconstruct()
+        del kwargs["max_length"]
+        del kwargs['choices']
+        return name, path, args, kwargs
 
 
 class MajorField(models.CharField):
@@ -201,7 +233,8 @@ class MajorField(models.CharField):
         (BIOCHEMICAL_ENGINEERING, "Biochemical Engineering"),
         (BIOCHEMISTRY, "Biochemistry"),
         (
-        BIOCHEMISTRY_AND_CELL_BIOLOGY, "Biochemistry and Cell Biology (BCCB)"),
+            BIOCHEMISTRY_AND_CELL_BIOLOGY,
+            "Biochemistry and Cell Biology (BCCB)"),
         (BIOINFORMATICS_AND_COMPUTATIONAL_BIOLOGY,
          "Bioinformatics and Computational Biology"),
         (BIOLOGICAL_RECOGNITION, "Biological Recognition"),
@@ -270,6 +303,13 @@ class MajorField(models.CharField):
         kwargs['choices'] = MajorField.MAJOR_CHOICES
         kwargs['default'] = MajorField.OTHER
         super(MajorField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(MajorField, self).deconstruct()
+        del kwargs["max_length"]
+        del kwargs['choices']
+        del kwargs['default']
+        return name, path, args, kwargs
 
 
 class IndustryField(models.IntegerField):
@@ -588,6 +628,12 @@ class IndustryField(models.IntegerField):
         kwargs['default'] = IndustryField.OTHER
         super(IndustryField, self).__init__(*args, **kwargs)
 
+    def deconstruct(self):
+        name, path, args, kwargs = super(IndustryField, self).deconstruct()
+        del kwargs['choices']
+        del kwargs['default']
+        return name, path, args, kwargs
+
 
 class JobField(models.IntegerField):
     ACCOUNTING_FINANCE = 1
@@ -669,6 +715,12 @@ class JobField(models.IntegerField):
         kwargs['default'] = JobField.UNEMPLOYED
         super(JobField, self).__init__(*args, **kwargs)
 
+    def deconstruct(self):
+        name, path, args, kwargs = super(JobField, self).deconstruct()
+        del kwargs['choices']
+        del kwargs['default']
+        return name, path, args, kwargs
+
 
 class TierField(models.CharField):
     STARTER = 'st'
@@ -689,3 +741,11 @@ class TierField(models.CharField):
         kwargs['choices'] = TierField.TIER_CHOICES
         kwargs['default'] = TierField.CONTRIBUTOR
         super(TierField, self).__init__(**kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(TierField, self).deconstruct()
+        del kwargs['max_length']
+        del kwargs['choices']
+        del kwargs['default']
+        return name, path, args, kwargs
+
