@@ -142,6 +142,7 @@ class ClassField(models.IntegerField):
 
 
 class DegreeField(models.CharField):
+    FOUNDATION_YEAR = 'fy'
     BACHELOR_ARTS = 'ba'
     BACHELOR_SCIENCE = 'bsc'
     MASTER_ARTS = 'ma'
@@ -150,6 +151,7 @@ class DegreeField(models.CharField):
     MBA = 'mba'
 
     DEGREE_CHOICES = (
+        (FOUNDATION_YEAR, 'Foundation Year'),
         (BACHELOR_ARTS, 'Bachelor of Arts'),
         (BACHELOR_SCIENCE, 'Bachelor of Science'),
         (MASTER_ARTS, 'Master of Arts'),
