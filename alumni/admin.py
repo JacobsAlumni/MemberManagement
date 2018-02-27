@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from alumni.actions import export_as_csv_action
+from alumni.actions import export_as_csv_action, export_as_xslx_action
 from .models import Alumni, Address, JobInformation, SocialMedia, \
     JacobsData, Approval, PaymentInformation, Skills
 
@@ -39,7 +39,8 @@ class AlumniAdmin(admin.ModelAdmin):
                AlumniJobsInline, SkillsInline, PaymentInline]
 
     # search through names and emails
-    search_fields = ['firstName', 'middleName', 'lastName', 'email', 'existingEmail', 'approval__gsuite']
+    search_fields = ['firstName', 'middleName', 'lastName', 'email',
+                     'existingEmail', 'approval__gsuite']
 
     list_display = (
         # basic information
@@ -55,9 +56,55 @@ class AlumniAdmin(admin.ModelAdmin):
         'jacobs__graduation',
         'jacobs__major', 'payment__tier')
 
-    actions = [export_as_csv_action("Export as CSV", fields=list_display + (
-        'existingEmail', 'resetExistingEmailPassword'
-    ))]
+    legacy_export_fields = list_display + ('existingEmail',
+                                           'resetExistingEmailPassword')
+    csv_export = export_as_csv_action("Export as CSV (Legacy)",
+                                      fields=legacy_export_fields)
+
+    full_export_fields = (
+        # Profile data
+        'profile__username', 'profile__is_staff', 'profile__is_superuser',
+        'profile__date_joined', 'profile__last_login',
+
+        # Alumni Model
+        'firstName', 'middleName', 'lastName', 'email', 'existingEmail',
+        'resetExistingEmailPassword', 'sex', 'birthday', 'birthdayVisible',
+        'nationality', 'category',
+
+        # Address Data
+        'address__address_line_1', 'address__address_line_2', 'address__city',
+        'address__zip', 'address__state', 'address_country',
+        'address__addressVisible',
+
+        # 'Social' Data
+        'social__facebook', 'social__linkedin', 'social__twitter',
+        'social__instagram', 'social__homepage',
+
+        # 'Jacobs Data'
+        'jacobs__college', 'jacobs__graduation', 'jacobs__degree',
+        'jacobs__major', 'jacobs__comments'
+
+        # 'Approval' Data
+                         'approval__approval',
+
+        # Job Data
+        'job__employer', 'job__position', 'job__industry', 'job__job',
+
+        # Skills Data
+        'skills__otherDegrees', 'skills__spokenLanguages',
+        'skills__programmingLanguages', 'skills__areasOfInterest',
+        'skills__alumniMentor',
+
+        # Payment Data
+        'payment__tier', 'payment__starterReason'
+    )
+    xslx_export = export_as_xslx_action("Export as XSLX",
+                                        fields=full_export_fields)
+
+    actions = [
+        'xslx_export',
+        'csv_export'
+    ]
 
     def fullName(self, x):
         return x.fullName
@@ -75,7 +122,6 @@ class AlumniAdmin(admin.ModelAdmin):
 
     userGSuite.short_description = 'Alumni E-Mail'
     userGSuite.admin_order_field = 'approval__gsuite'
-
 
     def paymentTier(self, x):
         return x.payment.tier
