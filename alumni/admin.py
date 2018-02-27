@@ -73,7 +73,7 @@ class AlumniAdmin(admin.ModelAdmin):
 
         # Address Data
         'address__address_line_1', 'address__address_line_2', 'address__city',
-        'address__zip', 'address__state', 'address_country',
+        'address__zip', 'address__state', 'address__country',
         'address__addressVisible',
 
         # 'Social' Data
