@@ -2,6 +2,7 @@ import collections
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from jsonfield import JSONField
 
 from . import fields
 
@@ -184,7 +185,7 @@ class PaymentInformation(models.Model):
 
     tier = fields.TierField(help_text='Membership Tier')
 
-    payment_type = fields.PaymentTypeField(help_text='Payment Type')
+    payment_type = fields.PaymentTypeField()
 
     starterReason = models.TextField(null=True, blank=True,
         help_text="Please provide a short explanation on why you choose the starter plan. ")
@@ -195,3 +196,5 @@ class PaymentInformation(models.Model):
                                 help_text='The stripe customer id for the user')
     subscription = models.CharField(max_length=255, null=True, blank=True,
                                     help_text='The payment token for the customer')
+    sepa_mandate = JSONField(blank=True, null=True)
+

@@ -147,17 +147,24 @@ class SubscribeView(FormView):
     def form_valid(self, form):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         tier = form.cleaned_data['tier']
-        token = form.cleaned_data['token']
         customer_data = {
-            'description': "Jacobs Alumni {} for {} ({})".format(subscription_plans[tier].name, self.request.user.alumni.fullName, self.request.user.alumni.email),
+            'description': "Jacobs Alumni {} for {} ({})".format(subscription_plans[tier].name,
+                                                                 self.request.user.alumni.fullName,
+                                                                 self.request.user.alumni.email),
             'email': self.request.user.email,
         }
+        ptype = form.cleaned_data['payment_type']
 
-        if form.cleaned_data['payment_type'] == PaymentTypeField.SEPA:
-            customer_data["source"] = form.cleaned_data[token]
+        if ptype == PaymentTypeField.SEPA:
+            sepa_mandate = form.cleaned_data['sepa_mandate']
+            customer_data['source'] = sepa_mandate['id']
+        elif ptype == PaymentTypeField.CARD:
+            customer_data["card"] = form.cleaned_data['token']
         else:
-            customer_data["card"] = form.cleaned_data[token]
+            return form.add_error(None,
+                                  'Only credit cards, certain debit cards, and SEPA transfers are accepted at the moment')
 
+        import pdb; pdb.set_trace()
         try:
             customer = stripe.Customer.create(**customer_data)
             subscription = customer.subscriptions.create(
@@ -180,6 +187,7 @@ class SubscribeView(FormView):
             return self.form_invalid(form)
         except stripe.error.InvalidRequestError as e:
             client.captureException()
+            import pdb;pdb.set_trace()
             # Invalid parameters were supplied to Stripe's API
             form.add_error(None,
                            'Unable to communicate with our service payment provider (stripe.error.InvalidRequestError). Please try again later or contact support. ')

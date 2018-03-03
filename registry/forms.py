@@ -163,8 +163,8 @@ class PaymentInformationForm(forms.ModelForm):
 
     class Meta:
         model = PaymentInformation
-        fields = ['tier', 'token', 'starterReason', 'payment_type']
-        widgets = {'token': forms.HiddenInput()}
+        fields = ['tier', 'token', 'starterReason', 'payment_type', 'sepa_mandate']
+        widgets = {'token': forms.HiddenInput(), 'sepa_mandate': forms.HiddenInput()}
         labels = {
             'starterReason': ''
         }
