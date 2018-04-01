@@ -164,7 +164,6 @@ class SubscribeView(FormView):
             return form.add_error(None,
                                   'Only credit cards, certain debit cards, and SEPA transfers are accepted at the moment')
 
-        import pdb; pdb.set_trace()
         try:
             customer = stripe.Customer.create(**customer_data)
             subscription = customer.subscriptions.create(
@@ -187,7 +186,6 @@ class SubscribeView(FormView):
             return self.form_invalid(form)
         except stripe.error.InvalidRequestError as e:
             client.captureException()
-            import pdb;pdb.set_trace()
             # Invalid parameters were supplied to Stripe's API
             form.add_error(None,
                            'Unable to communicate with our service payment provider (stripe.error.InvalidRequestError). Please try again later or contact support. ')
