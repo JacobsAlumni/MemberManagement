@@ -1,0 +1,59 @@
+{% extends "base/base.html" %}
+{% load uikit_tags %}
+
+{% block title %} View Past Payments {% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 class="uk-article-title">
+        View Membership &amp; Payments
+    </h1>
+
+    {% include "portal/approval_warning.html" %}
+
+
+    {% if error %}
+        <div class="uk-alert uk-alert-danger" uk-alert>
+            <h3>An error occurred</h3>
+            <p>
+                {{ error | safe }}
+            </p>
+        </div>
+    {% else %}
+        <table class="uk-table uk-table-divider">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Invoice</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                    <tr>
+                        <td>
+                            {{ invoice.total }}
+                        </td>
+                        <td>
+                            {{ invoice.date }}
+                        </td>
+                        <td>
+                            {% if invoice.paid %}
+                                <span class="uk-label uk-label-success">Paid</span>
+                            {% elif invoice.closed %}
+                                <span class="uk-label uk-label-danger">Unpaid</span>
+                            {% else %}
+                                <span class="uk-label uk-label-warning">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            TODO
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</article>
+{% endblock %}
