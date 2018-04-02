@@ -4,17 +4,12 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
-from django.conf import settings
-
-from raven.contrib.django.raven_compat.models import client
 
 from registry.views.registry import default_alternative
 from ..decorators import require_setup_completed
 
 from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, PaymentInformationForm, SkillsForm
-
-import stripe
 
 
 def editViewFactory(prop, FormClass, name):
@@ -100,57 +95,4 @@ def password(request):
         'form': form,
         'name': 'Password',
         'messsages': get_messages(request)
-    })
-
-
-@require_setup_completed(default_alternative)
-def payments(request):
-    error = None
-    customer = None
-    invoices = None
-
-    customer_id = request.user.alumni.payment.customer
-
-    if customer_id:
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-
-        try:
-            customer = stripe.Customer.retrieve(customer_id)
-            invoices = stripe.Invoice.list(customer=customer_id)
-        except stripe.error.RateLimitError as e:
-            client.captureException()
-            error = "Unable to communicate with our service payment " \
-                    "provider (stripe.error.RateLimitError). " \
-                    "Please try again later or contact support. "
-        except stripe.error.InvalidRequestError as e:
-            client.captureException()
-            error = "Unable to communicate with our service payment " \
-                    "provider (stripe.error.InvalidRequestError). " \
-                    "Please try again later or contact support. "
-        except stripe.error.AuthenticationError as e:
-            client.captureException()
-            error = "Unable to communicate with our service payment " \
-                    "provider (stripe.error.AuthenticationError). " \
-                    "Please try again later or contact support. "
-        except stripe.error.APIConnectionError as e:
-            client.captureException()
-            error = "Unable to communicate with our service payment " \
-                    "provider (stripe.error.APIConnectionError). " \
-                    "Please try again later or contact support. "
-        except stripe.error.StripeError as e:
-            client.captureException()
-            error = "Something went wrong trying to retrieve your payments. " \
-                    "Please try again later or contact support. "
-        except Exception as e:
-            client.captureException()
-            error = "Something went wrong trying to retrieve your payments. " \
-                    "Please try again later or contact support. "
-    else:
-        error = "Something went wrong (missing Customer ID). " \
-                "Please contact support or try again later. "
-
-    return render(request, 'payments/view.html', {
-        'customer': customer,
-        'invoices': invoices,
-        'error': error
     })

@@ -23,20 +23,27 @@
         <table class="uk-table uk-table-divider">
             <thead>
                 <tr>
-                    <th>Amount</th>
                     <th>Date</th>
+                    <th>Description</th>
+                    <th>Total</th>
                     <th>Status</th>
-                    <th>Invoice</th>
                 </tr>
             </thead>
             <tbody>
                 {% for invoice in invoices %}
                     <tr>
                         <td>
-                            {{ invoice.total }}
+                            {{ invoice.date | safe }}
                         </td>
                         <td>
-                            {{ invoice.date }}
+                            {% for l in invoice.lines %}
+                                {% if l %}
+                                    {{ l | safe }} <br />
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{ invoice.total | safe }}
                         </td>
                         <td>
                             {% if invoice.paid %}
@@ -46,9 +53,6 @@
                             {% else %}
                                 <span class="uk-label uk-label-warning">Pending</span>
                             {% endif %}
-                        </td>
-                        <td>
-                            TODO
                         </td>
                     </tr>
                 {% endfor %}
