@@ -10,6 +10,6 @@ openpyxl==2.5.0
 pytz==2017.3
 raven==6.3.0
 requests==2.18.4
-stripe==1.75.1
+stripe==1.79.1
 unicodecsv==0.14.1
 urllib3==1.22
