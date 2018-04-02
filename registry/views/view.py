@@ -1,8 +1,10 @@
 import stripe
 from django.conf import settings
-from django.shortcuts import render
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render, get_object_or_404
 from raven.contrib.django.raven_compat.models import client
 
+from alumni.models import Alumni, PaymentInformation
 from registry.decorators import require_setup_completed
 from registry.views.registry import default_alternative
 
@@ -10,11 +12,11 @@ from datetime import datetime
 from django.utils import formats
 
 
-def format_date(epoch):
+def format_datetime(epoch, format="DATETIME_FORMAT"):
     """ Formats seconds since epoch as a readable date """
 
     date_joined = datetime.fromtimestamp(epoch)
-    return formats.date_format(date_joined, "DATETIME_FORMAT")
+    return formats.date_format(date_joined, format)
 
 
 def format_total(amount, cur):
@@ -27,6 +29,27 @@ def format_total(amount, cur):
         raise Exception("unknown currency {}".format(cur))
 
 
+def format_description(line):
+    """ Formats the description line of an invoice """
+
+    # if we have a description, return it
+    if line.description is not None:
+        return line.description
+
+    # if we have a subscription show {{Name}} x timeframe
+    if line.type == "subscription":
+        name = "{} ({} - {})".format(line.plan.name,
+                                     format_datetime(line.period.start,
+                                                     "DATE_FORMAT"),
+                                     format_datetime(line.period.end,
+                                                     "DATE_FORMAT"))
+        return "{} x {}".format(line.quantity, name)
+
+    # we have a normal line item, and there should have been a description
+    else:
+        raise Exception("Non-subscription without description")
+
+
 def get_invoice_table(customer_id):
     error = None
     invoices = []
@@ -37,8 +60,8 @@ def get_invoice_table(customer_id):
         try:
             for iv in stripe.Invoice.list(customer=customer_id):
                 invoices.append({
-                    'description': [l.description for l in stripe.Invoice.retrieve(iv.id).lines.all()],
-                    'date': format_date(iv.date),
+                    'lines': [format_description(l) for l in iv.lines],
+                    'date': format_datetime(iv.date),
                     'total': format_total(iv.total, iv.currency),
                     'paid': iv.paid,
                     'closed': iv.closed
@@ -83,6 +106,21 @@ def payments(request):
     (error, invoices) = get_invoice_table(request.user.alumni.payment.customer)
 
     return render(request, 'payments/view.html', {
+        'invoices': invoices,
+        'error': error
+    })
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def payments_admin(request, username):
+    payment = get_object_or_404(PaymentInformation,
+                                member__profile__username=username)
+
+    (error, invoices) = get_invoice_table(payment.customer)
+
+    return render(request, 'payments/view.html', {
+        'admin': True,
+        'username': username,
         'invoices': invoices,
         'error': error
     })
