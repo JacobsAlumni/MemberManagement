@@ -42,10 +42,9 @@
                     iconColor: '#fa755a'
                 }
             };
-            // Create an instance of the card Element
-            var card = elements.create('card', {style: style});
 
-            // Add an instance of the card Element into the `card-element` <div>
+            // Create a card UI element
+            var card = elements.create('card', {style: style});
             card.mount('#card-element');
 
             // Handle real-time validation errors from the card Element.
@@ -65,17 +64,25 @@
                     errorElement.textContent = '';
                 }
             });
-
-            function stripeCardHandler(token) {
-                document.getElementById('id_token').value = token;
+            
+            // clears private data and submits the form
+            function submitForm() {
+                document.getElementById('name').value = '';
+                document.getElementById('iban').value = '';
                 document.getElementById("payment-form").submit();
             }
 
+            // handle submission of card data once token has been created
+            function stripeCardHandler(token) {
+                document.getElementById('id_token').value = token;
+                submitForm();
+            }
+
+            // handle submission of sepa data once token has been created
             function stripeSepaHandler(mandate) {
-                console.log("YOLO: Managed to handle sepa handler");
                 document.getElementById('id_sepa_mandate').value = JSON.stringify(mandate);
                 document.getElementById('id_token').value = mandate.id;
-                document.getElementById("payment-form").submit();
+                submitForm();
             }
 
             // the element displaying errors
@@ -86,9 +93,7 @@
             // Handle form submission
             var form = document.getElementById('payment-form');
             form.addEventListener('submit', function (event) {
-                console.log("YOLO: trying to prevent default");
                 event.preventDefault();
-                console.log("YOLO: prevented default");
                 // hide the error message (if any)
                 errorElement.style.display = 'none';
                 errorElement.style.visibility = 'hidden';
@@ -132,6 +137,8 @@
                     });
                 }
             });
+
+            // handle changing id
             $('#id_tier').change(function () {
                 var selected = $(this).find(':selected').val();
                 $('#id_tier').parent().next().html(membership_options[selected]);
@@ -141,6 +148,8 @@
                     $("#div_id_starterReason").hide()
                 }
             }).trigger('change');
+
+            // handle changing payment type
             $('#id_payment_type').change(function () {
                 var selected = $(this).find(':selected').val();
                 $('#id_tier').parent().next().html(membership_options[selected]);
@@ -224,6 +233,7 @@
                     </div>
                 </div>
 
+                <!-- Elements for Card -->
                 <div id="stripe-card-elements">
                     <label for="card-element" class="uk-form-label">
                         Credit or debit card *
@@ -232,21 +242,29 @@
                         <!-- a Stripe Element will be inserted here. -->
                     </div>
                 </div>
+
+                <!-- Elements for SEPA -->
                 <div id="stripe-sepa-elements">
-                    <p>By providing your IBAN and confirming this payment, you are authorizing Rocketship Inc and Stripe, our payment service provider, to send instructions to your bank to debit your account and your bank to debit your account in accordance with those instructions. You are entitled to a refund from your bank under the terms and conditions of your agreement with your bank. A refund must be claimed within 8 weeks starting from the date on which your account was debited.</p>
-                    <label for="sepa-element" class="uk-form-label">
-                        SEPA Direct debit
+
+                    <div class="uk-form-controls uk-form-controls-text uk-alert-warning" uk-alert>
+                        By providing your IBAN and confirming this payment, you are authorizing Jacobs Alumni Association and Stripe, our payment service provider, to send instructions to your bank to debit your account and your bank to debit your account in accordance with those instructions. 
+                        You are entitled to a refund from your bank under the terms and conditions of your agreement with your bank. 
+                        A refund must be claimed within 8 weeks starting from the date on which your account was debited.
+                    </div>
+                    
+                    
+                    <label for="name" class="uk-form-label">
+                        Bank Account Owner *
                     </label>
                     <div id="sepa-element" class="uk-form-controls uk-form-controls-text">
-                        <!-- a Stripe Element will be inserted here. -->
-                        <label>
-                            <span>Name</span>
-                            <input id="name" class="field" placeholder="Jenny Rosen"/>
-                        </label>
-                        <label>
-                            <span>IBAN</span>
-                            <input id="iban" class="field" placeholder="DE89370400440532013000"/>
-                        </label>
+                            <input id="name" class="uk-input" placeholder=""/>
+                    </div>
+
+                    <label for="iban" class="uk-form-label">
+                        IBAN *
+                    </label>
+                    <div id="sepa-element" class="uk-form-controls uk-form-controls-text">
+                            <input id="iban" class="uk-input" placeholder=""/>
                     </div>
                 </div>
 
