@@ -4,7 +4,7 @@
     {% if original.payment %}
         {% if original.payment.customer %}
             <li>
-                <a href="https://dashboard.stripe.com/customers/{{ original.payment.customer }}" target="_blank">View on Stripe Dashboard</a>
+                <a href="https://dashboard.stripe.com/{% if stripe_test_mode %}test/{% endif%}customers/{{ original.payment.customer }}" target="_blank">View on Stripe Dashboard</a>
             </li>
         {% endif %}
     {% endif %}
