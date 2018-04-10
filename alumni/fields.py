@@ -796,7 +796,7 @@ class PaymentTypeField(models.CharField):
         (CARD,
          "Credit or Debit Card"),
         (SEPA,
-         "SEPA bank transfer"),
+         "Automatic Bank Transfer (SEPA)"),
     )
 
     def __init__(self, **kwargs):
