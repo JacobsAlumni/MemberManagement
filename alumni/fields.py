@@ -110,6 +110,7 @@ class ClassField(models.IntegerField):
     C_2016 = 2016
     C_2017 = 2017
     C_2018 = 2018
+    C_2019 = 2019
     CLASS_CHOICES = (
         (OTHER, 'Other (please specifiy in comments)'),
         (C_2004, 'Class of 2004'),
@@ -127,6 +128,7 @@ class ClassField(models.IntegerField):
         (C_2016, 'Class of 2016'),
         (C_2017, 'Class of 2017'),
         (C_2018, 'Class of 2018'),
+        (C_2019, 'Class of 2019'),
     )
 
     def __init__(self, *args, **kwargs):
