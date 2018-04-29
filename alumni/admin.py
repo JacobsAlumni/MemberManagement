@@ -155,3 +155,6 @@ class AlumniAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Alumni, AlumniAdmin)
+
+from django.contrib.auth.models import Group
+admin.site.unregister(Group)
