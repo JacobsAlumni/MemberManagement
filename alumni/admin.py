@@ -32,6 +32,22 @@ class PaymentInline(admin.StackedInline):
 class SkillsInline(admin.StackedInline):
     model = Skills
 
+class SetupCompleted(admin.SimpleListFilter):
+    title = 'Setup Status'
+    parameter_name = 'completed'
+    
+    def lookups(self, request, modeladmin):
+        return [
+            ('true', 'Completed'), 
+            ('false', 'Incomplete')
+        ]
+    
+    def queryset(self, request, queryset):
+        if self.value() == 'true':
+            return queryset.filter(payment__customer__isnull=False)
+        else:
+            return queryset.filter(payment__customer__isnull=True)
+
 
 class AlumniAdmin(admin.ModelAdmin):
     inlines = [AlumniApprovalInline, AlumniAddressInline,
@@ -44,7 +60,7 @@ class AlumniAdmin(admin.ModelAdmin):
 
     list_display = (
         # basic information
-        'fullName', 'email', 'userApproval', 'userGSuite', 'sex', 'birthday',
+        'fullName', 'email', 'userApproval', 'setupCompleted', 'userGSuite', 'sex', 'birthday',
         'category', 'paymentTier',
 
         # Jacobs information
@@ -52,7 +68,7 @@ class AlumniAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        'approval__approval', 'category', 'jacobs__degree',
+        'approval__approval', SetupCompleted, 'category', 'jacobs__degree',
         'jacobs__graduation',
         'jacobs__major', 'payment__tier')
 
@@ -116,6 +132,14 @@ class AlumniAdmin(admin.ModelAdmin):
 
     userApproval.short_description = 'Approval'
     userApproval.admin_order_field = 'approval__approval'
+
+    def setupCompleted(self, x):
+        if x.payment and x.payment.customer:
+            return True
+        else:
+            return False
+    
+    setupCompleted.short_description = 'Setup Completed'
 
     def userGSuite(self, x):
         return x.approval.gsuite
