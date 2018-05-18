@@ -38,15 +38,17 @@ class SetupCompleted(admin.SimpleListFilter):
     
     def lookups(self, request, modeladmin):
         return [
-            ('true', 'Completed'), 
-            ('false', 'Incomplete')
+            ('1', 'Completed'), 
+            ('0', 'Incomplete')
         ]
     
     def queryset(self, request, queryset):
-        if self.value() == 'true':
+        if self.value() == '1':
             return queryset.filter(payment__customer__isnull=False)
-        else:
+        elif self.value() == '0':
             return queryset.filter(payment__customer__isnull=True)
+        else:
+            return queryset
 
 
 class AlumniAdmin(admin.ModelAdmin):
@@ -60,7 +62,7 @@ class AlumniAdmin(admin.ModelAdmin):
 
     list_display = (
         # basic information
-        'fullName', 'email', 'userApproval', 'setupCompleted', 'userGSuite', 'sex', 'birthday',
+        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'sex', 'birthday',
         'category', 'paymentTier',
 
         # Jacobs information
@@ -124,26 +126,30 @@ class AlumniAdmin(admin.ModelAdmin):
 
     def fullName(self, x):
         return x.fullName
-
+    
     fullName.short_description = 'Full Name'
 
     def userApproval(self, x):
         return x.approval.approval
-
-    userApproval.short_description = 'Approval'
+    userApproval.short_description = 'Approved'
+    userApproval.boolean = 'true'
     userApproval.admin_order_field = 'approval__approval'
 
-    def setupCompleted(self, x):
-        if x.payment and x.payment.customer:
-            return True
-        else:
+    def completedSetup(self, x):
+        try:
+            if x.payment and x.payment.customer:
+                return True
+            else:
+                return False
+        except:
             return False
-    
-    setupCompleted.short_description = 'Setup Completed'
+    completedSetup.short_description = 'Setup Done'
+    completedSetup.boolean = True
+    completedSetup.admin_order_field = 'payment__customer'
 
     def userGSuite(self, x):
         return x.approval.gsuite
-
+    
     userGSuite.short_description = 'Alumni E-Mail'
     userGSuite.admin_order_field = 'approval__gsuite'
 
