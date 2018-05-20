@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.auth',
     'registry',
+    'cookielaw',
     'alumni',
     'django_forms_uikit',
     'django_countries',
