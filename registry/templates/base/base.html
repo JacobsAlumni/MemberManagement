@@ -19,7 +19,7 @@
     {% block head %}
     {% endblock %}
     </head>
-    <body>
+    <body {% block bodyattr %}{% endblock %}>
         <div class="fill uk-offcanvas-content">
             {% block header %}
                 {% include "base/header.html" %}

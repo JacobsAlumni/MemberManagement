@@ -30,6 +30,7 @@ urlpatterns = [
     # Static requirements
     url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
     url(r'^privacy/$', TemplateView.as_view(template_name="static/privacy.html"), name='privacy'),
+    url(r'^privacy/old/$', TemplateView.as_view(template_name="static/privacy_old.html"), name='privacy_old'),
 
     # Login / Logout
     url(r'^login/$', auth_views.login, {'template_name': 'auth/login.html'},
