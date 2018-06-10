@@ -112,15 +112,15 @@ def payments(request):
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def payments_admin(request, username):
+def payments_admin(request, id):
     payment = get_object_or_404(PaymentInformation,
-                                member__profile__username=username)
+                                member__profile__id=id)
 
     (error, invoices) = get_invoice_table(payment.customer)
 
     return render(request, 'payments/view.html', {
         'admin': True,
-        'username': username,
+        'username': payment.member.profile.username,
         'invoices': invoices,
         'error': error
     })

@@ -8,7 +8,7 @@
         </li>
     {% endif %}
     <li>
-        <a href="{% url 'view_payments_admin' username=original.profile.username %}" target="_blank">View Payments</a>
+        <a href="{% url 'view_payments_admin' id=original.profile.id %}" target="_blank">View Payments</a>
     </li>
     {{ block.super }}
 {% endblock %}
