@@ -1,0 +1,12 @@
+{% if user.alumni.approval.approval %}
+{% for msg in announcements %}
+    <div class="uk-alert uk-alert-primary" uk-alert>
+        <h3>{{ msg.title | safe}}</h3>
+        <p>
+            {% autoescape off %}
+                {{ msg.content }}
+            {% endautoescape %}
+        </p>
+    </div>
+{% endfor %}
+{% endif %}

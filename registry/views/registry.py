@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from registry.decorators import require_setup_completed
+from registry.models import Announcement
 
 
 def home(request):
@@ -20,7 +21,7 @@ def home(request):
 def portal(request):
 
     # and render the portal
-    return render(request, 'portal/index.html', {'user': request.user})
+    return render(request, 'portal/index.html', {'user': request.user, 'announcements': Announcement.objects.filter(active=True)})
 
 
 def default_alternative(request):
