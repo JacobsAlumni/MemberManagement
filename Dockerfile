@@ -1,5 +1,8 @@
 FROM python:3.6-alpine
 
+# Install lxml requirements
+RUN apk add --no-cache g++ libxslt-dev
+
 # Install nginx and configuration
 RUN apk add --no-cache nginx \
     && mkdir -p /run/nginx/

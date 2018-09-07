@@ -100,10 +100,10 @@ class AlumniAdmin(admin.ModelAdmin):
 
         # 'Jacobs Data'
         'jacobs__college', 'jacobs__graduation', 'jacobs__degree',
-        'jacobs__major', 'jacobs__comments'
+        'jacobs__major', 'jacobs__comments',
 
         # 'Approval' Data
-                         'approval__approval',
+        'approval__approval',
 
         # Job Data
         'job__employer', 'job__position', 'job__industry', 'job__job',
