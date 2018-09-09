@@ -77,7 +77,9 @@ def export_as_csv_action(description="Export selected objects as CSV file",
             writer.writerow(field_names)
 
         # Write the content rows
-        for row in queryset.values_list(*field_names):
+        for obj in queryset:
+            row = [get_model_prop(modeladmin, obj, field) for field in
+                   field_names]
             writer.writerow(row)
 
         # And return
