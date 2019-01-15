@@ -769,7 +769,7 @@ class TierField(models.CharField):
 
     TIER_CHOICES = (
         (CONTRIBUTOR,
-         "Contributor (Standard package for graduation before 2016): 39€ p.a."),
+         "Contributor (Standard package if graduated more than 2 years ago): 39€ p.a."),
         (STARTER,
          "Starter (If graduated less than 2 years ago or not ready to financially contribute): free"),
         (PATRON,
