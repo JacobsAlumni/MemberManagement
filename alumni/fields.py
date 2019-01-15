@@ -770,10 +770,10 @@ class TierField(models.CharField):
     TIER_CHOICES = (
         (CONTRIBUTOR,
          "Contributor (Standard package for graduation before 2016): 39€ p.a."),
+        (STARTER,
+         "Starter (If graduated less than 2 years ago or not ready to financially contribute): free"),
         (PATRON,
          "Patron (Premium package for those who want to contribute more): 249€ p.a. "),
-        (STARTER,
-         "Starter (For graduation after 2016 or unable to financially contribute): 1 symbolic cent p.a."),
     )
 
     def __init__(self, **kwargs):
