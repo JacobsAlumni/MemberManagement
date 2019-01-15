@@ -188,7 +188,7 @@ class PaymentInformation(models.Model):
     payment_type = fields.PaymentTypeField()
 
     starterReason = models.TextField(null=True, blank=True,
-        help_text="Please provide a short explanation on why you choose the starter plan. ")
+        help_text="")
 
     token = models.CharField(max_length=255, null=True, blank=True,
                              help_text='The stripe card token for the user')
