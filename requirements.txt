@@ -1,4 +1,4 @@
-Django==1.11.16
+Django==1.11.18
 django-countries==5.3.2
 django-cookie-law==2.0.1
 jsonfield==2.0.2
