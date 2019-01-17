@@ -7,3 +7,4 @@ openpyxl==2.5.9
 raven==6.9.0
 stripe==1.84.2
 unicodecsv==0.14.1
+google-auth==1.6.2

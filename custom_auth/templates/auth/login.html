@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+{% load uikit_tags %}
+{% load staticfiles %}
+
+{% block title %}Membership Portal - Jacobs University Bremen Alumni {% endblock %}
+
+{% block head %}
+<style type="text/css">
+    #g-signin-icon {
+        margin-left: -30px;
+        padding-right: 30px;
+    }
+</style>
+
+<!-- Sign in with Google -->#
+<script>
+var google_login_settings = {
+    client_id: '{{ client_id }}',
+    hosted_domain: '{{ gsuite_domain }}',
+    prompt: 'select_account'
+}
+
+var login_script_settings = {
+    next: "{{ next }}",
+    token_endpoint: "{% url 'token_login' %}"
+}
+</script>
+<script src="{% static 'js/login.js' %}"></script>
+<script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+
+{% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 id="page-header" class="uk-article-title">Login</h1>
+
+    <div>
+        <div>
+            <button disabled id="g-signin" type="button" class="uk-button uk-button-primary">
+                <img id="g-signin-icon" src="{% static 'media/btn_google_light_pressed_ios.svg' %}" /><span id="g-signin-text">Sign
+                    in with Google</span>
+            </button>
+        </div>
+        <!--
+        <form id="local-login" class="uk-form-horizontal" method="POST">
+            {% csrf_token %}
+            {{ form | as_uikit_form }}
+            <input type="submit" class="uk-button uk-button-primary" value="Login">
+        </form>
+        -->
+    </div>
+</article>
+{% endblock %}
