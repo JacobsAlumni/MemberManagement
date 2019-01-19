@@ -25,7 +25,7 @@ var login_script_settings = {
     token_endpoint: "{% url 'token_login' %}"
 }
 </script>
-<script src="{% static 'js/login.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/login.js' %}"></script>
 <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
 
 {% endblock %}
