@@ -1,6 +1,7 @@
 import stripe
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
@@ -48,7 +49,8 @@ def register(request):
             approval.save()
 
             # Authenticate the user for this request
-            login(request, user)
+            new_user = authenticate(request, username=username, password=password)
+            login(request, new_user)
 
             # and then redirect the user to the main setup page
             return redirect(reverse('setup'))

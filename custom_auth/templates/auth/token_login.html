@@ -1,0 +1,36 @@
+{% extends "base/base.html" %}
+{% load uikit_tags %}
+{% load staticfiles %}
+
+{% block title %}Membership Portal - Token Login{% endblock %}
+
+{% block head %}
+<script>
+{% if not error %}
+// Automatically submit the hidden form to log the user in.
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('token_form').submit()
+})
+{% endif %}
+</script>
+{% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 id="page-header" class="uk-article-title">Magic Login</h1>
+
+    <div>
+        <form method='POST' id="token_form">
+            <input type="hidden" name="token" value="{{ token }}">
+            <input type="hidden" name="next" value="{{ next }}">
+            {% csrf_token %}
+        </form>
+
+        {% if error %}
+        <div class="uk-alert-danger" uk-alert class="uk-width-1-1">    
+            <p>We could not log you in. <a href="{% url 'login' %}">Try Again</a></p>
+        </div>
+        {% endif %}
+    </div>
+</article>
+{% endblock %}
