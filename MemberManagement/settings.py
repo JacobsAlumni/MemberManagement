@@ -159,9 +159,12 @@ except ImportError:
 # Email settings
 # https://docs.djangoproject.com/en/1.11/topics/email/
 
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = ''
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'email_login@jacobs-alumni.de'
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_FROM = 'Alumni Association Portal Login <email_login@jacobs-alumni.de>'
