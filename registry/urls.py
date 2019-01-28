@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+from custom_auth import views as custom_auth_views
 from django.views.generic import TemplateView
 
 from .views import registry as registry_views
@@ -30,10 +31,11 @@ urlpatterns = [
     # Static requirements
     url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
     url(r'^privacy/$', TemplateView.as_view(template_name="static/privacy.html"), name='privacy'),
-    url(r'^privacy/old/$', TemplateView.as_view(template_name="static/privacy_old.html"), name='privacy_old'),
+    url(r'^privacy/old/$',
+        TemplateView.as_view(template_name="static/privacy_old.html"), name='privacy_old'),
 
     # Login / Logout
-    url(r'^login/$', auth_views.login, {'template_name': 'auth/login.html'},
+    url(r'^login/$', custom_auth_views.ClientIdLoginView.as_view(template_name='auth/login.html'), {},
         name='login'),
     url('^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 
@@ -47,7 +49,8 @@ urlpatterns = [
     url(r'^setup/jacobs/$', setup_views.jacobs, name='setup_jacobs'),
     url(r'^setup/job/$', setup_views.job, name='setup_job'),
     url(r'^setup/skills/$', setup_views.skills, name='setup_skills'),
-    url(r'^setup/payment/$', setup_views.SubscribeView.as_safe_view(), name='setup_payment'),
+    url(r'^setup/payment/$', setup_views.SubscribeView.as_safe_view(),
+        name='setup_payment'),
 
     # the portal for the user
     url(r'portal/', registry_views.portal, name='portal'),
@@ -57,7 +60,8 @@ urlpatterns = [
     url(r'^edit/password/$', edit_views.password, name='edit_password'),
     url(r'^edit/address/$', edit_views.address, name='edit_address'),
     url(r'^edit/payments/$', view_views.payments, name='edit_payments'),
-    url(r'^edit/payments/(?P<id>\d+)/$', view_views.payments_admin, name='view_payments_admin'),
+    url(r'^edit/payments/(?P<id>\d+)/$',
+        view_views.payments_admin, name='view_payments_admin'),
     url(r'^edit/social/$', edit_views.social, name='edit_social'),
     url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
     url(r'^edit/job/$', edit_views.job, name='edit_job'),

@@ -33,6 +33,8 @@ DATABASES = {
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 
+# update the client ID for Google login
+GSUITE_OAUTH_CLIENT_ID = os.environ.setdefault("GSUITE_OAUTH_CLIENT_ID", "")
 
 # add the static file root
 STATIC_ROOT = "/var/www/static/"

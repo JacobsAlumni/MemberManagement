@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'registry',
     'cookielaw',
     'alumni',
+    'custom_auth',
     'django_forms_uikit',
     'django_countries',
     'django.contrib.admin',
@@ -115,6 +116,13 @@ LOGIN_URL = '/login'
 LOGOUT_URL = '/logout'
 LOGIN_REDIRECT_URL = '/'
 
+GSUITE_DOMAIN_NAME = 'jacobs-alumni.de'
+GSUITE_OAUTH_CLIENT_ID = '118982546822-515a0fn0ldm96ebev0af5naj6qn8pt9i.apps.googleusercontent.com'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'custom_auth.backend.GoogleTokenBackend'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
