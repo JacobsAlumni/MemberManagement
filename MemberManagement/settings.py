@@ -120,9 +120,12 @@ GSUITE_DOMAIN_NAME = 'jacobs-alumni.de'
 GSUITE_OAUTH_CLIENT_ID = '118982546822-515a0fn0ldm96ebev0af5naj6qn8pt9i.apps.googleusercontent.com'
 
 AUTHENTICATION_BACKENDS = [
+    'sesame.backends.ModelBackend',
     'django.contrib.auth.backends.ModelBackend',
     'custom_auth.backend.GoogleTokenBackend'
 ]
+
+SESAME_MAX_AGE = 300 # Emailed tokens expire after 5 minutes
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -151,3 +154,17 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+
+# Email settings
+# https://docs.djangoproject.com/en/1.11/topics/email/
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = ''
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_FROM = 'Alumni Association Portal Login <email_login@jacobs-alumni.de>'
