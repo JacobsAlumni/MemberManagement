@@ -9,3 +9,4 @@ stripe==1.84.2
 unicodecsv==0.14.1
 google-auth==1.6.2
 django-sesame==1.4
+pre-js-py==1.1.0

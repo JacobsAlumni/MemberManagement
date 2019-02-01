@@ -1,0 +1,80 @@
+{% extends "base/base.html" %}
+
+{% load registry_display %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 class="uk-article-title">
+        Jacobs Alumni Search - {{query}}
+    </h1>
+
+    {% include "map/search_form.html" with value=query %}
+
+    {% if error %}
+        <p>
+            Something went wrong: {{ error }}<br />
+            Please try again. 
+        </p>
+    {% else %}
+        <p>
+            <table class="uk-table uk-table-small">
+                <tbody>
+                {% for alumni in page %}
+                    <tr>
+                        <td><a href="{% url 'map_profile' id=alumni.profile.id %}">{{ alumni.firstName }} {{ alumni.lastName }}</a></td>
+                        <td> {{ alumni.address.city }} </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </p>
+        
+        <p>
+            <hr />
+            <ul class="uk-pagination">
+                {% if pagination.print1 %}
+                    <li>
+                        <span>
+                            <a href="{% url 'map_search' %}?query={{query|urlencode}}&page=1">1</a>
+                        </span>
+                    </li>
+                {% endif %}
+                {% if pagination.print1Dots %}
+                    <li><span>...</span></li>
+                {% endif %}
+
+                {% if page.has_previous %}
+                    <li>
+                        <span>
+                            <a href="{% url 'map_search' %}?query={{query|urlencode}}&page={{page.previous_page_number}}">{{page.previous_page_number}}</a>
+                        </span>
+                    </li>
+                {% endif %}
+
+                    <li class="uk-active">{{ page.number }}</li>
+                
+                {% if page.has_next %}
+                    <li>
+                        <span>
+                            <a href="{% url 'map_search' %}?query={{query|urlencode}}&page={{page.next_page_number}}">{{page.next_page_number}}</a>
+                        </span>
+                    </li>
+                {% endif %}
+
+                {% if pagination.printLDots %}
+                    <li><span>...</span></li>
+                {% endif %}
+                {%if pagination.printL %}
+                    <li>
+                        <span>
+                            <a href="{% url 'map_search' %}?query={{query|urlencode}}&page={{page.paginator.num_pages}}">{{page.paginator.num_pages}}</a>
+                        </span>
+                    </li>
+                {% endif %}
+            </ul>
+        </p>
+    {% endif %}
+</article>
+{% endblock %}
