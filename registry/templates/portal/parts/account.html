@@ -11,11 +11,6 @@
                 </tr>
 
                 <tr>
-                    <td>Portal Password</td>
-                    <td><i>(not shown)</i></td>
-                </tr>
-
-                <tr>
                     <td>G-Suite E-Mail</td>
                     <td>
                         {% if user.alumni.approval.gsuite %}
@@ -26,8 +21,5 @@
                 </tr>
             </tbody>
         </table>
-    </div>
-    <div class="uk-card-footer">
-        <a href="{% url 'edit_password' %}" class="uk-button uk-button-text">Change Portal Password</a>
     </div>
 </div>

@@ -2,7 +2,6 @@ from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 
 from registry.views.registry import default_alternative
@@ -71,28 +70,3 @@ job = editViewFactory('job', JobInformationForm, 'Job Information')
 skills = editViewFactory('skills', SkillsForm, 'Education and Skills')
 payment = editViewFactory('payment', PaymentInformationForm,
                           'Payment Information')
-
-
-@require_setup_completed(default_alternative)
-def password(request):
-    # if we have something that needs to be setup return to the main page
-    if request.user.alumni.get_first_unset_component() is not None:
-        return redirect(reverse('portal'))
-
-    if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # Important!
-            messages.success(request,
-                             'Your password was successfully updated!')
-            return redirect('edit_password')
-        else:
-            messages.error(request, 'Please correct the error below.')
-    else:
-        form = PasswordChangeForm(request.user)
-    return render(request, 'portal/edit.html', {
-        'form': form,
-        'name': 'Password',
-        'messsages': get_messages(request)
-    })

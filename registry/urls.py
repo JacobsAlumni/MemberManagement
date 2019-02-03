@@ -58,7 +58,6 @@ urlpatterns = [
 
     # Edit views
     url(r'^edit/$', edit_views.edit, name='edit'),
-    url(r'^edit/password/$', edit_views.password, name='edit_password'),
     url(r'^edit/address/$', edit_views.address, name='edit_address'),
     url(r'^edit/payments/$', view_views.payments, name='edit_payments'),
     url(r'^edit/payments/(?P<id>\d+)/$',

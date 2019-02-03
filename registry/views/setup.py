@@ -1,4 +1,5 @@
 import stripe
+
 from django.conf import settings
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.backends import ModelBackend
@@ -34,9 +35,8 @@ def register(request):
             form.clean()
 
             # create a user object and save it
-            username, password = \
-                form.cleaned_data['username'], form.cleaned_data['password1']
-            user = User.objects.create_user(username, None, password=password)
+            username = form.cleaned_data['username']
+            user = User.objects.create_user(username, None, password=None)
             user.save()
 
             # Create the Alumni Data Object
@@ -49,8 +49,7 @@ def register(request):
             approval.save()
 
             # Authenticate the user for this request
-            new_user = authenticate(request, username=username, password=password)
-            login(request, new_user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             # and then redirect the user to the main setup page
             return redirect(reverse('setup'))
