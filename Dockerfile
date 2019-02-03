@@ -56,6 +56,9 @@ ENV DJANGO_DB_PORT ""
 ENV STRIPE_SECRET_KEY ""
 ENV STRIPE_PUBLISHABLE_KEY ""
 
+# GSuite Auth file should be in the data volume
+ENV GSUITE_AUTH_FILE /data/credentials.json
+
 # Raven -- optional
 ENV DJANGO_RAVEN_DSN ""
 

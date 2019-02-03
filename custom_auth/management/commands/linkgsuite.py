@@ -1,57 +1,50 @@
-from google.oauth2 import service_account
-import googleapiclient.discovery
+from django.db import transaction
 
 from django.core.management.base import BaseCommand
 
+from django.contrib.auth import get_user_model
+from custom_auth.gsuite import make_directory_service
 from custom_auth.models import GoogleAssociation
-from alumni.models import Approval
-
-SCOPES = ['https://www.googleapis.com/auth/admin.directory.user']
 
 class Command(BaseCommand):
-    help = 'Links Google Accounts to Portal Accounts'
+    help = 'Links Google and Portal Accounts'
 
     def add_arguments(self, parser):
-        parser.add_argument('credentialspath', type=str, help='Path to credentials file')
-        parser.add_argument('adminusername', type=str, help='Admin username to use for requests')
+        parser.add_argument('users', nargs='*', help='Usernames of user(s) to update. If empty, update all users. ')
+        parser.add_argument('--remove-password', '-r', action='store_true', dest='remove_password', help='If provided, remove password login for non-staff non-superuser users. ')
 
     def handle(self, *args, **kwargs):
-        # setup credentials and delegate to specific user
-        credentials = service_account.Credentials.from_service_account_file(kwargs['credentialspath'], scopes=SCOPES)
-        delegated_credentials = credentials.with_subject(kwargs['adminusername'])
-
-        # build a service using these credentials
-        service = googleapiclient.discovery.build('admin', 'directory_v1', credentials=delegated_credentials)
-
-        # Find all the users that have been approved
-        for approval in Approval.objects.filter(approval=True):
-            profile = approval.member.profile
-            email = approval.gsuite
-
-            # Check if their google association exists
-            if not self.has_association(profile.username):
-                gid = self.get_user_id(service, email)
-                print("got {}".format(gid))
-
-                if gid is not None:
-                    print("Linking Portal Account for {} to G-Suite ID {}. ".format(email, gid))
-                    self.associate(profile, gid)
-
-    def get_user_id(self, service, username):
-        """ Gets the GSuite User ID of a user """
-        try:
-            result = service.users().get(userKey=username, projection='basic').execute()
-        except googleapiclient.errors.HttpError:
-            return None
+        # Get the user objects from the database
+        usernames = kwargs['users']
+        if len(usernames) == 0:
+            users = get_user_model().objects.all()
+        else:
+            users = get_user_model().objects.filter(username__in=usernames)
         
-        return result['id']
-
-    def has_association(self, username):
-        """ Checks if a user with the given username has an association to a GSuite Account """
-        return GoogleAssociation.objects.filter(user__username=username).count() > 0
-
-    def associate(self, profile, gid):
-        """ Links a given profile to a userid """
+        # Make sure to only use approved users
+        users = users.filter(alumni__approval__approval = True)
         
-        instance = GoogleAssociation.objects.create(user=profile, google_user_id=gid)
-        instance.save()
+        # Create a GSuite Service
+        service = make_directory_service()
+        
+        # Iterate over users
+        remove = kwargs['remove_password']
+        for user in users:
+            with transaction.atomic():
+                # Remove their password if requested
+                if remove:
+                    if (not user.is_staff and not user.is_superuser):
+                        print("Removed password for user {}".format(user.username))
+                        user.set_unusable_password()
+                        user.save()
+                    else:
+                        print("Did not remove password for user {} (is a staff or superuser)".format(user.username))
+
+                
+                # And link them
+                link = GoogleAssociation.link_user(user, service = service)
+                if link is None:
+                    print("Unable to link user {}: Unable to find GSuite (does it exist?)".format(user.username))
+                else:
+                    print("Linked user {} to G-Suite ID {}".format(user.username, link.google_user_id))
+        

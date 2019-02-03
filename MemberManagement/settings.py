@@ -120,6 +120,9 @@ LOGIN_REDIRECT_URL = '/'
 GSUITE_DOMAIN_NAME = 'jacobs-alumni.de'
 GSUITE_OAUTH_CLIENT_ID = '118982546822-515a0fn0ldm96ebev0af5naj6qn8pt9i.apps.googleusercontent.com'
 
+GSUITE_AUTH_FILE = os.environ.get("GSUITE_AUTH_FILE")
+GSUITE_ADMIN_USER = 'admin@jacobs-alumni.de'
+
 AUTHENTICATION_BACKENDS = [
     'sesame.backends.ModelBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -152,7 +155,7 @@ STATICFILES_DIRS = [
 
 # Import Local settings if available
 try:
-    from local_settings import *
+    from .local_settings import *
 except ImportError:
     pass
 
