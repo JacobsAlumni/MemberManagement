@@ -21,30 +21,29 @@ class Command(BaseCommand):
         else:
             users = get_user_model().objects.filter(username__in=usernames)
         
-        # Make sure to only use approved users
-        users = users.filter(alumni__approval__approval = True)
-        
-        # Create a GSuite Service
-        service = make_directory_service()
-        
-        # Iterate over users
-        remove = kwargs['remove_password']
-        for user in users:
-            with transaction.atomic():
-                # Remove their password if requested
-                if remove:
-                    if (not user.is_staff and not user.is_superuser):
-                        print("Removed password for user {}".format(user.username))
-                        user.set_unusable_password()
-                        user.save()
-                    else:
-                        print("Did not remove password for user {} (is a staff or superuser)".format(user.username))
+        link_gsuite_users(users, remove, lambda x: print(x))
 
-                
-                # And link them
-                link = GoogleAssociation.link_user(user, service = service)
-                if link is None:
-                    print("Unable to link user {}: Unable to find GSuite (does it exist?)".format(user.username))
+def link_gsuite_users(users, remove, on_message):
+    """ Links GSuite Users """
+
+    # Create a GSuite Service
+    service = make_directory_service()
+
+    for user in users.filter(alumni__approval__approval = True):
+        with transaction.atomic():
+            # Remove their password if requested
+            if remove:
+                if (not user.is_staff and not user.is_superuser):
+                    on_message("Removed password for user {}".format(user.username))
+                    user.set_unusable_password()
+                    user.save()
                 else:
-                    print("Linked user {} to G-Suite ID {}".format(user.username, link.google_user_id))
-        
+                    on_message("Did not remove password for user {} (is a staff or superuser)".format(user.username))
+
+            
+            # And link them
+            link = GoogleAssociation.link_user(user, service = service)
+            if link is None:
+                on_message("Unable to link user {}: Unable to find GSuite (does it exist?)".format(user.username))
+            else:
+                on_message("Linked user {} to G-Suite ID {}".format(user.username, link.google_user_id))

@@ -4,8 +4,13 @@ import openpyxl
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
+from django.contrib.auth import get_user_model
+
 from openpyxl import styles
 from openpyxl.cell import cell
+
+from custom_auth.management.commands.linkgsuite import link_gsuite_users
+from custom_auth.models import GoogleAssociation
 
 def get_direct_prop(obj, fields):
     """ Gets a model property of an object """
@@ -170,3 +175,20 @@ def export_as_xslx_action(description="Export selected objects as XSLX file",
 
     export_as_xslx.short_description = description
     return export_as_xslx
+
+def link_to_gsuite_action(modeladmin, request, queryset):
+    """ Link to GSuite links users to a GSuite Account """
+    profiles = get_user_model().objects.filter(alumni__in=queryset)
+
+    link_gsuite_users(profiles, False, on_message=lambda x: modeladmin.message_user(request, x))
+ 
+link_to_gsuite_action.short_description = 'Link Users to GSuite'
+
+
+def unlink_from_gsuite_action(modeladmin, request, queryset):
+    """ Unlink Users from GSuite """
+
+    count, _ = GoogleAssociation.objects.filter(user__alumni__in=queryset).delete()
+    modeladmin.message_user(request, 'Unlinked {} user(s) from their GSuite Account(s). '.format(count))
+
+unlink_from_gsuite_action.short_description = 'Unlink Users from GSuite'
