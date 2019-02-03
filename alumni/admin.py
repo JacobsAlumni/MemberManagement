@@ -62,7 +62,7 @@ class AlumniAdmin(admin.ModelAdmin):
 
     list_display = (
         # basic information
-        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'sex', 'birthday',
+        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'GSuiteLink', 'sex', 'birthday',
         'category', 'paymentTier',
 
         # Jacobs information
@@ -152,6 +152,14 @@ class AlumniAdmin(admin.ModelAdmin):
     
     userGSuite.short_description = 'Alumni E-Mail'
     userGSuite.admin_order_field = 'approval__gsuite'
+
+    def GSuiteLink(self, x):
+        results = x.profile.googleassociation_set
+        return results.exists()
+    GSuiteLink.short_description = 'Linked'
+    GSuiteLink.boolean = True
+    GSuiteLink.admin_order_field = 'profile__googleassociation'
+    
 
     def paymentTier(self, x):
         return x.payment.tier
