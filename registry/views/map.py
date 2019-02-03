@@ -24,7 +24,7 @@ def can_view_map(user):
         return False
     
     # for non-admins, i.e. user that are neither staff nor superadmin
-    if not user.is_staff and not user.is_superadmin:
+    if not user.is_staff and not user.is_superuser:
 
         # we need to make sure that they have been approved before they
         # can view this page. 
