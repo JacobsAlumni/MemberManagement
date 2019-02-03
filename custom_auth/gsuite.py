@@ -24,7 +24,6 @@ def get_user_id(username, service = None):
     try:
         result = service.users().get(userKey=username, projection='basic').execute()
     except googleapiclient.errors.HttpError:
-        import pdb; pdb.set_trace()
         return None
         
     return result['id']
