@@ -1,0 +1,121 @@
+{% extends "base/base.html" %}
+
+{% load registry_display %}
+
+{% block title %}Map Search{% endblock %}
+
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+<style>
+.map {
+    height: 400px;
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 class="uk-article-title">
+        Jacobs Alumni Map Search
+    </h1>
+
+    {% include "map/search_form.html" %}
+
+    <p>
+        <table class="uk-table">
+            <caption>Search Examples</caption>
+            <tbody>
+                <tr>
+                    <td><code>name</code> Search By Full Name</td>
+                    <td><code>city: City</code> Search By City</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><code>queryA and queryB</code> Search for two matching expressions</td>
+                    <td><code></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td rowspan="3">
+                        This search engine will only search over users that have been approved and have choosen to be shown on the Alumni Map.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </p>
+
+    <p>
+        <div id="map" class="map"></div>
+    </p>
+
+
+    <script>
+        // get coordinates and features
+        var coords = {{people_coords}};
+        var features = coords.map(function(p) {
+            return new ol.Feature(
+                new ol.geom.Point(
+                    ol.proj.fromLonLat([p[1], p[0]])
+                )
+            )
+        });
+
+        // create a source from it
+        var source = new ol.source.Vector({
+            features: features
+        });
+
+        // create a cluster from this source
+        var clusterSource = new ol.source.Cluster({
+            distance: 40,
+            source: source
+        });
+
+        // cached style computation for different sizes
+        var styleCache = {};
+
+        // create some clusters
+        var clusters = new ol.layer.Vector({
+            source: clusterSource,
+            style: function(feature) {
+                var size = feature.get('features').length;
+                return new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 10,
+                        stroke: new ol.style.Stroke({
+                            color: '#fff'
+                        }),
+                        fill: new ol.style.Fill({
+                            color: '#3399CC'
+                        })
+                    }),
+                    text: new ol.style.Text({
+                        text: size.toString(),
+                        fill: new ol.style.Fill({
+                            color: '#fff'
+                        })
+                    })
+                });
+            }
+        });
+
+        // the source for all the images is OpenStreetMap
+        var raster = new ol.layer.Tile({
+            source: new ol.source.OSM()
+        });
+
+        // finally: create a map
+        var map = new ol.Map({
+            layers: [raster, clusters],
+            target: 'map',
+            view: new ol.View({
+                center: [0, 0],
+                zoom: 2
+            })
+        });
+    </script>
+</article>
+{% endblock %}

@@ -76,8 +76,7 @@ def setup(request):
 
     # if we have finished everything, return the all done page
     if component is None:
-        return render(request, 'setup/finished.html',
-                      {'user': request.user})
+        return render(request, 'setup/finished.html', {'user': request.user})
 
     # else redirect to the setup page.
     else:

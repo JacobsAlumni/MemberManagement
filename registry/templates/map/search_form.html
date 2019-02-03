@@ -1,0 +1,15 @@
+<p class="uk-article-lead">
+    <form action="{% url 'map_search' %}" method="GET" class="uk-form-stacked">
+        <div>
+            <div class="uk-form-controls">
+                <input type="text" name="query" id="form-query" placeholder="Search..." class="uk-input" {% if value %}value="{{ value }}"{% endif %}/>
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-form-custom">
+                <input type="submit" value="Search..." class="uk-input uk-button uk-button-default" />
+            </div>
+        </div>
+    </form>
+</p>

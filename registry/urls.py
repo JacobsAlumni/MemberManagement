@@ -22,6 +22,7 @@ from .views import registry as registry_views
 from .views import setup as setup_views
 from .views import edit as edit_views
 from .views import view as view_views
+from .views import map as map_views
 
 
 urlpatterns = [
@@ -66,4 +67,9 @@ urlpatterns = [
     url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
     url(r'^edit/job/$', edit_views.job, name='edit_job'),
     url(r'^edit/skills/$', edit_views.skills, name='edit_skills'),
+
+    # Map Views
+    url(r'map/$', map_views.HomeView.as_view(), name='map_home'),
+    url(r'map/search/$', map_views.SearchView.as_view(), name='map_search'),
+    url(r'map/profile/(?P<id>\d+)/$', map_views.ProfileView.as_view(), name='map_profile')
 ]

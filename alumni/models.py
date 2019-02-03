@@ -1,11 +1,12 @@
 import collections
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from jsonfield import JSONField
 
 from . import fields
 
+import re
 
 class Alumni(models.Model):
     """ The information about an Alumni Member """
@@ -103,6 +104,21 @@ class Address(models.Model):
 
     addressVisible = models.BooleanField(default=False, blank=True,
                                          help_text="Include me on the alumni map (only your city will be visible to others)")
+    
+    @property
+    def coords(self, default=None):
+        """ The coordinates of this user """
+        lat, lng = GeoLocation.getLoc(self.country, self.zip)
+        if lat is None or lng is None:
+            return [None, None]
+        else:
+            return [lat, lng]
+       
+    @classmethod
+    def all_valid_coords(cls):
+        """ Returns the coordinates of all alumni """
+        coords = map(lambda x: x.coords, cls.objects.filter(addressVisible=True, member__approval__approval=True))
+        return filter(lambda c: c[0] is not None and c[1] is not None, coords)
 
 
 @Alumni.register_component
@@ -198,3 +214,38 @@ class PaymentInformation(models.Model):
                                     help_text='The payment token for the customer')
     sepa_mandate = JSONField(blank=True, null=True)
 
+class GeoLocation(models.Model):
+    """ Represents a (cached) GeoLocation """
+
+    country = fields.CountryField()
+    zip = models.CharField(max_length=10)
+
+    lat = models.FloatField()
+    lon = models.FloatField()
+
+    class Meta:
+        unique_together = (('country', 'zip'))
+        
+    @classmethod
+    def getLoc(cls, country, zip):
+        try:
+            instance = cls.objects.get(country=country, zip=cls.normalize_zip(zip))
+        except cls.DoesNotExist:
+            #print('No location for combination: ', country.code, cls.normalize_zip(zip))
+            return None, None
+        
+        return instance.lat, instance.lon
+    
+    @classmethod
+    def updateData(cls, data):
+        with transaction.atomic():
+            cls.objects.all().delete()
+            cls.objects.bulk_create(data)
+    
+    @classmethod
+    def normalize_zip(self, zip):
+        lowerzip = zip.lower()
+        return re.sub(r'[^0-9a-z]', '', lowerzip)
+    
+    def __str__(self):
+        return 'GeoLocation of {} in {}'.format(self.zip, self.country)
