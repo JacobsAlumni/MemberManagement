@@ -21,7 +21,7 @@ class Command(BaseCommand):
         else:
             users = get_user_model().objects.filter(username__in=usernames)
         
-        link_gsuite_users(users, remove, lambda x: print(x))
+        link_gsuite_users(users, kwargs['remove_password'], lambda x: print(x))
 
 def link_gsuite_users(users, remove, on_message):
     """ Links GSuite Users """
