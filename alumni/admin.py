@@ -96,7 +96,7 @@ class AlumniAdmin(admin.ModelAdmin):
         'address__addressVisible',
 
         # 'Social' Data
-        'social__facebook', 'social__linkedin', 'social__twitter',
+        'social__showOnMap', 'social__facebook', 'social__linkedin', 'social__twitter',
         'social__instagram', 'social__homepage',
 
         # 'Jacobs Data'

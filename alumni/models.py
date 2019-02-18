@@ -103,7 +103,7 @@ class Address(models.Model):
     country = fields.CountryField()
 
     addressVisible = models.BooleanField(default=False, blank=True,
-                                         help_text="Include me on the alumni map (only your city will be visible to others)")
+                                         help_text="Include me on the alumni map. By selecting this checkbox, your location (approximated by your zip code), your city, and other information about you will be visible on the map interface to other users that have chosen to be visible as well. ")
     
     @property
     def coords(self, default=None):
@@ -126,6 +126,8 @@ class SocialMedia(models.Model):
     """ The social media data of a Jacobs Alumni """
 
     member = models.OneToOneField(Alumni, related_name='social')
+
+    showOnMap = models.BooleanField(default=False, blank=True, help_text="Show my social media & contact information (like @jacobs-alumni email) on the alumni map. ")
 
     facebook = models.URLField(null=True, blank=True,
                                help_text="Your Facebook Profile (optional)")

@@ -1,3 +1,4 @@
+{% load registry_display %}
 <div class="uk-card uk-card-default">
     <div class="uk-card-header">
         <h3 class="uk-card-title uk-margin-remove-bottom">My Social Media Links</h3>
@@ -35,6 +36,10 @@
                         <td>{{ user.alumni.social.homepage|safe }}</td>
                     </tr>
                 {% endif %}
+                <tr>
+                    <td>Show Social & Contact Information on Map</td>
+                    <td>{{ user.alumni.social.showOnMap|print_boolean }}</td>
+                </tr>
             </tbody>
         </table>
     </div>

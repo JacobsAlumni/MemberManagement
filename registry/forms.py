@@ -108,7 +108,7 @@ class SocialMediaForm(forms.ModelForm):
 
     class Meta:
         model = SocialMedia
-        fields = ['facebook', 'linkedin', 'twitter', 'instagram', 'homepage']
+        fields = ['showOnMap', 'facebook', 'linkedin', 'twitter', 'instagram', 'homepage']
 
 
 class SkillsForm(forms.ModelForm):
