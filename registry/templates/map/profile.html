@@ -38,46 +38,82 @@
                 </a>
             {% endif %}
         {% endif %}
+
+        <span class="uk-label">{{ alumni |get_choice_field:"category"|safe }}
     </h1>
+    
+    <div class="uk-grid">
+        <div class="uk-width-1-2">
+            <p class="uk-article-lead">
+                {% if alumni.social.showOnMap %}
+                    <a href="mailto:{{alumni.approval.gsuite}}">{{alumni.approval.gsuite}}</a>
+                    {% if alumni.social.homepage %}
+                    &nbsp;-&nbsp; <a href="{{alumni.social.homepage}}" target="_blank">{{alumni.social.homepage}}</a>
+                    {% endif %}
+                    <br />
+                {% endif %}
 
-    <p class="uk-article-lead">
+                {% if alumni.jacobs.degree %}
+                    {{ alumni.jacobs|get_choice_field:"degree"|safe }}, 
+                {% endif %}
 
-        {% if alumni.social.showOnMap %}
-            <a href="mailto:{{alumni.approval.gsuite}}">{{alumni.approval.gsuite}}</a>
+                {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
 
-            {% if alumni.social.homepage %}
-            &nbsp;-&nbsp; <a href="{{alumni.social.homepage}}" target="_blank">{{alumni.social.homepage}}</a>
-            {% endif %}
-        {% endif %}
+                {% if alumni.birthdayVisible %}
+                    <br />born {{ alumni.birthday|date }}
+                {% endif %}
+            </p>
 
-        <div class="uk-grid">
-            <div class="uk-width-1-2">
-                <table class="uk-table uk-table-small">
-                    <tbody>
-        
-                        {% if alumni.birthdayVisible %}
-                        
-                        <tr>
-                            <td>Birthday</td>
-                            <td>{{ alumni.birthday|date }}</td>
-                        </tr>
-        
-                        {% endif %}
+            <p>
+                <h4>Education and Skills</h4>
+
                 
-                        <tr>
-                            <td>Category</td>
-                            <td>{{ alumni |get_choice_field:"category"|safe }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            </p>
 
-            <div class="uk-width-1-2" style="text-align: right; ">
+            <table class="uk-table uk-table-small">
+                <tbody>
+                    {% if alumni.skills.otherDegrees %}
+                        <tr>
+                            <td>Other Degrees</td>
+                            <td>{{ alumni.skills.otherDegrees }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if alumni.skills.spokenLanguages %}
+                        <tr>
+                            <td>Spoken Languages</td>
+                            <td>{{ alumni.skills.spokenLanguages }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if alumni.skills.programmingLanguages %}
+                        <tr>
+                            <td>Programming Languages</td>
+                            <td>{{ alumni.skills.programmingLanguages }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if alumni.skills.areasOfInterest %}
+                        <tr>
+                            <td>Areas of Interest</td>
+                            <td>{{ alumni.skills.areasOfInterest|safe }}</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class="uk-card uk-card-default uk-card-body uk-width-1-2" style="text-align: right; ">
+            <p>
                 <div id="map" class="map"></div>
                 lives in <i>{{alumni.address.city}}, {{alumni.address.country.name}}</i>
-            </div>
+                {% if alumni.jacobs.college %}
+                    <br />
+                    lived in <i>{{ alumni.jacobs|get_choice_field:"college"|safe }}</i>
+                {% endif %}
+            </p>
         </div>
-    </p>
+
+        </div>
+    </div>
 
     <script type="text/javascript">
 

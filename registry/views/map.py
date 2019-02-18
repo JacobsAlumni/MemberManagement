@@ -16,7 +16,7 @@ from alumni.models import Alumni, Address
 from registry.search.filter import SearchFilter, ParsingError
 search = SearchFilter({
     'city': 'address__city'
-}, ['firstName', 'lastName'])
+}, ['firstName', 'lastName', 'jacobs__degree', 'skills__otherDegrees', 'skills__spokenLanguages', 'skills__programmingLanguages', 'skills__areasOfInterest'])
 
 def can_view_map(user):
     """ Functionts that check if access to map functionality is available """

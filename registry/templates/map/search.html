@@ -11,6 +11,7 @@
     </h1>
 
     {% include "map/search_form.html" with value=query %}
+    <hr />
 
     {% if error %}
         <p>
@@ -20,10 +21,24 @@
     {% else %}
         <p>
             <table class="uk-table uk-table-small">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Degree</th>
+                        <th>City</th>
+                    </tr>
+                </thead>
                 <tbody>
                 {% for alumni in page %}
                     <tr>
                         <td><a href="{% url 'map_profile' id=alumni.profile.id %}">{{ alumni.firstName }} {{ alumni.lastName }}</a></td>
+                        <td>
+                            {% if alumni.jacobs.degree %}
+                                {{ alumni.jacobs|get_choice_field:"degree"|safe }}, 
+                            {% endif %}
+            
+                            {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
+                        </td>
                         <td> {{ alumni.address.city }} </td>
                     </tr>
                 {% endfor %}
