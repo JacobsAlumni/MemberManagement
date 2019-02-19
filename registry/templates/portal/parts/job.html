@@ -10,25 +10,25 @@
                     {% if user.alumni.job.employer %}
                         <tr>
                             <td>Employer</td>
-                            <td>{{ user.alumni.job.employer|safe }}</td>
+                            <td>{{ user.alumni.job.employer }}</td>
                         </tr>
                     {% endif %}
 
                     {% if user.alumni.job.position %}
                         <tr>
                             <td>Position</td>
-                            <td>{{ user.alumni.job.position|safe }}</td>
+                            <td>{{ user.alumni.job.position }}</td>
                         </tr>
                     {% endif %}
 
                     <tr>
                         <td>Job</td>
-                        <td>{{ user.alumni.job|get_choice_field:"job"|safe }}</td>
+                        <td>{{ user.alumni.job|get_choice_field:"job" }}</td>
                     </tr>
 
                     <tr>
                         <td>Industry</td>
-                        <td>{{ user.alumni.job|get_choice_field:"industry"|safe }}</td>
+                        <td>{{ user.alumni.job|get_choice_field:"industry" }}</td>
                     </tr>
 
             </tbody>

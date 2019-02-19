@@ -10,22 +10,22 @@
                 <tr>
                     <td>Address</td>
                     <td>
-                        {{ user.alumni.address.address_line_1|safe }}
+                        {{ user.alumni.address.address_line_1 }}
 
                         {% if user.alumni.address.address_line_2 %}
                             <br />
-                            {{ user.alumni.address.address_line_2|safe }}
+                            {{ user.alumni.address.address_line_2 }}
                         {% endif %}
                     </td>
                 </tr>
 
                 <tr>
                     <td>ZIP</td>
-                    <td>{{ user.alumni.address.zip | safe }}</td>
+                    <td>{{ user.alumni.address.zip }}</td>
                 </tr>
                 <tr>
                     <td>City</td>
-                    <td>{{ user.alumni.address.city | safe }}</td>
+                    <td>{{ user.alumni.address.city  }}</td>
                 </tr>
 
                 <tr>
@@ -35,7 +35,7 @@
 
                 <tr>
                     <td>Country</td>
-                    <td>{{ user.alumni.address |get_choice_field:"country"|safe }}</td>
+                    <td>{{ user.alumni.address |get_choice_field:"country" }}</td>
                 </tr>
             </tbody>
         </table>
