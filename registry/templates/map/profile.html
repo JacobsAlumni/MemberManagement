@@ -67,37 +67,67 @@
             <p>
                 <h4>Education and Skills</h4>
 
-                
+                <table class="uk-table uk-table-small">
+                    <tbody>
+                        {% if alumni.skills.otherDegrees %}
+                            <tr>
+                                <td>Other Degrees</td>
+                                <td>{{ alumni.skills.otherDegrees }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if alumni.skills.spokenLanguages %}
+                            <tr>
+                                <td>Spoken Languages</td>
+                                <td>{{ alumni.skills.spokenLanguages }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if alumni.skills.programmingLanguages %}
+                            <tr>
+                                <td>Programming Languages</td>
+                                <td>{{ alumni.skills.programmingLanguages }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if alumni.skills.areasOfInterest %}
+                            <tr>
+                                <td>Areas of Interest</td>
+                                <td>{{ alumni.skills.areasOfInterest|safe }}</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
             </p>
 
-            <table class="uk-table uk-table-small">
-                <tbody>
-                    {% if alumni.skills.otherDegrees %}
+            <p>
+                <h4>Job</h4>
+
+                <table>
+                    <tbody>
+                        {% if alumni.job.employer %}
+                            <tr>
+                                <td>Employer</td>
+                                <td>{{ alumni.job.employer }}</td>
+                            </tr>
+                        {% endif %}
+    
+                        {% if alumni.job.position %}
+                            <tr>
+                                <td>Position</td>
+                                <td>{{ alumni.job.position }}</td>
+                            </tr>
+                        {% endif %}
+    
                         <tr>
-                            <td>Other Degrees</td>
-                            <td>{{ alumni.skills.otherDegrees }}</td>
+                            <td>Job</td>
+                            <td>{{ alumni.job|get_choice_field:"job" }}</td>
                         </tr>
-                    {% endif %}
-                    {% if alumni.skills.spokenLanguages %}
+    
                         <tr>
-                            <td>Spoken Languages</td>
-                            <td>{{ alumni.skills.spokenLanguages }}</td>
+                            <td>Industry</td>
+                            <td>{{ alumni.job|get_choice_field:"industry" }}</td>
                         </tr>
-                    {% endif %}
-                    {% if alumni.skills.programmingLanguages %}
-                        <tr>
-                            <td>Programming Languages</td>
-                            <td>{{ alumni.skills.programmingLanguages }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if alumni.skills.areasOfInterest %}
-                        <tr>
-                            <td>Areas of Interest</td>
-                            <td>{{ alumni.skills.areasOfInterest|safe }}</td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </p>
         </div>
 
         
