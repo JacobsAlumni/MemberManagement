@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
                 try:
                     country = fields[0]
-                    zip = GeoLocation.normalize_zip(fields[1])
+                    zip = GeoLocation.normalize_zip(fields[1], fields[0])
 
                     lat = float(fields[9])
                     lon = float(fields[10])
