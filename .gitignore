@@ -106,3 +106,7 @@ db.sqlite3
 
 # Stupid jetbrains stuff
 .idea/
+
+# Countries data
+allCountries.txt
+allCountries.zip
