@@ -1,0 +1,19 @@
+{% extends "base/base.html" %}
+
+{% block title %}Application Approval {{ alumni.profile.username }} {% endblock %}
+
+{% block content %}
+<article class="uk-article">
+    <h1 class="uk-article-title">
+        User Approval {{ alumni.profile.username }}
+    </h1>
+   
+    <p>
+        {% if alumni.approval.approval %}
+            User is already approved -- nothing to do
+        {% else %}
+            User approval tbd
+        {% endif %}
+    </p>
+</article>
+{% endblock %}

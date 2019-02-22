@@ -23,6 +23,7 @@ from .views import setup as setup_views
 from .views import edit as edit_views
 from .views import view as view_views
 from .views import map as map_views
+from .views import approval as approval_views
 
 
 urlpatterns = [
@@ -70,5 +71,8 @@ urlpatterns = [
     # Map Views
     url(r'map/$', map_views.HomeView.as_view(), name='map_home'),
     url(r'map/search/$', map_views.SearchView.as_view(), name='map_search'),
-    url(r'map/profile/(?P<id>\d+)/$', map_views.ProfileView.as_view(), name='map_profile')
+    url(r'map/profile/(?P<id>\d+)/$', map_views.ProfileView.as_view(), name='map_profile'),
+
+    # Account link views
+    url(r'approval/(?P<id>\d+)/$', approval_views.ApprovalView.as_view(), name='approval_approval')
 ]
