@@ -1,0 +1,19 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+<p>
+    Hi {{ name }}, <br />
+    someone (probably you) asked us to send a login link for your Jacobs Alumni Portal account.
+</p>
+<p>
+    Please go to the following link to sign in:
+</p>
+<p>
+    {% autoescape off %}
+    <a href="{{ login_url }}">{{ login_url }}</a>
+    {% endautoescape on %}
+<p>
+    Cheers,<br/>
+    Jacobs Alumni Association
+</p>
+{% endblock %}

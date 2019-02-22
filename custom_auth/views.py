@@ -15,7 +15,7 @@ from sesame import utils as token_utils
 
 from alumni.models import Alumni as UserModel
 
-from . import backend, forms
+from . import backend, forms, mailutils
 
 # Create your views here.
 
@@ -104,13 +104,8 @@ class ClientIdLoginView(views.LoginView):
                 abs_url = "{}?token={}&next={}".format(
                     self.request.build_absolute_uri(reverse(email_token_login)), token_str, next_url)
 
-                mail.send_mail(
-                    'Jacobs Alumni Association - Login Link',
-                    loader.render_to_string(
-                        'auth/token_email.txt', context={'name': user.firstName, 'login_url': abs_url}),
-                    settings.EMAIL_FROM,
-                    [user.email]
-                )
+                mailutils.send_email(user.email, 'Jacobs Alumni Association - Login Link',
+                                     'emails/token_email.html', name=user.firstName, login_url=abs_url)
 
             except UserModel.DoesNotExist:
                 # Can't complain to the user here, or we'll give away that we don't know this address.
