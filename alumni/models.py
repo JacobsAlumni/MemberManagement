@@ -81,6 +81,11 @@ class Alumni(models.Model):
                 return c
 
         return None
+    
+    @property
+    def setup_completed(self):
+        """ Checks if a user has completed setup """
+        return self.get_first_unset_component() is None
 
     def __str__(self):
         return "Alumni [{}]".format(self.fullName)

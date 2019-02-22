@@ -139,13 +139,7 @@ class AlumniAdmin(admin.ModelAdmin):
     userApproval.admin_order_field = 'approval__approval'
 
     def completedSetup(self, x):
-        try:
-            if x.payment and x.payment.customer:
-                return True
-            else:
-                return False
-        except:
-            return False
+        return x.setup_completed
     completedSetup.short_description = 'Setup Done'
     completedSetup.boolean = True
     completedSetup.admin_order_field = 'payment__customer'
