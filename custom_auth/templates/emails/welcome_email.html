@@ -1,0 +1,80 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+<p>
+    Dear {{ name }},
+</p>
+
+<p>
+    Thank you for signing up as {{ tier }} in the new Membership Portal!
+</p>
+
+{% block creds %}
+<p>
+    In this e-mail we would like to share your new Google-based Jacobs-Alumni e-mail account
+</p>
+<p>
+    {{ gsuite }}
+</p>
+<p>
+    as well as provide instructions on how to integrate this email with your existing email clients.
+</p>
+<p>
+    Your temporary password is {{ password }}.
+</p>
+<p>
+    Please change it when you sign in. 
+</p>
+{% endblock %}
+
+<p>
+    Google will also ask you to set up a <b>recovery phone number</b> to recover your account access if you ever forget your password. 
+    <b>This is important</b>, because otherwise we have to personally do it and as we are all volunteers, it will cause an annoying delay for you.
+</p>
+<p>
+    With your Jacobs-Alumni account, you can now access the <b>Google Drive</b> with unlimited storage at <a href="https://drive.google.com/">drive.google.com</a>. 
+    For help on how to set up and use Google Drive, please check the Google Drive help at <a href="https://support.google.com/drive/?hl=en">https://support.google.com/drive/?hl=en</a>.
+</p>
+<p>
+    You can directly access your Jacobs-Alumni email by going to mail.jacobs-alumni.de and log in with the credentials you have received.
+</p>
+
+<p style="color: blue; ">
+    However, we highly recommend to set up an <b>automatic forwarding to any email address</b> of yours directly in the settings for your Jacobs-Alumni email account. 
+    You can find instructions at <a href="https://support.google.com/mail/answer/10957">https://support.google.com/mail/answer/10957</a>.
+</p>
+
+<p>
+    You can also fully integrate your Jacobs-Alumni email with your existing email client. 
+    Many clients provide a special setup option for Google accounts, which you can use to set up your Jacobs-Alumni email:
+    <ul>
+        <li>
+            <a href="https://support.google.com/mail/topic/7280290">GMail</a>
+        </li>
+        <li>
+            <a href="https://support.office.com/en-us/article/Import-Gmail-to-Outlook-20fdb8f2-fed8-4b14-baf0-bf04b9c44bf7">Outlook</a>
+        </li>
+        <li>
+            <a href="https://support.apple.com/mail">Apple Mail</a>
+        </li>
+        <li>
+            <a href="https://support.google.com/a/users/answer/1738362?hl=en">Android</a>
+        </li>
+        <li>
+            <a href="https://support.mozilla.org/en-US/kb/thunderbird-and-gmail">Thunderbird</a> 
+        </li>
+    </ul>
+</p>
+
+<p>
+    If you have any questions or problems, let us know at support@jacobs-alumni.de.
+</p>
+
+<p>
+    Finally, thanks again for joining us. We look forward to growing ournetwork together with you!
+</p>
+<p>
+    Cheers, <br />
+    Your Alumni Board
+</p>
+{% endblock %}
