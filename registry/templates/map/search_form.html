@@ -1,15 +1,70 @@
 <p class="uk-article-lead">
-    <form action="{% url 'map_search' %}" method="GET" class="uk-form-stacked">
-        <div>
-            <div class="uk-form-controls">
-                <input type="text" name="query" id="form-query" placeholder="Search..." class="uk-input" {% if value %}value="{{ value }}"{% endif %}/>
-            </div>
-        </div>
+    <form action="{% url 'map_search' %}" method="GET" class="uk-grid-small" uk-grid id="searchForm">
 
-        <div class="uk-margin">
-            <div class="uk-form-custom">
-                <input type="submit" value="Search..." class="uk-input uk-button uk-button-default" />
+        <div class="uk-width-3-5">
+            <input id="searchInput" type="text" name="query" placeholder="Search..." class="uk-input" {% if value %}value="{{ value }}" {% endif %} />
+        </div>
+        <div class="uk-width-2-5 uk-button-group">
+            <input type="button" class="uk-button uk-button-default" value="Advanced" />
+            <div uk-dropdown>
+                <div class="uk-form-horizontal">
+                    <table id="advancedFieldTable">
+                        <tbody>
+                            {% for field in search_fields %}
+                                <tr style="margin-bottom: 5px; ">
+                                    <td data-selector="{{ field.0 }}">{{ field.1 }}</td>
+                                    <td>
+                                        <div class="uk-button-group">
+                                            <select class="uk-select" style="min-width: 200px; ">
+                                                {% for kv in field.2 %}
+                                                    <option value="{{ kv.0 }}">{{ kv.1 }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <button type="submit" class="uk-input uk-button uk-button-primary">
+                Search
+                <span uk-icon="icon: search"></span>
+            </button>
         </div>
     </form>
 </p>
+
+<script>
+    (function(){
+        // the thing to add to the search
+        var searchInput = document.getElementById('searchInput');
+
+        // select the advanced table
+        var tableBody = document.getElementById('advancedFieldTable').children[0];
+        Array.prototype.forEach.call(tableBody.children, function(advancedField){
+            console.log(advancedField);
+            var selector = advancedField.children[0].getAttribute('data-selector');
+            var select = advancedField.children[1].children[0].children[0];
+
+            var button = document.createElement('button');
+            advancedField.children[1].children[0].appendChild(button);
+            button.setAttribute('type', 'button');
+            button.className = 'uk-button uk-button-default';
+            button.innerHTML = '+';
+
+            button.addEventListener('click', function(evt){
+                evt.stopImmediatePropagation();
+                var value = select.options[select.selectedIndex].value;
+                searchInput.value = searchInput.value + ' ' + selector + ':' + value;
+                return false;
+            }, false);
+        });
+
+        // on submitting the form, remove all the extra fields in the table
+        searchInput.form.addEventListener("submit", function(){
+            advancedTable.parentElement.removeChild(advancedTable);
+        }, false);
+    })();
+</script>
