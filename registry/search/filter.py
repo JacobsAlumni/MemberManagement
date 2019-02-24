@@ -40,7 +40,7 @@ class SearchFilter(object):
         except ParsingError as p:
             return None, p
         except Exception as e:
-            return None, ParsingError('Unknown error', e)
+            return None, ParsingError(str(e), e)
 
         return q, None
 
@@ -121,12 +121,16 @@ class QueryBuilder(object):
     def _generate_compound(self, filter_obj):
         """Compound expressions are implicitly converted into a series of
         AND connected clauses."""
+
         try:
             body = filter_obj['body']
         except KeyError as e:
             raise ValueError("Compound is missing: " + str(e))
 
         clauses = [self.translate(part, finalize=True) for part in body]
+
+        if len(clauses) == 0:
+            raise ValueError('Empty search')
 
         return functools.reduce(self.ops['and_fn'], clauses)
 

@@ -51,6 +51,8 @@ def get_operators(field_map):
 
     def q_lambda(dj_filter="exact"):
         def impl(x, y):
+            if not x in field_map:
+                raise KeyError('Unknown search field: {}'.format(x))
             return models.Q(**{field_map[x] + '__' + dj_filter: y})
         return impl 
 
