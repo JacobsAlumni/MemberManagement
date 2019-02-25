@@ -62,7 +62,7 @@ def register(request):
         'form': form,
         'title': 'Register',
         'subtitle': 'Enter your General Information - just the basics',
-        'next_text': 'Join the Alumni Association'
+        'next_text': 'Continue Application'
     })
 
 
