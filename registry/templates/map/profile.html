@@ -65,9 +65,14 @@
             </p>
 
             <p>
-                <h4>Job</h4>
-
-                <table>
+                <table class="uk-table uk-table-striped">
+                    <thead>
+                        <tr>
+                            <th colspan="2">
+                                <h4>Job</h4>
+                            </th>
+                        </tr>
+                    </thead>
                     <tbody>
                         {% if alumni.job.employer %}
                             <tr>
@@ -94,12 +99,16 @@
                         </tr>
                     </tbody>
                 </table>
-            </p>
 
-            <p>
-                <h4>Education and Skills</h4>
+                <table class="uk-table uk-table-striped">
+                    <thead>
+                            <tr>
+                                <th colspan="2">
+                                    <h4>Education and Skills</h4>
+                                </th>
+                            </tr>
+                        </thead>
 
-                <table class="uk-table uk-table-small">
                     <tbody>
                         {% if alumni.skills.otherDegrees %}
                             <tr>
@@ -137,7 +146,7 @@
                 lives in <i>{{alumni.address.city}}, {{alumni.address.country.name}}</i>
                 {% if alumni.jacobs.college %}
                     <br />
-                    lived in <i>{{ alumni.jacobs|get_choice_field:"college"|safe }}</i>
+                    lived in <span class="uk-label" id='college' data-college="{{ alumni.jacobs.college }}">{{ alumni.jacobs|get_choice_field:"college"|safe }}</span>
                 {% endif %}
             </p>
         </div>
@@ -146,6 +155,15 @@
     </div>
 
     <script type="text/javascript">
+        // apply the college color (if any)
+        var collegeEle = document.getElementById('college');
+        if (collegeEle) {
+            var college = parseInt(collegeEle.getAttribute('data-college'), 10);
+            var collegeColor = ['', 'red', 'blue', 'green', 'yellow', 'white'][college];
+            var collegeBackground = ['white', 'white', 'white', 'white', 'black', 'black'][college];
+            collegeEle.style.backgroundColor = collegeColor;
+            collegeEle.style.color = collegeBackground;
+        }
 
         // get the point and feature
         var point = {{ alumni_coords }};
