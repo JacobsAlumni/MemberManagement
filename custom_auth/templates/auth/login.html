@@ -25,7 +25,7 @@ var login_script_settings = {
     token_endpoint: "{% url 'token_login' %}"
 }
 </script>
-<script type="text/javascript" src="{% static 'js/login.js' %}"></script>
+<script type="text/javascript"  src="{% static 'js/login.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -33,11 +33,16 @@ var login_script_settings = {
     <h1 id="page-header" class="uk-article-title">Login</h1>
 
     <div>
-        <div>
+        <div {% if googlefail %} class="uk-alert uk-alert-danger" uk-alert {% endif%}>
             <button disabled id="g-signin" type="button" class="uk-button uk-button-primary">
                 <img id="g-signin-icon" src="{% static 'media/btn_google_light_pressed_ios.svg' %}" /><span id="g-signin-text">Sign
                     in with Google</span>
             </button>
+            {% if googlefail %}
+                The Google Account you are attempting to sign in with is not associated to any portal account. 
+                Please try again. 
+                
+            {% endif %}
         </div>
         <h2>OR</h2>
         <form id="local-login" class="uk-form-horizontal" method="POST">

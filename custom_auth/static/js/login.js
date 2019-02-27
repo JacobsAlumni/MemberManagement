@@ -33,14 +33,15 @@ document.addEventListener('DOMContentLoaded', function () {
             body: 'token=' + token,
             headers: headers
         }).then(function (response) {
+            var next = login_script_settings.next;
             if (response.ok === true && response.status === 200) {
-                if (login_script_settings.next !== '') {
-                    window.location.assign(login_script_settings.next)
-                } else {
-                    window.location.assign('/')
-                }
+                window.location.assign(next || '/');
             } else {
-                window.location.reload()
+                if (next) {
+                    window.location.assign('?next='+encodeURIComponent(next)+'&error=googlefail');
+                } else {
+                    window.location.assign('?error=googlefail')
+                }
             }
         })
     }

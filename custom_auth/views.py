@@ -71,6 +71,13 @@ class ClientIdLoginView(views.LoginView):
         'gsuite_domain': settings.GSUITE_DOMAIN_NAME
     }
 
+    def get_context_data(self, **kwargs):
+        context = super(views.LoginView, self).get_context_data(**kwargs)
+        context['googlefail'] = self.request.GET.get('error', '') == 'googlefail'
+        context.update(self.extra_context)
+
+        return context
+
     form_class = forms.EmailForm
 
     @method_decorator(sensitive_post_parameters())
