@@ -1,0 +1,12 @@
+# Do not include any settings
+local_settings.py
+prod_settings.py
+
+# virtualenv
+.venv
+venv/
+ENV/
+
+# Countries data
+allCountries.txt
+allCountries.zip
