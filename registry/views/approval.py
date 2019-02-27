@@ -27,7 +27,7 @@ def check_existing_email(alumni):
 
     emailLinked = alumni.profile.googleassociation_set.exists()
 
-    if emailLinked and alumni.existingEmail != alumni.approval.gsuite:
+    if emailLinked and alumni.existingEmail and alumni.existingEmail != alumni.approval.gsuite:
         return EMAIL_DIFFERS
             
     # if we have not linked check if the email exists
