@@ -14,6 +14,9 @@ from alumni.models import Alumni, Address
 
 from alumni.fields import CollegeField, ClassField, MajorField, DegreeField, IndustryField, JobField
 
+from django.shortcuts import redirect
+from django.urls import reverse
+
 # Create a new SearchFilter instance
 from registry.search.filter import SearchFilter, ParsingError
 search = SearchFilter({
@@ -198,6 +201,11 @@ class SearchView(ListView):
     def get(self, request, *args, **kwargs):
         if not can_view_map(request.user):
             raise Http404
+        
+        # if there is no search, redirect to home
+        if not self.request.GET.get('query', '').strip():
+            return redirect(reverse('map_home'))
+        
         return super(SearchView, self).get(request, *args, **kwargs)
 
     @method_decorator(login_required)

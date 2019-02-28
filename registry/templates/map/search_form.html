@@ -1,37 +1,67 @@
 <p class="uk-article-lead">
-    <form action="{% url 'map_search' %}" method="GET" class="uk-grid-small" uk-grid id="searchForm">
+    <form action="{% url 'map_search' %}" method="GET" id="searchForm">
+        <div uk-grid>
 
-        <div class="uk-width-3-5">
-            <input id="searchInput" type="text" name="query" placeholder="Search..." class="uk-input" {% if value %}value="{{ value }}" {% endif %} />
-        </div>
-        <div class="uk-width-2-5 uk-button-group">
-            <input type="button" class="uk-button uk-button-default" value="Advanced" />
-            <div uk-dropdown>
-                <div class="uk-form-horizontal">
-                    <table id="advancedFieldTable">
-                        <tbody>
-                            {% for field in search_fields %}
-                                <tr style="margin-bottom: 5px; ">
-                                    <td data-selector="{{ field.0 }}">{{ field.1 }}</td>
-                                    <td>
-                                        <div class="uk-button-group">
-                                            <select class="uk-select" style="min-width: 200px; ">
-                                                {% for kv in field.2 %}
-                                                    <option value="{{ kv.0 }}">{{ kv.1 }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </td>
+            <div class="uk-width-expand">
+                <input id="searchInput" type="text" name="query" placeholder="Search..." class="uk-input" {% if value %}value="{{ value }}" {% endif %} />
+            </div>
+
+            <div class="uk-width-2-5 uk-button-group">
+                <!-- Advanced Search Button -->
+                <input type="button" class="uk-button uk-button-default" value="Advanced" />
+                <div uk-dropdown>
+                    <div class="uk-form-horizontal">
+                        <table id="advancedFieldTable">
+                            <tbody>
+                                {% for field in search_fields %}
+                                    <tr style="margin-bottom: 5px; ">
+                                        <td data-selector="{{ field.0 }}">{{ field.1 }}</td>
+                                        <td>
+                                            <div class="uk-button-group">
+                                                <select class="uk-select" style="min-width: 200px; ">
+                                                    {% for kv in field.2 %}
+                                                        <option value="{{ kv.0 }}">{{ kv.1 }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <button type="submit" class="uk-input uk-button uk-button-primary">
+                    Search
+                    <span uk-icon="icon: search"></span>
+                </button>
+            </div>
+
+            <div class="uk-width-auto">
+                <!-- Help -->
+                <a href="" class="uk-icon-button" uk-icon="question"></a>
+                <div uk-dropdown="pos: bottom-left">
+                        <table class="uk-table">
+                            <caption>
+                                Find users that have selected to appear on the Alumni Map. 
+                            </caption>
+                            <tbody>
+                                <tr>
+                                    <td><code>text</code> Fulltext Search witin Name, Education, Job and Skill Fields</td>
+                                    <td><code>city: City</code> Search For Specific Fields, such as City</td>
+                                    <td></td>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                                <tr>
+                                    <td><code>queryA and queryB</code> Search for two matching expressions</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
                 </div>
             </div>
-            <button type="submit" class="uk-input uk-button uk-button-primary">
-                Search
-                <span uk-icon="icon: search"></span>
-            </button>
         </div>
     </form>
 </p>
@@ -44,7 +74,6 @@
         // select the advanced table
         var tableBody = document.getElementById('advancedFieldTable').children[0];
         Array.prototype.forEach.call(tableBody.children, function(advancedField){
-            console.log(advancedField);
             var selector = advancedField.children[0].getAttribute('data-selector');
             var select = advancedField.children[1].children[0].children[0];
 

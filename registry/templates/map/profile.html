@@ -18,8 +18,8 @@
 {% block content %}
 <article class="uk-article">
     <h1 class="uk-article-title">
-        {{ alumni.firstName }} {% if alumni.middleName %}{{ alumni.middleName }}{% endif %}{{ alumni.lastName }}
-
+        {{ alumni.fullName }}
+        
         {% if alumni.social.showOnMap %}
             {% if alumni.social.facebook %}
                 <a class="uk-icon-button" target="_blank" href="{{alumni.social.facebook}}" uk-icon="icon: facebook" alt="Facebook">
