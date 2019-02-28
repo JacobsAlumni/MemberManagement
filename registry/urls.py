@@ -74,5 +74,5 @@ urlpatterns = [
     url(r'map/profile/(?P<id>\d+)/$', map_views.ProfileView.as_view(), name='map_profile'),
 
     # Account link views
-    url(r'approval/(?P<id>\d+)/$', approval_views.ApprovalView.as_view(), name='approval_approval')
+    url(r'approval/(?P<id>\d+)/$', approval_views.ApprovalView.as_view(), name='approval_approval'),
 ]

@@ -122,6 +122,12 @@ GSUITE_OAUTH_CLIENT_ID = '118982546822-515a0fn0ldm96ebev0af5naj6qn8pt9i.apps.goo
 
 GSUITE_AUTH_FILE = os.environ.get("GSUITE_AUTH_FILE")
 GSUITE_ADMIN_USER = 'admin@jacobs-alumni.de'
+GSUITE_ORG_PATH = '/Approved Alumni'
+GSUITE_PASS_LENGTH = 20
+
+GSUITE_EMAIL_WELCOME_SUBJECT = 'Welcome to the Jacobs Alumni Association!'
+GSUITE_EMAIL_WELCOMEBACK_SUBJECT = 'Welcome again to the Jacobs Alumni Association!'
+GSUITE_EMAIL_ALL = ['membership@jacobs-alumni.de']
 
 AUTHENTICATION_BACKENDS = [
     'sesame.backends.ModelBackend',

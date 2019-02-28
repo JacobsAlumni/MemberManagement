@@ -27,3 +27,41 @@ def get_user_id(username, service = None):
         return None
         
     return result['id']
+
+def create_user(givenName, familyName, email, password, service = None):
+    """ Creates a user with the given username and password """
+
+    if service is None:
+        service = make_directory_service()
+    
+    userInfo = {
+        'orgUnitPath': settings.GSUITE_ORG_PATH,
+        'primaryEmail': email,
+        'name': {
+            'givenName': givenName, 
+            'familyName': familyName,
+        },
+        'password': password,
+        'changePasswordAtNextLogin': True,
+    }
+    
+    result = service.users().insert(body=userInfo).execute()
+    return result['id']
+
+def patch_user(username, password = None, service = None):
+    """ Patches a (potentially suspended) user to have the password and be in the right organization """
+
+    if service is None:
+        service = make_directory_service()
+
+    userPatch = {
+        'orgUnitPath': settings.GSUITE_ORG_PATH,
+        'suspended': False,
+    }
+
+    if password is not None:
+        userPatch['password'] = password
+        userPatch['changePasswordAtNextLogin'] = True
+    
+    result = service.users().patch(userKey=username, body=userPatch).execute()
+    return result['id']

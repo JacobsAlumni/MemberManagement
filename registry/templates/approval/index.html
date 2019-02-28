@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load uikit_tags %}
 
 {% block title %}Application Approval {{ alumni.profile.username }} {% endblock %}
 
@@ -7,7 +8,18 @@
     <h1 class="uk-article-title">
         User Approval {{ alumni.profile.username }}
     </h1>
-   
+
+    <div class="uk-tile uk-tile-muted">
+
+        {% include "approval/messages.html" %}
+
+        <form class="uk-form-horizontal" method="POST">
+            {% csrf_token %}
+            {{ form | as_uikit_form }}
+            <input type="submit" class="uk-button uk-button-primary" value="Approve user">
+        </form>
+    </div>
+
     <div class="uk-tile uk-tile-default">
         <p class="uk-h4">Personal Data</p>
 
@@ -61,42 +73,42 @@
     </div>
 
     <div class="uk-tile uk-tile-default">
-            <p class="uk-h4">GSuite Status</p>
+        <p class="uk-h4">GSuite Status</p>
+
+        <table class="uk-table uk-table-striped">
+            <tbody>
+                <tr>
+                    <td>Assigned E-Mail</td>
+                    <td>
+                        {% if alumni.approval.gsuite %}
+                            <span style='color: green; '>{{alumni.approval.gsuite}}</span>
+                        {% else %}
+                        {% endif %}
+
+                        {% if emailLinked %}
+                            <span class="uk-label uk-label-success">Account Linked</span>
+                        {% else %}
+                            <span class="uk-label uk-label-danger">Unlinked</span>
+                        {% endif %}
+                    </td>
+                </tr>
     
-            <table class="uk-table uk-table-striped">
-                <tbody>
-                    <tr>
-                        <td>Assigned E-Mail</td>
-                        <td>
-                            {% if alumni.approval.gsuite %}
-                                <span style='color: green; '>{{alumni.approval.gsuite}}</span>
-                            {% else %}
-                            {% endif %}
+                <tr>
+                    <td>Previous E-Mail</td>
+                    <td>
+                        {% if alumni.existingEmail %}
+                            {{alumni.existingEmail}}
+                        {% else %}
+                            (none listed)
+                        {% endif %}
 
-                            {% if emailLinked %}
-                                <span class="uk-label uk-label-success">Account Linked</span>
-                            {% else %}
-                                <span class="uk-label uk-label-danger">Unlinked</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-        
-                    <tr>
-                        <td>Previous E-Mail</td>
-                        <td>
-                            {% if alumni.existingEmail %}
-                                {{alumni.existingEmail}}
-                            {% else %}
-                                (none listed)
-                            {% endif %}
-
-                            {% if previousEmail %}
-                                <span class="uk-label uk-label-warning">{{previousEmail}}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                        {% if previousEmail %}
+                            <span class="uk-label uk-label-warning">{{previousEmail}}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </article>
 {% endblock %}

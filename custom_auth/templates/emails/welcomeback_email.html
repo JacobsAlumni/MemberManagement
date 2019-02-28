@@ -10,6 +10,17 @@
 <p>
     as well as provide instructions on how to integrate this email with your existing email clients.
 </p>
+{% if password %}
+<p>
+    As per your request, we reset the password to your Jacobs-Alumni email account. 
+</p>
+<p>
+    Your new temporary password is {{ password }}.
+</p>
+<p>
+    Please change it when you sign in. 
+</p>
+{% else %}
 <p>
     If you do not remember your password for your Jacobs-Alumni account, please request a reset at support@jacobs-alumni.de.
     We will then send you a separate email with a temporary password. 
@@ -17,4 +28,5 @@
 <p>
     In that email click the link provided to set your personal password.
 </p>
+{% endif %}
 {% endblock %}
