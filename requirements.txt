@@ -11,3 +11,4 @@ google-auth==1.6.2
 django-sesame==1.4
 pre-js-py==1.1.0
 google-api-python-client==1.7.7
+beautifulsoup4==4.7.1
