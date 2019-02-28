@@ -199,13 +199,12 @@ class ApprovalView(FormView):
         send_approval_email(alumni, password=password, back=True)
         messages.success(request, 'Sent Welcome Back email')
 
-
     
     def approve_and_link(self, request, email, alumni):
         # Approve user
         messages.info(request, 'Storing approval info')
         alumni.approval.approval = True
-        alumni.approval.email = email
+        alumni.approval.gsuite = email
         alumni.approval.save()
         messages.success(request, 'Stored approval info')
 
