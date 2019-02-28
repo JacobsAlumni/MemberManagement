@@ -1,6 +1,6 @@
 # Do not include any settings
-local_settings.py
-prod_settings.py
+MemberManagement/local_settings.py
+MemberManagement/prod_settings.py
 
 # virtualenv
 .venv
