@@ -8,10 +8,20 @@ RUN apk add --no-cache nginx \
     && mkdir -p /run/nginx/
 ADD docker/django.conf /etc/nginx/django.conf
 
+# Add requirements and install dependencies
+ADD requirements.txt /app/
+WORKDIR /app/
+
+# Add the entrypoint and add configuration
+RUN mkdir -p /var/www/static/ \
+    && pip install -r requirements.txt \
+    && pip install gunicorn==19.7
+
+# /entrypoint.sh
+ADD docker/entrypoint.sh /entrypoint.sh
 
 # Install Django App and setup the setting module
 ADD manage.py /app/
-ADD requirements.txt /app/
 ADD alumni/ /app/alumni/
 ADD django_forms_uikit/ /app/django_forms_uikit/
 ADD MemberManagement/ /app/MemberManagement/
@@ -20,17 +30,6 @@ ADD static/ /app/static/
 ADD custom_auth/ /app/custom_auth
 
 ENV DJANGO_SETTINGS_MODULE "MemberManagement.docker_settings"
-
-# /entrypoint.sh
-ADD docker/entrypoint.sh /entrypoint.sh
-
-
-# Add the entrypoint and add configuration
-WORKDIR /app/
-RUN mkdir -p /var/www/static/ \
-    && pip install -r requirements.txt \
-    && pip install gunicorn==19.7
-
 
 ### ALL THE CONFIGURATION
 
