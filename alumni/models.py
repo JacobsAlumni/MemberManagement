@@ -132,7 +132,7 @@ class Address(models.Model):
     country = fields.CountryField()
 
     addressVisible = models.BooleanField(default=False, blank=True,
-                                         help_text="Include me on the alumni map. By selecting this checkbox, your location (approximated by your zip code), your city, and other information about you will be visible on the map interface to other users that have chosen to be visible as well. ")
+                                         help_text="Include me on Alumni Map & Search. By selecting this checkbox, your location (approximated by your zip code), your city, and other information about you will be visible on the map & search interface to other users that have chosen to be visible as well. ")
     
     @property
     def coords(self, default=None):
