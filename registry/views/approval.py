@@ -58,27 +58,6 @@ def check_existing_email(alumni, candidate = None):
 def generate_random_password():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=settings.GSUITE_PASS_LENGTH))
 
-def send_approval_email(alumni, password = None, back = False):
-    """ Sends an approval email to the user """
-    
-    # Extract all the fields from the alumni
-    email = alumni.email
-    gsuite = alumni.approval.gsuite
-    name = alumni.fullName
-    tier = {
-        TierField.PATRON: 'Patron',
-        TierField.CONTRIBUTOR: 'Contributor',
-        TierField.STARTER: 'Starter'
-    }[alumni.payment.tier]
-
-    # set destination and instantiate email templates
-    destination = [email, gsuite] + settings.GSUITE_EMAIL_ALL
-    if back or password is None:
-        return send_email(destination, settings.GSUITE_EMAIL_WELCOMEBACK_SUBJECT, 'emails/welcomeback_email.html', name = name, tier = tier, gsuite = gsuite, password = password)
-    else:
-        return send_email(destination, settings.GSUITE_EMAIL_WELCOME_SUBJECT, 'emails/welcome_email.html', name = name, tier = tier, gsuite = gsuite, password = password)
-
-
 class ApprovalView(FormView):
     template_name = 'approval/index.html'
     form_class = UserApprovalForm
@@ -152,7 +131,7 @@ class ApprovalView(FormView):
 
         # Send email
         messages.info(request, 'Sending Welcome email')
-        send_approval_email(alumni, password)
+        alumni.send_welcome_email(password=password)
         messages.success(request, 'Sent welcome email')
 
     def run_approval_unlock(self, request, email, alumni):
@@ -172,7 +151,7 @@ class ApprovalView(FormView):
 
         # Send email
         messages.info(request, 'Sending Welcome Back email')
-        send_approval_email(alumni, back=True)
+        alumni.send_welcome_email(back=True)
         messages.success(request, 'Sent Welcome Back email')
 
     
@@ -196,7 +175,7 @@ class ApprovalView(FormView):
 
         # Send email
         messages.info(request, 'Sending Welcome Back email')
-        send_approval_email(alumni, password=password, back=True)
+        alumni.send_welcome_email(alumni, password=password, back=True)
         messages.success(request, 'Sent Welcome Back email')
 
     
