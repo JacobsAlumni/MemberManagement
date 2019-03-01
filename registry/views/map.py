@@ -28,7 +28,7 @@ search = SearchFilter({
     'industry': 'job__industry',
     'job': 'job__job',
 }, [
-    'firstName', 'lastName',
+    'firstName', 'lastName', 'address__city',
     'jacobs__degree',
     'skills__otherDegrees', 'skills__spokenLanguages', 'skills__programmingLanguages', 'skills__areasOfInterest',
     'job__employer', 'job__position',

@@ -39,7 +39,7 @@
             
                             {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
                         </td>
-                        <td> {{ alumni.address.city }} </td>
+                        <td> {{ alumni.address.city }}, {{ alumni.address.country }} </td>
                     </tr>
                 {% endfor %}
                 </tbody>

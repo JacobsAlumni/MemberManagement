@@ -6,7 +6,41 @@
                 <input id="searchInput" type="text" name="query" placeholder="Search..." class="uk-input" {% if value %}value="{{ value }}" {% endif %} />
             </div>
 
+            <div class="uk-width-auto">
+                <!-- Help -->
+                <a href="" class="uk-icon-button" uk-icon="question"></a>
+                <div uk-dropdown="pos: bottom-left">
+                    <p>
+                        You can search for:
+                    </p>
+
+                    <ul>
+                        <li>Name, e.g. <b>Peter Pan</b></li>
+                        <li>City, e.g. <b>Munich</b> or <b>&quot;San Francisco&quot;</b></li>
+                        <li>Other Degrees, e.g. <b>MBA Stanford</b></li>
+                        <li>Spoken Languages, e.g. <b>German</b></li>
+                        <li>Programming Languages, e.g. <b>HTML</b></li>
+                        <li>Areas Of Interest, e.g. <b>Design Thinking</b></li>
+                        <li>Employer, e.g. <b>Google</b></li>
+                        <li>Position, e.g. <b>Consultant</b></li>
+                    </ul>
+                    
+                    <p>
+                        Or you can select a field from the <i>>Advanced Search Box</i> and click <i>+</i> to add it to the search bar. 
+                    </p>
+                    <p>
+                        You can search multiple things at once by just separating them with spaces, e.g  <b>Peter Pan Munich</b>. 
+                    </p>
+                </div>
+            </div>
+
             <div class="uk-width-2-5 uk-button-group">
+                <!-- Search -->
+                <button type="submit" class="uk-input uk-button uk-button-primary">
+                    Search
+                    <span uk-icon="icon: search"></span>
+                </button>
+
                 <!-- Advanced Search Button -->
                 <input type="button" class="uk-button uk-button-default" value="Advanced" />
                 <div uk-dropdown>
@@ -30,36 +64,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <!-- Search -->
-                <button type="submit" class="uk-input uk-button uk-button-primary">
-                    Search
-                    <span uk-icon="icon: search"></span>
-                </button>
-            </div>
-
-            <div class="uk-width-auto">
-                <!-- Help -->
-                <a href="" class="uk-icon-button" uk-icon="question"></a>
-                <div uk-dropdown="pos: bottom-left">
-                        <table class="uk-table">
-                            <caption>
-                                Find users that have selected to appear on the Alumni Map. 
-                            </caption>
-                            <tbody>
-                                <tr>
-                                    <td><code>text</code> Fulltext Search witin Name, Education, Job and Skill Fields</td>
-                                    <td><code>city: City</code> Search For Specific Fields, such as City</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><code>queryA and queryB</code> Search for two matching expressions</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
                 </div>
             </div>
         </div>
@@ -86,7 +90,7 @@
             button.addEventListener('click', function(evt){
                 evt.stopImmediatePropagation();
                 var value = select.options[select.selectedIndex].value;
-                searchInput.value = searchInput.value + ' ' + selector + ':' + value;
+                searchInput.value = searchInput.value + ' ' + selector + ': ' + value;
                 return false;
             }, false);
         });
