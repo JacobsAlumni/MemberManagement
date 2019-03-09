@@ -67,17 +67,15 @@ class AlumniAdmin(admin.ModelAdmin):
 
     list_display = (
         # basic information
-        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'GSuiteLink', 'sex', 'birthday',
-        'category', 'paymentTier',
+        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'GSuiteLink', 'atlas_included', 'sex', 'birthday',
+        'category', 'paymentTier', 
 
         # Jacobs information
         'jacobs_degree', 'jacobs_graduation', 'jacobs_major', 'jacobs_college',
     )
 
     list_filter = (
-        'approval__approval', SetupCompleted, 'category', 'jacobs__degree',
-        'jacobs__graduation',
-        'jacobs__major', 'payment__tier')
+        'approval__approval', SetupCompleted, 'category', 'jacobs__degree', 'payment__tier', 'atlas__included', 'jacobs__graduation', 'jacobs__major')
 
     legacy_export_fields = list_display + ('existingEmail',
                                            'resetExistingEmailPassword')
@@ -162,6 +160,12 @@ class AlumniAdmin(admin.ModelAdmin):
     GSuiteLink.short_description = 'Linked'
     GSuiteLink.boolean = True
     GSuiteLink.admin_order_field = 'profile__googleassociation'
+
+    def atlas_included(self, x):
+        return x.atlas.included
+    atlas_included.short_description = 'Atlas'
+    atlas_included.boolean = True
+    atlas_included.admin_order_field = 'atlas__included'
     
 
     def paymentTier(self, x):
