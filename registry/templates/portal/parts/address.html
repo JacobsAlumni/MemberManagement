@@ -29,11 +29,6 @@
                 </tr>
 
                 <tr>
-                    <td>Included on Alumni Map</td>
-                    <td>{{ user.alumni.address.addressVisible|print_boolean }}</td>
-                </tr>
-
-                <tr>
                     <td>Country</td>
                     <td>{{ user.alumni.address |get_choice_field:"country" }}</td>
                 </tr>

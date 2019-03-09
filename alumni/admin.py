@@ -91,16 +91,15 @@ class AlumniAdmin(admin.ModelAdmin):
 
         # Alumni Model
         'firstName', 'middleName', 'lastName', 'email', 'existingEmail',
-        'resetExistingEmailPassword', 'sex', 'birthday', 'birthdayVisible',
+        'resetExistingEmailPassword', 'sex', 'birthday',
         'nationality', 'category',
 
         # Address Data
         'address__address_line_1', 'address__address_line_2', 'address__city',
         'address__zip', 'address__state', 'address__country',
-        'address__addressVisible',
 
         # 'Social' Data
-        'social__showOnMap', 'social__facebook', 'social__linkedin', 'social__twitter',
+        'social__facebook', 'social__linkedin', 'social__twitter',
         'social__instagram', 'social__homepage',
 
         # 'Jacobs Data'
@@ -122,7 +121,7 @@ class AlumniAdmin(admin.ModelAdmin):
         'payment__tier', 'payment__starterReason',
 
         # Atlas Settings
-        'atlas__secret'
+        'atlas__secret', 'atlas__included', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',
     )
     xslx_export = export_as_xslx_action("Export as XSLX",
                                         fields=full_export_fields)

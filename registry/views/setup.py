@@ -144,7 +144,7 @@ jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data',
 job = setupViewFactory('job', JobInformationForm, 'Professional information',
                        'What did you do after Jacobs?')
 skills = setupViewFactory('skills', SkillsForm, 'Education and Skills', '')
-atlas = setupViewFactory('atlas', AtlasSettingsForm, 'Atlas Setup', '')
+atlas = setupViewFactory('atlas', AtlasSettingsForm, 'Atlas Setup', 'A Map & Search Interface for Alumni')
 
 
 class SubscribeView(FormView):

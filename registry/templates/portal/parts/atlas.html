@@ -7,7 +7,18 @@
     <div class="uk-card-body">
         <table class="uk-table uk-table-small">
             <tbody>
-                
+                <tr>
+                    <td>Included on Alumni Atlas</td>
+                    <td>{{ user.alumni.atlas.included|print_boolean }}</td>
+                </tr>
+                <tr>
+                    <td>Birthday Visible</td>
+                    <td>{{ user.alumni.atlas.birthdayVisible|print_boolean }}</td>
+                </tr>
+                <tr>
+                    <td>Contact Information Visible</td>
+                    <td>{{ user.alumni.atlas.contactInfoVisible|print_boolean }}</td>
+                </tr>
             </tbody>
         </table>
     </div>

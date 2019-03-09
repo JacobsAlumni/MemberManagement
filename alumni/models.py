@@ -39,8 +39,6 @@ class Alumni(models.Model):
     sex = fields.GenderField()
     birthday = models.DateField(
         help_text="Your birthday in YYYY-MM-DD format")
-    birthdayVisible = models.BooleanField(default=False, blank=True,
-                                          help_text="Make birthday visible to others")
 
     # TODO: Better handling of multiple nationalities
     nationality = fields.CountryField(
@@ -128,9 +126,6 @@ class Address(models.Model):
     state = models.CharField(max_length=255, blank=True, null=True,
                              help_text="E.g. Bremen (optional)")
     country = fields.CountryField()
-
-    addressVisible = models.BooleanField(default=False, blank=True,
-                                         help_text="Include me in the Alumni Atlas. By selecting this checkbox, your location (approximated by your zip code), your city, and other information about you will be visible on the map & search interface to other users that have chosen to be visible as well. ")
     
     @property
     def coords(self, default=None):
@@ -145,7 +140,7 @@ class Address(models.Model):
     @classmethod
     def all_valid_coords(cls):
         """ Returns the coordinates of all alumni """
-        coords = map(lambda x: x.coords, cls.objects.filter(addressVisible=True, member__approval__approval=True))
+        coords = map(lambda x: x.coords, cls.objects.filter(member__atlas__included=True, member__approval__approval=True))
         return filter(lambda c: c[0] is not None and c[1] is not None, coords)
 
 
@@ -154,8 +149,6 @@ class SocialMedia(models.Model):
     """ The social media data of a Jacobs Alumni """
 
     member = models.OneToOneField(Alumni, related_name='social', on_delete=models.CASCADE)
-
-    showOnMap = models.BooleanField(default=False, blank=True, help_text="Show my social media & contact information (like @jacobs-alumni email) on the alumni atlas. ")
 
     facebook = models.URLField(null=True, blank=True,
                                help_text="Your Facebook Profile (optional)")
@@ -225,6 +218,13 @@ class Skills(models.Model):
 @Alumni.register_component
 class AtlasSettings(models.Model):
     member = models.OneToOneField(Alumni, related_name='atlas', on_delete=models.CASCADE)
+
+    included = models.BooleanField(default=False, blank=True,
+                                         help_text="Include me in the Alumni Atlas. By selecting this checkbox, your location (approximated by your zip code), your city, and other information about you will be visible on the atlas interface to other users. ")
+
+    birthdayVisible = models.BooleanField(default=False, blank=True, help_text="Show Birthday on my Alumni Atlas Profile")
+
+    contactInfoVisible = models.BooleanField(default=False, blank=True, help_text="Show Social Media and Contact information (like @jacobs-alumni email) on the Alumni Atlas Profile Page. ")
 
     secret = models.TextField(null=True, blank=True, help_text='Secret Search Text that the member can be found with')
 

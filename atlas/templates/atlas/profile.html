@@ -20,7 +20,7 @@
     <h1 class="uk-article-title">
         {{ alumni.fullName }}
         
-        {% if alumni.social.showOnMap %}
+        {% if alumni.atlas.contactInfoVisible %}
             {% if alumni.social.facebook %}
                 <a class="uk-icon-button" target="_blank" href="{{alumni.social.facebook}}" uk-icon="icon: facebook" alt="Facebook">
                 </a>
@@ -45,7 +45,7 @@
     <div class="uk-grid">
         <div class="uk-width-1-2">
             <p class="uk-article-lead">
-                {% if alumni.social.showOnMap %}
+                {% if alumni.atlas.contactInfoVisible %}
                     <a href="mailto:{{alumni.approval.gsuite}}">{{alumni.approval.gsuite}}</a>
                     {% if alumni.social.homepage %}
                     &nbsp;-&nbsp; <a href="{{alumni.social.homepage}}" target="_blank">{{alumni.social.homepage}}</a>
@@ -59,7 +59,7 @@
 
                 {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
 
-                {% if alumni.birthdayVisible %}
+                {% if alumni.atlas.birthdayVisible %}
                     <br />born {{ alumni.birthday|date }}
                 {% endif %}
             </p>

@@ -24,7 +24,7 @@ class RegistrationForm(forms.ModelForm):
         model = Alumni
         fields = ['firstName', 'middleName', 'lastName', 'email',
                   'existingEmail', 'resetExistingEmailPassword', 'sex',
-                  'birthday', 'birthdayVisible', 'nationality', 'category']
+                  'birthday', 'nationality', 'category']
         widgets = {
             'birthday': DatePickerInput()
         }
@@ -32,7 +32,6 @@ class RegistrationForm(forms.ModelForm):
             "firstName": "First Name",
             "middleName": "Middle Name",
             "lastName": "Last Name",
-            "birthdayVisible": "",
             "existingEmail": "",
             "resetExistingEmailPassword": ""
         }
@@ -78,12 +77,8 @@ class AddressForm(forms.ModelForm):
 
     class Meta:
         model = Address
-        fields = ['address_line_1', 'address_line_2', 'zip', 'city',
-                  'addressVisible', 'state',
+        fields = ['address_line_1', 'address_line_2', 'zip', 'city', 'state',
                   'country']
-        labels = {
-            'addressVisible': ''
-        }
 
 
 class JacobsForm(forms.ModelForm):
@@ -107,7 +102,7 @@ class SocialMediaForm(forms.ModelForm):
 
     class Meta:
         model = SocialMedia
-        fields = ['showOnMap', 'facebook', 'linkedin', 'twitter', 'instagram', 'homepage']
+        fields = ['facebook', 'linkedin', 'twitter', 'instagram', 'homepage']
 
 
 class SkillsForm(forms.ModelForm):
@@ -140,7 +135,12 @@ class AtlasSettingsForm(forms.ModelForm):
 
     class Meta:
         model = AtlasSettings
-        fields = []
+        fields = ['included', 'birthdayVisible', 'contactInfoVisible']
+        labels = {
+            'included': '',
+            'birthdayVisible': '',
+            'contactInfoVisible': '',
+        }
 
 
 class PaymentInformationForm(forms.ModelForm):

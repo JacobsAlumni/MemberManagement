@@ -61,6 +61,8 @@ def can_view_atlas(user):
                 return False
         except ObjectDoesNotExist:
             return False
+        
+        # we need to make sure that they have chosen to be included in the
 
     return True
 
@@ -133,7 +135,7 @@ class ProfileView(TemplateView):
         context = super(ProfileView, self).get_context_data(**kwargs)
         # Find the user with the given id and approved approval
         context['alumni'] = get_object_or_404(
-            Alumni, profile__id=kwargs['id'], approval__approval=True, address__addressVisible=True)
+            Alumni, profile__id=kwargs['id'], approval__approval=True, atlas__included=True)
         coords = context['alumni'].address.coords
         context['alumni_coords'] = '[{}, {}]'.format(coords[0], coords[1])
 
@@ -166,7 +168,7 @@ class SearchView(ListView):
         # build a query
         # and also build a search
         queryset = Alumni.objects.filter(
-            approval__approval=True, address__addressVisible=True)
+            approval__approval=True, atlas__included=True)
         q, err = search(queryset, query)
 
         # If we had an error, raise it
