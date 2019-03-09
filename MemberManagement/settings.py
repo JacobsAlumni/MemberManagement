@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'cookielaw',
     'alumni',
     'custom_auth',
+    'atlas',
     'django_forms_uikit',
     'django_countries',
     'django.contrib.admin',
