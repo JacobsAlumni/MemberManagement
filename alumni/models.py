@@ -11,6 +11,8 @@ from . import fields
 
 import re
 
+import warnings
+
 class Alumni(models.Model):
     """ The information about an Alumni Member """
 
@@ -262,7 +264,7 @@ class GeoLocation(models.Model):
         try:
             instance = cls.objects.get(country=country, zip=cls.normalize_zip(zip, country.code))
         except cls.DoesNotExist:
-            # print('No location for combination: ', country.code, cls.normalize_zip(zip, country.code))
+            warnings.warn('No location for combination: {} {}'.format(country.code, cls.normalize_zip(zip, country.code)))
             return None, None
         
         return instance.lat, instance.lon
