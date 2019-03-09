@@ -16,8 +16,9 @@ from registry.decorators import require_unset_component
 from registry.models import subscription_plans
 from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm, PaymentInformationForm, SkillsForm
+    JobInformationForm, PaymentInformationForm, SkillsForm, AtlasSettingsForm
 
+from django.core.exceptions import ObjectDoesNotExist
 
 def register(request):
     """ Implements the new Alumni Registration Page"""
@@ -75,7 +76,19 @@ def setup(request):
 
     # if we have finished everything, return the all done page
     if component is None:
-        return render(request, 'setup/finished.html', {'user': request.user})
+
+        # check if the user is approved
+        try:
+            approved = request.user.alumni.approval.approval
+        except ObjectDoesNotExist:
+            approved = False
+
+        # If the user is not approved, show him that he finished the setup
+        if not approved:
+            return render(request, 'setup/finished.html', {'user': request.user})
+        # else go straight to the portal
+        else:
+            return redirect(reverse('portal'))
 
     # else redirect to the setup page.
     else:
@@ -131,6 +144,7 @@ jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data',
 job = setupViewFactory('job', JobInformationForm, 'Professional information',
                        'What did you do after Jacobs?')
 skills = setupViewFactory('skills', SkillsForm, 'Education and Skills', '')
+atlas = setupViewFactory('atlas', AtlasSettingsForm, 'Atlas Setup', '')
 
 
 class SubscribeView(FormView):

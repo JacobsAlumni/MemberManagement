@@ -1,8 +1,7 @@
 from django import forms
-from django.contrib.auth import password_validation
 
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
-    JobInformation, PaymentInformation, Skills
+    JobInformation, PaymentInformation, Skills, AtlasSettings
 from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
 
@@ -135,6 +134,13 @@ class JobInformationForm(forms.ModelForm):
     class Meta:
         model = JobInformation
         fields = ['employer', 'position', 'industry', 'job']
+
+class AtlasSettingsForm(forms.ModelForm):
+    """ A form for saving the users Atlas Settings """
+
+    class Meta:
+        model = AtlasSettings
+        fields = []
 
 
 class PaymentInformationForm(forms.ModelForm):

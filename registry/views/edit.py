@@ -1,14 +1,13 @@
 from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 
 from registry.views.registry import default_alternative
 from ..decorators import require_setup_completed
 
 from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm, PaymentInformationForm, SkillsForm
+    JobInformationForm, PaymentInformationForm, SkillsForm, AtlasSettingsForm
 
 
 def editViewFactory(prop, FormClass, name):
@@ -68,5 +67,6 @@ jacobs = editViewFactory('jacobs', JacobsForm, 'Jacobs Data')
 social = editViewFactory('social', SocialMediaForm, 'Social Media')
 job = editViewFactory('job', JobInformationForm, 'Job Information')
 skills = editViewFactory('skills', SkillsForm, 'Education and Skills')
+atlas = editViewFactory('atlas', AtlasSettingsForm, 'Atlas')
 payment = editViewFactory('payment', PaymentInformationForm,
                           'Payment Information')

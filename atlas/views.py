@@ -32,6 +32,7 @@ search = SearchFilter({
     'jacobs__degree',
     'skills__otherDegrees', 'skills__spokenLanguages', 'skills__programmingLanguages', 'skills__areasOfInterest',
     'job__employer', 'job__position',
+    'atlas__secret',
 ])
 
 ADVANCED_SEARCH_FIELDS = [

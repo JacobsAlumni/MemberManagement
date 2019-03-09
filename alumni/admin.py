@@ -3,7 +3,7 @@ from django.contrib import admin
 from alumni.actions import export_as_csv_action, export_as_xslx_action, \
     link_to_gsuite_action, unlink_from_gsuite_action
 from .models import Alumni, Address, JobInformation, SocialMedia, \
-    JacobsData, Approval, PaymentInformation, Skills
+    JacobsData, Approval, PaymentInformation, Skills, AtlasSettings
 
 
 class AlumniJacobsDataInline(admin.StackedInline):
@@ -33,6 +33,9 @@ class PaymentInline(admin.StackedInline):
 class SkillsInline(admin.StackedInline):
     model = Skills
 
+class AtlasInline(admin.StackedInline):
+    model = AtlasSettings
+
 class SetupCompleted(admin.SimpleListFilter):
     title = 'Setup Status'
     parameter_name = 'completed'
@@ -55,7 +58,8 @@ class SetupCompleted(admin.SimpleListFilter):
 class AlumniAdmin(admin.ModelAdmin):
     inlines = [AlumniApprovalInline, AlumniAddressInline,
                AlumniSocialMediaInline, AlumniJacobsDataInline,
-               AlumniJobsInline, SkillsInline, PaymentInline]
+               AlumniJobsInline, SkillsInline, PaymentInline,
+               AtlasInline]
 
     # search through names and emails
     search_fields = ['firstName', 'middleName', 'lastName', 'email',
@@ -115,7 +119,10 @@ class AlumniAdmin(admin.ModelAdmin):
         'skills__alumniMentor',
 
         # Payment Data
-        'payment__tier', 'payment__starterReason'
+        'payment__tier', 'payment__starterReason',
+
+        # Atlas Settings
+        'atlas__secret'
     )
     xslx_export = export_as_xslx_action("Export as XSLX",
                                         fields=full_export_fields)

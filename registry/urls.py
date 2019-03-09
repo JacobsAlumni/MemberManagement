@@ -50,6 +50,7 @@ urlpatterns = [
     url(r'^setup/jacobs/$', setup_views.jacobs, name='setup_jacobs'),
     url(r'^setup/job/$', setup_views.job, name='setup_job'),
     url(r'^setup/skills/$', setup_views.skills, name='setup_skills'),
+    url(r'^setup/atlas/$', setup_views.atlas, name='setup_atlas'),
     url(r'^setup/payment/$', setup_views.SubscribeView.as_safe_view(),
         name='setup_payment'),
 
@@ -66,6 +67,7 @@ urlpatterns = [
     url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
     url(r'^edit/job/$', edit_views.job, name='edit_job'),
     url(r'^edit/skills/$', edit_views.skills, name='edit_skills'),
+    url(r'^edit/atlas/$', edit_views.atlas, name='edit_atlas'),
 
     # Account link views
     url(r'approval/(?P<id>\d+)/$', approval_views.ApprovalView.as_view(), name='approval_approval'),

@@ -222,6 +222,12 @@ class Skills(models.Model):
     alumniMentor = models.BooleanField(default=False, blank=True,
                                        help_text="I would like to sign up as an alumni mentor")
 
+@Alumni.register_component
+class AtlasSettings(models.Model):
+    member = models.OneToOneField(Alumni, related_name='atlas', on_delete=models.CASCADE)
+
+    secret = models.TextField(null=True, blank=True, help_text='Secret Search Text that the member can be found with')
+
 
 @Alumni.register_component
 class PaymentInformation(models.Model):
