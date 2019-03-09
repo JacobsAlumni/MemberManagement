@@ -16,7 +16,7 @@ import warnings
 class Alumni(models.Model):
     """ The information about an Alumni Member """
 
-    profile = models.OneToOneField(User)
+    profile = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # name and basic contact information
     firstName = models.CharField(max_length=255, help_text="Your first name")
@@ -121,7 +121,7 @@ class Alumni(models.Model):
 class Address(models.Model):
     """ The address of an Alumni Member """
 
-    member = models.OneToOneField(Alumni, related_name='address')
+    member = models.OneToOneField(Alumni, related_name='address', on_delete=models.CASCADE)
 
     address_line_1 = models.CharField(max_length=255,
                                       help_text="E.g. Campus Ring 1")
@@ -156,7 +156,7 @@ class Address(models.Model):
 class SocialMedia(models.Model):
     """ The social media data of a Jacobs Alumni """
 
-    member = models.OneToOneField(Alumni, related_name='social')
+    member = models.OneToOneField(Alumni, related_name='social', on_delete=models.CASCADE)
 
     showOnMap = models.BooleanField(default=False, blank=True, help_text="Show my social media & contact information (like @jacobs-alumni email) on the alumni map. ")
 
@@ -176,7 +176,7 @@ class SocialMedia(models.Model):
 class JacobsData(models.Model):
     """ The jacobs data of an Alumni Member"""
 
-    member = models.OneToOneField(Alumni, related_name='jacobs')
+    member = models.OneToOneField(Alumni, related_name='jacobs', on_delete=models.CASCADE)
 
     college = fields.CollegeField(null=True, blank=True)
     graduation = fields.ClassField()
@@ -188,7 +188,7 @@ class JacobsData(models.Model):
 
 class Approval(models.Model):
     """ The approval status of a member """
-    member = models.OneToOneField(Alumni, related_name='approval')
+    member = models.OneToOneField(Alumni, related_name='approval', on_delete=models.CASCADE)
 
     approval = models.BooleanField(default=False, blank=True,
                                    help_text="Has the user been approved by an admin?")
@@ -201,7 +201,7 @@ class Approval(models.Model):
 class JobInformation(models.Model):
     """ The jobs of an Alumni Member"""
 
-    member = models.OneToOneField(Alumni, related_name='job')
+    member = models.OneToOneField(Alumni, related_name='job', on_delete=models.CASCADE)
 
     employer = models.CharField(max_length=255, null=True, blank=True,
                                 help_text="Your employer (optional)")
@@ -215,7 +215,7 @@ class JobInformation(models.Model):
 class Skills(models.Model):
     """ The skills of an Alumni member """
 
-    member = models.OneToOneField(Alumni, related_name='skills')
+    member = models.OneToOneField(Alumni, related_name='skills', on_delete=models.CASCADE)
 
     otherDegrees = models.TextField(null=True, blank=True)
     spokenLanguages = models.TextField(null=True, blank=True)
@@ -230,7 +230,7 @@ class Skills(models.Model):
 class PaymentInformation(models.Model):
     """ The payment information of an Alumni Member """
 
-    member = models.OneToOneField(Alumni, related_name='payment')
+    member = models.OneToOneField(Alumni, related_name='payment', on_delete=models.CASCADE)
 
     tier = fields.TierField(help_text='Membership Tier')
 

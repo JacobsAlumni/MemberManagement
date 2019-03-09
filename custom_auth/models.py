@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from custom_auth.gsuite import make_directory_service, get_user_id
 
 class GoogleAssociation(models.Model):
-    user = models.ForeignKey(auth.get_user_model())
+    user = models.ForeignKey(auth.get_user_model(), on_delete=models.CASCADE)
     google_user_id = models.CharField(max_length=64)
 
     @classmethod
