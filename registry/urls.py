@@ -39,7 +39,7 @@ urlpatterns = [
     # Login / Logout
     url(r'^login/$', custom_auth_views.ClientIdLoginView.as_view(template_name='auth/login.html'), {},
         name='login'),
-    url('^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
+    url('^logout/$', auth_views.LogoutView.as_view(), name='logout'),
 
     # Registration
     url('^register/$', setup_views.register, name='register'),

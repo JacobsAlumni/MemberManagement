@@ -116,6 +116,7 @@ STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
 LOGIN_URL = '/login'
 LOGOUT_URL = '/logout'
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 GSUITE_DOMAIN_NAME = 'jacobs-alumni.de'
 GSUITE_OAUTH_CLIENT_ID = '118982546822-515a0fn0ldm96ebev0af5naj6qn8pt9i.apps.googleusercontent.com'
