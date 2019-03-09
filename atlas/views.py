@@ -63,6 +63,7 @@ def can_view_atlas(user):
             return False
         
         # we need to make sure that they have chosen to be included in the
+        return user.alumni.atlas.included
 
     return True
 
