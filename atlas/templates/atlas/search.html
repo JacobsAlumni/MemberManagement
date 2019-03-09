@@ -10,7 +10,7 @@
         Jacobs Alumni Search - {{query}}
     </h1>
 
-    {% include "map/search_form.html" with value=query %}
+    {% include "atlas/search_form.html" with value=query %}
     <hr />
 
     {% if error %}
@@ -31,7 +31,7 @@
                 <tbody>
                 {% for alumni in page %}
                     <tr>
-                        <td><a href="{% url 'map_profile' id=alumni.profile.id %}">{{ alumni.firstName }} {{ alumni.lastName }}</a></td>
+                        <td><a href="{% url 'atlas_profile' id=alumni.profile.id %}">{{ alumni.firstName }} {{ alumni.lastName }}</a></td>
                         <td>
                             {% if alumni.jacobs.degree %}
                                 {{ alumni.jacobs|get_choice_field:"degree"|safe }}, 
@@ -52,7 +52,7 @@
                 {% if pagination.print1 %}
                     <li>
                         <span>
-                            <a href="{% url 'map_search' %}?query={{query|urlencode}}&page=1">1</a>
+                            <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page=1">1</a>
                         </span>
                     </li>
                 {% endif %}
@@ -63,7 +63,7 @@
                 {% if page.has_previous %}
                     <li>
                         <span>
-                            <a href="{% url 'map_search' %}?query={{query|urlencode}}&page={{page.previous_page_number}}">{{page.previous_page_number}}</a>
+                            <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.previous_page_number}}">{{page.previous_page_number}}</a>
                         </span>
                     </li>
                 {% endif %}
@@ -73,7 +73,7 @@
                 {% if page.has_next %}
                     <li>
                         <span>
-                            <a href="{% url 'map_search' %}?query={{query|urlencode}}&page={{page.next_page_number}}">{{page.next_page_number}}</a>
+                            <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.next_page_number}}">{{page.next_page_number}}</a>
                         </span>
                     </li>
                 {% endif %}
@@ -84,7 +84,7 @@
                 {%if pagination.printL %}
                     <li>
                         <span>
-                            <a href="{% url 'map_search' %}?query={{query|urlencode}}&page={{page.paginator.num_pages}}">{{page.paginator.num_pages}}</a>
+                            <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.paginator.num_pages}}">{{page.paginator.num_pages}}</a>
                         </span>
                     </li>
                 {% endif %}

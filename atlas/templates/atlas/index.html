@@ -2,7 +2,7 @@
 
 {% load registry_display %}
 
-{% block title %}Map &amp; Search{% endblock %}
+{% block title %}Atlas{% endblock %}
 
 
 {% block head %}
@@ -19,10 +19,10 @@
 {% block content %}
 <article class="uk-article">
     <h1 class="uk-article-title">
-        Jacobs Alumni Map &amp; Search
+        Jacobs Alumni Atlas
     </h1>
 
-    {% include "map/search_form.html" %}
+    {% include "atlas/search_form.html" %}
 
     <p>
         <div id="map" class="map"></div>

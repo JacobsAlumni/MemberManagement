@@ -22,5 +22,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('custom_auth.urls')),
+    url(r'^atlas/', include('atlas.urls')),
     url(r'^', include('registry.urls'))
 ]
