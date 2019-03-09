@@ -46,7 +46,7 @@ ADVANCED_SEARCH_FIELDS = [
 
 def can_view_map(user):
     """ Functionts that check if access to map functionality is available """
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return False
 
     # for non-admins, i.e. user that are neither staff nor superadmin
