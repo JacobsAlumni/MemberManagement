@@ -28,6 +28,7 @@ ADD MemberManagement/ /app/MemberManagement/
 ADD registry/ /app/registry/
 ADD static/ /app/static/
 ADD custom_auth/ /app/custom_auth
+ADD atlas/ /app/atlas
 
 ENV DJANGO_SETTINGS_MODULE "MemberManagement.docker_settings"
 
