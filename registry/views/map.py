@@ -105,6 +105,7 @@ def make_pagination_ui_ctx(page):
     return context
 
 
+@method_decorator(login_required, name='dispatch')
 class HomeView(TemplateView):
     template_name = 'map/index.html'
 
@@ -123,11 +124,7 @@ class HomeView(TemplateView):
             raise Http404
         return super().get(request, *args, **kwargs)
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-
+@method_decorator(login_required, name='dispatch')
 class ProfileView(TemplateView):
     template_name = 'map/profile.html'
 
@@ -146,11 +143,7 @@ class ProfileView(TemplateView):
             raise Http404
         return super(ProfileView, self).get(request, *args, **kwargs)
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
-
+@method_decorator(login_required, name='dispatch')
 class SearchView(ListView):
     model = Alumni
     template_name = "map/search.html"
@@ -207,7 +200,3 @@ class SearchView(ListView):
             return redirect(reverse('map_home'))
         
         return super(SearchView, self).get(request, *args, **kwargs)
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
