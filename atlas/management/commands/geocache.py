@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from alumni.models import Address, GeoLocation
+from atlas.models import GeoLocation
 
 import time
 

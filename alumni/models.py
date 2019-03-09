@@ -1,5 +1,5 @@
 import collections
-from django.db import models, transaction
+from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from jsonfield import JSONField
@@ -8,10 +8,6 @@ from django.conf import settings
 from custom_auth.mailutils import send_email
 
 from . import fields
-
-import re
-
-import warnings
 
 class Alumni(models.Model):
     """ The information about an Alumni Member """
@@ -139,6 +135,7 @@ class Address(models.Model):
     @property
     def coords(self, default=None):
         """ The coordinates of this user """
+        from atlas.models import GeoLocation
         lat, lng = GeoLocation.getLoc(self.country, self.zip)
         if lat is None or lng is None:
             return [None, None]
@@ -246,50 +243,3 @@ class PaymentInformation(models.Model):
     subscription = models.CharField(max_length=255, null=True, blank=True,
                                     help_text='The payment token for the customer')
     sepa_mandate = JSONField(blank=True, null=True)
-
-class GeoLocation(models.Model):
-    """ Represents a (cached) GeoLocation """
-
-    country = fields.CountryField()
-    zip = models.CharField(max_length=10)
-
-    lat = models.FloatField()
-    lon = models.FloatField()
-
-    class Meta:
-        unique_together = (('country', 'zip'))
-        
-    @classmethod
-    def getLoc(cls, country, zip):
-        try:
-            instance = cls.objects.get(country=country, zip=cls.normalize_zip(zip, country.code))
-        except cls.DoesNotExist:
-            warnings.warn('No location for combination: {} {}'.format(country.code, cls.normalize_zip(zip, country.code)))
-            return None, None
-        
-        return instance.lat, instance.lon
-    
-    @classmethod
-    def updateData(cls, data):
-        with transaction.atomic():
-            cls.objects.all().delete()
-            cls.objects.bulk_create(data)
-    
-    @classmethod
-    def normalize_zip(self, zip, country):
-        lowerzip = zip.lower()
-        norm = re.sub(r'[^0-9a-z]', '', lowerzip)
-
-        # Canada: First three characters
-        if country == 'CA':
-            norm = norm[0:3]
-        # Great Briatin: First four characters
-        elif country == 'GB':
-            norm = norm[0:4]
-        # Netherlands: digits only
-        elif country == 'NL':
-            norm = re.sub(r'[^0-9]', '', norm)
-        return norm
-    
-    def __str__(self):
-        return 'GeoLocation of {} in {}'.format(self.zip, self.country)

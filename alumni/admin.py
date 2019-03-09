@@ -3,7 +3,7 @@ from django.contrib import admin
 from alumni.actions import export_as_csv_action, export_as_xslx_action, \
     link_to_gsuite_action, unlink_from_gsuite_action
 from .models import Alumni, Address, JobInformation, SocialMedia, \
-    JacobsData, Approval, PaymentInformation, Skills, GeoLocation
+    JacobsData, Approval, PaymentInformation, Skills
 
 
 class AlumniJacobsDataInline(admin.StackedInline):
@@ -193,10 +193,3 @@ admin.site.register(Alumni, AlumniAdmin)
 
 from django.contrib.auth.models import Group
 admin.site.unregister(Group)
-
-class GeoAdmin(admin.ModelAdmin):
-
-    list_filter = ('country', )
-    list_display = ('country', 'zip', 'lat', 'lon')
-    search_fields = ('country', 'zip')
-admin.site.register(GeoLocation, GeoAdmin)

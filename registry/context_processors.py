@@ -12,5 +12,5 @@ def is_stripe_test_mode(request):
     return {'stripe_test_mode': IS_STRIPE_TEST_MODE}
 
 def map_view_allowed(request):
-    from registry.views.map import can_view_map
+    from atlas.views import can_view_map
     return {'can_view_map': request.user and can_view_map(request.user)}    
