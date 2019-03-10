@@ -1,7 +1,8 @@
 from django import forms
 
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
-    JobInformation, PaymentInformation, Skills, AtlasSettings
+    JobInformation, PaymentInformation, Skills
+from atlas.models import AtlasSettings
 from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
 

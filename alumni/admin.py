@@ -3,7 +3,8 @@ from django.contrib import admin
 from alumni.actions import export_as_csv_action, export_as_xslx_action, \
     link_to_gsuite_action, unlink_from_gsuite_action
 from .models import Alumni, Address, JobInformation, SocialMedia, \
-    JacobsData, Approval, PaymentInformation, Skills, AtlasSettings
+    JacobsData, Approval, PaymentInformation, Skills
+from atlas.models import AtlasSettings
 
 
 class AlumniJacobsDataInline(admin.StackedInline):
@@ -67,7 +68,7 @@ class AlumniAdmin(admin.ModelAdmin):
 
     list_display = (
         # basic information
-        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'GSuiteLink', 'atlas_included', 'sex', 'birthday',
+        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'GSuiteLink', 'sex', 'birthday',
         'category', 'paymentTier', 
 
         # Jacobs information
@@ -75,7 +76,7 @@ class AlumniAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        'approval__approval', SetupCompleted, 'category', 'jacobs__degree', 'payment__tier', 'atlas__included', 'jacobs__graduation', 'jacobs__major')
+        'approval__approval', SetupCompleted, 'category', 'jacobs__degree', 'payment__tier', 'jacobs__graduation', 'jacobs__major')
 
     legacy_export_fields = list_display + ('existingEmail',
                                            'resetExistingEmailPassword')

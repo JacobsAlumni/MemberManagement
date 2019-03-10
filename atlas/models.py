@@ -3,10 +3,22 @@ import re
 
 from django.db import models, transaction
 
+from alumni.models import Alumni
 from alumni.fields import CountryField
 
+@Alumni.register_component(5)
+class AtlasSettings(models.Model):
+    member = models.OneToOneField(Alumni, related_name='atlas', on_delete=models.CASCADE)
 
-# Create your models here.
+    included = models.BooleanField(default=False, blank=True,
+                                         help_text="Include me in the Alumni Atlas. By selecting this checkbox, your location (approximated by your zip code), your city, and other information about you will be visible on the atlas interface to other users. ")
+
+    birthdayVisible = models.BooleanField(default=False, blank=True, help_text="Show Birthday on my Alumni Atlas Profile")
+
+    contactInfoVisible = models.BooleanField(default=False, blank=True, help_text="Show Social Media and Contact information (like @jacobs-alumni email) on the Alumni Atlas Profile Page. ")
+
+    secret = models.TextField(null=True, blank=True, help_text='Secret Search Text that the member can be found with')
+
 class GeoLocation(models.Model):
     """ Represents a (cached) GeoLocation """
 
