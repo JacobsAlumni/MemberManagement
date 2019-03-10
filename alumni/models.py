@@ -1,4 +1,4 @@
-import collections
+import bisect
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -52,16 +52,24 @@ class Alumni(models.Model):
     # COMPONENTS MANAGEMENT
     #
 
-    # The list of components know to this class
-    components = collections.OrderedDict()
+    # The list of components an prios of them
+    components = []
+    component_prios = []
 
     @classmethod
-    def register_component(cls, f):
+    def register_component(cls, prio):
         """ A decorator to add a component to the list of components """
+        def decorator(f):
+            # Find the insertion point within the priority list
+            insertion = bisect.bisect_left(cls.component_prios, prio)
 
-        name = f.member.field.remote_field.name
-        cls.components[name] = f
-        return f
+            # Insert into (components, component_prios)
+            cls.components.insert(insertion, f)
+            cls.component_prios.insert(insertion, prio)
+
+            # and return the original function
+            return f
+        return decorator
 
     def has_component(self, component):
         """ Checks if this alumni has a given component"""
@@ -75,9 +83,10 @@ class Alumni(models.Model):
         """ Gets the first unset component or returns None if it
         already exists. """
 
-        for c in self.__class__.components.keys():
-            if not self.has_component(c):
-                return c
+        for c in self.__class__.components:
+            name = c.member.field.remote_field.name
+            if not self.has_component(name):
+                return name
 
         return None
     
@@ -111,7 +120,7 @@ class Alumni(models.Model):
 
 
 
-@Alumni.register_component
+@Alumni.register_component(0)
 class Address(models.Model):
     """ The address of an Alumni Member """
 
@@ -144,7 +153,7 @@ class Address(models.Model):
         return filter(lambda c: c[0] is not None and c[1] is not None, coords)
 
 
-@Alumni.register_component
+@Alumni.register_component(1)
 class SocialMedia(models.Model):
     """ The social media data of a Jacobs Alumni """
 
@@ -162,7 +171,7 @@ class SocialMedia(models.Model):
                                help_text="Your Homepage or Blog")
 
 
-@Alumni.register_component
+@Alumni.register_component(2)
 class JacobsData(models.Model):
     """ The jacobs data of an Alumni Member"""
 
@@ -187,7 +196,7 @@ class Approval(models.Model):
                                help_text="The G-Suite E-Mail of the user", unique=True)
 
 
-@Alumni.register_component
+@Alumni.register_component(3)
 class JobInformation(models.Model):
     """ The jobs of an Alumni Member"""
 
@@ -201,7 +210,7 @@ class JobInformation(models.Model):
     job = fields.JobField()
 
 
-@Alumni.register_component
+@Alumni.register_component(4)
 class Skills(models.Model):
     """ The skills of an Alumni member """
 
@@ -215,7 +224,7 @@ class Skills(models.Model):
     alumniMentor = models.BooleanField(default=False, blank=True,
                                        help_text="I would like to sign up as an alumni mentor")
 
-@Alumni.register_component
+@Alumni.register_component(5)
 class AtlasSettings(models.Model):
     member = models.OneToOneField(Alumni, related_name='atlas', on_delete=models.CASCADE)
 
@@ -229,7 +238,7 @@ class AtlasSettings(models.Model):
     secret = models.TextField(null=True, blank=True, help_text='Secret Search Text that the member can be found with')
 
 
-@Alumni.register_component
+@Alumni.register_component(6)
 class PaymentInformation(models.Model):
     """ The payment information of an Alumni Member """
 
