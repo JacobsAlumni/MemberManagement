@@ -60,7 +60,7 @@
                 {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
 
                 {% if alumni.atlas.birthdayVisible %}
-                    <br />born {{ alumni.birthday|date }}
+                    <br />Birthday: {{ alumni.birthday|date:"dS F" }}
                 {% endif %}
             </p>
 
