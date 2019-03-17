@@ -20,8 +20,6 @@ from .views import registry as registry_views
 from .views import setup as setup_views
 from .views import edit as edit_views
 from .views import view as view_views
-from .views import approval as approval_views
-
 
 urlpatterns = [
     # The Portal home page
@@ -59,7 +57,4 @@ urlpatterns = [
     url(r'^edit/job/$', edit_views.job, name='edit_job'),
     url(r'^edit/skills/$', edit_views.skills, name='edit_skills'),
     url(r'^edit/atlas/$', edit_views.atlas, name='edit_atlas'),
-
-    # Account link views
-    url(r'approval/(?P<id>\d+)/$', approval_views.ApprovalView.as_view(), name='approval_approval'),
 ]
