@@ -14,8 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from django.contrib.auth import views as auth_views
-from custom_auth import views as custom_auth_views
 from django.views.generic import TemplateView, RedirectView
 
 from .views import registry as registry_views
@@ -32,11 +30,6 @@ urlpatterns = [
     # Static requirements
     url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
     url(r'^privacy/$', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/', permanent=False), name='privacy'),
-
-    # Login / Logout
-    url(r'^login/$', custom_auth_views.ClientIdLoginView.as_view(template_name='auth/login.html'), {},
-        name='login'),
-    url('^logout/$', auth_views.LogoutView.as_view(), name='logout'),
 
     # Registration
     url('^register/$', setup_views.register, name='register'),
