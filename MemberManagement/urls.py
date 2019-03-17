@@ -18,9 +18,17 @@ from django.conf.urls import include, url
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.views.generic import TemplateView, RedirectView
+
 urlpatterns = [
+    # Static urls
+    url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
+    url(r'^privacy/$', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/', permanent=False), name='privacy'),
+
+    # And recursively go into all the apps
     url(r'^admin/', include('alumni.urls')),
     url(r'^auth/', include('custom_auth.urls')),
     url(r'^atlas/', include('atlas.urls')),
+
     url(r'^', include('registry.urls'))
 ]
