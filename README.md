@@ -69,10 +69,8 @@ The following portal-related apps exist:
 - `registry/` -- user-facing registration + editing of data (purposes 1 + 4)
 - `alumni/` -- admin-facing viewing + editing of data, contains core Alumni models (purpose 5)
 - `custom_auth/` -- GSuite-integration, including login and approval (purpose 2)
+- `payments/` -- Stripe + payments integration (purpose 3)
 - `atlas/` -- user-facing search of atlas data (purpose 6)
-
-Currently no dedicated app for purpose 3 exists. 
-We are planning to create one to consolidate integration with Stripe. 
 
 The following independent apps also exist:
 
