@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'alumni',
     'custom_auth',
     'atlas',
+    'payments',
     'django_forms_uikit',
     'django_countries',
     'django.contrib.admin',
