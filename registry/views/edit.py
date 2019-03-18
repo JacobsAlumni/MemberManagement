@@ -7,7 +7,7 @@ from registry.views.registry import default_alternative
 from ..decorators import require_setup_completed
 
 from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm, PaymentInformationForm, SkillsForm, AtlasSettingsForm
+    JobInformationForm, SkillsForm, AtlasSettingsForm
 
 
 def editViewFactory(prop, FormClass, name):
@@ -68,5 +68,3 @@ social = editViewFactory('social', SocialMediaForm, 'Social Media')
 job = editViewFactory('job', JobInformationForm, 'Job Information')
 skills = editViewFactory('skills', SkillsForm, 'Education and Skills')
 atlas = editViewFactory('atlas', AtlasSettingsForm, 'Atlas')
-payment = editViewFactory('payment', PaymentInformationForm,
-                          'Payment Information')
