@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, get_object_or_404
 from raven.contrib.django.raven_compat.models import client
 
-from alumni.models import Alumni, PaymentInformation
+from alumni.models import Alumni
+from payments.models import PaymentInformation
 from registry.decorators import require_setup_completed
 from registry.views.registry import default_alternative
 

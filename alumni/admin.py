@@ -3,7 +3,8 @@ from django.contrib import admin
 from alumni.actions import export_as_csv_action, export_as_xslx_action, \
     link_to_gsuite_action, unlink_from_gsuite_action
 from .models import Alumni, Address, JobInformation, SocialMedia, \
-    JacobsData, Approval, PaymentInformation, Skills
+    JacobsData, Approval, Skills
+from payments.models import PaymentInformation
 from atlas.models import AtlasSettings
 
 

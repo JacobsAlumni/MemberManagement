@@ -2,7 +2,6 @@ import bisect
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from jsonfield import JSONField
 
 from django.conf import settings
 from custom_auth.mailutils import send_email
@@ -224,24 +223,3 @@ class Skills(models.Model):
     alumniMentor = models.BooleanField(default=False, blank=True,
                                        help_text="I would like to sign up as an alumni mentor")
 
-
-@Alumni.register_component(6)
-class PaymentInformation(models.Model):
-    """ The payment information of an Alumni Member """
-
-    member = models.OneToOneField(Alumni, related_name='payment', on_delete=models.CASCADE)
-
-    tier = fields.TierField(help_text='Membership Tier')
-
-    payment_type = fields.PaymentTypeField()
-
-    starterReason = models.TextField(null=True, blank=True,
-        help_text="")
-
-    token = models.CharField(max_length=255, null=True, blank=True,
-                             help_text='The stripe card token for the user')
-    customer = models.CharField(max_length=255, null=True, blank=True,
-                                help_text='The stripe customer id for the user')
-    subscription = models.CharField(max_length=255, null=True, blank=True,
-                                    help_text='The payment token for the customer')
-    sepa_mandate = JSONField(blank=True, null=True)
