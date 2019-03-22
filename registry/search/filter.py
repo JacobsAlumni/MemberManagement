@@ -80,8 +80,8 @@ class QueryBuilder(object):
         else:
             raise NotImplementedError("Invalid filter type: " + obj_type)
         
-        if finalize and isinstance(res, str):
-            res = self._finalize(res)
+        if finalize and (isinstance(res, str) or isinstance(res, float)):
+                res = self._finalize(str(res))
         
         return res
 
