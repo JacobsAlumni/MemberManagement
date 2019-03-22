@@ -1,8 +1,8 @@
 from django import forms
-from django.contrib.auth import password_validation
 
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
     JobInformation, PaymentInformation, Skills
+from atlas.models import AtlasSettings
 from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
 
@@ -12,18 +12,6 @@ class RegistrationForm(forms.ModelForm):
     username = forms.SlugField(label='Username',
                                help_text='Select your username for the membership portal. '
                                          'We recommend your alumni email username, e.g. <em>ppan</em> for <em>Peter Pan</em>')
-    password1 = forms.CharField(
-        label="Password",
-        widget=forms.PasswordInput,
-        strip=False,
-        help_text=password_validation.password_validators_help_text_html(),
-    )
-    password2 = forms.CharField(
-        label="Password Confirmation",
-        strip=False,
-        widget=forms.PasswordInput,
-        help_text='Re-enter your password'
-    )
 
     _tos_help_text = 'I confirm that I have read and agree to the ' \
                      '<a target="_blank" href="/privacy">Terms and Conditions' \
@@ -37,7 +25,7 @@ class RegistrationForm(forms.ModelForm):
         model = Alumni
         fields = ['firstName', 'middleName', 'lastName', 'email',
                   'existingEmail', 'resetExistingEmailPassword', 'sex',
-                  'birthday', 'birthdayVisible', 'nationality', 'category']
+                  'birthday', 'nationality', 'category']
         widgets = {
             'birthday': DatePickerInput()
         }
@@ -45,7 +33,6 @@ class RegistrationForm(forms.ModelForm):
             "firstName": "First Name",
             "middleName": "Middle Name",
             "lastName": "Last Name",
-            "birthdayVisible": "",
             "existingEmail": "",
             "resetExistingEmailPassword": ""
         }
@@ -55,15 +42,6 @@ class RegistrationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data  # individual field's clean methods have already been called
-
-        # check that the passwords are identical
-        password1 = cleaned_data.get("password1")
-        password2 = cleaned_data.get("password2")
-
-        if password1 != password2:
-            self.add_error('password2', forms.ValidationError(
-                "Please make sure that the password you entered is correct. "))
-            raise forms.ValidationError("Please correct the error below.")
 
         # check that the username doesn't already exist
         username = cleaned_data.get("username")
@@ -100,12 +78,8 @@ class AddressForm(forms.ModelForm):
 
     class Meta:
         model = Address
-        fields = ['address_line_1', 'address_line_2', 'zip', 'city',
-                  'addressVisible', 'state',
+        fields = ['address_line_1', 'address_line_2', 'zip', 'city', 'state',
                   'country']
-        labels = {
-            'addressVisible': ''
-        }
 
 
 class JacobsForm(forms.ModelForm):
@@ -157,6 +131,18 @@ class JobInformationForm(forms.ModelForm):
         model = JobInformation
         fields = ['employer', 'position', 'industry', 'job']
 
+class AtlasSettingsForm(forms.ModelForm):
+    """ A form for saving the users Atlas Settings """
+
+    class Meta:
+        model = AtlasSettings
+        fields = ['included', 'birthdayVisible', 'contactInfoVisible']
+        labels = {
+            'included': '',
+            'birthdayVisible': '',
+            'contactInfoVisible': '',
+        }
+
 
 class PaymentInformationForm(forms.ModelForm):
     """ A form for editing payment information"""
@@ -168,3 +154,4 @@ class PaymentInformationForm(forms.ModelForm):
         labels = {
             'starterReason': ''
         }
+

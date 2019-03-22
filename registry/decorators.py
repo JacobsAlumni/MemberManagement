@@ -50,7 +50,7 @@ def require_setup_completed(alternative):
         @require_alumni
         def wrapper(request, *args, **kwargs):
             # if we are missing a component, return to the main page
-            if request.user.alumni.get_first_unset_component() is not None:
+            if not request.user.alumni.setup_completed:
                 return alternative(request, *args, **kwargs)
 
             # else use the normal one

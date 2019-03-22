@@ -1,6 +1,8 @@
 import stripe
+
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
@@ -14,14 +16,15 @@ from registry.decorators import require_unset_component
 from registry.models import subscription_plans
 from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm, PaymentInformationForm, SkillsForm
+    JobInformationForm, PaymentInformationForm, SkillsForm, AtlasSettingsForm
 
+from django.core.exceptions import ObjectDoesNotExist
 
 def register(request):
     """ Implements the new Alumni Registration Page"""
 
     # not for already logged in users
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect('/')
 
     if request.method == 'POST':
@@ -33,9 +36,8 @@ def register(request):
             form.clean()
 
             # create a user object and save it
-            username, password = \
-                form.cleaned_data['username'], form.cleaned_data['password1']
-            user = User.objects.create_user(username, None, password=password)
+            username = form.cleaned_data['username']
+            user = User.objects.create_user(username, None, password=None)
             user.save()
 
             # Create the Alumni Data Object
@@ -48,7 +50,7 @@ def register(request):
             approval.save()
 
             # Authenticate the user for this request
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             # and then redirect the user to the main setup page
             return redirect(reverse('setup'))
@@ -74,8 +76,19 @@ def setup(request):
 
     # if we have finished everything, return the all done page
     if component is None:
-        return render(request, 'setup/finished.html',
-                      {'user': request.user})
+
+        # check if the user is approved
+        try:
+            approved = request.user.alumni.approval.approval
+        except ObjectDoesNotExist:
+            approved = False
+
+        # If the user is not approved, show him that he finished the setup
+        if not approved:
+            return render(request, 'setup/finished.html', {'user': request.user})
+        # else go straight to the portal
+        else:
+            return redirect(reverse('portal'))
 
     # else redirect to the setup page.
     else:
@@ -131,6 +144,7 @@ jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data',
 job = setupViewFactory('job', JobInformationForm, 'Professional information',
                        'What did you do after Jacobs?')
 skills = setupViewFactory('skills', SkillsForm, 'Education and Skills', '')
+atlas = setupViewFactory('atlas', AtlasSettingsForm, 'Atlas Setup', 'A Map & Search Interface for Alumni')
 
 
 class SubscribeView(FormView):

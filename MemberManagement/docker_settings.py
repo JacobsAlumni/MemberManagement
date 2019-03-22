@@ -29,10 +29,20 @@ DATABASES = {
     }
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.setdefault("EMAIL_HOST", "")
+EMAIL_HOST_USER = os.environ.setdefault("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.setdefault("EMAIL_HOST_PASSWORD", "")
+EMAIL_FROM = os.environ.setdefault("EMAIL_FROM", 
+'Alumni Association Portal <portal@jacobs-alumni.de>')
+
+
 # add the stripe keys
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 
+# update the client ID for Google login
+GSUITE_OAUTH_CLIENT_ID = os.environ.setdefault("GSUITE_OAUTH_CLIENT_ID", "")
 
 # add the static file root
 STATIC_ROOT = "/var/www/static/"

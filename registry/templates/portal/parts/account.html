@@ -7,12 +7,7 @@
             <tbody>
                 <tr>
                     <td>Portal Username</td>
-                    <td>{{ user.username | safe }}</td>
-                </tr>
-
-                <tr>
-                    <td>Portal Password</td>
-                    <td><i>(not shown)</i></td>
+                    <td>{{ user.username }}</td>
                 </tr>
 
                 <tr>
@@ -26,8 +21,5 @@
                 </tr>
             </tbody>
         </table>
-    </div>
-    <div class="uk-card-footer">
-        <a href="{% url 'edit_password' %}" class="uk-button uk-button-text">Change Portal Password</a>
     </div>
 </div>

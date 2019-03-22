@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'registry',
     'cookielaw',
     'alumni',
+    'custom_auth',
+    'atlas',
     'django_forms_uikit',
     'django_countries',
     'django.contrib.admin',
@@ -61,12 +63,13 @@ ROOT_URLCONF = 'MemberManagement.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [(os.path.join(BASE_DIR, 'MemberManagement', 'templates')),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'registry.context_processors.devel_warning',
                 'registry.context_processors.is_stripe_test_mode',
+                'atlas.context_processors.atlas_allowed',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -111,10 +114,30 @@ AUTH_PASSWORD_VALIDATORS = [
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
 
-LOGIN_URL = '/login'
-LOGOUT_URL = '/logout'
+LOGIN_URL = '/auth/login'
+LOGOUT_URL = '/auth/logout'
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
+GSUITE_DOMAIN_NAME = 'jacobs-alumni.de'
+GSUITE_OAUTH_CLIENT_ID = '118982546822-515a0fn0ldm96ebev0af5naj6qn8pt9i.apps.googleusercontent.com'
+
+GSUITE_AUTH_FILE = os.environ.get("GSUITE_AUTH_FILE")
+GSUITE_ADMIN_USER = 'admin@jacobs-alumni.de'
+GSUITE_ORG_PATH = '/Approved Alumni'
+GSUITE_PASS_LENGTH = 20
+
+GSUITE_EMAIL_WELCOME_SUBJECT = 'Welcome to the Jacobs Alumni Association!'
+GSUITE_EMAIL_WELCOMEBACK_SUBJECT = 'Welcome again to the Jacobs Alumni Association!'
+GSUITE_EMAIL_ALL = ['membership@jacobs-alumni.de']
+
+AUTHENTICATION_BACKENDS = [
+    'sesame.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'custom_auth.backend.GoogleTokenBackend'
+]
+
+SESAME_MAX_AGE = 300 # Emailed tokens expire after 5 minutes
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -140,6 +163,20 @@ STATICFILES_DIRS = [
 
 # Import Local settings if available
 try:
-    from local_settings import *
+    from .local_settings import *
 except ImportError:
     pass
+
+
+# Email settings
+# https://docs.djangoproject.com/en/1.11/topics/email/
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = ''
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_FROM = 'Alumni Association Portal Login <email_login@jacobs-alumni.de>'

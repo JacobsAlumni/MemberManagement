@@ -14,27 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from django.contrib.auth import views as auth_views
-from django.views.generic import TemplateView, RedirectView
 
 from .views import registry as registry_views
 from .views import setup as setup_views
 from .views import edit as edit_views
 from .views import view as view_views
 
-
 urlpatterns = [
     # The Portal home page
     url(r'^$', registry_views.home, name='portal'),
-
-    # Static requirements
-    url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
-    url(r'^privacy/$', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/', permanent=False), name='privacy'),
-
-    # Login / Logout
-    url(r'^login/$', auth_views.login, {'template_name': 'auth/login.html'},
-        name='login'),
-    url('^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 
     # Registration
     url('^register/$', setup_views.register, name='register'),
@@ -46,19 +34,22 @@ urlpatterns = [
     url(r'^setup/jacobs/$', setup_views.jacobs, name='setup_jacobs'),
     url(r'^setup/job/$', setup_views.job, name='setup_job'),
     url(r'^setup/skills/$', setup_views.skills, name='setup_skills'),
-    url(r'^setup/payment/$', setup_views.SubscribeView.as_safe_view(), name='setup_payment'),
+    url(r'^setup/atlas/$', setup_views.atlas, name='setup_atlas'),
+    url(r'^setup/payment/$', setup_views.SubscribeView.as_safe_view(),
+        name='setup_payment'),
 
     # the portal for the user
     url(r'portal/', registry_views.portal, name='portal'),
 
     # Edit views
     url(r'^edit/$', edit_views.edit, name='edit'),
-    url(r'^edit/password/$', edit_views.password, name='edit_password'),
     url(r'^edit/address/$', edit_views.address, name='edit_address'),
     url(r'^edit/payments/$', view_views.payments, name='edit_payments'),
-    url(r'^edit/payments/(?P<id>\d+)/$', view_views.payments_admin, name='view_payments_admin'),
+    url(r'^edit/payments/(?P<id>\d+)/$',
+        view_views.payments_admin, name='view_payments_admin'),
     url(r'^edit/social/$', edit_views.social, name='edit_social'),
     url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
     url(r'^edit/job/$', edit_views.job, name='edit_job'),
     url(r'^edit/skills/$', edit_views.skills, name='edit_skills'),
+    url(r'^edit/atlas/$', edit_views.atlas, name='edit_atlas'),
 ]

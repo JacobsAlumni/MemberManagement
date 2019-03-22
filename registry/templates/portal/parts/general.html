@@ -10,24 +10,24 @@
             <tbody>
                 <tr>
                     <td>First Name</td>
-                    <td>{{ user.alumni.firstName | safe }}</td>
+                    <td>{{ user.alumni.firstName }}</td>
                 </tr>
 
                 {% if user.alumni.middleName is not None %}
                     <tr>
                         <td>Middle Name</td>
-                        <td>{{ user.alumni.middleName | safe }}</td>
+                        <td>{{ user.alumni.middleName }}</td>
                     </tr>
                 {% endif %}
 
                 <tr>
                     <td>Last Name</td>
-                    <td>{{ user.alumni.lastName|safe }}</td>
+                    <td>{{ user.alumni.lastName }}</td>
                 </tr>
 
                 <tr>
                     <td>E-Mail</td>
-                    <td>{{ user.alumni.email|safe }}</td>
+                    <td>{{ user.alumni.email }}</td>
                 </tr>
 
                 <tr>
@@ -37,11 +37,7 @@
 
                 <tr>
                     <td>Birthday</td>
-                    <td>{{ user.alumni.birthday|safe }}</td>
-                </tr>
-                <tr>
-                    <td>Birthday Visible to others</td>
-                    <td>{{ user.alumni.birthdayVisible|print_boolean }}</td>
+                    <td>{{ user.alumni.birthday }}</td>
                 </tr>
 
                 <tr>
@@ -51,7 +47,7 @@
 
                 <tr>
                     <td>Category</td>
-                    <td>{{ user.alumni |get_choice_field:"category"|safe }}</td>
+                    <td>{{ user.alumni |get_choice_field:"category" }}</td>
                 </tr>
             </tbody>
         </table>

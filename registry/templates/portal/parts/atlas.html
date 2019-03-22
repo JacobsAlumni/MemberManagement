@@ -1,0 +1,28 @@
+{% load registry_display %}
+
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">Atlas Settings</h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <tbody>
+                <tr>
+                    <td>Included on Alumni Atlas</td>
+                    <td>{{ user.alumni.atlas.included|print_boolean }}</td>
+                </tr>
+                <tr>
+                    <td>Birthday Visible</td>
+                    <td>{{ user.alumni.atlas.birthdayVisible|print_boolean }}</td>
+                </tr>
+                <tr>
+                    <td>Contact Information Visible</td>
+                    <td>{{ user.alumni.atlas.contactInfoVisible|print_boolean }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="uk-card-footer">
+        <a href="{% url 'edit_atlas' %}" class="uk-button uk-button-text">Edit Atlas Settings</a>
+    </div>
+</div>

@@ -10,22 +10,22 @@
                 {% if user.alumni.jacobs.college %}
                     <tr>
                         <td>College</td>
-                        <td>{{ user.alumni.jacobs|get_choice_field:"college"|safe }}</td>
+                        <td>{{ user.alumni.jacobs|get_choice_field:"college" }}</td>
                     </tr>
                 {% endif %}
                 {% if user.alumni.jacobs.degree %}
                     <tr>
                         <td>Degree</td>
-                        <td>{{ user.alumni.jacobs|get_choice_field:"degree"|safe }}</td>
+                        <td>{{ user.alumni.jacobs|get_choice_field:"degree" }}</td>
                     </tr>
                 {% endif %}
                 <tr>
                     <td>Graduation</td>
-                    <td>{{ user.alumni.jacobs|get_choice_field:"graduation"|safe }}</td>
+                    <td>{{ user.alumni.jacobs|get_choice_field:"graduation" }}</td>
                 </tr>
                 <tr>
                     <td>Major</td>
-                    <td>{{ user.alumni.jacobs|get_choice_field:"major"|safe }}</td>
+                    <td>{{ user.alumni.jacobs|get_choice_field:"major" }}</td>
                 </tr>
 
                 {% if user.alumni.comments %}

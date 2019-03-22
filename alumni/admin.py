@@ -1,8 +1,10 @@
 from django.contrib import admin
 
-from alumni.actions import export_as_csv_action, export_as_xslx_action
+from alumni.actions import export_as_csv_action, export_as_xslx_action, \
+    link_to_gsuite_action, unlink_from_gsuite_action
 from .models import Alumni, Address, JobInformation, SocialMedia, \
     JacobsData, Approval, PaymentInformation, Skills
+from atlas.models import AtlasSettings
 
 
 class AlumniJacobsDataInline(admin.StackedInline):
@@ -32,6 +34,9 @@ class PaymentInline(admin.StackedInline):
 class SkillsInline(admin.StackedInline):
     model = Skills
 
+class AtlasInline(admin.StackedInline):
+    model = AtlasSettings
+
 class SetupCompleted(admin.SimpleListFilter):
     title = 'Setup Status'
     parameter_name = 'completed'
@@ -54,7 +59,8 @@ class SetupCompleted(admin.SimpleListFilter):
 class AlumniAdmin(admin.ModelAdmin):
     inlines = [AlumniApprovalInline, AlumniAddressInline,
                AlumniSocialMediaInline, AlumniJacobsDataInline,
-               AlumniJobsInline, SkillsInline, PaymentInline]
+               AlumniJobsInline, SkillsInline, PaymentInline,
+               AtlasInline]
 
     # search through names and emails
     search_fields = ['firstName', 'middleName', 'lastName', 'email',
@@ -62,17 +68,15 @@ class AlumniAdmin(admin.ModelAdmin):
 
     list_display = (
         # basic information
-        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'sex', 'birthday',
-        'category', 'paymentTier',
+        'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'GSuiteLink', 'sex', 'birthday',
+        'category', 'paymentTier', 
 
         # Jacobs information
         'jacobs_degree', 'jacobs_graduation', 'jacobs_major', 'jacobs_college',
     )
 
     list_filter = (
-        'approval__approval', SetupCompleted, 'category', 'jacobs__degree',
-        'jacobs__graduation',
-        'jacobs__major', 'payment__tier')
+        'approval__approval', SetupCompleted, 'category', 'jacobs__degree', 'payment__tier', 'jacobs__graduation', 'jacobs__major')
 
     legacy_export_fields = list_display + ('existingEmail',
                                            'resetExistingEmailPassword')
@@ -86,13 +90,12 @@ class AlumniAdmin(admin.ModelAdmin):
 
         # Alumni Model
         'firstName', 'middleName', 'lastName', 'email', 'existingEmail',
-        'resetExistingEmailPassword', 'sex', 'birthday', 'birthdayVisible',
+        'resetExistingEmailPassword', 'sex', 'birthday',
         'nationality', 'category',
 
         # Address Data
         'address__address_line_1', 'address__address_line_2', 'address__city',
         'address__zip', 'address__state', 'address__country',
-        'address__addressVisible',
 
         # 'Social' Data
         'social__facebook', 'social__linkedin', 'social__twitter',
@@ -114,14 +117,19 @@ class AlumniAdmin(admin.ModelAdmin):
         'skills__alumniMentor',
 
         # Payment Data
-        'payment__tier', 'payment__starterReason'
+        'payment__tier', 'payment__starterReason',
+
+        # Atlas Settings
+        'atlas__secret', 'atlas__included', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',
     )
     xslx_export = export_as_xslx_action("Export as XSLX",
                                         fields=full_export_fields)
 
     actions = [
         'xslx_export',
-        'csv_export'
+        'csv_export',
+        link_to_gsuite_action,
+        unlink_from_gsuite_action
     ]
 
     def fullName(self, x):
@@ -136,13 +144,7 @@ class AlumniAdmin(admin.ModelAdmin):
     userApproval.admin_order_field = 'approval__approval'
 
     def completedSetup(self, x):
-        try:
-            if x.payment and x.payment.customer:
-                return True
-            else:
-                return False
-        except:
-            return False
+        return x.setup_completed
     completedSetup.short_description = 'Setup Done'
     completedSetup.boolean = True
     completedSetup.admin_order_field = 'payment__customer'
@@ -152,6 +154,20 @@ class AlumniAdmin(admin.ModelAdmin):
     
     userGSuite.short_description = 'Alumni E-Mail'
     userGSuite.admin_order_field = 'approval__gsuite'
+
+    def GSuiteLink(self, x):
+        results = x.profile.googleassociation_set
+        return results.exists()
+    GSuiteLink.short_description = 'Linked'
+    GSuiteLink.boolean = True
+    GSuiteLink.admin_order_field = 'profile__googleassociation'
+
+    def atlas_included(self, x):
+        return x.atlas.included
+    atlas_included.short_description = 'Atlas'
+    atlas_included.boolean = True
+    atlas_included.admin_order_field = 'atlas__included'
+    
 
     def paymentTier(self, x):
         return x.payment.tier
