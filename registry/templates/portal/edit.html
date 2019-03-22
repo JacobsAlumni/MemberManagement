@@ -6,8 +6,14 @@
 {% block content %}
 <article class="uk-article">
     <h1 class="uk-article-title">
+        <a href="{% url "portal" %}" class="uk-button uk-button-default uk-button-small">
+            <span uk-icon="icon: arrow-left"></span>
+            Back to Portal
+        </a>
         Edit Data - {{ name }}
     </h1>
+
+
 
     {% include "portal/approval_warning.html" %}
 
