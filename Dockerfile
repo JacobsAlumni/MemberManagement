@@ -57,6 +57,7 @@ ENV STRIPE_SECRET_KEY ""
 ENV STRIPE_PUBLISHABLE_KEY ""
 
 # GSuite Auth file should be in the data volume
+ENV GOOGLE_ANALYTICS_ID ""
 ENV GSUITE_AUTH_FILE /data/credentials.json
 
 # Raven -- optional
