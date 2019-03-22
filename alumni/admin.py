@@ -69,14 +69,14 @@ class AlumniAdmin(admin.ModelAdmin):
     list_display = (
         # basic information
         'fullName', 'email', 'userApproval', 'completedSetup', 'userGSuite', 'GSuiteLink', 'sex', 'birthday',
-        'category', 'paymentTier', 
+        'category', 'paymentTier', 'atlas_included',
 
         # Jacobs information
         'jacobs_degree', 'jacobs_graduation', 'jacobs_major', 'jacobs_college',
     )
 
     list_filter = (
-        'approval__approval', SetupCompleted, 'category', 'jacobs__degree', 'payment__tier', 'jacobs__graduation', 'jacobs__major')
+        'approval__approval', SetupCompleted, 'category', 'atlas__included', 'jacobs__degree', 'payment__tier', 'jacobs__graduation', 'jacobs__major')
 
     legacy_export_fields = list_display + ('existingEmail',
                                            'resetExistingEmailPassword')
