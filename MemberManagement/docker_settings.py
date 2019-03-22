@@ -34,7 +34,7 @@ EMAIL_HOST = os.environ.setdefault("EMAIL_HOST", "")
 EMAIL_HOST_USER = os.environ.setdefault("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.setdefault("EMAIL_HOST_PASSWORD", "")
 EMAIL_FROM = os.environ.setdefault("EMAIL_FROM", 
-'Alumni Association Portal Login <email_login@jacobs-alumni.de>')
+'Alumni Association Portal <portal@jacobs-alumni.de>')
 
 
 # add the stripe keys
