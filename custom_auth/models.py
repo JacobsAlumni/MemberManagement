@@ -30,6 +30,12 @@ class GoogleAssociation(models.Model):
 
         # Create or update the object
         obj, created = cls.objects.update_or_create(user=user, defaults={'google_user_id': google_user_id})
+
+        # if the user is not staff and is not a superuser
+        # then we need to lock their password 
+        if not (user.is_staff or user.is_superuser):
+            user.set_unusable_password()
+            user.save()
         
         # and return the object itself for convenience
         return obj
