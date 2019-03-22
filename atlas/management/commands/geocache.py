@@ -46,4 +46,4 @@ class Command(BaseCommand):
         
         now = time.time()
         GeoLocation.updateData(data)
-        print("Updated database in {} seconds. ".format(len(data), time.time() - now))
+        print("Updated database in {} seconds. ".format(time.time() - now))
