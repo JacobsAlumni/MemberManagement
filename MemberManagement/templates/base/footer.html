@@ -2,16 +2,17 @@
 
 <footer class="footer uk-background-secondary uk-light uk-padding">
     {% include "base/devel.html" %}
-   <div class="uk-grid uk-margin-medium-bottom uk-child-width-1-2@s uk-child-width-1-4@m" uk-grid="true">
+   <div class="uk-grid uk-margin-small-bottom uk-child-width-1-2" uk-grid="true">
       <div>
-         <figure>
-            <p>The Jacobs Alumni Association is the growing network of former Jacobs University students and friends.</p>
-            <a target="_blank" href="https://www.jacobs-university.de"><img src="{%  static "media/jub_logo.png" %}" alt="Jacobs University Bremen"></a>
-         </figure>
+            <p>
+               The <a href="https://jacobs-alumni.de/">Jacobs Alumni Association</a> is the growing network of former Jacobs University students and friends.
+            </p>
+            <p class="copyright">
+               Copyright © 2017-{% now "y" %} Jacobs University Alumni Association. All Rights Reserved. <br>
+               <a href="{% url 'privacy' %}">Datenschutzerklärung / Privacy Policy</a> <a href="{% url 'imprint' %}">Impressum / Imprint</a>
+           </p>
       </div>
-      <div class="uk-visible@m"></div>
-      <div class="uk-visible@m"></div>
-      <div>
+      <div style="text-align: right;">
          <h3>Social media</h3>
          <ul class="inline nolisticon">
             <li class="uk-margin-small-right">
@@ -47,10 +48,5 @@
             </li>
          </ul>
       </div>
-   </div>
-   <div class="copyright uk-text-small">
-      <p>
-          Copyright © 2017-{% now "y" %} Jacobs University Alumni Association. All Rights Reserved. <br>
-          <a href="{% url 'privacy' %}">Datenschutzerklärung / Privacy Policy</a> <a href="{% url 'imprint' %}">Impressum / Imprint</a></p>
    </div>
 </footer>
