@@ -12,11 +12,11 @@ from django.conf import settings
 
 from .forms import UserApprovalForm
 from .models import Alumni
-from .fields import TierField
 
 from custom_auth.models import GoogleAssociation
-from custom_auth.gsuite import get_user_id, make_directory_service, create_user, patch_user
-from custom_auth.mailutils import send_email
+from custom_auth.gsuite import get_user_id, create_user, patch_user
+
+from raven.contrib.django.raven_compat.models import client
 
 EMAIL_OK = 0
 EMAIL_DIFFERS = 1
@@ -78,6 +78,7 @@ class ApprovalView(FormView):
         try:
             self.run_approval(self.request, context, form)
         except Exception as e:
+            client.captureException()
             form.add_error(None, 'Account approval failed: {}'.format(e))
         
         # grab the context *again*, as things might have changed
