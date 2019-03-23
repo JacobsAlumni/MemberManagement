@@ -173,7 +173,7 @@ class ApprovalView(FormView):
 
         # Send email
         messages.info(request, 'Sending Welcome Back email')
-        alumni.send_welcome_email(alumni, password=password, back=True)
+        alumni.send_welcome_email(password=password, back=True)
         messages.success(request, 'Sent Welcome Back email')
 
     
