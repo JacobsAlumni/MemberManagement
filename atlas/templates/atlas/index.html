@@ -87,6 +87,9 @@
         // finally: create a map
         var map = new ol.Map({
             layers: [raster, clusters],
+            controls: ol.control.defaults().extend([
+               new ol.control.FullScreen() 
+            ]),
             target: 'map',
             view: new ol.View({
                 center: [0, 0],
