@@ -4,6 +4,7 @@ from django_countries.fields import Country
 
 
 class CountryField(OriginalCountryField):
+    COUNTRY_CHOICES = []
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -16,6 +17,8 @@ class CountryField(OriginalCountryField):
 
     def to_python(self, value):
         return self.get_clean_value(value)
+
+CountryField.COUNTRY_CHOICES = CountryField().get_choices(include_blank=False)
 
 
 class GenderField(models.CharField):

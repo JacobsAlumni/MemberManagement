@@ -12,7 +12,7 @@ from django.core.paginator import PageNotAnInteger
 
 from alumni.models import Alumni, Address
 
-from alumni.fields import CollegeField, ClassField, MajorField, DegreeField, IndustryField, JobField
+from alumni.fields import CollegeField, ClassField, MajorField, DegreeField, IndustryField, JobField, CountryField
 
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -21,6 +21,7 @@ from django.urls import reverse
 from registry.search.filter import SearchFilter, ParsingError
 search = SearchFilter({
     'city': 'address__city',
+    'country': 'address__country',
     'class': 'jacobs__graduation',
     'college': 'jacobs__college',
     'major': 'jacobs__major',
@@ -41,7 +42,8 @@ ADVANCED_SEARCH_FIELDS = [
     ['major', 'Major', MajorField.MAJOR_CHOICES],
     ['degree', 'Degree', DegreeField.DEGREE_CHOICES],
     ['industry', 'Industry', IndustryField.INDUSTRY_CHOICES],
-    ['job', 'Job', JobField.JOB_CHOICES]
+    ['job', 'Job', JobField.JOB_CHOICES],
+    ['country', 'Country', CountryField.COUNTRY_CHOICES]
 ]
 
 
