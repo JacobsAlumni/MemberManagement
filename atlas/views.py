@@ -115,6 +115,11 @@ def make_pagination_ui_ctx(page):
 class HomeView(TemplateView):
     template_name = 'atlas/index.html'
 
+    def get_template_names(self):
+        if not can_view_atlas(self.request.user):
+            return 'atlas/denied.html'
+        return 'atlas/index.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['search_fields'] = ADVANCED_SEARCH_FIELDS
@@ -124,11 +129,6 @@ class HomeView(TemplateView):
         context['people_coords'] = '[{}]'.format(','.join(coords))
 
         return context
-
-    def get(self, request, *args, **kwargs):
-        if not can_view_atlas(request.user):
-            raise Http404
-        return super().get(request, *args, **kwargs)
 
 @method_decorator(login_required, name='dispatch')
 class ProfileView(TemplateView):
