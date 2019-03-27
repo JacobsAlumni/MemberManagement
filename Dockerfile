@@ -22,13 +22,14 @@ ADD docker/entrypoint.sh /entrypoint.sh
 
 # Install Django App and setup the setting module
 ADD manage.py /app/
-ADD alumni/ /app/alumni/
-ADD django_forms_uikit/ /app/django_forms_uikit/
-ADD MemberManagement/ /app/MemberManagement/
+ADD alumni/ /app/alumni
+ADD django_forms_uikit/ /app/django_forms_uikit
+ADD MemberManagement/ /app/MemberManagement
 ADD registry/ /app/registry/
 ADD static/ /app/static/
 ADD custom_auth/ /app/custom_auth
 ADD atlas/ /app/atlas
+ADD payments/ /app/payments
 
 ENV DJANGO_SETTINGS_MODULE "MemberManagement.docker_settings"
 
