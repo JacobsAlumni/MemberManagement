@@ -56,6 +56,7 @@ def check_existing_email(alumni, candidate = None):
 def generate_random_password():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=settings.GSUITE_PASS_LENGTH))
 
+@method_decorator(staff_member_required, name='dispatch')
 class ApprovalView(FormView):
     template_name = 'approval/index.html'
     form_class = UserApprovalForm
@@ -190,7 +191,3 @@ class ApprovalView(FormView):
         messages.info(request, 'Linking portal account')
         GoogleAssociation.link_user(alumni.profile)
         messages.success(request, 'Linked portal account')
-    
-    @method_decorator(staff_member_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
