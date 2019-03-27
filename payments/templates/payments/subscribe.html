@@ -219,7 +219,6 @@
                 If you run into any trouble or have any questions, please drop us an e-mail at <a
                     href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>.
             </p>
-
         </div>
 
         <div>
@@ -294,6 +293,18 @@
                         </ul>
                     </div>
                 </div>
+
+                {% if stripe_test_mode %}
+                <div class="uk-text-lead">
+                    <div class="uk-alert-danger" uk-alert>
+                        <p>
+                            Stripe is in testing mode and no real charges will be made. <br>
+                            Using real payment data is not possible in this mode. 
+                            Instead make use of <a target="_blank" href="https://stripe.com/docs/testing">Testing Card or SEPA numbers</a>. 
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
 
                 <button class="uk-button uk-button-primary">CONFIRM MEMBERSHIP &amp; AUTHORIZE PAYMENT NOW</button>
             </form>

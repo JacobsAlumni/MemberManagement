@@ -18,7 +18,6 @@ from django.conf.urls import url
 from .views import registry as registry_views
 from .views import setup as setup_views
 from .views import edit as edit_views
-from .views import view as view_views
 
 urlpatterns = [
     # The Portal home page
@@ -35,8 +34,6 @@ urlpatterns = [
     url(r'^setup/job/$', setup_views.job, name='setup_job'),
     url(r'^setup/skills/$', setup_views.skills, name='setup_skills'),
     url(r'^setup/atlas/$', setup_views.atlas, name='setup_atlas'),
-    url(r'^setup/payment/$', setup_views.SubscribeView.as_safe_view(),
-        name='setup_payment'),
 
     # the portal for the user
     url(r'portal/', registry_views.portal, name='portal'),
@@ -44,9 +41,6 @@ urlpatterns = [
     # Edit views
     url(r'^edit/$', edit_views.edit, name='edit'),
     url(r'^edit/address/$', edit_views.address, name='edit_address'),
-    url(r'^edit/payments/$', view_views.payments, name='edit_payments'),
-    url(r'^edit/payments/(?P<id>\d+)/$',
-        view_views.payments_admin, name='view_payments_admin'),
     url(r'^edit/social/$', edit_views.social, name='edit_social'),
     url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
     url(r'^edit/job/$', edit_views.job, name='edit_job'),

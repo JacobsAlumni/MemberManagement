@@ -1,22 +1,18 @@
 import stripe
 
-from django.conf import settings
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView
-from raven.contrib.django.raven_compat.models import client
+from django.urls import reverse
 
 from alumni.models import Approval
 from alumni.fields import PaymentTypeField
 from registry.decorators import require_unset_component
-from registry.models import subscription_plans
 from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm, PaymentInformationForm, SkillsForm, AtlasSettingsForm
+    JobInformationForm, SkillsForm, AtlasSettingsForm
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -146,100 +142,3 @@ job = setupViewFactory('job', JobInformationForm, 'Professional information',
 skills = setupViewFactory('skills', SkillsForm, 'Education and Skills', '')
 atlas = setupViewFactory('atlas', AtlasSettingsForm, 'Atlas Setup', 'A Map & Search Interface for Alumni')
 
-
-class SubscribeView(FormView):
-    template_name = 'payments/subscribe.html'
-    form_class = PaymentInformationForm
-    success_url = reverse_lazy('portal')
-    publishable_key = settings.STRIPE_PUBLISHABLE_KEY
-
-    def get_context_data(self, **kwargs):
-        context = super(SubscribeView, self).get_context_data(**kwargs)
-        context['publishable_key'] = settings.STRIPE_PUBLISHABLE_KEY
-        return context
-
-    def form_valid(self, form):
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        tier = form.cleaned_data['tier']
-        customer_data = {
-            'description': "Jacobs Alumni {} for {} ({})".format(subscription_plans[tier].name,
-                                                                 self.request.user.alumni.fullName,
-                                                                 self.request.user.alumni.email),
-            'email': self.request.user.email,
-        }
-        ptype = form.cleaned_data['payment_type']
-
-        if ptype == PaymentTypeField.SEPA:
-            sepa_mandate = form.cleaned_data['sepa_mandate']
-            customer_data['source'] = sepa_mandate['id']
-        elif ptype == PaymentTypeField.CARD:
-            customer_data["card"] = form.cleaned_data['token']
-        else:
-            return form.add_error(None,
-                                  'Only credit cards, certain debit cards, and SEPA transfers are accepted at the moment')
-
-        try:
-            customer = stripe.Customer.create(**customer_data)
-            subscription = customer.subscriptions.create(
-                plan=subscription_plans[tier].stripe_id)
-        except stripe.error.CardError as e:
-            client.captureException()
-            # Since it's a decline, stripe.error.CardError will be caught
-            body = e.json_body
-            err = body.get('error', {})
-
-            form.add_error(None,
-                           'Your card has been declined ({})'.format(
-                               err.get('message')))
-            return self.form_invalid(form)
-        except stripe.error.RateLimitError as e:
-            client.captureException()
-            # Too many requests made to the API too quickly
-            form.add_error(None,
-                           'Unable to communicate with our service payment provider (stripe.error.RateLimitError). Please try again later or contact support. ')
-            return self.form_invalid(form)
-        except stripe.error.InvalidRequestError as e:
-            client.captureException()
-            # Invalid parameters were supplied to Stripe's API
-            form.add_error(None,
-                           'Unable to communicate with our service payment provider (stripe.error.InvalidRequestError). Please try again later or contact support. ')
-            return self.form_invalid(form)
-        except stripe.error.AuthenticationError as e:
-            client.captureException()
-            # Authentication with Stripe's API failed
-            # (maybe you changed API keys recently)
-            form.add_error(None,
-                           'Unable to communicate with our service payment provider (stripe.error.AuthenticationError). Please try again later or contact support. ')
-            return self.form_invalid(form)
-        except stripe.error.APIConnectionError as e:
-            client.captureException()
-            # Network communication with Stripe failed
-            form.add_error(None,
-                           'Unable to communicate with our service payment provider (stripe.error.APIConnectionError). Please try again later or contact support. ')
-            return self.form_invalid(form)
-        except stripe.error.StripeError as e:
-            client.captureException()
-            # Display a very generic error to the user, and maybe send
-            # yourself an email
-            form.add_error(None,
-                           'Something went wrong trying to process your payment. Please try again later. ')
-            return self.form_invalid(form)
-        except Exception as e:
-            form.add_error(None, 'Something went wrong trying to process your payment. Please try again. ')
-            return self.form_invalid(form)
-
-        # Create an instance for the payment in the database
-        instance = form.save(commit=False)
-        instance.member = self.request.user.alumni
-        instance.customer = customer.stripe_id
-        instance.subscription = subscription.stripe_id
-
-        # and save it
-        instance.save()
-        return super(SubscribeView, self).form_valid(form)
-
-    @classmethod
-    def as_safe_view(cls, **initkwargs):
-        dec = require_unset_component('payment', default_alternative)
-        view = cls.as_view(**initkwargs)
-        return dec(view)

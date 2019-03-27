@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^admin/', include('alumni.urls')),
     url(r'^auth/', include('custom_auth.urls')),
     url(r'^atlas/', include('atlas.urls')),
+    url(r'^payments/', include('payments.urls')),
 
     url(r'^', include('registry.urls'))
 ]

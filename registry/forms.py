@@ -2,7 +2,6 @@ from django import forms
 
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
     JobInformation, Skills
-from payments.models import PaymentInformation
 from atlas.models import AtlasSettings
 from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
@@ -142,17 +141,5 @@ class AtlasSettingsForm(forms.ModelForm):
             'included': '',
             'birthdayVisible': '',
             'contactInfoVisible': '',
-        }
-
-
-class PaymentInformationForm(forms.ModelForm):
-    """ A form for editing payment information"""
-
-    class Meta:
-        model = PaymentInformation
-        fields = ['tier', 'token', 'starterReason', 'payment_type', 'sepa_mandate']
-        widgets = {'token': forms.HiddenInput(), 'sepa_mandate': forms.HiddenInput()}
-        labels = {
-            'starterReason': ''
         }
 
