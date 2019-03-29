@@ -1,144 +1,198 @@
 import stripe
 
+from django.views.generic.base import View, TemplateResponseMixin
+from django.views.generic.edit import FormMixin
+
+from django.utils.decorators import method_decorator
+
 from django.contrib.auth import login
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 
 from alumni.models import Approval
-from alumni.fields import PaymentTypeField
-from registry.decorators import require_unset_component
+from registry.decorators import require_alumni
 from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, SkillsForm, AtlasSettingsForm
 
 from django.core.exceptions import ObjectDoesNotExist
 
-def register(request):
-    """ Implements the new Alumni Registration Page"""
+@method_decorator(login_required, name='dispatch')
+class SetupView(TemplateResponseMixin, View):
+    template_name = 'setup/finished.html'
 
-    # not for already logged in users
-    if request.user.is_authenticated:
-        return redirect('/')
+    def get(self, *args, **kwargs):
+        alumni = self.request.user.alumni
+        component = alumni.get_first_unset_component()
 
-    if request.method == 'POST':
-        # load the form
-        form = RegistrationForm(request.POST)
+        if component is None:
+            try:
+                approved = alumni.approval.approval
+            except ObjectDoesNotExist:
+                approved = False
+            
+            if not approved:
+                return self.render_to_response({'user': request.user})
+            else:
+                return redirect(reverse('portal'))
+        else:
+            return redirect(reverse('setup_{}'.format(component)))
 
-        # check that the form is valid
-        if form.is_valid():
+class SetupViewBase(TemplateResponseMixin, View):
+    """ A base class for all setup views """
+
+
+    http_method_names = ['get', 'post']
+    template_name = 'setup/setup.html'
+    
+    setup_name = None
+    setup_subtitle = ''
+    setup_next_text = ''
+    setup_form_class = None
+    setup_redirect_url = reverse_lazy('setup')
+
+    def has_setup_component(self):
+        """ returns True iff this setup routine has already been performed """
+
+        raise NotImplementedError
+
+    def dispatch_already_set(self):
+        """ called when setup component already exists """
+
+        raise NotImplementedError
+    
+    def form_valid(self, form):
+        """ Called when the form is valid and an instance is to be created """
+
+        raise NotImplementedError
+
+    def dispatch_success(self, validated):
+        """ called upon successful setup """
+
+        return redirect(self.__class__.setup_redirect_url)
+
+    def get_context(self, form):
+        """ builds context for instantiating the template """
+
+        return {
+            'form': form,
+            'title': self.__class__.setup_name,
+            'subtitle': self.__class__.setup_subtitle,
+            'next_text': self.__class__.setup_next_text,
+        }
+    
+    def dispatch(self, *args, **kwargs):
+        # if we already have the setup component
+        # then call the appropriate dispatch method
+        if self.has_setup_component():
+            return self.dispatch_already_set()
+
+        # Create the form instance
+        form = self.__class__.setup_form_class(self.request.POST or None)
+        
+        # and if it is valid
+        if self.request.method == 'POST' and form.is_valid():
             form.clean()
 
-            # create a user object and save it
-            username = form.cleaned_data['username']
-            user = User.objects.create_user(username, None, password=None)
-            user.save()
+            # and we successfully created the object
+            return self.dispatch_success(self.form_valid(form))
+        
+        # else render the form
+        return self.render_to_response(self.get_context(form))
 
-            # Create the Alumni Data Object
-            instance = form.save(commit=False)
-            instance.profile = user
-            instance.save()
+class RegisterView(SetupViewBase):
+    setup_name = 'Register'
+    setup_subtitle = 'Enter your General Information - just the basics'
+    setup_next_text = 'Continue Application'
+    setup_form_class = RegistrationForm
 
-            # create an empty approval object
-            approval = Approval(member=instance, approval=False, gsuite=None)
-            approval.save()
+    def has_setup_component(self):
+        return self.request.user.is_authenticated
 
-            # Authenticate the user for this request
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+    def dispatch_already_set(self):
+        return redirect('/')
 
-            # and then redirect the user to the main setup page
-            return redirect(reverse('setup'))
+    def form_valid(self, form):
+        """ Called when the form is valid and an instance is to be created """
 
-    # if we did not have any post data, simply create a new form
-    else:
-        form = RegistrationForm()
+        # Create the user
+        username = form.cleaned_data['username']
+        user = User.objects.create_user(username, None, password=None)
+        user.save()
 
-    # and return the request
-    return render(request, 'setup/setup.html', {
-        'form': form,
-        'title': 'Register',
-        'subtitle': 'Enter your General Information - just the basics',
-        'next_text': 'Continue Application'
-    })
+        # Create the instance
+        instance = form.save(commit=False)
+        instance.profile = user
+        instance.save()
 
+        # Create an empty approval object
+        approval = Approval(member=instance, approval=False, gsuite=None)
+        approval.save()
 
-@login_required
-def setup(request):
-    """ Generates a setup page according to the given component. """
+        # authenticate the user    
+        login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
 
-    component = request.user.alumni.get_first_unset_component()
+        # and return the created user
+        return instance
 
-    # if we have finished everything, return the all done page
-    if component is None:
+@method_decorator(require_alumni, name='dispatch')
+class SetupComponentView(SetupViewBase):
+    """ A view for setting up components """
 
-        # check if the user is approved
-        try:
-            approved = request.user.alumni.approval.approval
-        except ObjectDoesNotExist:
-            approved = False
+    setup_next_text = 'Continue'
+    setup_prop = None
 
-        # If the user is not approved, show him that he finished the setup
-        if not approved:
-            return render(request, 'setup/finished.html', {'user': request.user})
-        # else go straight to the portal
-        else:
-            return redirect(reverse('portal'))
+    def has_setup_component(self):
+        return self.request.user.alumni.has_component(self.__class__.setup_prop)
 
-    # else redirect to the setup page.
-    else:
-        return redirect(reverse('setup_{}'.format(component)))
+    def dispatch_already_set(self):
+        # TODO: Redirect(reverse('portal'))
+        return default_alternative(self.request)
 
+    def form_valid(self, form):
+        """ Called when the form is valid and an instance is to be created """
+        instance = form.save(commit=False)
+        instance.member = self.request.user.alumni
+        instance.save()
 
-def setupViewFactory(prop, FormClass, name, subtitle):
-    """ Generates a setup view for a given section of the profile """
-
-    @require_unset_component(prop, default_alternative)
-    def setup(request):
-
-        # reverse the url to redirect to
-        url = reverse('setup')
-
-        if request.method == 'POST':
-            # load the form
-            form = FormClass(request.POST)
-
-            # check that the form is valid
-            if form.is_valid():
-                form.clean()
-
-                # Create the data instance
-                instance = form.save(commit=False)
-                instance.member = request.user.alumni
-                instance.save()
-
-                # and then continue to the main setup page
-                return redirect(url)
-
-        # if we did not have any post data, simply create a new form
-        else:
-            form = FormClass()
-
-        # and return the request
-        return render(request, 'setup/setup.html',
-                      {
-                          'form': form,
-                          'title': name,
-                          'subtitle': subtitle,
-                          'next_text': 'Continue'
-                      })
-
-    return setup
+        return instance
 
 
-address = setupViewFactory('address', AddressForm,
-                           'General Information - Residential Address', '')
-social = setupViewFactory('social', SocialMediaForm, 'Social Media Data', '')
-jacobs = setupViewFactory('jacobs', JacobsForm, 'Alumni Data',
-                          'tell us what you did at Jacobs')
-job = setupViewFactory('job', JobInformationForm, 'Professional information',
-                       'What did you do after Jacobs?')
-skills = setupViewFactory('skills', SkillsForm, 'Education and Skills', '')
-atlas = setupViewFactory('atlas', AtlasSettingsForm, 'Atlas Setup', 'A Map & Search Interface for Alumni')
+class AddressSetup(SetupComponentView):
+    setup_name = 'General Information - Residential Address'
+    setup_subtitle = ''
+    setup_prop = 'address'
+    setup_form_class = AddressForm
 
+class SocialSetup(SetupComponentView):
+    setup_name = 'Social Media Data'
+    setup_subtitle = ''
+    setup_prop = 'social'
+    setup_form_class = SocialMediaForm
+
+class JacobsSetup(SetupComponentView):
+    setup_name = 'Alumni Data'
+    setup_subtitle = 'tell us what you did at Jacobs'
+    setup_prop = 'jacobs'
+    setup_form_class = JacobsForm
+
+class JobSetup(SetupComponentView):
+    setup_name = 'Professional Information'
+    setup_subtitle = 'What did you do after Jacobs?'
+    setup_prop = 'job'
+    setup_form_class = JobInformationForm
+
+class SkillsSetup(SetupComponentView):
+    setup_name = 'Education And Skills'
+    setup_subtitle = ''
+    setup_prop = 'skills'
+    setup_form_class = SkillsForm
+
+class AtlasSetup(SetupComponentView):
+    setup_name = 'Atlas Setup'
+    setup_subtitle = 'A Map & Search Interface for Alumni'
+    setup_prop = 'atlas'
+    setup_form_class = AtlasSettingsForm

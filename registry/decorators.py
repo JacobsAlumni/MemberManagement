@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
 
@@ -6,21 +6,15 @@ from django.http import HttpResponseForbidden
 def require_alumni(view):
     """ A decorator for views that ensures an alumni exists """
 
-    @login_required
-    def wrapper(request, *args, **kwargs):
-
-        # Try to retrieve the alumni
+    def user_has_alumni(user):
         try:
-            _ = request.user.alumni
+            user.alumni
+            return True
+        except:
+            return False
 
-        # return to retrieve a forbidden response if it does not exist
-        except ObjectDoesNotExist:
-            return HttpResponseForbidden()
-
-        return view(request, *args, **kwargs)
-
-    # and return the wrapper
-    return wrapper
+    # Check that the user passes the test
+    return user_passes_test(user_has_alumni)(view)
 
 
 def require_unset_component(component, alternative):

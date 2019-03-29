@@ -18,8 +18,7 @@ from django.conf.urls import url
 from .views import SubscribeView, PaymentsView, PaymentsAdminView
 
 urlpatterns = [
-    url(r'^setup/$', SubscribeView.as_safe_view(),
-        name='setup_payment'),
+    url(r'^setup/$', SubscribeView.as_view(), name='setup_payment'),
     url(r'^view/$', PaymentsView.as_view(), name='edit_payments'),
     url(r'^view/(?P<id>\d+)/$',
         PaymentsAdminView.as_view(), name='view_payments_admin'),

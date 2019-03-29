@@ -24,16 +24,16 @@ urlpatterns = [
     url(r'^$', registry_views.home, name='portal'),
 
     # Registration
-    url('^register/$', setup_views.register, name='register'),
+    url('^register/$', setup_views.RegisterView.as_view(), name='register'),
 
     # Initial data Setup
-    url(r'^setup/$', setup_views.setup, name='setup'),
-    url(r'^setup/address/$', setup_views.address, name='setup_address'),
-    url(r'^setup/social/$', setup_views.social, name='setup_social'),
-    url(r'^setup/jacobs/$', setup_views.jacobs, name='setup_jacobs'),
-    url(r'^setup/job/$', setup_views.job, name='setup_job'),
-    url(r'^setup/skills/$', setup_views.skills, name='setup_skills'),
-    url(r'^setup/atlas/$', setup_views.atlas, name='setup_atlas'),
+    url(r'^setup/$', setup_views.SetupView.as_view(), name='setup'),
+    url(r'^setup/address/$', setup_views.AddressSetup.as_view(), name='setup_address'),
+    url(r'^setup/social/$', setup_views.SocialSetup.as_view(), name='setup_social'),
+    url(r'^setup/jacobs/$', setup_views.JacobsSetup.as_view(), name='setup_jacobs'),
+    url(r'^setup/job/$', setup_views.JobSetup.as_view(), name='setup_job'),
+    url(r'^setup/skills/$', setup_views.SkillsSetup.as_view(), name='setup_skills'),
+    url(r'^setup/atlas/$', setup_views.AtlasSetup.as_view(), name='setup_atlas'),
 
     # the portal for the user
     url(r'portal/', registry_views.portal, name='portal'),

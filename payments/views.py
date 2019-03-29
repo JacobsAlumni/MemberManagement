@@ -20,6 +20,7 @@ from registry.decorators import require_setup_completed, require_unset_component
 from registry.views.registry import default_alternative
 
 
+@method_decorator(require_unset_component('payment', default_alternative), name='dispatch')
 class SubscribeView(FormView):
     template_name = 'payments/subscribe.html'
     form_class = PaymentInformationForm
@@ -109,12 +110,6 @@ class SubscribeView(FormView):
         # and save it
         instance.save()
         return super(SubscribeView, self).form_valid(form)
-
-    @classmethod
-    def as_safe_view(cls, **initkwargs):
-        dec = require_unset_component('payment', default_alternative)
-        view = cls.as_view(**initkwargs)
-        return dec(view)
 
 
 @method_decorator(require_setup_completed(default_alternative), name='dispatch')
