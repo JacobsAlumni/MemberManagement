@@ -6,8 +6,17 @@ from atlas.models import AtlasSettings
 from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
 
+class RegistrationMixin():
+    def raise_validation_error(self):
+        raise forms.ValidationError("Please correct the error below.")
+    
+    def clean_profile_fields(self, cleaned_data):
+        if cleaned_data['email'].endswith('@jacobs-alumni.de'):
+            self.add_error('email', forms.ValidationError(
+                "Your private email address may not be a Jacobs Alumni email address. "))
 
-class RegistrationForm(forms.ModelForm):
+
+class RegistrationForm(RegistrationMixin, forms.ModelForm):
     """ A form for registering users """
     username = forms.SlugField(label='Username',
                                help_text='Select your username for the membership portal. '
@@ -49,18 +58,20 @@ class RegistrationForm(forms.ModelForm):
         if User.objects.filter(username=username).exists():
             self.add_error('username', forms.ValidationError(
                 "This username is already taken, please pick another. "))
-            raise forms.ValidationError("Please correct the error below.")
+            return self.raise_validation_error()
 
         # check that we have accepted the terms and conditions
         if not self.cleaned_data['tos']:
             self.add_error('tos', forms.ValidationError(
                 "You need to accept the terms and conditions to continue. "))
-            raise forms.ValidationError("Please correct the error below.")
+            return self.raise_validation_error()
 
-        return super(RegistrationForm, self).clean()
+        self.clean_profile_fields(cleaned_data)
+
+        return super().clean()
 
 
-class AlumniForm(forms.ModelForm):
+class AlumniForm(RegistrationMixin, forms.ModelForm):
     class Meta:
         model = Alumni
         fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
@@ -71,6 +82,10 @@ class AlumniForm(forms.ModelForm):
         help_texts = {
             "birthday": "",
         }
+
+    def clean(self):
+        self.clean_profile_fields(self.cleaned_data)
+        return super().clean()
 
 
 class AddressForm(forms.ModelForm):
