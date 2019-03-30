@@ -1,5 +1,7 @@
 import stripe
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from django.views.generic.base import View, TemplateResponseMixin
 from django.views.generic.edit import FormMixin
 
@@ -9,8 +11,6 @@ from django.contrib.auth import login
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import redirect
-from django.urls import reverse, reverse_lazy
 
 from alumni.models import Approval
 from registry.decorators import require_alumni
@@ -18,10 +18,10 @@ from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, SkillsForm, AtlasSettingsForm
 
-from django.core.exceptions import ObjectDoesNotExist
+from MemberManagement.mixins import RedirectResponseMixin
 
 @method_decorator(login_required, name='dispatch')
-class SetupView(TemplateResponseMixin, View):
+class SetupView(RedirectResponseMixin, TemplateResponseMixin, View):
     template_name = 'setup/finished.html'
 
     def get(self, *args, **kwargs):
@@ -37,11 +37,11 @@ class SetupView(TemplateResponseMixin, View):
             if not approved:
                 return self.render_to_response({'user': request.user})
             else:
-                return redirect(reverse('portal'))
+                return self.redirect_response('portal', reverse=True)
         else:
-            return redirect(reverse('setup_{}'.format(component)))
+            return self.redirect_response('setup_{}'.format(component), reverse=True)
 
-class SetupViewBase(TemplateResponseMixin, View):
+class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
     """ A base class for all setup views """
 
 
@@ -52,7 +52,7 @@ class SetupViewBase(TemplateResponseMixin, View):
     setup_subtitle = ''
     setup_next_text = ''
     setup_form_class = None
-    setup_redirect_url = reverse_lazy('setup')
+    setup_redirect_url = 'setup'
 
     def has_setup_component(self):
         """ returns True iff this setup routine has already been performed """
@@ -72,7 +72,7 @@ class SetupViewBase(TemplateResponseMixin, View):
     def dispatch_success(self, validated):
         """ called upon successful setup """
 
-        return redirect(self.__class__.setup_redirect_url)
+        return self.redirect_response(self.__class__.setup_redirect_url, reverse=True)
 
     def get_context(self, form):
         """ builds context for instantiating the template """
@@ -113,7 +113,7 @@ class RegisterView(SetupViewBase):
         return self.request.user.is_authenticated
 
     def dispatch_already_set(self):
-        return redirect('/')
+        return self.redirect_response('/')
 
     def form_valid(self, form):
         """ Called when the form is valid and an instance is to be created """
@@ -152,7 +152,6 @@ class SetupComponentView(SetupViewBase):
         return self.request.user.alumni.has_component(self.__class__.setup_class())
 
     def dispatch_already_set(self):
-        # TODO: Redirect(reverse('portal'))
         return default_alternative(self.request)
 
     def form_valid(self, form):
