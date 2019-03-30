@@ -32,10 +32,9 @@ urlpatterns = [
     url(r'^privacy/$', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/', permanent=False), name='privacy'),
 
     # And recursively go into all the apps
+    url(r'^portal/', include('registry.urls')),
     url(r'^admin/', include('alumni.urls')),
     url(r'^auth/', include('custom_auth.urls')),
     url(r'^atlas/', include('atlas.urls')),
     url(r'^payments/', include('payments.urls')),
-
-    url(r'^', include('registry.urls'))
 ]

@@ -21,8 +21,11 @@ from .views import edit as edit_views
 
 urlpatterns = [
 
+    # the portal for the user
+    url(r'^$', registry_views.portal, name='portal'),
+
     # Registration
-    url('^setup/register/$', setup_views.RegisterView.as_view(), name='register'),
+    url(r'^register/$', setup_views.RegisterView.as_view(), name='register'),
 
     # Initial data Setup
     url(r'^setup/$', setup_views.SetupView.as_view(), name='setup'),
@@ -32,9 +35,6 @@ urlpatterns = [
     url(r'^setup/job/$', setup_views.JobSetup.as_view(), name='setup_job'),
     url(r'^setup/skills/$', setup_views.SkillsSetup.as_view(), name='setup_skills'),
     url(r'^setup/atlas/$', setup_views.AtlasSetup.as_view(), name='setup_atlas'),
-
-    # the portal for the user
-    url(r'portal/', registry_views.portal, name='portal'),
 
     # Edit views
     url(r'^edit/$', edit_views.edit, name='edit'),
