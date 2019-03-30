@@ -72,21 +72,19 @@ class Alumni(models.Model):
 
     def has_component(self, component):
         """ Checks if this alumni has a given component"""
-        try:
-            _ = getattr(self, component)
-            return True
-        except ObjectDoesNotExist:
-            return False
+        
+        if issubclass(component, models.Model):
+            return component.objects.filter(member=self).exists()
+        else:
+            raise TypeError("expected 'component' to be a subclass of model")
 
     def get_first_unset_component(self):
         """ Gets the first unset component or returns None if it
         already exists. """
 
         for c in self.__class__.components:
-            name = c.member.field.remote_field.name
-            if not self.has_component(name):
-                return name
-
+            if not self.has_component(c):
+                return c.member.field.remote_field.name
         return None
     
     @property

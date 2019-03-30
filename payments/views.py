@@ -19,8 +19,7 @@ from alumni.fields import PaymentTypeField
 from registry.decorators import require_setup_completed, require_unset_component
 from registry.views.registry import default_alternative
 
-
-@method_decorator(require_unset_component('payment', default_alternative), name='dispatch')
+@method_decorator(require_unset_component(PaymentInformation, default_alternative), name='dispatch')
 class SubscribeView(FormView):
     template_name = 'payments/subscribe.html'
     form_class = PaymentInformationForm

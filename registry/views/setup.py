@@ -143,10 +143,13 @@ class SetupComponentView(SetupViewBase):
     """ A view for setting up components """
 
     setup_next_text = 'Continue'
-    setup_prop = None
+
+    @classmethod
+    def setup_class(cls):
+        return cls.setup_form_class.Meta.model
 
     def has_setup_component(self):
-        return self.request.user.alumni.has_component(self.__class__.setup_prop)
+        return self.request.user.alumni.has_component(self.__class__.setup_class())
 
     def dispatch_already_set(self):
         # TODO: Redirect(reverse('portal'))
@@ -164,25 +167,21 @@ class SetupComponentView(SetupViewBase):
 class AddressSetup(SetupComponentView):
     setup_name = 'General Information - Residential Address'
     setup_subtitle = ''
-    setup_prop = 'address'
     setup_form_class = AddressForm
 
 class SocialSetup(SetupComponentView):
     setup_name = 'Social Media Data'
     setup_subtitle = ''
-    setup_prop = 'social'
     setup_form_class = SocialMediaForm
 
 class JacobsSetup(SetupComponentView):
     setup_name = 'Alumni Data'
     setup_subtitle = 'tell us what you did at Jacobs'
-    setup_prop = 'jacobs'
     setup_form_class = JacobsForm
 
 class JobSetup(SetupComponentView):
     setup_name = 'Professional Information'
     setup_subtitle = 'What did you do after Jacobs?'
-    setup_prop = 'job'
     setup_form_class = JobInformationForm
 
 class SkillsSetup(SetupComponentView):
