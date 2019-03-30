@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^setup/job/$', setup_views.JobSetup.as_view(), name='setup_job'),
     url(r'^setup/skills/$', setup_views.SkillsSetup.as_view(), name='setup_skills'),
     url(r'^setup/atlas/$', setup_views.AtlasSetup.as_view(), name='setup_atlas'),
+    url(r'^setup/completed/$', setup_views.CompletedSetup.as_view(), name='setup_setup'),
 
     # Edit views
     url(r'^edit/$', edit_views.edit, name='edit'),

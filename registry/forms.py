@@ -1,7 +1,7 @@
 from django import forms
 
 from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
-    JobInformation, Skills
+    JobInformation, Skills, SetupCompleted
 from atlas.models import AtlasSettings
 from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
@@ -158,3 +158,7 @@ class AtlasSettingsForm(forms.ModelForm):
             'contactInfoVisible': '',
         }
 
+class SetupCompletedForm(forms.ModelForm):
+    class Meta:
+        model = SetupCompleted
+        fields = []

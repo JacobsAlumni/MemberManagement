@@ -3,7 +3,7 @@ from django.contrib import admin
 from alumni.actions import export_as_csv_action, export_as_xslx_action, \
     link_to_gsuite_action, unlink_from_gsuite_action
 from .models import Alumni, Address, JobInformation, SocialMedia, \
-    JacobsData, Approval, Skills
+    JacobsData, Approval, Skills, SetupCompleted
 from payments.models import PaymentInformation
 from atlas.models import AtlasSettings
 
@@ -38,6 +38,9 @@ class SkillsInline(admin.StackedInline):
 class AtlasInline(admin.StackedInline):
     model = AtlasSettings
 
+class SetupCompletedInline(admin.StackedInline):
+    model = SetupCompleted
+
 class SetupCompleted(admin.SimpleListFilter):
     title = 'Setup Status'
     parameter_name = 'completed'
@@ -50,15 +53,15 @@ class SetupCompleted(admin.SimpleListFilter):
     
     def queryset(self, request, queryset):
         if self.value() == '1':
-            return queryset.filter(payment__customer__isnull=False)
+            return queryset.filter(setup__isnull=False)
         elif self.value() == '0':
-            return queryset.filter(payment__customer__isnull=True)
+            return queryset.filter(setup__isnull=True)
         else:
             return queryset
 
 
 class AlumniAdmin(admin.ModelAdmin):
-    inlines = [AlumniApprovalInline, AlumniAddressInline,
+    inlines = [SetupCompletedInline, AlumniApprovalInline, AlumniAddressInline,
                AlumniSocialMediaInline, AlumniJacobsDataInline,
                AlumniJobsInline, SkillsInline, PaymentInline,
                AtlasInline]
@@ -122,6 +125,9 @@ class AlumniAdmin(admin.ModelAdmin):
 
         # Atlas Settings
         'atlas__secret', 'atlas__included', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',
+
+        # Setup
+        'setup__date',
     )
     xslx_export = export_as_xslx_action("Export as XSLX",
                                         fields=full_export_fields)
@@ -145,10 +151,9 @@ class AlumniAdmin(admin.ModelAdmin):
     userApproval.admin_order_field = 'approval__approval'
 
     def completedSetup(self, x):
-        return x.setup_completed
-    completedSetup.short_description = 'Setup Done'
-    completedSetup.boolean = True
-    completedSetup.admin_order_field = 'payment__customer'
+        return x.setup.date
+    completedSetup.short_description = 'Setup Completed'
+    completedSetup.admin_order_field = 'setup__date'
 
     def userGSuite(self, x):
         return x.approval.gsuite

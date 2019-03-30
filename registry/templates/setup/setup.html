@@ -12,6 +12,8 @@
         {% endif %}
     </h1>
 
+    {% block extracontent %}{% endblock %}
+
     <div>
         <form class="uk-form-horizontal" method="POST">
             {% csrf_token %}

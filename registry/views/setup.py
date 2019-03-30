@@ -16,28 +16,17 @@ from alumni.models import Approval
 from registry.decorators import require_alumni
 from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm, SkillsForm, AtlasSettingsForm
+    JobInformationForm, SkillsForm, AtlasSettingsForm, SetupCompletedForm
 
 from MemberManagement.mixins import RedirectResponseMixin
 
 @method_decorator(login_required, name='dispatch')
-class SetupView(RedirectResponseMixin, TemplateResponseMixin, View):
-    template_name = 'setup/finished.html'
-
+class SetupView(RedirectResponseMixin, View):
     def get(self, *args, **kwargs):
-        alumni = self.request.user.alumni
-        component = alumni.get_first_unset_component()
+        component = self.request.user.alumni.get_first_unset_component()
 
         if component is None:
-            try:
-                approved = alumni.approval.approval
-            except ObjectDoesNotExist:
-                approved = False
-            
-            if not approved:
-                return self.render_to_response({'user': request.user})
-            else:
-                return self.redirect_response('portal', reverse=True)
+            return self.redirect_response('portal', reverse=True)
         else:
             return self.redirect_response('setup_{}'.format(component), reverse=True)
 
@@ -186,11 +175,17 @@ class JobSetup(SetupComponentView):
 class SkillsSetup(SetupComponentView):
     setup_name = 'Education And Skills'
     setup_subtitle = ''
-    setup_prop = 'skills'
     setup_form_class = SkillsForm
 
 class AtlasSetup(SetupComponentView):
     setup_name = 'Atlas Setup'
     setup_subtitle = 'A Map & Search Interface for Alumni'
-    setup_prop = 'atlas'
     setup_form_class = AtlasSettingsForm
+
+class CompletedSetup(SetupComponentView):
+    setup_name = 'Congratulations'
+    setup_subtitle = '...'
+    setup_form_class = SetupCompletedForm
+    setup_next_text = 'Continue to Portal'
+
+    template_name = 'setup/completed.html'

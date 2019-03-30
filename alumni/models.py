@@ -221,3 +221,11 @@ class Skills(models.Model):
     alumniMentor = models.BooleanField(default=False, blank=True,
                                        help_text="I would like to sign up as an alumni mentor")
 
+@Alumni.register_component(1000)
+class SetupCompleted(models.Model):
+    member = models.OneToOneField(Alumni, related_name='setup', on_delete=models.CASCADE)
+    
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Setup Completed On {}'.format(self.date)
