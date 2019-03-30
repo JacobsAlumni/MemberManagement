@@ -2,16 +2,16 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
 
+def user_has_alumni(user):
+    """ Safely checks if a user has an alumni """
+    try:
+        user.alumni
+        return True
+    except:
+        return False
 
 def require_alumni(view):
     """ A decorator for views that ensures an alumni exists """
-
-    def user_has_alumni(user):
-        try:
-            user.alumni
-            return True
-        except:
-            return False
 
     # Check that the user passes the test
     return user_passes_test(user_has_alumni)(view)

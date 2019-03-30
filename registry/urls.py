@@ -20,11 +20,9 @@ from .views import setup as setup_views
 from .views import edit as edit_views
 
 urlpatterns = [
-    # The Portal home page
-    url(r'^$', registry_views.home),
 
     # Registration
-    url('^register/$', setup_views.RegisterView.as_view(), name='register'),
+    url('^setup/register/$', setup_views.RegisterView.as_view(), name='register'),
 
     # Initial data Setup
     url(r'^setup/$', setup_views.SetupView.as_view(), name='setup'),
