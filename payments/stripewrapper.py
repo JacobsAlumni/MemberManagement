@@ -1,0 +1,88 @@
+import stripe as stripeapi
+from raven.contrib.django.raven_compat.models import client
+
+def safe(operation):
+    """ Safely performs an operation with the stripe API """
+
+    result = None
+        
+    try:
+        result = operation(stripeapi)
+    except stripeapi.StripeError as e:
+        client.captureException()
+        return None, e
+        
+    return result, None
+
+def as_safe_operation(f):
+    """ A decorator to turn a function into a safe operation """
+
+    def _wrapper(*args, **kwargs):
+        return safe(lambda stripe: f(stripe, *args, **kwargs))
+    return _wrapper
+    
+def get_stripe_customer_props(alumni):
+    """ Gets props for a stripe customer given an alumni """
+    
+    return {
+        'description': 'Alumni Customer for {0!r} ({1!r})'.format(alumni.fullName, alumni.profile.username),
+        'email': alumni.email,
+    }
+
+@as_safe_operation
+def create_customer(stripe, alumni):
+    """ Creates a customer for the given alumni """
+
+    props = get_stripe_customer_props(alumni)
+    return stripe.Customer.create(**props)
+
+@as_safe_operation
+def clear_all_payment_sources(stripe, customer):
+    """ Removes all payment sources from an alumni """
+
+    for source in stripe.Customer.retrieve(customer).sources.list().data:
+        # cards can be deleted
+        if source.object == 'card':
+            source.delete()
+        
+        # everything else can be detached
+        else:
+            source.detach()
+
+    return True
+
+@as_safe_operation
+def update_payment_method(stripe, customer, source, card):
+    """ Sets the default payment method for a customer to source or card """
+
+    # clear all existing methods
+    cleared, err = clear_all_payment_sources(customer)
+    if err != None:
+        return
+    
+    # update the source and card id
+    update = {}
+    if source:
+        update['source'] = source
+    else:
+        update['card'] = card
+    
+    return stripe.Customer.modify(customer, **update)
+
+@as_safe_operation
+def create_subscription(stripe, customer, plan):
+    """ Creates a subscription for the customer """
+
+    # Creates a new subscription for the customer
+    return stripe.Customer.retrieve(customer).subscriptions.create(plan=plan)
+
+@as_safe_operation
+def get_payment_table(stripe, customer):
+    """ gets a table of payments for a customer """
+    return [{
+        'lines': [l for l in iv.lines],
+        'date': iv.date,
+        'total': [iv.total, iv.currency],
+        'paid': iv.paid,
+        'closed': iv.closed
+    } for iv in stripe.Invoice.list(customer=customer)]

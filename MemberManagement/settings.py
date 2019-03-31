@@ -70,7 +70,7 @@ TEMPLATES = [
             'context_processors': [
                 'MemberManagement.context_processors.google_analytics_id',
                 'registry.context_processors.devel_warning',
-                'payments.context_processors.is_stripe_test_mode',
+                'payments.context_processors.stripe',
                 'atlas.context_processors.atlas_allowed',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

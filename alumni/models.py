@@ -47,6 +47,11 @@ class Alumni(models.Model):
     # kind
     category = fields.AlumniCategoryField()
 
+    @property
+    def active_subscription(self):
+        from datetime import datetime
+        from payment.models import SubscriptionInformation
+        return SubscriptionInformation.objects.filter(member=self).exclude(end__lte=datetime.now()).order_by('start').first()
     #
     # COMPONENTS MANAGEMENT
     #
@@ -84,7 +89,10 @@ class Alumni(models.Model):
 
         for c in self.__class__.components:
             if not self.has_component(c):
-                return c.member.field.remote_field.name
+                if hasattr(c, 'SETUP_COMPONENT_NAME'):
+                    return c.SETUP_COMPONENT_NAME
+                else:
+                    return c.member.field.remote_field.name
         return None
     
     @property

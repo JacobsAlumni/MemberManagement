@@ -3,7 +3,6 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
-import stripe
 from datetime import datetime
 
 def createLegacySetup(apps, schema_editor):

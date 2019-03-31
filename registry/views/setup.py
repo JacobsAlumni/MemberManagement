@@ -1,5 +1,3 @@
-import stripe
-
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.views.generic.base import View, TemplateResponseMixin
@@ -85,9 +83,12 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         # and if it is valid
         if self.request.method == 'POST' and form.is_valid():
             form.clean()
-
-            # and we successfully created the object
-            return self.dispatch_success(self.form_valid(form))
+            
+            # if we have a valid form with some success
+            # then we dispatch it
+            success = self.form_valid(form)
+            if success is not None:
+                return self.dispatch_success(success)
         
         # else render the form
         return self.render_to_response(self.get_context(form))

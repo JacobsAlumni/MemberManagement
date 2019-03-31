@@ -779,6 +779,15 @@ class TierField(models.CharField):
          "Patron (Premium package for those who want to contribute more): 249€ p.a. "),
     )
 
+    TIER_ADMIN_CHOICES = (
+        (CONTRIBUTOR,
+         "Contributor"),
+        (STARTER,
+         "Starter"),
+        (PATRON,
+         "Patron"),
+    )
+
     def __init__(self, **kwargs):
         kwargs['max_length'] = 2
         kwargs['choices'] = TierField.TIER_CHOICES

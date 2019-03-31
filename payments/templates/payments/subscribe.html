@@ -4,31 +4,34 @@
 {% block title %}Membership Data{% endblock %}
 
 {% block head %}
-    <script
-            src="https://code.jquery.com/jquery-3.2.1.js"
-            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
-            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    
     <script type="text/javascript">
-        window.onload = function () {
-            var membership_options = {
-                "st": "<b>Starter</b> – The free membership for recent graduates or those who are not ready to contribute financially to the Association at this point. <br />We want all Alumni to be able to connect via the Association and won't exclude anyone based on their financial situation. <br /> In accordance with the Association’s current by-laws (§1.4), we will ask you to upgrade your membership to Contributor two years after graduation. However, the decision to upgrade is completely yours. Upon request you can extend the Starter category for one more year. This can be repeated for an unlimited number of times. <br /> Even though we ask you to fill in your payment details, we will NOT charge your account today. Our payment processor “Stripe” might send over a request to the issuing bank for verification of your card. This authorization charge (0 € or 1 €) will be removed from your statement within a few weeks. <br /> Your payment details are safely stored with “Stripe” so that if at any time in the future you decide to upgrade your membership or contribute to any one of our donation initiatives, you can do so without any hassle. <u><b>We will never charge your account without your explicit consent!</u></b><br /><br />If you are not a recent graduate, please provide a short explanation on why you chose the starter plan: <br/>",
-                "co": "<b>Contributor</b> – Our standard membership for Alumni and associate members who are part of the Jacobs community. <ul> <li>Your @jacobs-alumni.de email account is hosted on G Suite and comes with access to various apps as well as unlimited Google Drive space.</li> <li>Voting rights in the General Assembly of the Jacobs Alumni Association.</li> <li>Eligibility as a mentee or mentor for 1 year mentoring program.</li> <li>Access to Career Counselling Services.</li> <li>Free access to career seminars and workshops (on campus).</li> <li>Jacobs Career Fair: Free Silver Package (worth 850€) for own start-ups and spin-off companies.</li> <li>Career Services for Alumni Employers: 20% discount on Presentations, Recruiting Events, Workshops, Employer Interviews and Pre-Selection.</li> <li>Alumni Newsletter to stay up-to-date on all Alumni and University developments</li> <li>More to come!</li> </ul>",
-                "pa": "<b>Patron</b> - Our membership for senior alumni and friends who want to give back even more and love to see the Jacobs spirit grow! <ul><li>Includes all benefits of the Contributor membership PLUS:</li><li>After three years of patron membership, engraved alumni brick (on the path in front of the IRC)</li><li>Special mention in the Association’s newsletter after joining</li><li>Special mention in yearly newsletter every year of membership</li><li>Enables the Alumni Association to help young and future alumni grow and really make a difference in their lives</li></ul>"
-            };
+        var stripe_integration_init = function(stripe_publishable_key) {
+            // create an error elemenet
+            var errorElement = document.getElementById('card-errors');
+            var set_error = function(message){
+                if (message) {
+                    errorElement.style.display = 'block';
+                    errorElement.style.visibility = 'visible';
+                    errorElement.textContent = message;
+                } else {
+                    errorElement.style.display = 'none';
+                    errorElement.style.visibility = 'hidden';
+                    errorElement.textContent = '';
+                }
+            }
+            set_error();
 
-            // Create a Stripe client
-            var stripe = Stripe('{{ publishable_key }}');
-
-            // Create an instance of Elements
+            // initialize stripe API
+            var stripe = Stripe(stripe_publishable_key);
             var elements = stripe.elements();
 
-            // Custom styling can be passed to options when creating an Element.
-            // (Note that this demo uses a wider set of styles than the guide below.)
+            // custom element style
             var style = {
                 base: {
                     color: '#32325d',
-                    lineHeight: '18px',
                     fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
                     fontSmoothing: 'antialiased',
                     fontSize: '16px',
@@ -42,140 +45,127 @@
                 }
             };
 
-            // Create a card UI element
-            var card = elements.create('card', {style: style});
-            card.mount('#card-element');
-
-            // Handle real-time validation errors from the card Element.
-            card.addEventListener('change', function (event) {
-                var displayError = document.getElementById('card-errors');
-
-                // if there was an error, show it
-                if (event.error) {
-                    errorElement.style.display = 'block';
-                    errorElement.style.visibility = 'visible';
-                    errorElement.textContent = event.error.message;
-
-                    // else hide the error message
-                } else {
-                    errorElement.style.display = 'none';
-                    errorElement.style.visibility = 'hidden';
-                    errorElement.textContent = '';
-                }
-            });
             
-            // clears private data and submits the form
-            function submitForm() {
-                document.getElementById('name').value = '';
-                document.getElementById('iban').value = '';
-                document.getElementById("payment-form").submit();
+            // Create input elements for card and iban
+            var card = elements.create('card', { style: style });
+            card.mount('#card-element');
+            var iban = elements.create('iban', { style: style, supportedCountries: ['SEPA'] });
+            iban.mount('#iban-element');
+
+            // handle change errors properly
+            var handleChangeErrors = function(event) {
+                set_error(event.error ? event.error.message : undefined);
             }
+            card.addEventListener('change', handleChangeErrors);
+            iban.addEventListener('change', handleChangeErrors);
 
-            // handle submission of card data once token has been created
-            function stripeCardHandler(token) {
-                document.getElementById('id_token').value = token;
-                submitForm();
-            }
+            // handle changing of payment type
+            var paymentElement = $('#id_payment_type');
+            paymentElement.change(function () {
+                // clear out the error
+                set_error(undefined);
 
-            // handle submission of sepa data once token has been created
-            function stripeSepaHandler(mandate) {
-                document.getElementById('id_sepa_mandate').value = JSON.stringify(mandate);
-                document.getElementById('id_token').value = mandate.id;
-                submitForm();
-            }
+                // and switch accordingly
+                var selected = $(this).find(':selected').val();
+                if (selected === 'card') {
+                    $("#stripe-card-elements").show();
+                    $("#stripe-iban-elements").hide();
+                } else {
+                    $("#stripe-card-elements").hide();
+                    $("#stripe-iban-elements").show();
+                }
+            }).trigger('change');
 
-            // the element displaying errors
-            var errorElement = document.getElementById('card-errors');
-            errorElement.style.display = 'none';
-            errorElement.style.visibility = 'hidden';
 
+            // handle form suibmission
             // Handle form submission
             var form = document.getElementById('payment-form');
             form.addEventListener('submit', function (event) {
                 event.preventDefault();
-                // hide the error message (if any)
-                errorElement.style.display = 'none';
-                errorElement.style.visibility = 'hidden';
-                var ptype = $('#id_payment_type').val();
-                if (ptype === "card") {
-                    stripe.createToken(card).then(function (result) {
-                        console.log(result);
-                        if (result.error) {
-                            // Inform the user if there was an error
-                            errorElement.style.display = 'block';
-                            errorElement.style.visibility = 'visible';
-                            errorElement.textContent = result.error.message;
-                        } else {
-                            // Send the token to your server
-                            stripeCardHandler(result.token.id);
-                        }
-                    });
-                } else if (ptype === "sepa") {
-                    var bankAccount = {
-                        type: 'sepa_debit',
-                        sepa_debit: {
-                          iban: document.getElementById('iban').value,
-                        },
-                        currency: 'eur',
-                        owner:{
-                            name: document.getElementById('name').value
-                        }
-                    };
-                    stripe.createSource(bankAccount).then(function (result) {
-                        console.log(result);
-                        if (result.error) {
-                            // Inform the user if there was an error
-                            errorElement.style.display = 'block';
-                            errorElement.style.visibility = 'visible';
-                            errorElement.textContent = result.error.message;
-                        } else {
-                            // Send the token to your server
-                            console.log(result.source);
-                            stripeSepaHandler(result.source);
-                        }
-                    });
+
+                // grab the payment type
+                ptype = paymentElement.val();
+                if (ptype == 'card') {
+                    submitCard();
+                } else if ( ptype == 'sepa' ) {
+                    submitSepa();
+                } else {
+                    set_error('Something went wrong, please try again later or contact support. ')
                 }
             });
 
-            // handle changing id
-            $('#id_tier').change(function () {
-                var selected = $(this).find(':selected').val();
-                $('#id_tier').parent().next().html(membership_options[selected]);
-                if (selected === 'st') {
-                    $("#div_id_starterReason").show()
-                } else {
-                    $("#div_id_starterReason").hide()
-                }
-            }).trigger('change');
+            // handle submitting a card
+            var submitCard = function() {
+                stripe.createToken(card).then(function(result) {
+                    if (result.error) {
+                        set_error(result.error.message);
+                        return;
+                    }
+                    
+                    submitForm(result.token.id, undefined);
+                });
+            };
+            
+            // handle submitting a sepa token
+            var submitSepa = function() {
+                stripe.createSource(iban, {
+                    type: 'sepa_debit',
+                    currency: 'eur',
+                    owner: {
+                        name: document.getElementById('name').value
+                    },
+                    mandate: {},
+                }).then(function(result) {
+                    if (result.error) {
+                        set_error(result.error.message);
+                        return;
+                    }
 
-            // handle changing payment type
-            $('#id_payment_type').change(function () {
-                var selected = $(this).find(':selected').val();
-                $('#id_tier').parent().next().html(membership_options[selected]);
-                if (selected === 'card') {
-                    $("#stripe-card-elements").show();
-                    $("#stripe-sepa-elements").hide();
-                } else {
-                    $("#stripe-card-elements").hide();
-                    $("#stripe-sepa-elements").show();
-                }
-            }).trigger('change');
+                    submitForm(undefined, result.source.id);
+                })
+            };
+
+            var submitForm = function(card_token, source_id) {
+                // unmount both elements to be sure they do not leak
+                // any data to the server
+                card.unmount();
+                iban.unmount();
+
+                // fill form data
+                document.getElementById('id_card_token').value = card_token || '';
+                document.getElementById('id_source_id').value = source_id || '';
+                document.getElementById('name').value = '';
+
+                // and submit the form
+                document.getElementById("payment-form").submit();
+            }
+        };
+    </script>
+    <script type="text/javascript">
+        window.onload = function() {
+            stripe_integration_init('{{ stripe_publishable_key }}');
         }
     </script>
     <style>
-        /**
-     * The CSS shown here will not be introduced in the Quickstart guide, but shows
-     * how you can use CSS to style your Element's container.
-     */
         .StripeElement {
             background-color: white;
+            color: #32325d;
             height: 40px;
+
+            margin-top: 5px;
+            margin-bottom: 5px;
+
             padding: 10px 12px;
             border-radius: 4px;
             border: 1px solid transparent;
             box-shadow: 0 1px 3px 0 #e6ebf1;
             -webkit-transition: box-shadow 150ms ease;
             transition: box-shadow 150ms ease;
+        }
+
+        .uk-stripe-element {
+            width: 100%;
+            max-width: 100%;
         }
 
         .StripeElement--focus {
@@ -195,7 +185,7 @@
 {% block content %}
     <article class="uk-article">
         <h1 class="uk-article-title">
-            Membership Data
+            Payment Information
         </h1>
 
         <div class="uk-text-lead">
@@ -222,14 +212,10 @@
         </div>
 
         <div>
-            <form action="{% url 'setup_payment' %}" method="post" id="payment-form" class="uk-form-horizontal">
+            <form action="{% url 'setup_subscription' %}" method="post" id="payment-form" class="uk-form-horizontal">
                 {% csrf_token %}
 
                 {{ form | as_uikit_form }}
-                <div>
-                    <div id="description" class="uk-form-controls uk-form-controls-text">
-                    </div>
-                </div>
 
                 <!-- Elements for Card -->
                 <div id="stripe-card-elements">
@@ -241,8 +227,8 @@
                     </div>
                 </div>
 
-                <!-- Elements for SEPA -->
-                <div id="stripe-sepa-elements">
+                <!-- Elements for IBAN -->
+                <div id="stripe-iban-elements">
 
                     <div class="uk-form-controls uk-form-controls-text uk-alert-warning" uk-alert>
                         By providing your IBAN and confirming this payment, you are authorizing Jacobs Alumni Association and Stripe, our payment service provider, to send instructions to your bank to debit your account and your bank to debit your account in accordance with those instructions. 
@@ -250,19 +236,18 @@
                         A refund must be claimed within 8 weeks starting from the date on which your account was debited.
                     </div>
                     
-                    
+                    <label for="iban" class="uk-form-label">
+                        IBAN *
+                    </label>
+                    <div id="iban-element" class="uk-form-controls uk-form-controls-text">
+                        <!-- a Stripe Element will be inserted here. -->
+                    </div>
+
                     <label for="name" class="uk-form-label">
                         Bank Account Owner *
                     </label>
                     <div id="sepa-element" class="uk-form-controls uk-form-controls-text">
-                            <input id="name" class="uk-input" placeholder=""/>
-                    </div>
-
-                    <label for="iban" class="uk-form-label">
-                        IBAN *
-                    </label>
-                    <div id="sepa-element" class="uk-form-controls uk-form-controls-text">
-                            <input id="iban" class="uk-input" placeholder=""/>
+                        <input id="name" class="StripeElement uk-stripe-element" placeholder="Your Name"/>
                     </div>
                 </div>
 
@@ -272,9 +257,9 @@
                         You need to enable JavaScript for this to work.
                     </div>
                     <p>
-                        Your payment info is sent directly to <a href="https://stripe.com/"
-                                                                 target="_blank">Stripe</a> via your browser
+                        Your payment info is sent directly to <a href="https://stripe.com/" target="_blank">Stripe</a> via your browser
                         and never reaches Jacobs Alumni Servers.
+                        <!-- TODO: Stripe Logo -->
                     </p>
                 </div>
 

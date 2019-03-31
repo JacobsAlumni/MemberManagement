@@ -1,4 +1,4 @@
-import stripe
+from payments import stripewrapper
 from datetime import datetime
 import pytz
 
@@ -32,9 +32,8 @@ def fetch_from_stripe(sss, on_message):
         username = s.member.profile.username
         cid = s.member.payment.customer
 
-        try:
-            date = stripe.Customer.retrieve(cid).created
-        except stripe.error.StripeError:
+        date, e = stripewrapper.safe(lambda stripe: stripe.Customer.retrieve(cid).created)
+        if e is not None:
             on_message('Unable to retrieve customer creation date for {}'.format(username))
             continue
         

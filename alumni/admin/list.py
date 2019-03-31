@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from payments.models import SubscriptionInformation
 
 class AlumniListDisplay:
 
@@ -68,7 +69,7 @@ class AlumniListDisplay:
         # member email
         'approval_approval', 'setup_date', 'profile_googleassociation', 'approval_gsuite',
 
-        # category + payment
+        # category + subscription
         'category', 'payment_tier',
 
         # visible in atalas
@@ -90,13 +91,13 @@ class SetupCompletedFilter(admin.SimpleListFilter):
         ]
 
     def queryset(self, request, queryset):
-        if self.value() == '1':
+        val = self.value()
+        if val == '1':
             return queryset.filter(setup__isnull=False)
-        elif self.value() == '0':
+        elif val == '0':
             return queryset.filter(setup__isnull=True)
         else:
             return queryset
-
 
 def custom_titled_filter(title):
     class Wrapper(admin.FieldListFilter):

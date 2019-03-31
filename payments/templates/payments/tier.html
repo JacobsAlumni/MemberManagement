@@ -1,0 +1,60 @@
+{% extends "setup/setup.html" %}
+{% load staticfiles %}
+
+{% block head %}
+<script src="{% static "js/tier.js" %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block extracontent %}
+<div id='description' style='display: none; '>
+    <div class="uk-form-controls uk-form-controls-text">
+        <div id="description-st">
+            <p>
+                <b>Starter</b> - The free membership for recent graduates or those who are not ready to contribute financially to the Association at this point. 
+            </p>
+            <p>
+                We want all Alumni to be able to connect via the Association and won't exclude anyone based on their financial situation. 
+                In accordance with the Association’s current by-laws (§1.4), we will ask you to upgrade your membership to Contributor after two years. 
+                However, the decision to upgrade is completely yours. 
+                Upon request you can extend the Starter category for one more year. 
+                This can be repeated for an unlimited number of times. 
+            </p>
+            <p>
+                Please provide a short explanation on why you chose the starter plan: 
+            </p>
+        </div>
+        <div id="description-co">
+            <p>
+                <b>Contributor</b> - Our standard membership for Alumni and associate members who are part of the Jacobs community.
+            </p>
+            <p>
+                <ul>
+                    <li>Your @jacobs-alumni.de email account is hosted on G Suite and comes with access to various apps as well as unlimited Google Drive space. </li>
+                    <li>Voting rights in the General Assembly of the Jacobs Alumni Association. </li>
+                    <li>Eligibility as a mentee or mentor for 1 year mentoring program. </li>
+                    <li>Access to Career Counselling Services. </li>
+                    <li>Free access to career seminars and workshops (on campus). </li>
+                    <li>Jacobs Career Fair: Free Silver Package (worth 850€) for own start-ups and spin-off companies.</li>
+                    <li>Career Services for Alumni Employers: 20% discount on Presentations, Recruiting Events, Workshops, Employer Interviews and Pre-Selection.</li>
+                    <li>Alumni Newsletter to stay up-to-date on all Alumni and University developments</li>
+                    <li>More to come!</li>
+                </ul>
+            </p>
+        </div>
+        <div id="description-pa">
+            <p>
+                <b>Patron</b> - Our membership for senior alumni and friends who want to give back even more and love to see the Jacobs spirit grow! 
+            </p>
+            <p>
+                Includes all benefits of the Contributor membership PLUS:
+                <ul>
+                    <li>After three years of patron membership, engraved alumni brick (on the path in front of the IRC)</li>
+                    <li>Special mention in the Association’s newsletter after joining</li>
+                    <li>Special mention in yearly newsletter every year of membership</li>
+                    <li>Enables the Alumni Association to help young and future alumni grow and really make a difference in their lives</li>
+                </ul>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
