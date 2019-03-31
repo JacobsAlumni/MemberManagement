@@ -1,4 +1,3 @@
-import unicodecsv
 import openpyxl
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -11,6 +10,7 @@ from openpyxl.cell import cell
 
 from custom_auth.management.commands.linkgsuite import link_gsuite_users
 from custom_auth.models import GoogleAssociation
+
 
 def get_direct_prop(obj, fields):
     """ Gets a model property of an object """
@@ -31,7 +31,7 @@ def get_direct_prop(obj, fields):
         except:
             pass
 
-        #if we do not, return the field itself
+        # if we do not, return the field itself
         return getattr(obj, field)
 
     # else go recursively
@@ -53,45 +53,6 @@ def get_model_prop(modeladmin, obj, field, default=None):
     except ObjectDoesNotExist:
         return default
 
-
-def export_as_csv_action(description="Export selected objects as CSV file",
-                         fields=None, header=True):
-    """
-        Return an action that exports the given fields as CSV files
-    """
-
-    def export_as_csv(modeladmin, request, queryset):
-
-        # Get fields to export
-        opts = modeladmin.model._meta
-        if not fields:
-            field_names = [field.name for field in opts.fields]
-        else:
-            field_names = fields
-
-        # write a response header
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=%s.csv' % str(
-            opts).replace('.', '_')
-
-        # Create a CSV file
-        writer = unicodecsv.writer(response, encoding='utf-8')
-
-        # Write the header
-        if header:
-            writer.writerow(field_names)
-
-        # Write the content rows
-        for obj in queryset:
-            row = [get_model_prop(modeladmin, obj, field) for field in
-                   field_names]
-            writer.writerow(row)
-
-        # And return
-        return response
-
-    export_as_csv.short_description = description
-    return export_as_csv
 
 def to_excel(value):
     """ Turns any value into a value understood by excel """
@@ -131,7 +92,8 @@ def export_as_xslx_action(description="Export selected objects as XSLX file",
         # Create a response header
         response = HttpResponse(
             content_type='application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename={}.xlsx'.format(str(opts).replace('.', '_'))
+        response['Content-Disposition'] = 'attachment; filename={}.xlsx'.format(
+            str(opts).replace('.', '_'))
 
         # Create a new workbook
         wb = openpyxl.Workbook()
@@ -176,19 +138,82 @@ def export_as_xslx_action(description="Export selected objects as XSLX file",
     export_as_xslx.short_description = description
     return export_as_xslx
 
+
 def link_to_gsuite_action(modeladmin, request, queryset):
     """ Link to GSuite links users to a GSuite Account """
     profiles = get_user_model().objects.filter(alumni__in=queryset)
 
-    link_gsuite_users(profiles, False, on_message=lambda x: modeladmin.message_user(request, x))
- 
+    link_gsuite_users(
+        profiles, False, on_message=lambda x: modeladmin.message_user(request, x))
+
+
 link_to_gsuite_action.short_description = 'Link Users to GSuite'
 
 
 def unlink_from_gsuite_action(modeladmin, request, queryset):
     """ Unlink Users from GSuite """
 
-    count, _ = GoogleAssociation.objects.filter(user__alumni__in=queryset).delete()
-    modeladmin.message_user(request, 'Unlinked {} user(s) from their GSuite Account(s). '.format(count))
+    count, _ = GoogleAssociation.objects.filter(
+        user__alumni__in=queryset).delete()
+    modeladmin.message_user(
+        request, 'Unlinked {} user(s) from their GSuite Account(s). '.format(count))
+
 
 unlink_from_gsuite_action.short_description = 'Unlink Users from GSuite'
+
+
+class AlumniAdminActions:
+    """ Actions available in the Django Alumni Admin Page """
+
+    full_export_fields = (
+        # Profile data
+        'profile__username', 'profile__is_staff', 'profile__is_superuser',
+        'profile__date_joined', 'profile__last_login',
+
+        # Alumni Model
+        'firstName', 'middleName', 'lastName', 'email', 'existingEmail',
+        'resetExistingEmailPassword', 'sex', 'birthday',
+        'nationality', 'category',
+
+        # Address Data
+        'address__address_line_1', 'address__address_line_2', 'address__city',
+        'address__zip', 'address__state', 'address__country',
+
+        # 'Social' Data
+        'social__facebook', 'social__linkedin', 'social__twitter',
+        'social__instagram', 'social__homepage',
+
+        # 'Jacobs Data'
+        'jacobs__college', 'jacobs__graduation', 'jacobs__degree',
+        'jacobs__major', 'jacobs__comments',
+
+        # 'Approval' Data
+        'approval__approval',
+
+        # Job Data
+        'job__employer', 'job__position', 'job__industry', 'job__job',
+
+        # Skills Data
+        'skills__otherDegrees', 'skills__spokenLanguages',
+        'skills__programmingLanguages', 'skills__areasOfInterest',
+        'skills__alumniMentor',
+
+        # Payment Data
+        'payment__tier', 'payment__starterReason',
+
+        # Atlas Settings
+        'atlas__secret', 'atlas__included', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',
+
+        # Setup Data
+        'setup__date',
+    )
+
+    xslx_export = export_as_xslx_action("Export as XSLX",
+                                        fields=full_export_fields)
+
+    actions = [
+        'xslx_export',
+        'csv_export',
+        link_to_gsuite_action,
+        unlink_from_gsuite_action
+    ]
