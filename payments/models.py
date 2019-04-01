@@ -1,11 +1,9 @@
 from django.db import models
-from jsonfield import JSONField
 
 from alumni.models import Alumni
-from alumni.fields import TierField, PaymentTypeField
+from alumni.fields import TierField
 
 from datetime import datetime
-
 
 @Alumni.register_component(6)
 class MembershipInformation(models.Model):
