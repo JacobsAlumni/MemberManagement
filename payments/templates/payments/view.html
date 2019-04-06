@@ -1,17 +1,34 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
 
-{% block title %} View Payments{% if admin %} for {{ username }}{% endif %} {% endblock %}
+{% block title %} View Payment Information{% if admin %} for {{ user.username }}{% endif %} {% endblock %}
 
 {% block content %}
 <article class="uk-article">
     <h1 class="uk-article-title">
-        View Payments{% if admin %} for {{ username }}{% endif %}
+        {% if admin %}{% else %}
+            <a href="{% url "portal" %}" class="uk-button uk-button-default uk-button-small">
+                <span uk-icon="icon: arrow-left"></span>
+                Back to Portal
+            </a>
+        {% endif %}
+        Payment Information{% if admin %} for {{ user.username }}{% endif %}
     </h1>
 
     {% if admin %}{% else %}
         {% include "portal/approval_warning.html" %}
     {% endif %}
+
+    <div class="uk-text-lead">
+        <p>
+            All information visible on this page is securely stored with our payment provider, <a href="https://stripe.com/">Stripe</a>. 
+            Apart from the dates of your membership, we do not have a copy of this data on our server. 
+        </p>
+        
+        <p>
+            If you have any questions, need help or require a receipt, please contact <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>.
+        </p>
+    </div>
 
 
     {% if error %}
@@ -22,6 +39,36 @@
             </p>
         </div>
     {% else %}
+
+        <h2>Payment Methods</h2>
+
+        {% if methods %}
+        <p>
+            The following payment method(s) are on file for you:
+        </p>
+            
+        <ul>
+            {% for method in methods %}
+                <li>{{ method | safe }}</li>
+            {% endfor %}
+        </ul>
+
+        <p>
+            {% if admin %}{% else %}
+                {% if user.alumni.can_update_payment %}
+                    <a href="{% url 'update_subscription' %}" class="uk-button uk-button-default">Update Payment Method</a>
+                {% endif %}
+            {% endif %}
+        </p>
+        {% else %}
+        
+        <p>
+            No payment methods on file. 
+        </p>
+
+        {% endif %}
+        
+        <h2>Invoices</h2>
 
         <table class="uk-table uk-table-divider">
             <thead>
@@ -61,15 +108,6 @@
                 {% endfor %}
             </tbody>
         </table>
-    {% endif %}
-
-    {% if admin %}{% else %}
-    <div class="uk-alert uk-alert-primary" uk-alert>
-        <h3>Need help?</h3>
-        <p>
-            If you have any questions, need help or require a receipt, please contact <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>.
-        </p>
-    </div>
     {% endif %}
 </article>
 {% endblock %}

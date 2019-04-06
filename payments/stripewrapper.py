@@ -88,6 +88,29 @@ def get_payment_table(stripe, customer):
     } for iv in stripe.Invoice.list(customer=customer)]
 
 @as_safe_operation
+def get_methods_table(stripe, customer):
+    def format_source(source):
+        if source.object == 'card':
+            return {
+                'kind': 'card',
+                'brand': source.brand,
+                'exp_month': source.exp_month,
+                'exp_year': source.exp_year,
+                'last4': source.last4
+            }
+        elif source.type == 'sepa_debit':
+            return {
+                'kind': 'sepa',
+                'last4': source.sepa_debit.last4,
+                'mandate_reference': source.sepa_debit.mandate_reference,
+                'mandate_url': source.sepa_debit.mandate_url,
+            }
+        
+        return {'kind': 'unknown'}
+
+    return [format_source(source) for source in stripe.Customer.retrieve(customer).sources.list().data]
+
+@as_safe_operation
 def cancel_subscription(stripe, subscription):
 
     # cancel the subscription

@@ -155,8 +155,9 @@ class PaymentsTableMixin:
     @classmethod
     def get_invoice_table(cls, customer):
         invoices, err = stripewrapper.get_payment_table(customer)
+        described = []
 
-        if err is not None:
+        if err is None:
             try:
                 invoices = [{
                     'lines': [cls.format_description(l) for l in iv['lines']],
@@ -167,11 +168,50 @@ class PaymentsTableMixin:
                 } for iv in invoices]
             except Exception as e:
                 err = e
-        
-        if err is not None:
+        else:
             err = 'Something went wrong. Please try again later or contact support. '
         
-        return invoices, err    
+        return invoices, err
+    
+    @classmethod
+    def format_method(cls, source):
+        if source['kind'] == 'card':
+            return '{} Card ending in {} (valid until {}/{})'.format(source['brand'], source['last4'], source['exp_month'], source['exp_year'])
+        elif source['kind'] == 'sepa':
+            return 'Bank Account ending in {} (<a href="{}" target="_blank">SEPA Mandate Reference {}</a>)'.format(source['last4'], source['mandate_url'], source['mandate_reference'])
+        else:
+            return 'Unknown Payment Method. Please contact support. '
+
+    @classmethod
+    def get_method_table(cls, customer):
+        methods, err = stripewrapper.get_methods_table(customer)
+        if err is None:
+            methods = [cls.format_method(method) for method in methods]
+        else:
+            err = 'Something went wrong. Please try again later or contact support. '
+
+        return methods, err
+    
+    def generate_context(self, context, customer, user, admin):
+
+        invoices, error = self.__class__.get_invoice_table(customer)
+        context['invoices'] = invoices
+        
+        if error is None:
+            methods, error = self.__class__.get_method_table(customer)
+            context['methods'] = methods
+        
+        context['error'] = error
+        context['user'] = user
+
+        if admin:
+            context.update({
+                'admin': True,
+            })
+        
+        return context
+
+
 
 @method_decorator(require_setup_completed(default_alternative), name='dispatch')
 class PaymentsView(PaymentsTableMixin, TemplateView):
@@ -179,15 +219,8 @@ class PaymentsView(PaymentsTableMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        (invoices, error) = self.__class__.get_invoice_table(self.request.user.alumni.membership.customer)
 
-        context.update({
-            'invoices': invoices,
-            'error': error
-        })
-
-        return context
+        return self.generate_context(context, self.request.user.alumni.membership.customer, self.request.user, False)
 
 @method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
 class PaymentsAdminView(PaymentsTableMixin, TemplateView):
@@ -198,14 +231,6 @@ class PaymentsAdminView(PaymentsTableMixin, TemplateView):
 
         membership = get_object_or_404(MembershipInformation,
                                 member__profile__id=kwargs['id'])
-
-        (invoices, error) = self.__class__.get_invoice_table(membership.customer)
-
-        context.update({
-            'admin': True,
-            'username': membership.member.profile.username,
-            'invoices': invoices,
-            'error': error
-        })
-
-        return context
+        customer = membership.customer
+        
+        return self.generate_context(context, membership.customer, membership.member.profile, True)

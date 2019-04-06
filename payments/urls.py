@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^membership/$', SignupView.as_view(), name='setup_membership'),
     url(r'^subscribe/$', SubscribeView.as_view(), name='setup_subscription'),
     url(r'^update/$', UpdatePaymentView.as_view(), name='update_subscription'),
-    url(r'^view/$', PaymentsView.as_view(), name='edit_payments'),
-    url(r'^view/(?P<id>\d+)/$',
+    url(r'^$', PaymentsView.as_view(), name='view_payments'),
+    url(r'^admin/(?P<id>\d+)/$',
         PaymentsAdminView.as_view(), name='view_payments_admin'),
 ]
