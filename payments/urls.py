@@ -18,9 +18,8 @@ from django.conf.urls import url
 from .views import SignupView, SubscribeView, PaymentsView, PaymentsAdminView
 
 urlpatterns = [
-    url(r'^tier/$', SignupView.as_view(), name='setup_membership'),
+    url(r'^membership/$', SignupView.as_view(), name='setup_membership'),
     url(r'^subscribe/$', SubscribeView.as_view(), name='setup_subscription'),
-    #url(r'^subscribe/$', SubscribeView.as_view(), name='setup_payment'),
     url(r'^view/$', PaymentsView.as_view(), name='edit_payments'),
     url(r'^view/(?P<id>\d+)/$',
         PaymentsAdminView.as_view(), name='view_payments_admin'),

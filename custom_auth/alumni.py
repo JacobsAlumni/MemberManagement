@@ -14,7 +14,7 @@ class AlumniEmailMixin:
             fields.TierField.PATRON: 'Patron',
             fields.TierField.CONTRIBUTOR: 'Contributor',
             fields.TierField.STARTER: 'Starter'
-        }[self.payment.tier]
+        }[self.membership.tier]
 
         # set destination and instantiate email templates
         destination = [email, gsuite] + settings.GSUITE_EMAIL_ALL

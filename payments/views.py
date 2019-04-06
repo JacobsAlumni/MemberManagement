@@ -1,24 +1,17 @@
-import stripe
 from payments import stripewrapper
 
 from datetime import datetime
-from raven.contrib.django.raven_compat.models import client
-
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
 from django.utils import formats
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView, TemplateView
+from django.views.generic import TemplateView
 
 from .forms import MembershipInformationForm, PaymentMethodForm
 from .models import MembershipInformation, SubscriptionInformation
 from .plans import subscription_plans
 
-from alumni.fields import PaymentTypeField
-
-from registry.decorators import require_setup_completed, require_unset_component
+from registry.decorators import require_setup_completed
 from registry.views.registry import default_alternative
 from registry.views.setup import SetupComponentView
 
@@ -64,7 +57,7 @@ class SubscribeView(SetupComponentView):
 
     def form_valid(self, form):
         # Attach the payment source to the customer
-        customer = self.request.user.alumni.payment.customer
+        customer = self.request.user.alumni.membership.customer
         _, err = form.attach_to_customer(customer)
 
         # if the error is not, return
@@ -73,7 +66,7 @@ class SubscribeView(SetupComponentView):
             return None
 
         # grab tier and plan        
-        tier = self.request.user.alumni.payment.tier
+        tier = self.request.user.alumni.membership.tier
         plan = subscription_plans[tier].stripe_id
 
         # create a subscription on the plan
@@ -156,7 +149,7 @@ class PaymentsView(PaymentsTableMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        (invoices, error) = self.__class__.get_invoice_table(self.request.user.alumni.payment.customer)
+        (invoices, error) = self.__class__.get_invoice_table(self.request.user.alumni.membership.customer)
 
         context.update({
             'invoices': invoices,
@@ -172,14 +165,14 @@ class PaymentsAdminView(PaymentsTableMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        payment = get_object_or_404(MembershipInformation,
+        membership = get_object_or_404(MembershipInformation,
                                 member__profile__id=kwargs['id'])
 
-        (invoices, error) = self.__class__.get_invoice_table(payment.customer)
+        (invoices, error) = self.__class__.get_invoice_table(membership.customer)
 
         context.update({
             'admin': True,
-            'username': payment.member.profile.username,
+            'username': membership.member.profile.username,
             'invoices': invoices,
             'error': error
         })

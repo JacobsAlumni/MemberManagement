@@ -30,7 +30,7 @@ def fetch_from_stripe(sss, on_message):
 
     for s in sss:
         username = s.member.profile.username
-        cid = s.member.payment.customer
+        cid = s.member.membership.customer
 
         date, e = stripewrapper.safe(lambda stripe: stripe.Customer.retrieve(cid).created)
         if e is not None:

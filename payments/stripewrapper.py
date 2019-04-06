@@ -86,3 +86,9 @@ def get_payment_table(stripe, customer):
         'paid': iv.paid,
         'closed': iv.closed
     } for iv in stripe.Invoice.list(customer=customer)]
+
+@as_safe_operation
+def cancel_subscription(stripe, subscription):
+
+    # cancel the subscription
+    return stripe.Subscription.delete(subscription)
