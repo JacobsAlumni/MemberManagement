@@ -191,8 +191,16 @@ class PaymentsTableMixin:
             err = 'Something went wrong. Please try again later or contact support. '
 
         return methods, err
-    
-    def generate_context(self, context, customer, user, admin):
+
+@method_decorator(require_setup_completed(default_alternative), name='dispatch')
+class PaymentsView(PaymentsTableMixin, TemplateView):
+    template_name = 'payments/view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        customer = self.request.user.alumni.membership.customer
+        context['user'] = self.request.user
 
         invoices, error = self.__class__.get_invoice_table(customer)
         context['invoices'] = invoices
@@ -202,35 +210,5 @@ class PaymentsTableMixin:
             context['methods'] = methods
         
         context['error'] = error
-        context['user'] = user
-
-        if admin:
-            context.update({
-                'admin': True,
-            })
         
         return context
-
-
-
-@method_decorator(require_setup_completed(default_alternative), name='dispatch')
-class PaymentsView(PaymentsTableMixin, TemplateView):
-    template_name = 'payments/view.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        return self.generate_context(context, self.request.user.alumni.membership.customer, self.request.user, False)
-
-@method_decorator(user_passes_test(lambda u: u.is_superuser), name='dispatch')
-class PaymentsAdminView(PaymentsTableMixin, TemplateView):
-    template_name = 'payments/view.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        membership = get_object_or_404(MembershipInformation,
-                                member__profile__id=kwargs['id'])
-        customer = membership.customer
-        
-        return self.generate_context(context, membership.customer, membership.member.profile, True)

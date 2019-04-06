@@ -1,18 +1,16 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
 
-{% block title %} View Payment Information{% if admin %} for {{ user.username }}{% endif %} {% endblock %}
+{% block title %}Payment Information{% endblock %}
 
 {% block content %}
 <article class="uk-article">
     <h1 class="uk-article-title">
-        {% if admin %}{% else %}
-            <a href="{% url "portal" %}" class="uk-button uk-button-default uk-button-small">
-                <span uk-icon="icon: arrow-left"></span>
-                Back to Portal
-            </a>
-        {% endif %}
-        Payment Information{% if admin %} for {{ user.username }}{% endif %}
+        <a href="{% url "portal" %}" class="uk-button uk-button-default uk-button-small">
+            <span uk-icon="icon: arrow-left"></span>
+            Back to Portal
+        </a>
+        Payment Information
     </h1>
 
     {% if admin %}{% else %}
@@ -40,9 +38,9 @@
         </div>
     {% else %}
 
-        <h2>Payment Methods</h2>
+    <h2>Payment Methods</h2>
 
-        {% if methods %}
+    {% if methods %}
         <p>
             The following payment method(s) are on file for you:
         </p>
@@ -54,60 +52,58 @@
         </ul>
 
         <p>
-            {% if admin %}{% else %}
-                {% if user.alumni.can_update_payment %}
-                    <a href="{% url 'update_subscription' %}" class="uk-button uk-button-default">Update Payment Method</a>
-                {% endif %}
+            {% if user.alumni.can_update_payment %}
+                <a href="{% url 'update_subscription' %}" class="uk-button uk-button-default">Update Payment Method</a>
             {% endif %}
         </p>
-        {% else %}
+    {% else %}
         
         <p>
             No payment methods on file. 
         </p>
 
-        {% endif %}
+    {% endif %}
         
-        <h2>Invoices</h2>
+    <h2>Invoices</h2>
 
-        <table class="uk-table uk-table-divider">
-            <thead>
+    <table class="uk-table uk-table-divider">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
                 <tr>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for invoice in invoices %}
-                    <tr>
-                        <td>
-                            {{ invoice.date | safe }}
-                        </td>
-                        <td>
-                            {% for l in invoice.lines %}
-                                {% if l %}
-                                    {{ l | safe }} <br />
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {{ invoice.total | safe }}
-                        </td>
-                        <td>
-                            {% if invoice.paid %}
-                                <span class="uk-label uk-label-success">Paid</span>
-                            {% elif invoice.closed %}
-                                <span class="uk-label uk-label-danger">Unpaid</span>
-                            {% else %}
-                                <span class="uk-label uk-label-warning">Pending</span>
+                    <td>
+                        {{ invoice.date | safe }}
+                    </td>
+                    <td>
+                        {% for l in invoice.lines %}
+                            {% if l %}
+                                {{ l | safe }} <br />
                             {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {{ invoice.total | safe }}
+                    </td>
+                    <td>
+                        {% if invoice.paid %}
+                            <span class="uk-label uk-label-success">Paid</span>
+                        {% elif invoice.closed %}
+                            <span class="uk-label uk-label-danger">Unpaid</span>
+                        {% else %}
+                            <span class="uk-label uk-label-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     {% endif %}
 </article>
 {% endblock %}
