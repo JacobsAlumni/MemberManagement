@@ -8,8 +8,6 @@ from django.utils import formats
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
 
-from django.core.exceptions import ObjectDoesNotExist
-
 from .forms import MembershipInformationForm, PaymentMethodForm
 from .models import MembershipInformation, SubscriptionInformation
 from .plans import subscription_plans
