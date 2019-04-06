@@ -1,11 +1,14 @@
 from payments import stripewrapper
 
 from datetime import datetime
+from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
 from django.utils import formats
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, FormView
+
+from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import MembershipInformationForm, PaymentMethodForm
 from .models import MembershipInformation, SubscriptionInformation
@@ -43,7 +46,7 @@ class SignupView(SetupComponentView):
         return instance
 
 class SubscribeView(SetupComponentView):
-    setup_name = 'Payment Details'
+    setup_name = 'Payment Information'
     setup_subtitle = ''
     setup_form_class = PaymentMethodForm
     
@@ -52,8 +55,6 @@ class SubscribeView(SetupComponentView):
     @classmethod
     def setup_class(cls):
         return SubscriptionInformation
-
-    template_name = 'payments/subscribe.html'
 
     def form_valid(self, form):
         # Attach the payment source to the customer
@@ -84,6 +85,36 @@ class SubscribeView(SetupComponentView):
         )
 
         return instance
+
+@method_decorator(require_setup_completed(default_alternative), name='dispatch')
+@method_decorator(user_passes_test(lambda user: user.alumni.can_update_payment), name='dispatch')
+class UpdatePaymentView(FormView):
+    template_name = 'payments/subscribe.html'
+    form_class = PaymentMethodForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'title': 'Update Payment Information',
+            'updating': True
+        })
+        return context
+
+    
+    def form_valid(self, form):
+        # Attach the payment source to the customer
+        customer = self.request.user.alumni.membership.customer
+        _, err = form.attach_to_customer(customer)
+
+        # if the error is not, return
+        if err is not None:
+            form.add_error(None, 'Something went wrong when talking to our payment service provider. Please try again later or contact support. ')
+            return None
+        
+        messages.success(self.request, 'Payment method has been updated. ')
+        
+        return self.form_invalid(form)
+
 
 class PaymentsTableMixin:
     @classmethod

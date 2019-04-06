@@ -16,5 +16,8 @@
     </div>
     <div class="uk-card-footer">
         <a href="{% url 'edit_payments' %}" class="uk-button uk-button-text">View Payments</a>
+        {% if user.alumni.can_update_payment %}
+            <a href="{% url 'update_subscription' %}" class="uk-button uk-button-text">Update Payment Method</a>
+        {% endif %}
     </div>
 </div>
