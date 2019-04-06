@@ -8,7 +8,7 @@ def safe(operation):
         
     try:
         result = operation(stripeapi)
-    except stripeapi.StripeError as e:
+    except stripeapi.error.StripeError as e:
         client.captureException()
         return None, e
         
@@ -35,6 +35,11 @@ def create_customer(stripe, alumni):
 
     props = get_stripe_customer_props(alumni)
     return stripe.Customer.create(**props)
+
+@as_safe_operation
+def update_customer(stripe, customer, alumni):
+    props = get_stripe_customer_props(alumni)
+    return stripe.Customer.modify(customer, **props)
 
 @as_safe_operation
 def clear_all_payment_sources(stripe, customer):
@@ -112,6 +117,5 @@ def get_methods_table(stripe, customer):
 
 @as_safe_operation
 def cancel_subscription(stripe, subscription):
-
     # cancel the subscription
     return stripe.Subscription.delete(subscription)

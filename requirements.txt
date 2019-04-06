@@ -5,7 +5,7 @@ jsonfield==2.0.2
 lxml==4.2.5
 openpyxl==2.5.9
 raven==6.10.0
-stripe==1.84.2
+stripe==2.24.0
 google-auth==1.6.2
 django-sesame==1.4
 pre-js-py==1.2.0
