@@ -49,6 +49,7 @@ class SubscribeView(SetupComponentView):
     setup_name = 'Payment Information'
     setup_subtitle = ''
     setup_form_class = PaymentMethodForm
+    setup_next_text = 'CONFIRM MEMBERSHIP & AUTHORIZE PAYMENT NOW'
     
     template_name = 'payments/subscribe.html'
 
@@ -96,7 +97,8 @@ class UpdatePaymentView(FormView):
         context = super().get_context_data(**kwargs)
         context.update({
             'title': 'Update Payment Information',
-            'updating': True
+            'updating': True,
+            'next_text': 'AUTHORIZE PAYMENT NOW'
         })
         return context
 
