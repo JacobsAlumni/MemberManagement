@@ -4,6 +4,8 @@ class AlumniComponentMixin:
     """ Mixin representing a component """
 
     SETUP_COMPONENT_NAME = None
+    COMPONENT_SETUP_URL = None
+
 
     @classmethod
     def component_exists(cls, alumni):
@@ -17,8 +19,16 @@ class AlumniComponentMixin:
         name = cls.SETUP_COMPONENT_NAME
         if name is not None:
             return name
-        else:
-            return cls.member.field.remote_field.name
+        
+        return cls.member.field.remote_field.name
+    
+    @classmethod
+    def component_setup_url(cls):
+        url = cls.COMPONENT_SETUP_URL
+        if url is not None:
+            return url, False
+
+        return 'setup_{}'.format(cls.component_name()), True
 
 
 class AlumniRegistryMixin:
@@ -60,7 +70,7 @@ class AlumniRegistryMixin:
 
         for component in self.__class__.components:
             if not self.has_component(component):
-                return component.component_name()
+                return component
         
         return None
     

@@ -26,7 +26,8 @@ class SetupView(RedirectResponseMixin, View):
         if component is None:
             return self.redirect_response('portal', reverse=True)
         else:
-            return self.redirect_response('setup_{}'.format(component), reverse=True)
+            uri, reverse = component.component_setup_url()
+            return self.redirect_response(uri, reverse=reverse)
 
 class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
     """ A base class for all setup views """
