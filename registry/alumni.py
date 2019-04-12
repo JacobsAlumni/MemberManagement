@@ -1,6 +1,25 @@
 import bisect
 
-from django.db import models
+class AlumniComponentMixin:
+    """ Mixin representing a component """
+
+    SETUP_COMPONENT_NAME = None
+
+    @classmethod
+    def component_exists(cls, alumni):
+        """ Checks if an alumni has this component set """
+
+        return cls.objects.filter(member=alumni).exists()
+    
+    @classmethod
+    def component_name(cls):
+        """ Gets the component name """
+        name = cls.SETUP_COMPONENT_NAME
+        if name is not None:
+            return name
+        else:
+            return cls.member.field.remote_field.name
+
 
 class AlumniRegistryMixin:
     components = [] # the list of components used by the alumni model
@@ -11,6 +30,11 @@ class AlumniRegistryMixin:
         """ A decorator to add a component to the list of components """
         
         def decorator(f):
+
+            # raise an error for the component
+            if not issubclass(f, AlumniComponentMixin):
+                raise TypeError('can only register subclass of AlumniComponentMixin')
+
             # Find the insertion point within the priority list
             insertion = bisect.bisect_left(cls.component_prios, prio)
 
@@ -25,21 +49,19 @@ class AlumniRegistryMixin:
     def has_component(self, component):
         """ Checks if this alumni has a given component"""
         
-        if issubclass(component, models.Model):
-            return component.objects.filter(member=self).exists()
+        if issubclass(component, AlumniComponentMixin):
+            return component.component_exists(self)
         else:
-            raise TypeError("expected 'component' to be a subclass of model")
+            raise TypeError("expected 'component' to be a subclass of AlumniComponentMixin")
 
     def get_first_unset_component(self):
         """ Gets the first unset component or returns None if it
         already exists. """
 
-        for c in self.__class__.components:
-            if not self.has_component(c):
-                if hasattr(c, 'SETUP_COMPONENT_NAME'):
-                    return c.SETUP_COMPONENT_NAME
-                else:
-                    return c.member.field.remote_field.name
+        for component in self.__class__.components:
+            if not self.has_component(component):
+                return component.component_name()
+        
         return None
     
     @property

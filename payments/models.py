@@ -6,10 +6,12 @@ from datetime import timedelta
 from alumni.models import Alumni
 from alumni.fields import TierField
 
+from registry.alumni import AlumniComponentMixin
+
 from payments import stripewrapper
 
 @Alumni.register_component(6)
-class MembershipInformation(models.Model):
+class MembershipInformation(AlumniComponentMixin, models.Model):
     """ The (payment-related) membership information of an Alumni Member """
 
     SETUP_COMPONENT_NAME = 'membership'
@@ -25,7 +27,7 @@ class MembershipInformation(models.Model):
                                 help_text='The stripe customer id for the user')
 
 @Alumni.register_component(7)
-class SubscriptionInformation(models.Model):
+class SubscriptionInformation(AlumniComponentMixin, models.Model):
     SETUP_COMPONENT_NAME = 'subscription'
 
     member = models.ForeignKey(

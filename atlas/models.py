@@ -6,8 +6,10 @@ from django.db import models, transaction
 from alumni.models import Alumni
 from alumni.fields import CountryField
 
+from registry.alumni import AlumniComponentMixin
+
 @Alumni.register_component(5)
-class AtlasSettings(models.Model):
+class AtlasSettings(AlumniComponentMixin, models.Model):
     member = models.OneToOneField(Alumni, related_name='atlas', on_delete=models.CASCADE)
 
     included = models.BooleanField(default=False, blank=True,

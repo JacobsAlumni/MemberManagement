@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from . import fields
 
-from registry.alumni import AlumniRegistryMixin
+from registry.alumni import AlumniRegistryMixin, AlumniComponentMixin
 from custom_auth.alumni import AlumniEmailMixin
 from payments.alumni import AlumniSubscriptionMixin
 
@@ -51,7 +51,7 @@ class Alumni(AlumniSubscriptionMixin, AlumniEmailMixin, AlumniRegistryMixin, mod
 
 
 @Alumni.register_component(0)
-class Address(models.Model):
+class Address(AlumniComponentMixin, models.Model):
     """ The address of an Alumni Member """
 
     member = models.OneToOneField(Alumni, related_name='address', on_delete=models.CASCADE)
@@ -84,7 +84,7 @@ class Address(models.Model):
 
 
 @Alumni.register_component(1)
-class SocialMedia(models.Model):
+class SocialMedia(AlumniComponentMixin, models.Model):
     """ The social media data of a Jacobs Alumni """
 
     member = models.OneToOneField(Alumni, related_name='social', on_delete=models.CASCADE)
@@ -102,7 +102,7 @@ class SocialMedia(models.Model):
 
 
 @Alumni.register_component(2)
-class JacobsData(models.Model):
+class JacobsData(AlumniComponentMixin, models.Model):
     """ The jacobs data of an Alumni Member"""
 
     member = models.OneToOneField(Alumni, related_name='jacobs', on_delete=models.CASCADE)
@@ -127,7 +127,7 @@ class Approval(models.Model):
 
 
 @Alumni.register_component(3)
-class JobInformation(models.Model):
+class JobInformation(AlumniComponentMixin, models.Model):
     """ The jobs of an Alumni Member"""
 
     member = models.OneToOneField(Alumni, related_name='job', on_delete=models.CASCADE)
@@ -141,7 +141,7 @@ class JobInformation(models.Model):
 
 
 @Alumni.register_component(4)
-class Skills(models.Model):
+class Skills(AlumniComponentMixin, models.Model):
     """ The skills of an Alumni member """
 
     member = models.OneToOneField(Alumni, related_name='skills', on_delete=models.CASCADE)
@@ -155,7 +155,7 @@ class Skills(models.Model):
                                        help_text="I would like to sign up as an alumni mentor")
 
 @Alumni.register_component(1000)
-class SetupCompleted(models.Model):
+class SetupCompleted(AlumniComponentMixin, models.Model):
     member = models.OneToOneField(Alumni, related_name='setup', on_delete=models.CASCADE)
     
     date = models.DateTimeField(auto_now_add=True)
