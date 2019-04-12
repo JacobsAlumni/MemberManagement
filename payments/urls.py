@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from .views import SubscribeView, PaymentsView, PaymentsAdminView
+from .views import SignupView, SubscribeView, PaymentsView, UpdatePaymentView
 
 urlpatterns = [
-    url(r'^setup/$', SubscribeView.as_view(), name='setup_payment'),
-    url(r'^view/$', PaymentsView.as_view(), name='edit_payments'),
-    url(r'^view/(?P<id>\d+)/$',
-        PaymentsAdminView.as_view(), name='view_payments_admin'),
+    url(r'^membership/$', SignupView.as_view(), name='setup_membership'),
+    url(r'^subscribe/$', SubscribeView.as_view(), name='setup_subscription'),
+    url(r'^update/$', UpdatePaymentView.as_view(), name='update_subscription'),
+    url(r'^$', PaymentsView.as_view(), name='view_payments'),
 ]

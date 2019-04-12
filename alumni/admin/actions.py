@@ -198,8 +198,8 @@ class AlumniAdminActions:
         'skills__programmingLanguages', 'skills__areasOfInterest',
         'skills__alumniMentor',
 
-        # Payment Data
-        'payment__tier', 'payment__starterReason',
+        # Membership Data
+        'membership__tier', 'membership__starterReason',
 
         # Atlas Settings
         'atlas__secret', 'atlas__included', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',

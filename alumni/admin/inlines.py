@@ -4,7 +4,7 @@ from ..models import Alumni, Address, JobInformation, SocialMedia, \
     JacobsData, Approval, Skills, SetupCompleted
 
 from atlas.admin import AtlasSettingsInline
-from payments.admin import PaymentInformationInline
+from payments.admin import MembershipInformationInline, SubscriptionInformationInline
 
 
 class JacobsDataInline(admin.StackedInline):
@@ -37,4 +37,4 @@ class SetupCompletedInline(admin.StackedInline):
 
 class AlumniAdminInlines:
     inlines = [SetupCompletedInline, ApprovalInline, AddressInline, SocialMediaInline, JacobsDataInline,
-               JobInformationInline, SkillsInline, PaymentInformationInline, AtlasSettingsInline]
+               JobInformationInline, SkillsInline, MembershipInformationInline, SubscriptionInformationInline, AtlasSettingsInline]

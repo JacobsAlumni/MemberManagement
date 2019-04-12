@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import PaymentInformation
+from .models import MembershipInformation, SubscriptionInformation
 
-class PaymentInformationInline(admin.StackedInline):
-    model = PaymentInformation
+
+class MembershipInformationInline(admin.StackedInline):
+    model = MembershipInformation
+
+
+class SubscriptionInformationInline(admin.TabularInline):
+    model = SubscriptionInformation
+    extra = 0

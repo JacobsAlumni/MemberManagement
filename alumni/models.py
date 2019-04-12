@@ -1,14 +1,13 @@
-import bisect
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-
-from django.conf import settings
-from custom_auth.mailutils import send_email
 
 from . import fields
 
-class Alumni(models.Model):
+from registry.alumni import AlumniRegistryMixin
+from custom_auth.alumni import AlumniEmailMixin
+from payments.alumni import AlumniSubscriptionMixin
+
+class Alumni(AlumniSubscriptionMixin, AlumniEmailMixin, AlumniRegistryMixin, models.Model):
     """ The information about an Alumni Member """
 
     profile = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -47,74 +46,8 @@ class Alumni(models.Model):
     # kind
     category = fields.AlumniCategoryField()
 
-    #
-    # COMPONENTS MANAGEMENT
-    #
-
-    # The list of components an prios of them
-    components = []
-    component_prios = []
-
-    @classmethod
-    def register_component(cls, prio):
-        """ A decorator to add a component to the list of components """
-        def decorator(f):
-            # Find the insertion point within the priority list
-            insertion = bisect.bisect_left(cls.component_prios, prio)
-
-            # Insert into (components, component_prios)
-            cls.components.insert(insertion, f)
-            cls.component_prios.insert(insertion, prio)
-
-            # and return the original function
-            return f
-        return decorator
-
-    def has_component(self, component):
-        """ Checks if this alumni has a given component"""
-        
-        if issubclass(component, models.Model):
-            return component.objects.filter(member=self).exists()
-        else:
-            raise TypeError("expected 'component' to be a subclass of model")
-
-    def get_first_unset_component(self):
-        """ Gets the first unset component or returns None if it
-        already exists. """
-
-        for c in self.__class__.components:
-            if not self.has_component(c):
-                return c.member.field.remote_field.name
-        return None
-    
-    @property
-    def setup_completed(self):
-        """ Checks if a user has completed setup """
-        return self.get_first_unset_component() is None
-
     def __str__(self):
         return "Alumni [{}]".format(self.fullName)
-
-    def send_welcome_email(self, password=None, back=False):
-        """ Sends a user a Welcome (or welcome back) email """
-
-        # Extract all the fields from the alumni
-        email = self.email
-        gsuite = self.approval.gsuite
-        name = self.fullName
-        tier = {
-            fields.TierField.PATRON: 'Patron',
-            fields.TierField.CONTRIBUTOR: 'Contributor',
-            fields.TierField.STARTER: 'Starter'
-        }[self.payment.tier]
-
-        # set destination and instantiate email templates
-        destination = [email, gsuite] + settings.GSUITE_EMAIL_ALL
-        if back or password is None:
-            return send_email(destination, settings.GSUITE_EMAIL_WELCOMEBACK_SUBJECT, 'emails/welcomeback_email.html', name = name, tier = tier, gsuite = gsuite, password = password)
-        else:
-            return send_email(destination, settings.GSUITE_EMAIL_WELCOME_SUBJECT, 'emails/welcome_email.html', name = name, tier = tier, gsuite = gsuite, password = password)
-
 
 
 @Alumni.register_component(0)

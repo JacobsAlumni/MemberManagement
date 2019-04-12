@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from payments.models import SubscriptionInformation
 
 class AlumniListDisplay:
 
@@ -30,10 +31,10 @@ class AlumniListDisplay:
     approval_gsuite.short_description = 'Alumni E-Mail'
     approval_gsuite.admin_order_field = 'approval__gsuite'
 
-    def payment_tier(self, x):
-        return x.payment.tier
-    payment_tier.short_description = 'Tier'
-    payment_tier.admin_order_field = 'payment__tier'
+    def membership_tier(self, x):
+        return x.membership.tier
+    membership_tier.short_description = 'Tier'
+    membership_tier.admin_order_field = 'membership__tier'
 
     def atlas_included(self, x):
         return x.atlas.included
@@ -68,8 +69,8 @@ class AlumniListDisplay:
         # member email
         'approval_approval', 'setup_date', 'profile_googleassociation', 'approval_gsuite',
 
-        # category + payment
-        'category', 'payment_tier',
+        # category + subscription
+        'category', 'membership_tier',
 
         # visible in atalas
         'atlas_included',
@@ -90,13 +91,13 @@ class SetupCompletedFilter(admin.SimpleListFilter):
         ]
 
     def queryset(self, request, queryset):
-        if self.value() == '1':
+        val = self.value()
+        if val == '1':
             return queryset.filter(setup__isnull=False)
-        elif self.value() == '0':
+        elif val == '0':
             return queryset.filter(setup__isnull=True)
         else:
             return queryset
-
 
 def custom_titled_filter(title):
     class Wrapper(admin.FieldListFilter):
@@ -113,7 +114,7 @@ class AlumniListFilter:
         ('approval__approval', custom_titled_filter('Application Approval')),
         SetupCompletedFilter,
         ('category', custom_titled_filter('Alumni Category')),
-        ('payment__tier', custom_titled_filter('Alumni Tier')),
+        ('membership__tier', custom_titled_filter('Alumni Tier')),
         ('atlas__included', custom_titled_filter('Included in Alumni Atlas')),
         ('jacobs__degree', custom_titled_filter('Jacobs Degree')),
         ('jacobs__graduation', custom_titled_filter('Jacobs Class')),

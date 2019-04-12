@@ -1,17 +1,32 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
 
-{% block title %} View Payments{% if admin %} for {{ username }}{% endif %} {% endblock %}
+{% block title %}Payment Information{% endblock %}
 
 {% block content %}
 <article class="uk-article">
     <h1 class="uk-article-title">
-        View Payments{% if admin %} for {{ username }}{% endif %}
+        <a href="{% url "portal" %}" class="uk-button uk-button-default uk-button-small">
+            <span uk-icon="icon: arrow-left"></span>
+            Back to Portal
+        </a>
+        Payment Information
     </h1>
 
     {% if admin %}{% else %}
         {% include "portal/approval_warning.html" %}
     {% endif %}
+
+    <div class="uk-text-lead">
+        <p>
+            All information visible on this page is securely stored with our payment provider, <a href="https://stripe.com/">Stripe</a>. 
+            Apart from the dates of your membership, we do not have a copy of this data on our server. 
+        </p>
+        
+        <p>
+            If you have any questions, need help or require a receipt, please contact <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>.
+        </p>
+    </div>
 
 
     {% if error %}
@@ -23,53 +38,72 @@
         </div>
     {% else %}
 
-        <table class="uk-table uk-table-divider">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for invoice in invoices %}
-                    <tr>
-                        <td>
-                            {{ invoice.date | safe }}
-                        </td>
-                        <td>
-                            {% for l in invoice.lines %}
-                                {% if l %}
-                                    {{ l | safe }} <br />
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {{ invoice.total | safe }}
-                        </td>
-                        <td>
-                            {% if invoice.paid %}
-                                <span class="uk-label uk-label-success">Paid</span>
-                            {% elif invoice.closed %}
-                                <span class="uk-label uk-label-danger">Unpaid</span>
-                            {% else %}
-                                <span class="uk-label uk-label-warning">Pending</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+    <h2>Payment Methods</h2>
 
-    {% if admin %}{% else %}
-    <div class="uk-alert uk-alert-primary" uk-alert>
-        <h3>Need help?</h3>
+    {% if methods %}
         <p>
-            If you have any questions, need help or require a receipt, please contact <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>.
+            The following payment method(s) are on file for you:
         </p>
-    </div>
+            
+        <ul>
+            {% for method in methods %}
+                <li>{{ method | safe }}</li>
+            {% endfor %}
+        </ul>
+
+        <p>
+            {% if user.alumni.can_update_payment %}
+                <a href="{% url 'update_subscription' %}" class="uk-button uk-button-default">Update Payment Method</a>
+            {% endif %}
+        </p>
+    {% else %}
+        
+        <p>
+            No payment methods on file. 
+        </p>
+
+    {% endif %}
+        
+    <h2>Invoices</h2>
+
+    <table class="uk-table uk-table-divider">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+                <tr>
+                    <td>
+                        {{ invoice.date | safe }}
+                    </td>
+                    <td>
+                        {% for l in invoice.lines %}
+                            {% if l %}
+                                {{ l | safe }} <br />
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {{ invoice.total | safe }}
+                    </td>
+                    <td>
+                        {% if invoice.paid %}
+                            <span class="uk-label uk-label-success">Paid</span>
+                        {% elif invoice.closed %}
+                            <span class="uk-label uk-label-danger">Unpaid</span>
+                        {% else %}
+                            <span class="uk-label uk-label-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     {% endif %}
 </article>
 {% endblock %}

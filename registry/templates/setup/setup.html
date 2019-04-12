@@ -12,12 +12,11 @@
         {% endif %}
     </h1>
 
-    {% block extracontent %}{% endblock %}
-
     <div>
         <form class="uk-form-horizontal" method="POST">
             {% csrf_token %}
             {{ form | as_uikit_form }}
+            {% block extracontent %}{% endblock %}
             <input type="submit" class="uk-button uk-button-primary" value="{{ next_text }}">
         </form>
     </div>

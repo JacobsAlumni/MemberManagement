@@ -5,21 +5,18 @@
     <li>
         <a href="{% url 'approval_approval' id=original.profile.id %}" target="_blank">Manage Approval</a>
     </li>
-    {% if original.payment and original.payment.customer %}
+    {% if original.membership and original.membership.customer %}
         <li>
-            <a href="https://dashboard.stripe.com/{% if stripe_test_mode %}test/{% endif%}customers/{{ original.payment.customer }}" target="_blank">View on Stripe Dashboard</a>
+            <a href="https://dashboard.stripe.com/{% if stripe_test_mode %}test/{% endif%}customers/{{ original.membership.customer }}" target="_blank">View on Stripe Dashboard</a>
         </li>
     {% endif %}
-    <li>
-        <a href="{% url 'view_payments_admin' id=original.profile.id %}" target="_blank">View Payments</a>
-    </li>
     {{ block.super }}
 {% endblock %}
 
 {% block form_top %}
     {{ block.super }}
 
-    {% if original.payment and original.payment.customer %}{% else %}
+    {% if original.setup_completed %}{% else %}
         <p class="errornote">
             User has not completed setup. 
         </p>

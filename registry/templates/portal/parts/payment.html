@@ -2,19 +2,19 @@
 
 <div class="uk-card uk-card-default">
     <div class="uk-card-header">
-        <h3 class="uk-card-title uk-margin-remove-bottom">My Membership</h3>
+        <h3 class="uk-card-title uk-margin-remove-bottom">Membership &amp Payment Information</h3>
     </div>
     <div class="uk-card-body">
         <table class="uk-table uk-table-small">
             <tbody>
                 <tr>
                     <td>Tier</td>
-                    <td>{{ user.alumni.payment |get_choice_field:"tier" }}</td>
+                    <td>{{ user.alumni.membership |get_choice_field:"tier" }}</td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="uk-card-footer">
-        <a href="{% url 'edit_payments' %}" class="uk-button uk-button-text">View Payments</a>
+        <a href="{% url 'view_payments' %}" class="uk-button uk-button-text">View Payment Information</a>
     </div>
 </div>
