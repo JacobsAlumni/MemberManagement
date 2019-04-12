@@ -23,7 +23,7 @@ class Command(BaseCommand):
         else:
             subs = SubscriptionInformation.objects.filter(member__profile__username__in=usernames)
         
-        subs = subs.filter(tier=TierField.STARTER).exclude(subscription__isnull=True).exclude(subscription='')
+        subs = subs.filter(tier=TierField.STARTER)
         
         clear_legacy_data(subs, lambda x: print(x))
 
@@ -33,6 +33,8 @@ def clear_legacy_data(subs, on_message):
     subs = subs.select_related('member__membership')
     for s in subs:
         subscription = s.subscription
+        if subscription is None or subscription == "":
+            continue
         customer = s.member.membership.customer
 
         _, err = stripewrapper.cancel_subscription(subscription)
