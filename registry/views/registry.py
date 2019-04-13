@@ -1,16 +1,26 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.http import HttpResponse
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils.decorators import method_decorator
+from django.views.generic.base import View, TemplateResponseMixin
 
-from registry.decorators import require_setup_completed
 from registry.models import Announcement
 
-@require_setup_completed(lambda request: redirect(reverse('setup')))
-def portal(request):
-    # and render the portal
-    return render(request, 'portal/index.html', {'user': request.user, 'announcements': Announcement.objects.filter(active=True)})
+from MemberManagement.mixins import RedirectResponseMixin, UnauthorizedResponseMixin
+
+from ..decorators import require_alumni
+
+@method_decorator(require_alumni, name='dispatch')
+class PortalView(UnauthorizedResponseMixin, RedirectResponseMixin, TemplateResponseMixin, View):
+    template_name = 'portal/index.html'
+    def get(self, *args, **kwargs):
+        # if we have setup completed, show the announcements
+        alumni = self.request.user.alumni
+        if alumni.setup_completed:
+            return self.render_to_response({
+                'user': self.request.user,
+                'announcements': Announcement.objects.filter(active=True),
+            })
+        
+        return self.redirect_response('setup', reverse=True)
 
 
 def default_alternative(request):

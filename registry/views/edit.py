@@ -3,7 +3,6 @@ from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import render, redirect
 
-from registry.views.registry import default_alternative
 from ..decorators import require_setup_completed
 
 from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
@@ -13,7 +12,7 @@ from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
 def editViewFactory(prop, FormClass, name):
     """ Generates an edit view for a given section of the profile """
 
-    @require_setup_completed(default_alternative)
+    @require_setup_completed
     def edit(request):
 
         # figure out the edit url to redirect to

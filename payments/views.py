@@ -3,17 +3,15 @@ from payments import stripewrapper
 from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import get_object_or_404
 from django.utils import formats
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
 
 from .forms import MembershipInformationForm, PaymentMethodForm
-from .models import MembershipInformation, SubscriptionInformation
+from .models import SubscriptionInformation
 from .plans import subscription_plans
 
 from registry.decorators import require_setup_completed
-from registry.views.registry import default_alternative
 from registry.views.setup import SetupComponentView
 
 class SignupView(SetupComponentView):
@@ -85,7 +83,7 @@ class SubscribeView(SetupComponentView):
 
         return instance
 
-@method_decorator(require_setup_completed(default_alternative), name='dispatch')
+@method_decorator(require_setup_completed, name='dispatch')
 @method_decorator(user_passes_test(lambda user: user.alumni.can_update_payment), name='dispatch')
 class UpdatePaymentView(FormView):
     template_name = 'payments/subscribe.html'
@@ -192,7 +190,7 @@ class PaymentsTableMixin:
 
         return methods, err
 
-@method_decorator(require_setup_completed(default_alternative), name='dispatch')
+@method_decorator(require_setup_completed, name='dispatch')
 class PaymentsView(PaymentsTableMixin, TemplateView):
     template_name = 'payments/view.html'
 

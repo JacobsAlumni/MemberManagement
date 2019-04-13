@@ -15,14 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from .views import registry as registry_views
+from .views.registry import PortalView
 from .views import setup as setup_views
 from .views import edit as edit_views
 
 urlpatterns = [
 
     # the portal for the user
-    url(r'^$', registry_views.portal, name='portal'),
+    url(r'^$', PortalView.as_view(), name='portal'),
 
     # Registration
     url(r'^register/$', setup_views.RegisterView.as_view(), name='register'),
