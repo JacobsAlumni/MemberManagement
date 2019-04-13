@@ -1,4 +1,3 @@
-from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic.base import View, TemplateResponseMixin
 
@@ -21,9 +20,3 @@ class PortalView(UnauthorizedResponseMixin, RedirectResponseMixin, TemplateRespo
             })
         
         return self.redirect_response('setup', reverse=True)
-
-
-def default_alternative(request):
-    """ A view representing the default redirect representation"""
-
-    return redirect(reverse('portal'))

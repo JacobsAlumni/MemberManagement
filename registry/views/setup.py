@@ -1,18 +1,13 @@
-from django.core.exceptions import ObjectDoesNotExist
-
 from django.views.generic.base import View, TemplateResponseMixin
-from django.views.generic.edit import FormMixin
 
 from django.utils.decorators import method_decorator
 
 from django.contrib.auth import login
-from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 from alumni.models import Approval
 from registry.decorators import require_alumni
-from registry.views.registry import default_alternative
 from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, SkillsForm, AtlasSettingsForm, SetupCompletedForm
 
@@ -143,7 +138,7 @@ class SetupComponentView(SetupViewBase):
         return self.request.user.alumni.has_component(self.__class__.setup_class())
 
     def dispatch_already_set(self):
-        return default_alternative(self.request)
+        return self.redirect_response('portal', reverse=True)
 
     def form_valid(self, form):
         """ Called when the form is valid and an instance is to be created """
