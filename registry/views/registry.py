@@ -1,22 +1,20 @@
 from django.utils.decorators import method_decorator
-from django.views.generic.base import View, TemplateResponseMixin
+from django.views.generic.base import TemplateView
 
 from registry.models import Announcement
 
-from MemberManagement.mixins import RedirectResponseMixin, UnauthorizedResponseMixin
+from ..decorators import require_setup_completed
 
-from ..decorators import require_alumni
-
-@method_decorator(require_alumni, name='dispatch')
-class PortalView(UnauthorizedResponseMixin, RedirectResponseMixin, TemplateResponseMixin, View):
+@method_decorator(require_setup_completed, name='dispatch')
+class PortalView(TemplateView):
     template_name = 'portal/index.html'
-    def get(self, *args, **kwargs):
-        # if we have setup completed, show the announcements
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         alumni = self.request.user.alumni
-        if alumni.setup_completed:
-            return self.render_to_response({
-                'user': self.request.user,
-                'announcements': Announcement.objects.filter(active=True),
-            })
+        context.update({
+            'user': self.request.user,
+            'announcements': Announcement.objects.filter(active=True),
+        })
         
-        return self.redirect_response('setup', reverse=True)
+        return context
