@@ -1,6 +1,8 @@
 from django.conf import settings
 from .mailutils import send_email
 
+from alumni import fields
+
 
 class AlumniEmailMixin:
     def send_welcome_email(self, password=None, back=False):
