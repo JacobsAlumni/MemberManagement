@@ -28,6 +28,11 @@ ENABLE_DEVEL_WARNING = True
 
 ALLOWED_HOSTS = []
 
+# Kosovo is missing from the list of countries
+from django.utils.translation import ugettext_lazy as _
+COUNTRIES_OVERRIDE = {
+    'XK': _('Kosovo'),
+}
 
 # Application definition
 
