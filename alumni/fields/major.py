@@ -1,8 +1,8 @@
-from django.db import models
+from .custom import CustomTextChoiceField
 
 __all__ = ['MajorField']
 
-class MajorField(models.CharField):
+class MajorField(CustomTextChoiceField):
     APPLIED_COMPUTATIONAL_MATHEMATICS = "ACM"
     APPLIED_PHYSICS_AND_MATHEMATICS = "APAM"
     ASTROPARTICLE_PHYSICS = "AP"
@@ -71,7 +71,7 @@ class MajorField(models.CharField):
     WELFARE_STATE_INEQUALITY_AND_QUALITY_OF_LIFE = "WSIAQOL"
     OTHER = "OTHER"
 
-    MAJOR_CHOICES = (
+    CHOICES = (
         (APPLIED_COMPUTATIONAL_MATHEMATICS,
          "Applied Computational Mathematics (ACM)"),
         (APPLIED_PHYSICS_AND_MATHEMATICS, "Applied Physics and Mathematics"),
@@ -165,16 +165,5 @@ class MajorField(models.CharField):
          "Welfare State, Inequality and Quality of Life"),
         (OTHER, "Other (Please specify in comments)"),
     )
-
-    def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 7
-        kwargs['choices'] = MajorField.MAJOR_CHOICES
-        kwargs['default'] = MajorField.OTHER
-        super(MajorField, self).__init__(*args, **kwargs)
-
-    def deconstruct(self):
-        name, path, args, kwargs = super(MajorField, self).deconstruct()
-        del kwargs["max_length"]
-        del kwargs['choices']
-        del kwargs['default']
-        return name, path, args, kwargs
+    
+    DEFAULT_CHOICE = OTHER

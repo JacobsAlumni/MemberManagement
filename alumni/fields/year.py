@@ -1,8 +1,8 @@
-from django.db import models
+from .custom import CustomIntegerChoiceField
 
 __all__ = ['ClassField']
 
-class ClassField(models.IntegerField):
+class ClassField(CustomIntegerChoiceField):
     OTHER = 0000
     C_2004 = 2004
     C_2005 = 2005
@@ -20,7 +20,7 @@ class ClassField(models.IntegerField):
     C_2017 = 2017
     C_2018 = 2018
     C_2019 = 2019
-    CLASS_CHOICES = (
+    CHOICES = (
         (OTHER, 'Other (please specifiy in comments)'),
         (C_2004, 'Class of 2004'),
         (C_2005, 'Class of 2005'),
@@ -39,14 +39,5 @@ class ClassField(models.IntegerField):
         (C_2018, 'Class of 2018'),
         (C_2019, 'Class of 2019'),
     )
-
-    def __init__(self, *args, **kwargs):
-        kwargs['choices'] = ClassField.CLASS_CHOICES
-        kwargs['default'] = ClassField.OTHER
-        super(ClassField, self).__init__(*args, **kwargs)
-
-    def deconstruct(self):
-        name, path, args, kwargs = super(ClassField, self).deconstruct()
-        del kwargs['choices']
-        del kwargs['default']
-        return name, path, args, kwargs
+    
+    DEFAULT_CHOICE = OTHER

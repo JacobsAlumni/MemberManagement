@@ -1,9 +1,9 @@
-from django.db import models
+from .custom import CustomIntegerChoiceField
 
 __all__ = ['JobField']
 
 
-class JobField(models.IntegerField):
+class JobField(CustomIntegerChoiceField):
     ACCOUNTING_FINANCE = 1
     ADMINISTRATIVE = 2
     ANALYST = 3
@@ -39,7 +39,7 @@ class JobField(models.IntegerField):
     OTHER = 33
     UNEMPLOYED = 34
 
-    JOB_CHOICES = (
+    CHOICES = (
         (ACCOUNTING_FINANCE, "Accounting / Finance"),
         (ADMINISTRATIVE, "Administrative"),
         (ANALYST, "Analyst"),
@@ -77,14 +77,5 @@ class JobField(models.IntegerField):
         (OTHER, "Other"),
         (UNEMPLOYED, "Unemployed"),
     )
-
-    def __init__(self, *args, **kwargs):
-        kwargs['choices'] = JobField.JOB_CHOICES
-        kwargs['default'] = JobField.UNEMPLOYED
-        super(JobField, self).__init__(*args, **kwargs)
-
-    def deconstruct(self):
-        name, path, args, kwargs = super(JobField, self).deconstruct()
-        del kwargs['choices']
-        del kwargs['default']
-        return name, path, args, kwargs
+    
+    DEFAULT_CHOICE = OTHER

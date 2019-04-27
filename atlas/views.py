@@ -37,12 +37,12 @@ search = SearchFilter({
 ])
 
 ADVANCED_SEARCH_FIELDS = [
-    ['college', 'College', CollegeField.COLLEGE_CHOICES],
-    ['class', 'Class', ClassField.CLASS_CHOICES],
-    ['major', 'Major', MajorField.MAJOR_CHOICES],
-    ['degree', 'Degree', DegreeField.DEGREE_CHOICES],
-    ['industry', 'Industry', IndustryField.INDUSTRY_CHOICES],
-    ['job', 'Job', JobField.JOB_CHOICES],
+    ['college', 'College', CollegeField.CHOICES],
+    ['class', 'Class', ClassField.CHOICES],
+    ['major', 'Major', MajorField.CHOICES],
+    ['degree', 'Degree', DegreeField.CHOICES],
+    ['industry', 'Industry', IndustryField.CHOICES],
+    ['job', 'Job', JobField.CHOICES],
     ['country', 'Country', CountryField.COUNTRY_CHOICES]
 ]
 

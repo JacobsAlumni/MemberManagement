@@ -1,8 +1,8 @@
-from django.db import models
+from .custom import CustomTextChoiceField
 
 __all__ = ['DegreeField']
 
-class DegreeField(models.CharField):
+class DegreeField(CustomTextChoiceField):
     FOUNDATION_YEAR = 'fy'
     BACHELOR_ARTS = 'ba'
     BACHELOR_SCIENCE = 'bsc'
@@ -11,7 +11,7 @@ class DegreeField(models.CharField):
     PHD = 'phd'
     MBA = 'mba'
 
-    DEGREE_CHOICES = (
+    CHOICES = (
         (FOUNDATION_YEAR, 'Foundation Year'),
         (BACHELOR_ARTS, 'Bachelor of Arts'),
         (BACHELOR_SCIENCE, 'Bachelor of Science'),
@@ -20,14 +20,3 @@ class DegreeField(models.CharField):
         (PHD, 'PhD'),
         (MBA, 'MBA'),
     )
-
-    def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 3
-        kwargs['choices'] = DegreeField.DEGREE_CHOICES
-        super(DegreeField, self).__init__(*args, **kwargs)
-
-    def deconstruct(self):
-        name, path, args, kwargs = super(DegreeField, self).deconstruct()
-        del kwargs["max_length"]
-        del kwargs['choices']
-        return name, path, args, kwargs

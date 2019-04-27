@@ -21,7 +21,7 @@ class MembershipInformationForm(forms.ModelForm):
         }
 
 class PaymentMethodForm(forms.Form):
-    payment_type = forms.ChoiceField(choices = PaymentTypeField.PAYMENT_CHOICES)
+    payment_type = forms.ChoiceField(choices = PaymentTypeField.CHOICES)
     source_id = forms.CharField(widget=forms.HiddenInput(), required = False)
     card_token = forms.CharField(widget=forms.HiddenInput(), required = False)
 

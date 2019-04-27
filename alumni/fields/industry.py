@@ -1,8 +1,8 @@
-from django.db import models
+from .custom import CustomIntegerChoiceField
 
 __all__ = ['IndustryField']
 
-class IndustryField(models.IntegerField):
+class IndustryField(CustomIntegerChoiceField):
     OTHER = 0
     DEFENSE_SPACE = 1
     COMPUTER_HARDWARE = 3
@@ -153,7 +153,7 @@ class IndustryField(models.IntegerField):
     GOVERNMENT_RELATIONS = 148
     UNEMPLOYED = 150
 
-    INDUSTRY_CHOICES = (
+    CHOICES = (
         (ACCOUNTING, "Accounting"),
         (AIRLINESAVIATION, "Airlines/Aviation"),
         (ALTERNATIVE_DISPUTE_RESOLUTION, "Alternative Dispute Resolution"),
@@ -313,13 +313,4 @@ class IndustryField(models.IntegerField):
         (WRITING_AND_EDITING, "Writing and Editing"),
     )
 
-    def __init__(self, *args, **kwargs):
-        kwargs['choices'] = IndustryField.INDUSTRY_CHOICES
-        kwargs['default'] = IndustryField.OTHER
-        super(IndustryField, self).__init__(*args, **kwargs)
-
-    def deconstruct(self):
-        name, path, args, kwargs = super(IndustryField, self).deconstruct()
-        del kwargs['choices']
-        del kwargs['default']
-        return name, path, args, kwargs
+    DEFAULT_CHOICE = OTHER
