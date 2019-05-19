@@ -21,6 +21,11 @@ class SignupView(SetupComponentView):
 
     template_name = 'payments/tier.html'
 
+    def get_context(self, form):
+        context = super().get_context(form)
+        context['confirm_text'] = 'Confirm Membership'
+        return context
+
     def form_valid(self, form):
 
         # Create the stripe customer

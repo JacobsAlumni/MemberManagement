@@ -2,6 +2,12 @@
 {% load staticfiles %}
 
 {% block head %}
+<script type="text/javascript">
+    window.onload = function() {
+        tier_change_init("{{ next_text | escapejs }}", "{{ confirm_text | escapejs }}")
+    }
+</script>
+
 <script src="{% static "js/payments/tier.js" %}" type="text/javascript"></script>
 {% endblock %}
 
