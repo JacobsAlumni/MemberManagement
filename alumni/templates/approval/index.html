@@ -21,6 +21,16 @@
     </div>
 
     <div class="uk-tile uk-tile-default">
+        <p class="uk-h4">Preview E-Mails</p>
+
+        <div class="uk-button-group">
+            <a class="uk-button uk-button-default" href="{% url "approval_welcomeemail" uid=alumni.profile.id %}">Welcome (New Member)</a>
+            <a class="uk-button uk-button-default" href="{% url "approval_welcomebackemail_password" uid=alumni.profile.id %}">Welcome Back (Existing Member With Password Reset)</a>
+            <a class="uk-button uk-button-default" href="{% url "approval_welcomebackemail_link" uid=alumni.profile.id %}">Welcome Back (Existing Member Without Password Reset)</a>        
+        </div>
+    </div>
+
+    <div class="uk-tile uk-tile-default">
         <p class="uk-h4">Personal Data</p>
 
         <table class="uk-table uk-table-striped">

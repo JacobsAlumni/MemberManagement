@@ -1,7 +1,7 @@
 import random
 import string
 
-from django.views.generic import FormView
+from django.views.generic import FormView, View
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -191,3 +191,19 @@ class ApprovalView(FormView):
         messages.info(request, 'Linking portal account')
         GoogleAssociation.link_user(alumni.profile)
         messages.success(request, 'Linked portal account')
+
+
+@staff_member_required
+def preview_welcome_email(request, uid):
+    alumni = get_object_or_404(Alumni, profile__id=uid)
+    return alumni.render_welcome_email(request, password='PasswordWillBeHere', back=False)
+
+@staff_member_required
+def preview_welcomeback_password_email(request, uid):
+    alumni = get_object_or_404(Alumni, profile__id=uid)
+    return alumni.render_welcome_email(request, password='PasswordWillBeHere', back=True)
+
+@staff_member_required
+def preview_welcomeback_link_email(request, uid):
+    alumni = get_object_or_404(Alumni, profile__id=uid)
+    return alumni.render_welcome_email(request, password=None, back=True)
