@@ -1,0 +1,121 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+
+<p>
+    <b>
+        Dear {{FullName}},
+    </b>
+</p>
+
+{% block welcome %}
+{% endblock %}
+
+{% if Tier == "Starter" %}
+<p>
+    As a <b>Starter</b>, your membership contribution is 0&euro; for the first two years.
+    After two years, you will be asked to decide whether you would like to change to the regular Contributor membership
+    (39&euro;/year), contribute more with the Patron membership (249&euro;/year) or request an extension to continue
+    with the free Starter membership.
+</p>
+{% elif Tier == "Contributor" %}
+<p>
+    As a <b>Contributor</b>, your membership contribution is 39&euro; per year.
+    If you authorized a recurring payment, your contribution will be collected by our payment processor Stripe every
+    year on your join date for the following year. You will receive a notification from Stripe before your contribution
+    is due.
+</p>
+{% else %}
+<p>
+    As a <b>Patron</b>, your membership contribution is 249&euro; per year.
+    If you authorized a recurring payment, your contribution will be collected by our payment processor Stripe every
+    year on your join date for the following year.
+    You will receive a notification from Stripe before your contribution is due.
+</p>
+{% endif %}
+
+{% block credentials %}
+{% endblock %}
+
+<p>
+    With these credentials, you can both login to your Google account (e.g. for e-mail or your unlimited Google Drive
+    storage) AND your Alumni Portal account (choose sign in with Google).
+</p>
+
+<p>
+    Google will also ask you to set up a recovery phone number or e-mail address.
+    By setting these recovery methods, you will be able to instantly reset your password yourself should you ever forget
+    it.
+    Without these, you will have to send an email to <a
+        href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a> and wait for us to do so manually.
+</p>
+
+
+<p>
+    <b>What now?</b>
+</p>
+
+<ul>
+    <li>
+        <b>Explore</b> the <a href="https://portal.jacobs-alumni.de/atlas">Alumni Atlas</a> - find contacts for your next project, ask for advice from someone at that company you want to work for or just look up your old crush!
+        Enable Atlas in your Portal account to participate. 
+    </li>
+    <li>
+        <b>Benefit</b> from being an association member: save money on your homecoming tickets, participate at the annual Jacobs Career Fair for free with your start-up/company, receive career counseling services, and get the freshest news from campus and the alumni community in our monthly newsletter!  
+    </li>
+</ul>
+
+<p>
+    <b>Want to get involved?</b>
+</p>
+
+<ul>
+    <li>
+        <b>Vote</b> in elections and at the General Assembly to shape the future of the Association!
+        Check our <a href="https://jacobs-alumni.de/charter/">jCharter</a> to learn more. 
+    </li>
+    <li>
+        Become a <b>board member</b> and represent your fellow alumni - elections are coming up!
+        Check your @jacobs-alumni.de email to stay in the loop! 
+    </li>
+    <li>
+        Become a <b>mentor</b> or sign up to be mentored by more experienced alumni!
+        How? Check the box in your Portal account or e-mail the Jacobs Career Services Coordinator Christin Kl&auml;hn <a href="mailto:c.klaehn@jacobs-university.de">c.klaehn@jacobs-university.de</a>. 
+    </li>
+    <li>
+        Join your local <b>chapter</b> or found one yourself!
+        Need help? Contact <a href="mailto:alumni@jacobs-university.de">alumni@jacobs-university.de</a>. 
+    </li>
+    <li>
+        <b>Come back</b> to campus for Graduation, Homecoming or the annual Jacobs Career Fair! 
+    </li>
+    <li>
+        Get involved in <b>events</b> for alumni by alumni - share your knowledge at a workshop or other event! Contact <a href="mailto:board@jacobs-alumni.de">board@jacobs-alumni.de</a>. 
+    </li>
+    <li>
+        Want to share a success story?
+        Tell us at <a href="mailto:alumni@jacobs-university.de">alumni@jacobs-university.de</a>, get featured in the newsletter and inspire fellow alumni! 
+    </li>
+    <li>
+        Become a Starduck and meet up with prospective students to share your Jacobs experience!
+        Contact Cristina Trifon-Calvopina <a href="mailto:c.calvopina@jacobs-university.de">c.calvopina@jacobs-university.de</a>. 
+    </li>
+    <li>
+        Share your ideas with us!
+        Events, projects, fundraising purposes, other suggestions - let us know at <a href="mailto:board@jacobs-alumni.de">board@jacobs-alumni.de</a>.
+    </li>
+</ul>
+
+<p>
+    Finally, thanks again for joining us.
+    We look forward to growing our network together with you!
+</p>
+
+<p>
+    <b>
+        Cheers, <br/>
+        Your Alumni Board
+    </b>
+</p>
+
+{% endblock %}
