@@ -27,6 +27,10 @@ class AlumniEmailMixin:
 
         context = self.__get_email_context(password=password, back=back)
 
+        # extract email and gsuite address
+        email = self.email
+        gsuite = self.approval.gsuite
+
         # set destination and instantiate email templates
         destination = [email, gsuite] + settings.GSUITE_EMAIL_ALL
         if back:
