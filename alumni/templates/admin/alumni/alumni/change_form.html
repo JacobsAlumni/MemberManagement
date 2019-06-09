@@ -5,6 +5,9 @@
     <li>
         <a href="{% url 'approval_approval' id=original.profile.id %}" target="_blank">Manage Approval</a>
     </li>
+    <li>
+        <a href="{% url 'impersonate-start' uid=original.profile.id %}" target="_blank">Impersonate</a>
+    </li>
     {% if original.membership and original.membership.customer %}
         <li>
             <a href="https://dashboard.stripe.com/{% if stripe_test_mode %}test/{% endif%}customers/{{ original.membership.customer }}" target="_blank">View on Stripe Dashboard</a>

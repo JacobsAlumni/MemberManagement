@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'custom_auth',
     'atlas',
     'payments',
+    'impersonate',
     'django_forms_uikit',
     'django_countries',
     'django.contrib.admin',
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'impersonate.middleware.ImpersonateMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
