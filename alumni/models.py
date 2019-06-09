@@ -125,6 +125,8 @@ class Approval(models.Model):
     gsuite = models.EmailField(blank=True, null=True,
                                help_text="The G-Suite E-Mail of the user", unique=True)
 
+    time = models.DateTimeField(null=True, blank=True, help_text="Time the user has been approved")
+
 
 @Alumni.register_component(3)
 class JobInformation(AlumniComponentMixin, models.Model):

@@ -5,6 +5,7 @@ from django.views.generic import FormView, View
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 
@@ -184,6 +185,7 @@ class ApprovalView(FormView):
         messages.info(request, 'Storing approval info')
         alumni.approval.approval = True
         alumni.approval.gsuite = email
+        alumni.approval.time = timezone.now()
         alumni.approval.save()
         messages.success(request, 'Stored approval info')
 
