@@ -11,9 +11,16 @@ class RegistrationMixin():
         raise forms.ValidationError("Please correct the error below.")
     
     def clean_profile_fields(self, cleaned_data):
+        if not 'email' in cleaned_data:
+            return
         if cleaned_data['email'].endswith('@jacobs-alumni.de'):
             self.add_error('email', forms.ValidationError(
                 "Your private email address may not be a Jacobs Alumni email address. "))
+            return
+        if cleaned_data['email'].endswith('@jacobs-university.de'):
+            self.add_error('email', forms.ValidationError(
+                "Your private email address may not be a Jacobs University email address. "))
+            return
 
 
 class RegistrationForm(RegistrationMixin, forms.ModelForm):
