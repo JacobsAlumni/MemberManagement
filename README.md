@@ -82,6 +82,8 @@ The following independent apps also exist:
 
 Tests are in the process of being set up. 
 
+Most tests are integration tests, and require [geckodriver](https://github.com/mozilla/geckodriver) in $PATH. 
+
 One non-feature related test is the CodeStyle test. This enforces PEP8-compliance except for maximum line length.
 
 ## License
