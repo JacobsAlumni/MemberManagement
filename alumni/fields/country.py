@@ -15,7 +15,7 @@ class CountryField(OriginalCountryField):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         return self.get_clean_value(value)
 
     def to_python(self, value):
