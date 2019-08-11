@@ -45,7 +45,6 @@ def _preprocess_fields(form):
         if afield.errors:
             _add_class(form.fields[field].widget, 'uk-form-danger')
 
-
     return form
 
 

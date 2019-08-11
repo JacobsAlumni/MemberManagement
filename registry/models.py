@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 
+
 class Announcement(models.Model):
     active = models.BooleanField(help_text="Show Announcement")
     title = models.TextField(help_text="Title (Text)")

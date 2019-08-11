@@ -1,5 +1,7 @@
 # Member Management Portal
 
+[![Build Status](https://travis-ci.org/JacobsAlumni/MemberManagement.svg?branch=master)](https://travis-ci.org/JacobsAlumni/MemberManagement)
+
 The Django Application for managing Jacobs University Bremen Alumni Members. 
 
 In general it fullfills six purposes: 
@@ -75,6 +77,12 @@ The following portal-related apps exist:
 The following independent apps also exist:
 
 - `django_forms_uikit` -- rendering django forms using the uikit framework
+
+## Tests
+
+Tests are in the process of being set up. 
+
+One non-feature related test is the CodeStyle test. This enforces PEP8-compliance except for maximum line length.
 
 ## License
 Licensed under the Terms of the MIT LICENSE, see [LICENSE](LICENSE). 

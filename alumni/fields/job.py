@@ -77,5 +77,5 @@ class JobField(CustomIntegerChoiceField):
         (OTHER, "Other"),
         (UNEMPLOYED, "Unemployed"),
     )
-    
+
     DEFAULT_CHOICE = OTHER

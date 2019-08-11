@@ -2,6 +2,7 @@ from .custom import CustomTextChoiceField
 
 __all__ = ['MajorField']
 
+
 class MajorField(CustomTextChoiceField):
     APPLIED_COMPUTATIONAL_MATHEMATICS = "ACM"
     APPLIED_PHYSICS_AND_MATHEMATICS = "APAM"
@@ -165,5 +166,5 @@ class MajorField(CustomTextChoiceField):
          "Welfare State, Inequality and Quality of Life"),
         (OTHER, "Other (Please specify in comments)"),
     )
-    
+
     DEFAULT_CHOICE = OTHER

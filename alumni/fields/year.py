@@ -2,6 +2,7 @@ from .custom import CustomIntegerChoiceField
 
 __all__ = ['ClassField']
 
+
 class ClassField(CustomIntegerChoiceField):
     OTHER = 0000
     C_2004 = 2004
@@ -39,5 +40,5 @@ class ClassField(CustomIntegerChoiceField):
         (C_2018, 'Class of 2018'),
         (C_2019, 'Class of 2019'),
     )
-    
+
     DEFAULT_CHOICE = OTHER

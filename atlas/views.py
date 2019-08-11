@@ -63,7 +63,7 @@ def can_view_atlas(user):
                 return False
         except ObjectDoesNotExist:
             return False
-        
+
         # we need to make sure that they have chosen to be included in the
         return user.alumni.atlas.included
 
@@ -130,6 +130,7 @@ class HomeView(TemplateView):
 
         return context
 
+
 @method_decorator(login_required, name='dispatch')
 class ProfileView(TemplateView):
     template_name = 'atlas/profile.html'
@@ -148,6 +149,7 @@ class ProfileView(TemplateView):
         if not can_view_atlas(request.user):
             raise Http404
         return super(ProfileView, self).get(request, *args, **kwargs)
+
 
 @method_decorator(login_required, name='dispatch')
 class SearchView(ListView):
@@ -200,9 +202,9 @@ class SearchView(ListView):
     def get(self, request, *args, **kwargs):
         if not can_view_atlas(request.user):
             raise Http404
-        
+
         # if there is no search, redirect to home
         if not self.request.GET.get('query', '').strip():
             return redirect(reverse('atlas_home'))
-        
+
         return super(SearchView, self).get(request, *args, **kwargs)

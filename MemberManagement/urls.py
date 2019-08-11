@@ -23,10 +23,11 @@ urlpatterns = [
     # Static Views
     url(r'^$', HomeView.as_view()),
     url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
-    
+
     # Legacy urls
     url(r'^register/$', RedirectView.as_view(pattern_name='register', permanent=False)),
-    url(r'^privacy/$', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/', permanent=False), name='privacy'),
+    url(r'^privacy/$', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/',
+                                            permanent=False), name='privacy'),
 
     # And recursively go into all the apps
     url(r'^portal/', include('registry.urls')),

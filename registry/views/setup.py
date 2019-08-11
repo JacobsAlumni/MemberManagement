@@ -13,6 +13,7 @@ from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, 
 
 from MemberManagement.mixins import RedirectResponseMixin
 
+
 @method_decorator(login_required, name='dispatch')
 class SetupView(RedirectResponseMixin, View):
     def get(self, *args, **kwargs):
@@ -24,13 +25,13 @@ class SetupView(RedirectResponseMixin, View):
             uri, reverse = component.component_setup_url()
             return self.redirect_response(uri, reverse=reverse)
 
+
 class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
     """ A base class for all setup views """
 
-
     http_method_names = ['get', 'post']
     template_name = 'setup/setup.html'
-    
+
     setup_name = None
     setup_subtitle = ''
     setup_next_text = ''
@@ -46,7 +47,7 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         """ called when setup component already exists """
 
         raise NotImplementedError
-    
+
     def form_valid(self, form):
         """ Called when the form is valid and an instance is to be created """
 
@@ -66,7 +67,7 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
             'subtitle': self.__class__.setup_subtitle,
             'next_text': self.__class__.setup_next_text,
         }
-    
+
     def dispatch(self, *args, **kwargs):
         # if we already have the setup component
         # then call the appropriate dispatch method
@@ -75,19 +76,20 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
 
         # Create the form instance
         form = self.__class__.setup_form_class(self.request.POST or None)
-        
+
         # and if it is valid
         if self.request.method == 'POST' and form.is_valid():
             form.clean()
-            
+
             # if we have a valid form with some success
             # then we dispatch it
             success = self.form_valid(form)
             if success is not None:
                 return self.dispatch_success(success)
-        
+
         # else render the form
         return self.render_to_response(self.get_context(form))
+
 
 class RegisterView(SetupViewBase):
     setup_name = 'Register'
@@ -118,11 +120,12 @@ class RegisterView(SetupViewBase):
         approval = Approval(member=instance, approval=False, gsuite=None)
         approval.save()
 
-        # authenticate the user    
+        # authenticate the user
         login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
 
         # and return the created user
         return instance
+
 
 @method_decorator(require_alumni, name='dispatch')
 class SetupComponentView(SetupViewBase):
@@ -154,30 +157,36 @@ class AddressSetup(SetupComponentView):
     setup_subtitle = ''
     setup_form_class = AddressForm
 
+
 class SocialSetup(SetupComponentView):
     setup_name = 'Social Media Data'
     setup_subtitle = ''
     setup_form_class = SocialMediaForm
+
 
 class JacobsSetup(SetupComponentView):
     setup_name = 'Alumni Data'
     setup_subtitle = 'tell us what you did at Jacobs'
     setup_form_class = JacobsForm
 
+
 class JobSetup(SetupComponentView):
     setup_name = 'Professional Information'
     setup_subtitle = 'What did you do after Jacobs?'
     setup_form_class = JobInformationForm
+
 
 class SkillsSetup(SetupComponentView):
     setup_name = 'Education And Skills'
     setup_subtitle = ''
     setup_form_class = SkillsForm
 
+
 class AtlasSetup(SetupComponentView):
     setup_name = 'Atlas Setup'
     setup_subtitle = 'A Map & Search Interface for Alumni'
     setup_form_class = AtlasSettingsForm
+
 
 class CompletedSetup(SetupComponentView):
     setup_name = 'Congratulations'

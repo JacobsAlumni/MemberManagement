@@ -7,6 +7,7 @@ from registry.alumni import AlumniRegistryMixin, AlumniComponentMixin
 from custom_auth.alumni import AlumniEmailMixin
 from payments.alumni import AlumniSubscriptionMixin
 
+
 class Alumni(AlumniSubscriptionMixin, AlumniEmailMixin, AlumniRegistryMixin, models.Model):
     """ The information about an Alumni Member """
 
@@ -28,10 +29,12 @@ class Alumni(AlumniSubscriptionMixin, AlumniEmailMixin, AlumniRegistryMixin, mod
         names.append(self.lastName)
         return ' '.join(names)
 
-    email = models.EmailField(help_text="Your private email address", unique=True)
+    email = models.EmailField(
+        help_text="Your private email address", unique=True)
     existingEmail = models.EmailField(blank=True, null=True,
                                       help_text="Existing <em>@jacobs-alumni.de</em> email address (if you have one)")
-    resetExistingEmailPassword = models.BooleanField(blank=True, default=False, help_text='Reset password to existing email address')
+    resetExistingEmailPassword = models.BooleanField(
+        blank=True, default=False, help_text='Reset password to existing email address')
 
     # gender, nationality, birthday
     sex = fields.GenderField()
@@ -54,7 +57,8 @@ class Alumni(AlumniSubscriptionMixin, AlumniEmailMixin, AlumniRegistryMixin, mod
 class Address(AlumniComponentMixin, models.Model):
     """ The address of an Alumni Member """
 
-    member = models.OneToOneField(Alumni, related_name='address', on_delete=models.CASCADE)
+    member = models.OneToOneField(
+        Alumni, related_name='address', on_delete=models.CASCADE)
 
     address_line_1 = models.CharField(max_length=255,
                                       help_text="E.g. Campus Ring 1")
@@ -65,7 +69,7 @@ class Address(AlumniComponentMixin, models.Model):
     state = models.CharField(max_length=255, blank=True, null=True,
                              help_text="E.g. Bremen (optional)")
     country = fields.CountryField()
-    
+
     @property
     def coords(self, default=None):
         """ The coordinates of this user """
@@ -75,11 +79,12 @@ class Address(AlumniComponentMixin, models.Model):
             return [None, None]
         else:
             return [lat, lng]
-       
+
     @classmethod
     def all_valid_coords(cls):
         """ Returns the coordinates of all alumni """
-        coords = map(lambda x: x.coords, cls.objects.filter(member__atlas__included=True, member__approval__approval=True))
+        coords = map(lambda x: x.coords, cls.objects.filter(
+            member__atlas__included=True, member__approval__approval=True))
         return filter(lambda c: c[0] is not None and c[1] is not None, coords)
 
 
@@ -87,7 +92,8 @@ class Address(AlumniComponentMixin, models.Model):
 class SocialMedia(AlumniComponentMixin, models.Model):
     """ The social media data of a Jacobs Alumni """
 
-    member = models.OneToOneField(Alumni, related_name='social', on_delete=models.CASCADE)
+    member = models.OneToOneField(
+        Alumni, related_name='social', on_delete=models.CASCADE)
 
     facebook = models.URLField(null=True, blank=True,
                                help_text="Your Facebook Profile (optional)")
@@ -105,7 +111,8 @@ class SocialMedia(AlumniComponentMixin, models.Model):
 class JacobsData(AlumniComponentMixin, models.Model):
     """ The jacobs data of an Alumni Member"""
 
-    member = models.OneToOneField(Alumni, related_name='jacobs', on_delete=models.CASCADE)
+    member = models.OneToOneField(
+        Alumni, related_name='jacobs', on_delete=models.CASCADE)
 
     college = fields.CollegeField(null=True, blank=True)
     graduation = fields.ClassField()
@@ -117,7 +124,8 @@ class JacobsData(AlumniComponentMixin, models.Model):
 
 class Approval(models.Model):
     """ The approval status of a member """
-    member = models.OneToOneField(Alumni, related_name='approval', on_delete=models.CASCADE)
+    member = models.OneToOneField(
+        Alumni, related_name='approval', on_delete=models.CASCADE)
 
     approval = models.BooleanField(default=False, blank=True,
                                    help_text="Has the user been approved by an admin?")
@@ -125,14 +133,16 @@ class Approval(models.Model):
     gsuite = models.EmailField(blank=True, null=True,
                                help_text="The G-Suite E-Mail of the user", unique=True)
 
-    time = models.DateTimeField(null=True, blank=True, help_text="Time the user has been approved")
+    time = models.DateTimeField(
+        null=True, blank=True, help_text="Time the user has been approved")
 
 
 @Alumni.register_component(3)
 class JobInformation(AlumniComponentMixin, models.Model):
     """ The jobs of an Alumni Member"""
 
-    member = models.OneToOneField(Alumni, related_name='job', on_delete=models.CASCADE)
+    member = models.OneToOneField(
+        Alumni, related_name='job', on_delete=models.CASCADE)
 
     employer = models.CharField(max_length=255, null=True, blank=True,
                                 help_text="Your employer (optional)")
@@ -146,7 +156,8 @@ class JobInformation(AlumniComponentMixin, models.Model):
 class Skills(AlumniComponentMixin, models.Model):
     """ The skills of an Alumni member """
 
-    member = models.OneToOneField(Alumni, related_name='skills', on_delete=models.CASCADE)
+    member = models.OneToOneField(
+        Alumni, related_name='skills', on_delete=models.CASCADE)
 
     otherDegrees = models.TextField(null=True, blank=True)
     spokenLanguages = models.TextField(null=True, blank=True)
@@ -156,10 +167,12 @@ class Skills(AlumniComponentMixin, models.Model):
     alumniMentor = models.BooleanField(default=False, blank=True,
                                        help_text="I would like to sign up as an alumni mentor")
 
+
 @Alumni.register_component(1000)
 class SetupCompleted(AlumniComponentMixin, models.Model):
-    member = models.OneToOneField(Alumni, related_name='setup', on_delete=models.CASCADE)
-    
+    member = models.OneToOneField(
+        Alumni, related_name='setup', on_delete=models.CASCADE)
+
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

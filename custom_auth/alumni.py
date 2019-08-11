@@ -6,6 +6,7 @@ from alumni import fields
 
 from django.shortcuts import render
 
+
 class AlumniEmailMixin:
     def __get_email_context(self, password=None, back=False):
         """ Gets the context for a welcome (back) email sent to this user """
@@ -42,12 +43,12 @@ class AlumniEmailMixin:
         """ Previews the welcome (back) email for this user into a request """
 
         context = self.__get_email_context(password=password, back=back)
-        
+
         # get the right template
         if back:
             template = 'emails/approval/existing.html'
         else:
             template = 'emails/approval/new.html'
-        
+
         # and render it
         return render(request, template, context)

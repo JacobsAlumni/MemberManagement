@@ -2,6 +2,7 @@ from .custom import CustomTextChoiceField
 
 __all__ = ['DegreeField']
 
+
 class DegreeField(CustomTextChoiceField):
     FOUNDATION_YEAR = 'fy'
     BACHELOR_ARTS = 'ba'

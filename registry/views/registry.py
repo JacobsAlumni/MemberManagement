@@ -5,9 +5,11 @@ from registry.models import Announcement
 
 from ..decorators import require_setup_completed
 
+
 @method_decorator(require_setup_completed, name='dispatch')
 class PortalView(TemplateView):
     template_name = 'portal/index.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -16,5 +18,5 @@ class PortalView(TemplateView):
             'user': self.request.user,
             'announcements': Announcement.objects.filter(active=True),
         })
-        
+
         return context

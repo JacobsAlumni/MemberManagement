@@ -6,6 +6,7 @@ class SubscriptionPlan(object):
         self.currency = currency
         self.description = description
 
+
 # The subscription values are in Euro-Cents :)
 subscription_plans = {
     "st": SubscriptionPlan("Starter Membership", "starter-membership", 100, "EUR", "Recently graduated alumni can get a starter membership for upto 2 years"),

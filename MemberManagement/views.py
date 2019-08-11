@@ -3,11 +3,12 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from MemberManagement.mixins import RedirectResponseMixin, UnauthorizedResponseMixin
 
+
 class HomeView(UnauthorizedResponseMixin, RedirectResponseMixin, TemplateResponseMixin, View):
     template_name = 'static/index.html'
 
     def get(self, *args, **kwargs):
-        
+
         try:
             # if the user is signed in, redirect to the main portal
             if self.request.user.is_authenticated and self.request.user.alumni:

@@ -3,6 +3,7 @@ import functools
 
 from . import operators as ops
 
+
 class SearchFilter(object):
     def __init__(self, field_map, plain_search_fields):
         self.parser = PreJsPy.PreJsPy()
@@ -26,9 +27,9 @@ class SearchFilter(object):
             'contains': 2, '::': 2,
             'matches': 2, 'unicorn': 2, '@': 2,
         })
-        
+
         self.builder = QueryBuilder(field_map, plain_search_fields)
-    
+
     def __call__(self, queryset, query):
         try:
             parsed = self.parser.parse(query)
@@ -44,6 +45,7 @@ class SearchFilter(object):
 
         return q, None
 
+
 class QueryBuilder(object):
     """Generates a Django Q object from a PreJSPy filter JSON object"""
 
@@ -52,9 +54,9 @@ class QueryBuilder(object):
         self.fields = plain_search_fields
 
     def __call__(self, filter_obj):
-        return self.translate(filter_obj, finalize = True)
+        return self.translate(filter_obj, finalize=True)
 
-    def translate(self, filter_obj, finalize = False):
+    def translate(self, filter_obj, finalize=False):
         if not filter_obj:
             raise ValueError("Filter was empty")
 
@@ -79,10 +81,10 @@ class QueryBuilder(object):
 
         else:
             raise NotImplementedError("Invalid filter type: " + obj_type)
-        
+
         if finalize and (isinstance(res, str) or isinstance(res, float)):
-                res = self._finalize(str(res))
-        
+            res = self._finalize(str(res))
+
         return res
 
     def _generate_binary(self, filter_obj):
@@ -96,9 +98,11 @@ class QueryBuilder(object):
         try:
             op = self.ops['BIN_OPS'][filter_type]
         except KeyError as k:
-            raise ParsingError('Unknown binary operator {}'.format(filter_type), k)
+            raise ParsingError(
+                'Unknown binary operator {}'.format(filter_type), k)
         except TypeError as t:
-            raise ParsingError('Cannot use binary operator {} on {} and {}'.format(filter_type, left, right))
+            raise ParsingError('Cannot use binary operator {} on {} and {}'.format(
+                filter_type, left, right))
 
         return op(self.translate(left), self.translate(right))
 
@@ -112,9 +116,11 @@ class QueryBuilder(object):
         try:
             op = self.ops['UNARY_OPS'][filter_type]
         except KeyError as k:
-            raise ParsingError('Unknown unary operator {}'.format(filter_type), k)
+            raise ParsingError(
+                'Unknown unary operator {}'.format(filter_type), k)
         except TypeError as t:
-            raise ParsingError('Cannot use unary operator {} on {}'.format(filter_type, argument))
+            raise ParsingError(
+                'Cannot use unary operator {} on {}'.format(filter_type, argument))
 
         return op(self.translate(argument))
 
@@ -144,10 +150,11 @@ class QueryBuilder(object):
                 raise NotImplementedError
         except KeyError as e:
             raise ValueError("Invalid literal: " + str(e))
-    
+
     def _finalize(self, s):
         """ Generates a string search """
         return ops.build_text_search(s, self.fields)
+
 
 class ParsingError(Exception):
     def __init__(self, message, caused_by):

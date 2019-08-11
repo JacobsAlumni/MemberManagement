@@ -1,18 +1,20 @@
 import stripe as stripeapi
 from raven.contrib.django.raven_compat.models import client
 
+
 def safe(operation):
     """ Safely performs an operation with the stripe API """
 
     result = None
-        
+
     try:
         result = operation(stripeapi)
     except stripeapi.error.StripeError as e:
         client.captureException()
         return None, e
-        
+
     return result, None
+
 
 def as_safe_operation(f):
     """ A decorator to turn a function into a safe operation """
@@ -20,14 +22,16 @@ def as_safe_operation(f):
     def _wrapper(*args, **kwargs):
         return safe(lambda stripe: f(stripe, *args, **kwargs))
     return _wrapper
-    
+
+
 def get_stripe_customer_props(alumni):
     """ Gets props for a stripe customer given an alumni """
-    
+
     return {
         'description': 'Alumni Customer for {0!r} ({1!r})'.format(alumni.fullName, alumni.profile.username),
         'email': alumni.email,
     }
+
 
 @as_safe_operation
 def create_customer(stripe, alumni):
@@ -36,10 +40,12 @@ def create_customer(stripe, alumni):
     props = get_stripe_customer_props(alumni)
     return stripe.Customer.create(**props)
 
+
 @as_safe_operation
 def update_customer(stripe, customer, alumni):
     props = get_stripe_customer_props(alumni)
     return stripe.Customer.modify(customer, **props)
+
 
 @as_safe_operation
 def clear_all_payment_sources(stripe, customer):
@@ -49,12 +55,13 @@ def clear_all_payment_sources(stripe, customer):
         # cards can be deleted
         if source.object == 'card':
             source.delete()
-        
+
         # everything else can be detached
         else:
             source.detach()
 
     return True
+
 
 @as_safe_operation
 def update_payment_method(stripe, customer, source, card):
@@ -64,15 +71,16 @@ def update_payment_method(stripe, customer, source, card):
     cleared, err = clear_all_payment_sources(customer)
     if err != None:
         return
-    
+
     # update the source and card id
     update = {}
     if source:
         update['source'] = source
     else:
         update['card'] = card
-    
+
     return stripe.Customer.modify(customer, **update)
+
 
 @as_safe_operation
 def create_subscription(stripe, customer, plan):
@@ -80,6 +88,7 @@ def create_subscription(stripe, customer, plan):
 
     # Creates a new subscription for the customer
     return stripe.Customer.retrieve(customer).subscriptions.create(plan=plan)
+
 
 @as_safe_operation
 def get_payment_table(stripe, customer):
@@ -91,6 +100,7 @@ def get_payment_table(stripe, customer):
         'paid': iv.paid,
         'closed': iv.closed
     } for iv in stripe.Invoice.list(customer=customer)]
+
 
 @as_safe_operation
 def get_methods_table(stripe, customer):
@@ -110,10 +120,11 @@ def get_methods_table(stripe, customer):
                 'mandate_reference': source.sepa_debit.mandate_reference,
                 'mandate_url': source.sepa_debit.mandate_url,
             }
-        
+
         return {'kind': 'unknown'}
 
     return [format_source(source) for source in stripe.Customer.retrieve(customer).sources.list().data]
+
 
 @as_safe_operation
 def cancel_subscription(stripe, subscription):

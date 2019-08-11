@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+from django.utils.translation import ugettext_lazy as _
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -29,7 +30,6 @@ ENABLE_DEVEL_WARNING = True
 ALLOWED_HOSTS = []
 
 # Kosovo is missing from the list of countries
-from django.utils.translation import ugettext_lazy as _
 COUNTRIES_OVERRIDE = {
     'XK': _('Kosovo'),
 }
@@ -71,7 +71,7 @@ ROOT_URLCONF = 'MemberManagement.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [(os.path.join(BASE_DIR, 'MemberManagement', 'templates')),],
+        'DIRS': [(os.path.join(BASE_DIR, 'MemberManagement', 'templates')), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -148,7 +148,7 @@ AUTHENTICATION_BACKENDS = [
     'custom_auth.backend.GoogleTokenBackend'
 ]
 
-SESAME_MAX_AGE = 300 # Emailed tokens expire after 5 minutes
+SESAME_MAX_AGE = 300  # Emailed tokens expire after 5 minutes
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

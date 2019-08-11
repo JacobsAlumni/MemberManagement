@@ -2,6 +2,7 @@ from .custom import CustomIntegerChoiceField
 
 __all__ = ['IndustryField']
 
+
 class IndustryField(CustomIntegerChoiceField):
     OTHER = 0
     DEFENSE_SPACE = 1

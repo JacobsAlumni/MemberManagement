@@ -2,6 +2,7 @@ from .custom import CustomTextChoiceField
 
 __all__ = ['TierField']
 
+
 class TierField(CustomTextChoiceField):
     STARTER = 'st'
     CONTRIBUTOR = 'co'

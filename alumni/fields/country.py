@@ -2,10 +2,12 @@ from django_countries.fields import CountryField as OriginalCountryField
 
 __all__ = ['CountryField']
 
+
 class CountryField(OriginalCountryField):
     """ Country Field represents a CountryField """
-    
+
     COUNTRY_CHOICES = []
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -18,5 +20,6 @@ class CountryField(OriginalCountryField):
 
     def to_python(self, value):
         return self.get_clean_value(value)
+
 
 CountryField.COUNTRY_CHOICES = CountryField().get_choices(include_blank=False)

@@ -2,6 +2,7 @@ from .custom import CustomTextChoiceField
 
 __all__ = ['PaymentTypeField']
 
+
 class PaymentTypeField(CustomTextChoiceField):
     CARD = 'card'
     SEPA = 'sepa'

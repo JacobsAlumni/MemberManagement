@@ -9,7 +9,8 @@ import sys
 DEBUG = False
 
 # show a warning that this is not a real site
-ENABLE_DEVEL_WARNING = os.environ.setdefault("DJANGO_ENABLE_DEVEL_WARNING", "") == "1"
+ENABLE_DEVEL_WARNING = os.environ.setdefault(
+    "DJANGO_ENABLE_DEVEL_WARNING", "") == "1"
 
 # we want to allow all hosts
 ALLOWED_HOSTS = os.environ.setdefault("DJANGO_ALLOWED_HOSTS", "").split(",")
@@ -33,8 +34,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.setdefault("EMAIL_HOST", "")
 EMAIL_HOST_USER = os.environ.setdefault("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.setdefault("EMAIL_HOST_PASSWORD", "")
-EMAIL_FROM = os.environ.setdefault("EMAIL_FROM", 
-'Alumni Association Portal <portal@jacobs-alumni.de>')
+EMAIL_FROM = os.environ.setdefault("EMAIL_FROM",
+                                   'Alumni Association Portal <portal@jacobs-alumni.de>')
 
 
 # add the stripe keys

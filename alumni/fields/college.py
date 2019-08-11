@@ -2,6 +2,7 @@ from .custom import CustomIntegerChoiceField
 
 __all__ = ['CollegeField']
 
+
 class CollegeField(CustomIntegerChoiceField):
     KRUPP = 1
     MERCATOR = 2

@@ -71,7 +71,8 @@ class ClientIdLoginView(views.LoginView):
 
     def get_context_data(self, **kwargs):
         context = super(views.LoginView, self).get_context_data(**kwargs)
-        context['googlefail'] = self.request.GET.get('error', '') == 'googlefail'
+        context['googlefail'] = self.request.GET.get(
+            'error', '') == 'googlefail'
         context.update(self.extra_context)
 
         return context

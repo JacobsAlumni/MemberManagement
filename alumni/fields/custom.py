@@ -2,6 +2,7 @@ from django.db import models
 
 __all__ = ['CustomTextChoiceField', 'CustomIntegerChoiceField']
 
+
 class CustomChoiceFieldMixin:
     """ A mixin for custom choice fields """
 
@@ -12,12 +13,13 @@ class CustomChoiceFieldMixin:
 
         return cls.CHOICES
 
-    DEFAULT_CHOICE = None # the default choice
+    DEFAULT_CHOICE = None  # the default choice
     @classmethod
     def get_class_default(cls):
         """ Returns the default choice of this class """
 
         return cls.DEFAULT_CHOICE
+
 
 class CustomTextChoiceField(CustomChoiceFieldMixin, models.CharField):
     """ A Custom Choice Field for Text """
@@ -40,6 +42,7 @@ class CustomTextChoiceField(CustomChoiceFieldMixin, models.CharField):
         del kwargs['choices']
         del kwargs['default']
         return name, path, args, kwargs
+
 
 class CustomIntegerChoiceField(CustomChoiceFieldMixin, models.IntegerField):
     """ A Custom Choice Field for Integers """

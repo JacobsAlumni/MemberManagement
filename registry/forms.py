@@ -6,10 +6,11 @@ from atlas.models import AtlasSettings
 from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
 
+
 class RegistrationMixin():
     def raise_validation_error(self):
         raise forms.ValidationError("Please correct the error below.")
-    
+
     def clean_profile_fields(self, cleaned_data):
         if not 'email' in cleaned_data:
             return
@@ -57,7 +58,8 @@ class RegistrationForm(RegistrationMixin, forms.ModelForm):
         }
 
     def clean(self):
-        cleaned_data = self.cleaned_data  # individual field's clean methods have already been called
+        # individual field's clean methods have already been called
+        cleaned_data = self.cleaned_data
 
         # check that the username doesn't already exist
         username = cleaned_data.get("username")
@@ -153,6 +155,7 @@ class JobInformationForm(forms.ModelForm):
         model = JobInformation
         fields = ['employer', 'position', 'industry', 'job']
 
+
 class AtlasSettingsForm(forms.ModelForm):
     """ A form for saving the users Atlas Settings """
 
@@ -164,6 +167,7 @@ class AtlasSettingsForm(forms.ModelForm):
             'birthdayVisible': '',
             'contactInfoVisible': '',
         }
+
 
 class SetupCompletedForm(forms.ModelForm):
     class Meta:

@@ -10,6 +10,7 @@ from registry.alumni import AlumniComponentMixin
 
 from payments import stripewrapper
 
+
 @Alumni.register_component(6)
 class MembershipInformation(AlumniComponentMixin, models.Model):
     """ The (payment-related) membership information of an Alumni Member """
@@ -25,6 +26,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
                                      help_text="")
     customer = models.CharField(max_length=255, null=True, blank=True,
                                 help_text='The stripe customer id for the user')
+
 
 @Alumni.register_component(7)
 class SubscriptionInformation(AlumniComponentMixin, models.Model):
@@ -47,10 +49,9 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
         """ Cancels this subscription along with the stripe subscription """
         if self.end is not None:
             raise Exception('Subscription already cancelled')
-        
+
         if not self.subscription:
             raise Exception('Can not cancel subscription: No subscription')
-        
 
         # cancel the subscription
         sub, err = stripewrapper.cancel_subscription(self.subscription)
@@ -66,7 +67,7 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
         """ Marks this subscription as having ended """
         if not self.active:
             raise Exception('Subscription is already ended')
-        
+
         # store now as the end of the subscription
         self.end = timezone.now()
 
@@ -75,7 +76,7 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
         """ Property indicating if the subscription is active """
 
         return self.end is None or (self.end > timezone.now())
-    
+
     @property
     def time_left(self):
         """ Return the time left until the subscription expires or None """
@@ -83,36 +84,36 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
         # if we are not active or are no longer active
         if not self.active or self.end is None:
             return None
-        
+
         # return the timedelta left
         return timezone.now() - self.end
-    
+
     @classmethod
     def create_starter_subscription(cls, alumni):
         # creates a new starter subscription
-        return cls.start_new_subscription(alumni, None, length = timedelta(days = 2 * 365))
-    
+        return cls.start_new_subscription(alumni, None, length=timedelta(days=2 * 365))
+
     @classmethod
-    def start_new_subscription(cls, alumni, subscription, length = None, tier = None):
+    def start_new_subscription(cls, alumni, subscription, length=None, tier=None):
         # the new subscription starts now
         start = timezone.now()
-        
+
         # compute the end of the subscription
         end = None
         if length is not None:
             if not isinstance(length, timedelta):
-                raise TypeError('Expected length to be datetime.timedelta or None')
-            
+                raise TypeError(
+                    'Expected length to be datetime.timedelta or None')
+
             end = start + length
-        
+
         # if there is an old subscription, throw an error
         if alumni.subscription is not None:
             raise ValueError('User already has a subscription')
-        
+
         # If we did not create an alumni membership, create a new one
         if tier is None:
             tier = alumni.membership.tier
-        
+
         # and create the new subscription
-        return cls.objects.create(member = alumni, start = start, end = end, subscription = subscription, tier = tier)
-        
+        return cls.objects.create(member=alumni, start=start, end=end, subscription=subscription, tier=tier)

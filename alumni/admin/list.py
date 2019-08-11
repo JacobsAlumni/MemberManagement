@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from payments.models import SubscriptionInformation
 
+
 class AlumniListDisplay:
 
     def alumni_fullName(self, x):
@@ -98,6 +99,7 @@ class SetupCompletedFilter(admin.SimpleListFilter):
             return queryset.filter(setup__isnull=True)
         else:
             return queryset
+
 
 def custom_titled_filter(title):
     class Wrapper(admin.FieldListFilter):
