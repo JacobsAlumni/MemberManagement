@@ -188,7 +188,7 @@ class AlumniAdminActions:
         'jacobs__major', 'jacobs__comments',
 
         # 'Approval' Data
-        'approval__approval', 'approval__time',
+        'approval__approval', 'approval__time', 'approval__gsuite',
 
         # Job Data
         'job__employer', 'job__position', 'job__industry', 'job__job',
