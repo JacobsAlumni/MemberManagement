@@ -21,6 +21,12 @@ class ClassField(CustomIntegerChoiceField):
     C_2017 = 2017
     C_2018 = 2018
     C_2019 = 2019
+    C_2020 = 2020
+    C_2021 = 2021
+    C_2022 = 2022
+    C_2023 = 2023
+    C_2024 = 2024
+    C_2025 = 2025
     CHOICES = (
         (OTHER, 'Other (please specifiy in comments)'),
         (C_2004, 'Class of 2004'),
@@ -39,6 +45,12 @@ class ClassField(CustomIntegerChoiceField):
         (C_2017, 'Class of 2017'),
         (C_2018, 'Class of 2018'),
         (C_2019, 'Class of 2019'),
+        (C_2020, 'Class of 2020'),
+        (C_2021, 'Class of 2021'),
+        (C_2022, 'Class of 2022'),
+        (C_2023, 'Class of 2023'),
+        (C_2024, 'Class of 2024'),
+        (C_2025, 'Class of 2025'),
     )
 
     DEFAULT_CHOICE = OTHER
