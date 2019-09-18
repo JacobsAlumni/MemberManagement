@@ -42,6 +42,7 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
 
     subscription = models.CharField(max_length=255, null=True, blank=True,
                                     help_text='The Stripe Subscription ID for the given subscription')
+    external = models.BooleanField(default=False, help_text="Subscription is managed externally")
 
     tier = TierField(help_text='Membership Tier')
 
