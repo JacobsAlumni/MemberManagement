@@ -13,6 +13,7 @@ class GeoAdmin(admin.ModelAdmin):
 
 class AtlasSettingsInline(admin.StackedInline):
     model = AtlasSettings
+    extra = 0
 
 
 admin.site.register(GeoLocation, GeoAdmin)

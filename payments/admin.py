@@ -5,6 +5,7 @@ from .models import MembershipInformation, SubscriptionInformation
 
 class MembershipInformationInline(admin.StackedInline):
     model = MembershipInformation
+    extra = 0
 
 
 class SubscriptionInformationInline(admin.TabularInline):
