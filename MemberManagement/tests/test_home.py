@@ -2,7 +2,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from .selenium import SeleniumTest
 
 
-class MySeleniumTests(SeleniumTest, StaticLiveServerTestCase):
+class HomeTests(SeleniumTest, StaticLiveServerTestCase):
 
     def test_plain_homepage(self):
         """ Checks that the plain home page works as intended """
