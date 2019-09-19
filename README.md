@@ -86,5 +86,18 @@ Most tests are integration tests, and require [geckodriver](https://github.com/m
 
 One non-feature related test is the CodeStyle test. This enforces PEP8-compliance except for maximum line length.
 
+To run tests make sure that development dependencies are installed and then run:
+
+```
+pytest
+```
+
+By default, this uses a headless firefox webdriver to run the integration tests. 
+To enforce a visible firefox, instead use:
+
+```
+PYTEST_FIREFOX_VISIBLE=1 pytest
+```
+
 ## License
 Licensed under the Terms of the MIT LICENSE, see [LICENSE](LICENSE). 

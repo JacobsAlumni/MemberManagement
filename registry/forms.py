@@ -70,7 +70,7 @@ class RegistrationForm(RegistrationMixin, forms.ModelForm):
             return self.raise_validation_error()
 
         # check that we have accepted the terms and conditions
-        if not self.cleaned_data['tos']:
+        if 'tos' not in self.cleaned_data or not self.cleaned_data['tos']:
             self.add_error('tos', forms.ValidationError(
                 "You need to accept the terms and conditions to continue. "))
             return self.raise_validation_error()

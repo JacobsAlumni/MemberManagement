@@ -1,0 +1,152 @@
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from MemberManagement.tests.selenium import SeleniumTest
+
+import datetime
+
+from alumni.models import Alumni
+from alumni.fields.gender import GenderField
+from alumni.fields.category import AlumniCategoryField
+
+
+class SignupTest(SeleniumTest, StaticLiveServerTestCase):
+    def test_signup_regular(self):
+        """ Tests that we can complete the first setup page with a regular user """
+
+        # fill out a new form on the register page
+        self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
+            'id_firstName': 'Anna',
+            'id_middleName': '',
+            'id_lastName': 'Freytag',
+            'id_email': 'AnnaFreytag@dayrep.com',
+            'id_username': 'Mounfem',
+        }, select_dropdowns={
+            'id_sex': 'Female',
+            'id_nationality': ('DE',),
+            'id_category': (AlumniCategoryField.REGULAR,)
+        }, select_checkboxes={
+            'id_resetExistingEmailPassword': False,
+            'id_tos': True
+        }, script_value={
+            'id_birthday': '1948-11-07',
+        })
+
+        # check that we got redirected to the right url
+        self.assertEqual(self.current_url, '/portal/setup/address/',
+                         'Check that the user gets redirected to the second page')
+
+        # check that the right alumni object was created
+        obj = Alumni.objects.first()
+        self.assertEqual(obj.profile.username, 'Mounfem')
+        self.assertEqual(obj.firstName, 'Anna')
+        self.assertEqual(obj.middleName, None)
+        self.assertEqual(obj.lastName, 'Freytag')
+        self.assertEqual(obj.email, 'AnnaFreytag@dayrep.com')
+        self.assertEqual(obj.existingEmail, None)
+        self.assertEqual(obj.resetExistingEmailPassword, False)
+        self.assertEqual(obj.sex, GenderField.FEMALE)
+        self.assertEqual(obj.birthday, datetime.date(1948, 11, 7))
+        self.assertListEqual(
+            list(map(lambda c: c.name, obj.nationality)), ['Germany'])
+        self.assertEqual(obj.category, AlumniCategoryField.REGULAR)
+
+    def test_signup_faculty(self):
+        """ Tests that we can complete the first signup page for a faculty member """
+
+        # fill out a new form on the register page
+        self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
+            'id_firstName': 'David',
+            'id_middleName': 'L',
+            'id_lastName': 'Hood',
+            'id_existingEmail': 'dhood@jacobs-alumni.de',
+            'id_email': 'DavidLHood@armyspy.com',
+            'id_username': 'Heak1991',
+        }, select_dropdowns={
+            'id_sex': 'Male',
+            'id_nationality': ('US',),
+            'id_category': (AlumniCategoryField.FACULTY,)
+        }, select_checkboxes={
+            'id_resetExistingEmailPassword': True,
+            'id_tos': True
+        }, script_value={
+            'id_birthday': '1991-04-09',
+        })
+
+        # check that we got redirected to the right url
+        self.assertEqual(self.current_url, '/portal/setup/address/',
+                         'Check that the user gets redirected to the second page')
+
+        # check that the right alumni object was created
+        obj = Alumni.objects.first()
+        self.assertEqual(obj.profile.username, 'Heak1991')
+        self.assertEqual(obj.firstName, 'David')
+        self.assertEqual(obj.middleName, 'L')
+        self.assertEqual(obj.lastName, 'Hood')
+        self.assertEqual(obj.email, 'DavidLHood@armyspy.com')
+        self.assertEqual(obj.existingEmail, 'dhood@jacobs-alumni.de')
+        self.assertEqual(obj.resetExistingEmailPassword, True)
+        self.assertEqual(obj.sex, GenderField.MALE)
+        self.assertEqual(obj.birthday, datetime.date(1991, 4, 9))
+        self.assertListEqual(list(map(lambda c: c.name, obj.nationality)), [
+                             'United States of America'])
+        self.assertEqual(obj.category, AlumniCategoryField.FACULTY)
+
+    def test_signup_notos(self):
+        """ Tests that we can not submit a form without having accepted the TOS """
+
+        # fill out the form first
+        button = self.fill_out_form('/portal/register/', 'input_id_submit', send_form_keys={
+            'id_firstName': 'Anna',
+            'id_middleName': '',
+            'id_lastName': 'Freytag',
+            'id_email': 'AnnaFreytag@dayrep.com',
+            'id_username': 'Mounfem',
+        }, select_dropdowns={
+            'id_sex': 'Female',
+            'id_nationality': ('DE',),
+            'id_category': (AlumniCategoryField.REGULAR,)
+        }, select_checkboxes={
+            'id_resetExistingEmailPassword': False,
+            'id_tos': False
+        }, script_value={
+            'id_birthday': '1948-11-07',
+        })
+
+        # assume the user did some clever inspect element magic
+        self.selenium.execute_script(
+            'arguments[0].removeAttribute("required")', self.selenium.find_element_by_id('id_tos'))
+
+        # then click the button and wait
+        button.click()
+        self.wait_for_element('body')
+
+        # check that we didn't get redirected
+        self.assertEqual(self.current_url, '/portal/register/',
+                         'Check that the user stays on the first page')
+        self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
+            'id_tos').get_attribute('class').split(' '), 'tos field marked up as incorrect')
+
+    def test_signup_invalidemail(self):
+        """ Tests that we can not complete the first setup page with a jacobs alumni email """
+
+        self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
+            'id_firstName': 'David',
+            'id_middleName': 'L',
+            'id_lastName': 'Hood',
+            'id_existingEmail': 'dhood@jacobs-alumni.de',
+            'id_email': 'dhood@jacobs-alumni.de',
+            'id_username': 'Heak1991',
+        }, select_dropdowns={
+            'id_sex': 'Male',
+            'id_nationality': ('US',),
+            'id_category': (AlumniCategoryField.FACULTY,)
+        }, select_checkboxes={
+            'id_resetExistingEmailPassword': True,
+            'id_tos': True
+        }, script_value={
+            'id_birthday': '1991-04-09',
+        })
+
+        self.assertEqual(self.current_url, '/portal/register/',
+                         'Check that the user stays on the first page')
+        self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
+            'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')
