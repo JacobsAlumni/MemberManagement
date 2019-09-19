@@ -1,41 +1,66 @@
 {% load static %}
-<header class="uk-sticky uk-sticky-fixed uk-width-1-1" style="position: fixed; top: 0; width: 100%; ">
-  <div class="uk-navbar-container navbar uk-dark">
-    <nav class="uk-navbar" {% if show_devel_warning %}style="background-color: #fef4f6; "{% endif %}>
-      <div class="uk-navbar-left">
-        <a href="{% url 'portal' %}" class="uk-navbar-item uk-logo">
-          <span class="logo-button uk-margin-small-right">
-            <img src="{%  static "media/favicon.png" %}" />
-          </span>
-          <span class="uk-visible">
-              Jacobs Alumni Membership Management
-                {% if show_devel_warning %}
-                - <span class="uk-visible" style="color: #f0506e">Testing Site</span>
-                {% endif %}
-          </span>
-        </a>
-      </div>
-      <div class="uk-navbar-right">
-        <ul class="uk-navbar-nav uk-visible@l">
-            <li><a class="uk-active" href="/">Home</a></li>
-            {% if can_view_atlas %}<li><a href="{% url 'atlas_home' %}">Atlas</a></li>{% endif %}
-            {% if not user.is_authenticated %}<li><a class="uk-active" href="{% url 'login' %}">Login</a></li>{% endif %}
-            {% if user.is_staff %}<li><a class="uk-active" href="{% url 'admin:index' %}">Django Admin</a></li>{% endif %}
-            {% if user.is_impersonate %}<li><a class="uk-active" href="{% url 'impersonate-stop' %}">Stop Impersonating</a></li>{% endif %}
-        </ul>
-        <div class="uk-navbar-item">
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="uk-button uk-button-primary rounded bg-transparent uk-text-primary">
-                    Logout
-                </a>
-            {% else %}
-                <a href="{% url 'register' %}" class="uk-button uk-button-primary rounded bg-transparent uk-text-primary">
-                    Register
-                </a>
-            {% endif %}
-        </div>
-      </div>
-    </nav>
-  </div>
-</header>
 
+
+
+<!-- small screen menu -->
+<div id="offcanvas-menu" uk-offcanvas>
+    <div class="uk-offcanvas-bar uk-flex uk-flex-column">
+        <ul class="uk-nav uk-nav-primary uk-nav-center uk-margin-auto-vertical">
+          {% include "base/header_menu.html" %}
+          <li class="uk-nav-divider"></li>
+          <li class="hoverable uk-active">
+              {% if user.is_authenticated %}
+              <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+              <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+          </li>
+        </ul>
+    </div>
+</div>
+
+<header>
+    <div class="uk-navbar-container navbar">
+        <nav class="uk-navbar" {% if show_devel_warning %}style="background: #fef4f6;"{% endif %}>
+            <!-- logo -->
+            <div class="uk-navbar-left">
+                <a href="/" class="uk-navbar-item uk-logo">
+                    <span class="logo-button uk-margin-small-right">
+                        <img src="{%  static "media/favicon.png" %}" />
+                    </span>
+                    <span class="uk-visible">
+                      Jacobs Alumni Membership Management
+                      {% if show_devel_warning %}
+                        - <span class="uk-visible" style="color: #f0506e">Testing Site</span>
+                      {% endif %}
+                    </span>
+                </a>
+            </div>
+            <div class="uk-navbar-right">
+                
+                <!-- large screen menu -->
+                <ul class="uk-navbar-nav uk-visible@l">
+                    {% include "base/header_menu.html" %}
+                </ul>
+
+                <div class="uk-navbar-item uk-visible@l">
+                  {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="uk-button uk-button-primary uk-button-external bg-transparent uk-text-primary">
+                        Logout
+                    </a>
+                  {% else %}
+                    <a href="{% url 'register' %}" class="uk-button uk-button-primary uk-button-external bg-transparent uk-text-primary">
+                      Register
+                    </a>
+                  {% endif %}
+                </div>
+
+                <div class="uk-navbar-item uk-hidden@l">
+                    <a href="#" class="uk-navbar-toggle uk-navbar-toggle-icon uk-icon uk-hidden@l" uk-toggle="target: #offcanvas-menu" uk-icon="menu">
+                        Menu
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>

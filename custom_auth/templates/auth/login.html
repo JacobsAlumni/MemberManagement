@@ -12,7 +12,7 @@
     }
 </style>
 
-<!-- Sign in with Google -->#
+<!-- Sign in with Google -->
 <script>
 var google_login_settings = {
     client_id: '{{ client_id }}',
@@ -28,30 +28,33 @@ var login_script_settings = {
 <script type="text/javascript"  src="{% static 'js/login.js' %}"></script>
 {% endblock %}
 
-{% block content %}
-<article class="uk-article">
-    <h1 id="page-header" class="uk-article-title">Login</h1>
+{% block pagetitle %}
+Login
+{% endblock %}
 
-    <div>
-        <div {% if googlefail %} class="uk-alert uk-alert-danger" uk-alert {% endif%}>
-            <button disabled id="g-signin" type="button" class="uk-button uk-button-primary">
-                <img id="g-signin-icon" src="{% static 'media/btn_google_light_pressed_ios.svg' %}" /><span id="g-signin-text">Sign
-                    in with Google</span>
-            </button>
-            {% if googlefail %}
-                The Google Account you are attempting to sign in with is not associated to any portal account. 
-                Please try again. 
-                
-            {% endif %}
-        </div>
-        <h2>OR</h2>
-        <form id="local-login" class="uk-form-horizontal" method="POST">
-            {% csrf_token %}
-            {{ form | as_uikit_form }}
-            <input type="submit" class="uk-button uk-button-primary" value="Login">
-        </form>
+{% block content %}
+<div>
+    <div {% if googlefail %} class="uk-alert uk-alert-danger" uk-alert {% endif%}>
+        <button disabled id="g-signin" type="button" class="uk-button uk-button-primary">
+            <img id="g-signin-icon" src="{% static 'media/btn_google_light_pressed_ios.svg' %}" /><span id="g-signin-text">Sign
+                in with Google</span>
+        </button>
+        {% if googlefail %}
+            The Google Account you are attempting to sign in with is not associated to any portal account. 
+            Please try again. 
+        {% endif %}
     </div>
-</article>
+    <h2>OR</h2>
+    <form id="local-login" class="uk-form-horizontal" method="POST">
+        {% csrf_token %}
+        {{ form | as_uikit_form }}
+        <input type="submit" class="uk-button uk-button-primary" value="Login">
+    </form>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
 
 <script type="text/javascript">
 

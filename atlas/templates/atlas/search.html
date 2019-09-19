@@ -4,92 +4,90 @@
 
 {% block title %}Search{% endblock %}
 
+{% block pagetitle %}
+Jacobs Alumni Search - {{query}}
+{% endblock %}
+
 {% block content %}
-<article class="uk-article">
-    <h1 class="uk-article-title">
-        Jacobs Alumni Search - {{query}}
-    </h1>
+{% include "atlas/search_form.html" with value=query %}
+<hr />
 
-    {% include "atlas/search_form.html" with value=query %}
-    <hr />
-
-    {% if error %}
-        <p>
-            Something went wrong: {{ error }}<br />
-            Please try again. 
-        </p>
-    {% else %}
-        <p>
-            <table class="uk-table uk-table-small">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Degree</th>
-                        <th>City</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for alumni in page %}
-                    <tr>
-                        <td><a href="{% url 'atlas_profile' id=alumni.profile.id %}">{{ alumni.firstName }} {{ alumni.lastName }}</a></td>
-                        <td>
-                            {% if alumni.jacobs.degree %}
-                                {{ alumni.jacobs|get_choice_field:"degree"|safe }}, 
-                            {% endif %}
-            
-                            {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
-                        </td>
-                        <td> {{ alumni.address.city }}, {{ alumni.address.country }} </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </p>
+{% if error %}
+    <p>
+        Something went wrong: {{ error }}<br />
+        Please try again. 
+    </p>
+{% else %}
+    <p>
+        <table class="uk-table uk-table-small">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Degree</th>
+                    <th>City</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for alumni in page %}
+                <tr>
+                    <td><a href="{% url 'atlas_profile' id=alumni.profile.id %}">{{ alumni.firstName }} {{ alumni.lastName }}</a></td>
+                    <td>
+                        {% if alumni.jacobs.degree %}
+                            {{ alumni.jacobs|get_choice_field:"degree"|safe }}, 
+                        {% endif %}
         
-        <p>
-            <hr />
-            <ul class="uk-pagination">
-                {% if pagination.print1 %}
-                    <li>
-                        <span>
-                            <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page=1">1</a>
-                        </span>
-                    </li>
-                {% endif %}
-                {% if pagination.print1Dots %}
-                    <li><span>...</span></li>
-                {% endif %}
+                        {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
+                    </td>
+                    <td> {{ alumni.address.city }}, {{ alumni.address.country }} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </p>
+    
+    <p>
+        <hr />
+        <ul class="uk-pagination">
+            {% if pagination.print1 %}
+                <li>
+                    <span>
+                        <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page=1">1</a>
+                    </span>
+                </li>
+            {% endif %}
+            {% if pagination.print1Dots %}
+                <li><span>...</span></li>
+            {% endif %}
 
-                {% if page.has_previous %}
-                    <li>
-                        <span>
-                            <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.previous_page_number}}">{{page.previous_page_number}}</a>
-                        </span>
-                    </li>
-                {% endif %}
+            {% if page.has_previous %}
+                <li>
+                    <span>
+                        <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.previous_page_number}}">{{page.previous_page_number}}</a>
+                    </span>
+                </li>
+            {% endif %}
 
-                    <li class="uk-active">{{ page.number }}</li>
-                
-                {% if page.has_next %}
-                    <li>
-                        <span>
-                            <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.next_page_number}}">{{page.next_page_number}}</a>
-                        </span>
-                    </li>
-                {% endif %}
+                <li class="uk-active">{{ page.number }}</li>
+            
+            {% if page.has_next %}
+                <li>
+                    <span>
+                        <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.next_page_number}}">{{page.next_page_number}}</a>
+                    </span>
+                </li>
+            {% endif %}
 
-                {% if pagination.printLDots %}
-                    <li><span>...</span></li>
-                {% endif %}
-                {%if pagination.printL %}
-                    <li>
-                        <span>
-                            <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.paginator.num_pages}}">{{page.paginator.num_pages}}</a>
-                        </span>
-                    </li>
-                {% endif %}
-            </ul>
-        </p>
-    {% endif %}
-</article>
+            {% if pagination.printLDots %}
+                <li><span>...</span></li>
+            {% endif %}
+            {%if pagination.printL %}
+                <li>
+                    <span>
+                        <a href="{% url 'atlas_search' %}?query={{query|urlencode}}&page={{page.paginator.num_pages}}">{{page.paginator.num_pages}}</a>
+                    </span>
+                </li>
+            {% endif %}
+        </ul>
+    </p>
+{% endif %}
 {% endblock %}

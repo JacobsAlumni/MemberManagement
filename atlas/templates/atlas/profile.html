@@ -4,6 +4,7 @@
 
 {% block title %}Member{% endblock %}
 
+
 {% block head %}
 <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
 <style>
@@ -15,198 +16,196 @@
 <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
 {% endblock %}
 
-{% block content %}
-<article class="uk-article">
-    <h1 class="uk-article-title">
-        {{ alumni.fullName }}
-        
-        {% if alumni.atlas.contactInfoVisible %}
-            {% if alumni.social.facebook %}
-                <a class="uk-icon-button" target="_blank" href="{{alumni.social.facebook}}" uk-icon="icon: facebook" alt="Facebook">
-                </a>
-            {% endif %}
-            {% if alumni.social.linkedin %}
-                <a class="uk-icon-button" target="_blank" href="{{alumni.social.linkedin}}" uk-icon="icon: linkedin" alt="LinkedIn">
-                </a>
-            {% endif %}
-            {% if alumni.social.twitter %}
-                <a class="uk-icon-button" target="_blank" href="{{alumni.social.twitter}}" uk-icon="icon: twitter" alt="Twitter">
-                </a>
-            {% endif %}
-            {% if alumni.social.instagram %}
-                <a class="uk-icon-button" target="_blank" href="{{alumni.social.instagram}}" uk-icon="icon: instagram" alt="instagram">
-                </a>
-            {% endif %}
+{% block pagetitle %}
+    {{ alumni.fullName }}
+            
+    {% if alumni.atlas.contactInfoVisible %}
+        {% if alumni.social.facebook %}
+            <a class="uk-icon-button" target="_blank" href="{{alumni.social.facebook}}" uk-icon="icon: facebook" alt="Facebook">
+            </a>
         {% endif %}
+        {% if alumni.social.linkedin %}
+            <a class="uk-icon-button" target="_blank" href="{{alumni.social.linkedin}}" uk-icon="icon: linkedin" alt="LinkedIn">
+            </a>
+        {% endif %}
+        {% if alumni.social.twitter %}
+            <a class="uk-icon-button" target="_blank" href="{{alumni.social.twitter}}" uk-icon="icon: twitter" alt="Twitter">
+            </a>
+        {% endif %}
+        {% if alumni.social.instagram %}
+            <a class="uk-icon-button" target="_blank" href="{{alumni.social.instagram}}" uk-icon="icon: instagram" alt="instagram">
+            </a>
+        {% endif %}
+    {% endif %}
 
-        <span class="uk-label">{{ alumni |get_choice_field:"category"|safe }}
-    </h1>
-    
-    <div class="uk-grid">
-        <div class="uk-width-1-2">
-            <p class="uk-article-lead">
-                {% if alumni.atlas.contactInfoVisible %}
-                    <a href="mailto:{{alumni.approval.gsuite}}">{{alumni.approval.gsuite}}</a>
-                    {% if alumni.social.homepage %}
-                    &nbsp;-&nbsp; <a href="{{alumni.social.homepage}}" target="_blank">{{alumni.social.homepage}}</a>
+    <span class="uk-label">{{ alumni |get_choice_field:"category"|safe }}
+{% endblock %}
+
+{% block content %}
+<div class="uk-grid uk-child-width-1-2@s">
+    <div>
+        <p class="uk-article-lead">
+            {% if alumni.atlas.contactInfoVisible %}
+                <a href="mailto:{{alumni.approval.gsuite}}">{{alumni.approval.gsuite}}</a>
+                {% if alumni.social.homepage %}
+                &nbsp;-&nbsp; <a href="{{alumni.social.homepage}}" target="_blank">{{alumni.social.homepage}}</a>
+                {% endif %}
+                <br />
+            {% endif %}
+
+            {% if alumni.jacobs.degree %}
+                {{ alumni.jacobs|get_choice_field:"degree"|safe }}, 
+            {% endif %}
+
+            {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
+
+            {% if alumni.atlas.birthdayVisible %}
+                <br />Birthday: {{ alumni.birthday|date:"dS F" }}
+            {% endif %}
+        </p>
+
+        <p>
+            <table class="uk-table uk-table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="2">
+                            <h4>Job</h4>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if alumni.job.employer %}
+                        <tr>
+                            <td>Employer</td>
+                            <td>{{ alumni.job.employer }}</td>
+                        </tr>
                     {% endif %}
-                    <br />
-                {% endif %}
 
-                {% if alumni.jacobs.degree %}
-                    {{ alumni.jacobs|get_choice_field:"degree"|safe }}, 
-                {% endif %}
+                    {% if alumni.job.position %}
+                        <tr>
+                            <td>Position</td>
+                            <td>{{ alumni.job.position }}</td>
+                        </tr>
+                    {% endif %}
 
-                {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
+                    <tr>
+                        <td>Job</td>
+                        <td>{{ alumni.job|get_choice_field:"job" }}</td>
+                    </tr>
 
-                {% if alumni.atlas.birthdayVisible %}
-                    <br />Birthday: {{ alumni.birthday|date:"dS F" }}
-                {% endif %}
-            </p>
+                    <tr>
+                        <td>Industry</td>
+                        <td>{{ alumni.job|get_choice_field:"industry" }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
-            <p>
-                <table class="uk-table uk-table-striped">
-                    <thead>
+            <table class="uk-table uk-table-striped">
+                <thead>
                         <tr>
                             <th colspan="2">
-                                <h4>Job</h4>
+                                <h4>Education and Skills</h4>
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% if alumni.job.employer %}
-                            <tr>
-                                <td>Employer</td>
-                                <td>{{ alumni.job.employer }}</td>
-                            </tr>
-                        {% endif %}
-    
-                        {% if alumni.job.position %}
-                            <tr>
-                                <td>Position</td>
-                                <td>{{ alumni.job.position }}</td>
-                            </tr>
-                        {% endif %}
-    
+
+                <tbody>
+                    {% if alumni.skills.otherDegrees %}
                         <tr>
-                            <td>Job</td>
-                            <td>{{ alumni.job|get_choice_field:"job" }}</td>
+                            <td>Other Degrees</td>
+                            <td>{{ alumni.skills.otherDegrees }}</td>
                         </tr>
-    
+                    {% endif %}
+                    {% if alumni.skills.spokenLanguages %}
                         <tr>
-                            <td>Industry</td>
-                            <td>{{ alumni.job|get_choice_field:"industry" }}</td>
+                            <td>Spoken Languages</td>
+                            <td>{{ alumni.skills.spokenLanguages }}</td>
                         </tr>
-                    </tbody>
-                </table>
-
-                <table class="uk-table uk-table-striped">
-                    <thead>
-                            <tr>
-                                <th colspan="2">
-                                    <h4>Education and Skills</h4>
-                                </th>
-                            </tr>
-                        </thead>
-
-                    <tbody>
-                        {% if alumni.skills.otherDegrees %}
-                            <tr>
-                                <td>Other Degrees</td>
-                                <td>{{ alumni.skills.otherDegrees }}</td>
-                            </tr>
-                        {% endif %}
-                        {% if alumni.skills.spokenLanguages %}
-                            <tr>
-                                <td>Spoken Languages</td>
-                                <td>{{ alumni.skills.spokenLanguages }}</td>
-                            </tr>
-                        {% endif %}
-                        {% if alumni.skills.programmingLanguages %}
-                            <tr>
-                                <td>Programming Languages</td>
-                                <td>{{ alumni.skills.programmingLanguages }}</td>
-                            </tr>
-                        {% endif %}
-                        {% if alumni.skills.areasOfInterest %}
-                            <tr>
-                                <td>Areas of Interest</td>
-                                <td>{{ alumni.skills.areasOfInterest|safe }}</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </p>
-        </div>
-
-        
-        <div class="uk-card uk-card-default uk-card-body uk-width-1-2" style="text-align: right; ">
-            <p>
-                <div id="map" class="map"></div>
-                lives in <i>{{alumni.address.city}}, {{alumni.address.country.name}}</i>
-                {% if alumni.jacobs.college %}
-                    <br />
-                    lived in <span class="uk-label" id='college' data-college="{{ alumni.jacobs.college }}">{{ alumni.jacobs|get_choice_field:"college"|safe }}</span>
-                {% endif %}
-            </p>
-        </div>
-
-        </div>
+                    {% endif %}
+                    {% if alumni.skills.programmingLanguages %}
+                        <tr>
+                            <td>Programming Languages</td>
+                            <td>{{ alumni.skills.programmingLanguages }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if alumni.skills.areasOfInterest %}
+                        <tr>
+                            <td>Areas of Interest</td>
+                            <td>{{ alumni.skills.areasOfInterest|safe }}</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </p>
     </div>
 
-    <script type="text/javascript">
-        // apply the college color (if any)
-        var collegeEle = document.getElementById('college');
-        if (collegeEle) {
-            var college = parseInt(collegeEle.getAttribute('data-college'), 10);
-            var collegeColor = ['', 'red', 'blue', 'green', 'yellow', 'white'][college];
-            var collegeBackground = ['white', 'white', 'white', 'white', 'black', 'black'][college];
-            collegeEle.style.backgroundColor = collegeColor;
-            collegeEle.style.color = collegeBackground;
-        }
+    
+    <div class="uk-card uk-card-default uk-card-body" style="text-align: right; ">
+        <p>
+            <div id="map" class="map"></div>
+            lives in <i>{{alumni.address.city}}, {{alumni.address.country.name}}</i>
+            {% if alumni.jacobs.college %}
+                <br />
+                lived in <span class="uk-label" id='college' data-college="{{ alumni.jacobs.college }}">{{ alumni.jacobs|get_choice_field:"college"|safe }}</span>
+            {% endif %}
+        </p>
+    </div>
 
-        // get the point and feature
-        var point = {{ alumni_coords }};
-        var proj = ol.proj.fromLonLat([point[1], point[0]]);
-        var feature = new ol.Feature(
-            new ol.geom.Point(proj)
-        );
+    </div>
+</div>
 
-        // create a feature layer
-        var featureLayer = new ol.layer.Vector({
-            source: new ol.source.Vector({
-                features: [feature]
-            }),
-            style: function(feature) {
-                return new ol.style.Style({
-                    image: new ol.style.Circle({
-                        radius: 10,
-                        stroke: new ol.style.Stroke({
-                            color: '#fff'
-                        }),
-                        fill: new ol.style.Fill({
-                            color: '#3399CC'
-                        })
+<script type="text/javascript">
+    // apply the college color (if any)
+    var collegeEle = document.getElementById('college');
+    if (collegeEle) {
+        var college = parseInt(collegeEle.getAttribute('data-college'), 10);
+        var collegeColor = ['', 'red', 'blue', 'green', 'yellow', 'white'][college];
+        var collegeBackground = ['white', 'white', 'white', 'white', 'black', 'black'][college];
+        collegeEle.style.backgroundColor = collegeColor;
+        collegeEle.style.color = collegeBackground;
+    }
+
+    // get the point and feature
+    var point = {{ alumni_coords }};
+    var proj = ol.proj.fromLonLat([point[1], point[0]]);
+    var feature = new ol.Feature(
+        new ol.geom.Point(proj)
+    );
+
+    // create a feature layer
+    var featureLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            features: [feature]
+        }),
+        style: function(feature) {
+            return new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 10,
+                    stroke: new ol.style.Stroke({
+                        color: '#fff'
                     }),
-                });
-            }
-        });
+                    fill: new ol.style.Fill({
+                        color: '#3399CC'
+                    })
+                }),
+            });
+        }
+    });
 
-        // the source for all the images is OpenStreetMap
-        var raster = new ol.layer.Tile({
-            source: new ol.source.OSM()
-        });
+    // the source for all the images is OpenStreetMap
+    var raster = new ol.layer.Tile({
+        source: new ol.source.OSM()
+    });
 
-        // finally: create a map
-        var map = new ol.Map({
-            layers: [raster, featureLayer],
-            target: 'map',
-            view: new ol.View({
-                center: proj,
-                zoom: 4
-            })
-        });
+    // finally: create a map
+    var map = new ol.Map({
+        layers: [raster, featureLayer],
+        target: 'map',
+        view: new ol.View({
+            center: proj,
+            zoom: 4
+        })
+    });
 
-    </script>
-</article>
+</script>
 {% endblock %}

@@ -3,35 +3,31 @@
 
 {% block title %}Edit - {{ name }} {% endblock %}
 
+{% block pagetitle %}
+<a href="{% url "portal" %}" class="uk-button uk-button-default uk-button-small">
+        <span uk-icon="icon: arrow-left"></span>
+        Back to Portal
+    </a>
+    Edit Data - {{ name }}
+{% endblock %}
+
 {% block content %}
-<article class="uk-article">
-    <h1 class="uk-article-title">
-        <a href="{% url "portal" %}" class="uk-button uk-button-default uk-button-small">
-            <span uk-icon="icon: arrow-left"></span>
-            Back to Portal
-        </a>
-        Edit Data - {{ name }}
-    </h1>
+{% include "portal/approval_warning.html" %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="uk-alert{% if message.tags %}-{{ message.tags }}{% endif %}" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
 
-
-    {% include "portal/approval_warning.html" %}
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="uk-alert{% if message.tags %}-{{ message.tags }}{% endif %}" uk-alert>
-                <a class="uk-alert-close" uk-close></a>
-                <p>{{ message }}</p>
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    <div>
-        <form class="uk-form-horizontal" method="POST">
-            {% csrf_token %}
-            {{ form | as_uikit_form }}
-            <input type="submit" class="uk-button uk-button-primary" value="Update">
-        </form>
-    </div>
-</article>
+<div>
+    <form class="uk-form-horizontal" method="POST">
+        {% csrf_token %}
+        {{ form | as_uikit_form }}
+        <input type="submit" class="uk-button uk-button-primary" value="Update">
+    </form>
+</div>
 {% endblock %}

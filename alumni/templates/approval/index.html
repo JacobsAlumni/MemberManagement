@@ -2,123 +2,118 @@
 {% load uikit_tags %}
 
 {% block title %}Application Approval {{ alumni.profile.username }} {% endblock %}
+{% block pagetitle %}User Approval {{ alumni.profile.username }}{% endblock %}
 
 {% block content %}
-<article class="uk-article">
-    <h1 class="uk-article-title">
-        User Approval {{ alumni.profile.username }}
-    </h1>
+<div class="uk-tile uk-tile-muted">
 
-    <div class="uk-tile uk-tile-muted">
+    {% include "approval/messages.html" %}
 
-        {% include "approval/messages.html" %}
+    <form class="uk-form-horizontal" method="POST">
+        {% csrf_token %}
+        {{ form | as_uikit_form }}
+        <input type="submit" class="uk-button uk-button-primary" value="Approve user">
+    </form>
+</div>
 
-        <form class="uk-form-horizontal" method="POST">
-            {% csrf_token %}
-            {{ form | as_uikit_form }}
-            <input type="submit" class="uk-button uk-button-primary" value="Approve user">
-        </form>
+<div class="uk-tile uk-tile-default">
+    <p class="uk-h4">Preview E-Mails</p>
+
+    <div class="uk-button-group">
+        <a class="uk-button uk-button-default" href="{% url "approval_welcomeemail" uid=alumni.profile.id %}">Welcome (New Member)</a>
+        <a class="uk-button uk-button-default" href="{% url "approval_welcomebackemail_password" uid=alumni.profile.id %}">Welcome Back (Existing Member With Password Reset)</a>
+        <a class="uk-button uk-button-default" href="{% url "approval_welcomebackemail_link" uid=alumni.profile.id %}">Welcome Back (Existing Member Without Password Reset)</a>        
     </div>
+</div>
 
-    <div class="uk-tile uk-tile-default">
-        <p class="uk-h4">Preview E-Mails</p>
+<div class="uk-tile uk-tile-default">
+    <p class="uk-h4">Personal Data</p>
 
-        <div class="uk-button-group">
-            <a class="uk-button uk-button-default" href="{% url "approval_welcomeemail" uid=alumni.profile.id %}">Welcome (New Member)</a>
-            <a class="uk-button uk-button-default" href="{% url "approval_welcomebackemail_password" uid=alumni.profile.id %}">Welcome Back (Existing Member With Password Reset)</a>
-            <a class="uk-button uk-button-default" href="{% url "approval_welcomebackemail_link" uid=alumni.profile.id %}">Welcome Back (Existing Member Without Password Reset)</a>        
-        </div>
-    </div>
+    <table class="uk-table uk-table-striped">
+        <tbody>
+            <tr>
+                <td>Name</td>
+                <td>
+                    {{ alumni.fullName }}
+                </td>
+            </tr>
 
-    <div class="uk-tile uk-tile-default">
-        <p class="uk-h4">Personal Data</p>
+            <tr>
+                <td>Username</td>
+                <td>
+                    {{ alumni.profile.username }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-        <table class="uk-table uk-table-striped">
-            <tbody>
-                <tr>
-                    <td>Name</td>
-                    <td>
-                        {{ alumni.fullName }}
-                    </td>
-                </tr>
+<div class="uk-tile uk-tile-default">
+    <p class="uk-h4">Application Status</p>
 
-                <tr>
-                    <td>Username</td>
-                    <td>
-                        {{ alumni.profile.username }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <table class="uk-table uk-table-striped">
+        <tbody>
+            <tr>
+                <td>Application Completed</td>
+                <td>
+                    {% if alumni.setup_completed %}
+                        <span class="uk-label uk-label-success">Yes</span>
+                    {% else %}
+                        <span class="uk-label uk-label-warning">No</span>
+                    {% endif %}
+                </td>
+            </tr>
 
-    <div class="uk-tile uk-tile-default">
-        <p class="uk-h4">Application Status</p>
+            <tr>
+                <td>Application Approved</td>
+                <td>
+                    {% if alumni.approval.approval %}
+                        <span class="uk-label uk-label-success">Yes</span>
+                    {% else %}
+                        <span class="uk-label uk-label-danger">No</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-        <table class="uk-table uk-table-striped">
-            <tbody>
-                <tr>
-                    <td>Application Completed</td>
-                    <td>
-                        {% if alumni.setup_completed %}
-                            <span class="uk-label uk-label-success">Yes</span>
-                        {% else %}
-                            <span class="uk-label uk-label-warning">No</span>
-                        {% endif %}
-                    </td>
-                </tr>
-    
-                <tr>
-                    <td>Application Approved</td>
-                    <td>
-                        {% if alumni.approval.approval %}
-                            <span class="uk-label uk-label-success">Yes</span>
-                        {% else %}
-                            <span class="uk-label uk-label-danger">No</span>
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="uk-tile uk-tile-default">
+    <p class="uk-h4">GSuite Status</p>
 
-    <div class="uk-tile uk-tile-default">
-        <p class="uk-h4">GSuite Status</p>
+    <table class="uk-table uk-table-striped">
+        <tbody>
+            <tr>
+                <td>Assigned E-Mail</td>
+                <td>
+                    {% if alumni.approval.gsuite %}
+                        <span style='color: green; '>{{alumni.approval.gsuite}}</span>
+                    {% else %}
+                    {% endif %}
 
-        <table class="uk-table uk-table-striped">
-            <tbody>
-                <tr>
-                    <td>Assigned E-Mail</td>
-                    <td>
-                        {% if alumni.approval.gsuite %}
-                            <span style='color: green; '>{{alumni.approval.gsuite}}</span>
-                        {% else %}
-                        {% endif %}
+                    {% if emailLinked %}
+                        <span class="uk-label uk-label-success">Account Linked</span>
+                    {% else %}
+                        <span class="uk-label uk-label-danger">Unlinked</span>
+                    {% endif %}
+                </td>
+            </tr>
 
-                        {% if emailLinked %}
-                            <span class="uk-label uk-label-success">Account Linked</span>
-                        {% else %}
-                            <span class="uk-label uk-label-danger">Unlinked</span>
-                        {% endif %}
-                    </td>
-                </tr>
-    
-                <tr>
-                    <td>Previous E-Mail</td>
-                    <td>
-                        {% if alumni.existingEmail %}
-                            {{alumni.existingEmail}}
-                        {% else %}
-                            (none listed)
-                        {% endif %}
+            <tr>
+                <td>Previous E-Mail</td>
+                <td>
+                    {% if alumni.existingEmail %}
+                        {{alumni.existingEmail}}
+                    {% else %}
+                        (none listed)
+                    {% endif %}
 
-                        {% if previousEmail %}
-                            <span class="uk-label uk-label-warning">{{previousEmail}}</span>
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</article>
+                    {% if previousEmail %}
+                        <span class="uk-label uk-label-warning">{{previousEmail}}</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 {% endblock %}

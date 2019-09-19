@@ -7,15 +7,15 @@
 {% block head %}
 {% endblock %}
 
-{% block content %}
-<article class="uk-article">
-    <h1 id="page-header" class="uk-article-title">Email sent</h1>
+{% block pagetitle %}
+Email sent
+{% endblock %}
 
+{% block content %}
+<div>
     <div>
-        <div>
-            <p>If your email is in our database, we've sent one to you. Please check your inbox and spam folder for the login link.</p>
-            <p>In case you didn't receive an email from us, request <a href="{% url 'login' %}">another one</a>.</p>
-        </div>
+        <p>If your email is in our database, we've sent one to you. Please check your inbox and spam folder for the login link.</p>
+        <p>In case you didn't receive an email from us, request <a href="{% url 'login' %}">another one</a>.</p>
     </div>
-</article>
+</div>
 {% endblock %}
