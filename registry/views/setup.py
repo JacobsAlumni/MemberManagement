@@ -189,7 +189,7 @@ class AtlasSetup(SetupComponentView):
 
 
 class CompletedSetup(SetupComponentView):
-    setup_name = 'Congratulations'
+    setup_name = 'Almost Done'
     setup_subtitle = ''
     setup_form_class = SetupCompletedForm
     setup_next_text = 'Finalize Application & Continue to Portal'
