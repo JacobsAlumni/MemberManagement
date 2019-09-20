@@ -1,5 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.selenium import SeleniumTest
+from MemberManagement.tests.integration import IntegrationTest
 
 import datetime
 
@@ -8,7 +8,7 @@ from alumni.fields.gender import GenderField
 from alumni.fields.category import AlumniCategoryField
 
 
-class SignupTest(SeleniumTest, StaticLiveServerTestCase):
+class SignupTest(IntegrationTest, StaticLiveServerTestCase):
     def test_signup_regular(self):
         """ Tests that we can complete the first setup page with a regular user """
 

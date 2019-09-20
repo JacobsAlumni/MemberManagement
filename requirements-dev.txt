@@ -2,3 +2,5 @@ pycodestyle==2.5.0
 pytest==5.0.1
 pytest-django==3.5.1
 selenium==3.141.0
+django-selenium-clean==0.3.2
+django-selenium-login==2.0.0

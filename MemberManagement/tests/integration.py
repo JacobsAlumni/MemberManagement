@@ -1,30 +1,34 @@
-import os
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.options import Options
+from django.core.management import call_command
+from django.contrib.auth import get_user_model
+
+from seleniumlogin import force_login
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions
 
+from django_selenium_clean import SeleniumTestCase
 
-class SeleniumTest(object):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        options = Options()
-        if os.environ.get('PYTEST_FIREFOX_VISIBLE', None) != '1':
-            options.add_argument('-headless')
-        cls.selenium = Firefox(options=options)
-        cls.selenium.implicitly_wait(10)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.selenium.quit()
-        super().tearDownClass()
+class IntegrationTest(SeleniumTestCase):
+    """ An integration test base class using Selenium """
 
     def setUp(self):
-        # setup selenium cookies on first call
+        # before each test case, we need to reset the cookies
         self.selenium.delete_all_cookies()
+
+    def load_fixture(self, path):
+        """ Loads a fixture for use in unit tests """
+
+        return call_command('loaddata', path)
+
+    def login(self, username):
+        """ Authenticates the user with the given username """
+
+        # use the force_login method to enforce login
+        user = get_user_model().objects.get(username=username)
+        # TODO: Switch this to the appropriate django-selenium-clean method
+        # once the PR gets merged
+        force_login(user, self.selenium, self.live_server_url)
 
     @property
     def current_url(self):
@@ -34,13 +38,17 @@ class SeleniumTest(object):
             return url[len(self.live_server_url):]
         return url
 
-    def wait_for_element(self, selector, timeout=10):
-        """ Waits for element to be visible and returns it """
+    def wait_for_element(self, selector=None, timeout=10):
+        """ Either waits for a selector to become visible"""
 
         wait = WebDriverWait(self.selenium, timeout)
+        if selector is None:
+            selector = 'body'
+
         element = wait.until(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, selector)))
         return element
+
 
     def sget(self, url, selector=None, timeout=10):
         """
@@ -52,6 +60,14 @@ class SeleniumTest(object):
             return None
 
         return self.wait_for_element(selector, timeout=timeout)
+
+    def sfollow(self, url, selector=None, timeout=10):
+        """
+            Loads a url with selenium and follows all redirects.
+            Then returns the current url.
+        """
+        self.sget(url, selector=selector, timeout=timeout)
+        return self.current_url
 
     def fill_out_form(self, url, submit_button=None, send_form_keys=None, select_dropdowns=None, select_checkboxes=None, script_value=None, timeout=10):
         """

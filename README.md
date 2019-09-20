@@ -96,7 +96,7 @@ By default, this uses a headless firefox webdriver to run the integration tests.
 To enforce a visible firefox, instead use:
 
 ```
-PYTEST_FIREFOX_VISIBLE=1 pytest
+SELENIUM_HEADLESS=0 pytest
 ```
 
 ## License

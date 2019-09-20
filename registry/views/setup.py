@@ -43,10 +43,21 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
 
         raise NotImplementedError
 
+    def should_setup_component(self):
+        """ returns True iff this setup component is the next valid setup component """
+
+        raise NotImplementedError
+
+
     def dispatch_already_set(self):
         """ called when setup component already exists """
 
         raise NotImplementedError
+
+    def dispatch_should_not(self):
+        """ called when should_setup_component returns false """
+
+        return self.dispatch_already_set()
 
     def form_valid(self, form):
         """ Called when the form is valid and an instance is to be created """
@@ -74,6 +85,11 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         if self.has_setup_component():
             return self.dispatch_already_set()
 
+        # if we should not setup this component next
+        # then call the apporpriate redirect
+        if not self.should_setup_component():
+            return self.dispatch_should_not()
+
         # Create the form instance
         form = self.__class__.setup_form_class(self.request.POST or None)
 
@@ -99,6 +115,9 @@ class RegisterView(SetupViewBase):
 
     def has_setup_component(self):
         return self.request.user.is_authenticated
+
+    def should_setup_component(self):
+        return True
 
     def dispatch_already_set(self):
         return self.redirect_response('/')
@@ -139,6 +158,13 @@ class SetupComponentView(SetupViewBase):
 
     def has_setup_component(self):
         return self.request.user.alumni.has_component(self.__class__.setup_class())
+
+    def should_setup_component(self):
+        component = self.request.user.alumni.get_first_unset_component()
+        if component is None:
+            return False
+
+        return component is self.__class__.setup_class()
 
     def dispatch_already_set(self):
         return self.redirect_response('portal', reverse=True)
