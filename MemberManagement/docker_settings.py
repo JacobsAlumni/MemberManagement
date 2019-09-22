@@ -3,7 +3,6 @@ Django Docker settings for MemberManagement project.
 Reads all relevant setting from the environment
 """
 from .settings import *
-import sys
 
 # No Debugging
 DEBUG = False
@@ -37,6 +36,8 @@ EMAIL_HOST_PASSWORD = os.environ.setdefault("EMAIL_HOST_PASSWORD", "")
 EMAIL_FROM = os.environ.setdefault("EMAIL_FROM",
                                    'Alumni Association Portal <portal@jacobs-alumni.de>')
 
+# staticfiles
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # add the stripe keys
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')

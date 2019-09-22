@@ -5,6 +5,9 @@ Django Testing settings for MemberManagement project.
 # import the default settings
 from .settings import *
 
+# No debug mode during testing, to be as close to production as possible
+DEBUG = False
+
 # enforce minimization for the tests
 # so that we can test the production code
 HTML_MINIFY = True
