@@ -39,9 +39,14 @@ class IntegrationTest(SeleniumTestCase):
         return url
 
     def wait_for_element(self, selector, timeout=10):
-        """ Either waits for a selector to become visible"""
+        """ Waits for a selector to become available.
+        When selector is None, uses '.main-container'.
+        """
 
         wait = WebDriverWait(self.selenium, timeout)
+
+        if selector is None:
+            selector = '.main-container'
 
         element = wait.until(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, selector)))
@@ -54,9 +59,6 @@ class IntegrationTest(SeleniumTestCase):
             Returns the element selected, None if none is selected, or raises TimeoutException if a timeout occurs.
         """
         self.selenium.get(self.live_server_url + url)
-        if selector is None:
-            return None
-
         return self.wait_for_element(selector, timeout=timeout)
 
     def sfollow(self, url, selector=None, timeout=10):
@@ -103,8 +105,15 @@ class IntegrationTest(SeleniumTestCase):
                 if select.is_multiple:
                     select.deselect_all()
 
+                # if the value was set to none, do nothing
+                if value is None:
+                    continue
+
+                # if we have a string, select by visible text
                 if isinstance(value, str):
                     select.select_by_visible_text(value)
+
+                # else select all the ones by the given value
                 else:
                     for v in value:
                         select.select_by_value(v)
@@ -126,12 +135,12 @@ class IntegrationTest(SeleniumTestCase):
         # return the button
         return button
 
-    def submit_form(self, *args, timeout=10, **kwargs):
+    def submit_form(self, *args, next_selector=None, timeout=10, **kwargs):
         """ Fills out and submit a form, then returns the body element of the submitted page """
 
         # fill out the form and click the submit button
         button = self.fill_out_form(*args, timeout=timeout, **kwargs)
         button.click()
 
-        # wait for body to be visible
-        return self.wait_for_element('body', timeout=timeout)
+        # wait for next element to be visible
+        return self.wait_for_element(next_selector, timeout=timeout)

@@ -49,6 +49,12 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
             list(map(lambda c: c.name, obj.nationality)), ['Germany'])
         self.assertEqual(obj.category, AlumniCategoryField.REGULAR)
 
+        # check that the approval object is created
+        obj = Alumni.objects.first().approval
+        self.assertEqual(obj.approval, False)
+        self.assertEqual(obj.gsuite, None)
+        self.assertEqual(obj.time, None)
+
     def test_signup_faculty(self):
         """ Tests that we can complete the first signup page for a faculty member """
 
@@ -89,6 +95,12 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertListEqual(list(map(lambda c: c.name, obj.nationality)), [
                              'United States of America'])
         self.assertEqual(obj.category, AlumniCategoryField.FACULTY)
+
+        # check that the approval object is created
+        obj = Alumni.objects.first().approval
+        self.assertEqual(obj.approval, False)
+        self.assertEqual(obj.gsuite, None)
+        self.assertEqual(obj.time, None)
 
     def test_signup_notos(self):
         """ Tests that we can not submit a form without having accepted the TOS """
