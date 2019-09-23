@@ -38,12 +38,10 @@ class IntegrationTest(SeleniumTestCase):
             return url[len(self.live_server_url):]
         return url
 
-    def wait_for_element(self, selector=None, timeout=10):
+    def wait_for_element(self, selector, timeout=10):
         """ Either waits for a selector to become visible"""
 
         wait = WebDriverWait(self.selenium, timeout)
-        if selector is None:
-            selector = 'body'
 
         element = wait.until(expected_conditions.visibility_of_element_located(
             (By.CSS_SELECTOR, selector)))

@@ -1,17 +1,34 @@
 language: python
 
-addons:
-  firefox: latest
+matrix:
+  include:
+    # chrome
+    - env:
+      - SELENIUM_WEBDRIVER=default
+      addons:
+        chrome: stable
+      before_install:
+        - export CHROMEDRIVER_VERSION=77.0.3865.40
+        - wget -N http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+        - mkdir chromedriver
+        - unzip chromedriver_linux64.zip -d chromedriver
+        - chmod +x chromedriver/chromedriver
+        - export PATH=$PATH:$PWD/chromedriver
+
+    # firefox
+    - env:
+        - SELENIUM_WEBDRIVER=firefox
+      addons:
+        firefox: latest
+      before_install:
+        - export GECKODRIVER_VERSION=v0.25.0
+        - wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
+        - mkdir geckodriver
+        - tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -C geckodriver
+        - export PATH=$PATH:$PWD/geckodriver
 
 python:
-  - "3.7"
-
-before_install:
-  - export GECKODRIVER_VERSION=v0.24.0
-  - wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
-  - mkdir geckodriver
-  - tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -C geckodriver
-  - export PATH=$PATH:$PWD/geckodriver
+  - "3.6"
 
 install:
   - pip install -r requirements.txt

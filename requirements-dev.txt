@@ -4,3 +4,6 @@ pytest-django==3.5.1
 selenium==3.141.0
 django-selenium-clean==0.3.2
 django-selenium-login==2.0.0
+
+pyvirtualdisplay==0.2.4
+EasyProcess==0.2.7

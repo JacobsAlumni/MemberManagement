@@ -15,13 +15,35 @@ HTML_MINIFY = True
 # Selenium test settings
 from selenium import webdriver
 
-SELENIUM_HEADLESS = os.environ.get("SELENIUM_HEADLESS", "1") == "1"
-if SELENIUM_HEADLESS:
-    os.environ['MOZ_HEADLESS'] = '1'
+if os.environ.get("SELENIUM_HEADLESS", "1") == "1":
+    # chrome
+    from selenium.webdriver.chrome.options import Options as ChromeOptions
+    chrome_options = ChromeOptions()
+    chrome_options.add_argument("--headless")
+
+    # firefox
+    from selenium.webdriver.firefox.options import Options as FirefoxOptions
+    firefox_options = FirefoxOptions()
+    firefox_options.add_argument("--headless")
+
+else:
+    chrome_options = None
+    firefox_options = None
+
 SELENIUM_WEBDRIVERS = {
     'default': {
+        'callable': webdriver.Chrome,
+        'args': (),
+        'kwargs': {'options': chrome_options},
+    },
+    'firefox': {
         'callable': webdriver.Firefox,
         'args': (),
+        'kwargs': {'options': firefox_options},
+    },
+    'safari': {
+        'callable': webdriver.Safari,
+        'args': (),
         'kwargs': {},
-    }
+    },
 }

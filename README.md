@@ -80,11 +80,16 @@ The following independent apps also exist:
 
 ## Tests
 
-Tests are in the process of being set up. 
+This project contains several integration tests to ensure that user-facing functionality works as intended. 
+These integration tests make use of [Selenium](https://docs.seleniumhq.org) and [django-selenium-clean](https://github.com/aptiko/django-selenium-clean). 
 
-Most tests are integration tests, and require [geckodriver](https://github.com/mozilla/geckodriver) in $PATH. 
-
+In addition to integration tests, other unit tests also exist. 
 One non-feature related test is the CodeStyle test. This enforces PEP8-compliance except for maximum line length.
+
+The integration tests run headless by default and support the following browsers:
+- Chrome using [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/) (default)
+- Firefox using [geckodriver](https://github.com/mozilla/geckodriver) (set `SELENIUM_WEBDRIVER=firefox`)
+- Safari (__highly experimental__, set `SELENIUM_WEBDRIVER=safari`)
 
 To run tests make sure that development dependencies are installed and then run:
 
@@ -92,12 +97,14 @@ To run tests make sure that development dependencies are installed and then run:
 pytest
 ```
 
-By default, this uses a headless firefox webdriver to run the integration tests. 
-To enforce a visible firefox, instead use:
+By default, the tests are running in headless mode. 
+To enforce a visible browser, instead use:
 
 ```
 SELENIUM_HEADLESS=0 pytest
 ```
+
+Travis CI runs Chrome and Firefox tests in headless mode after every commit.  
 
 ## License
 Licensed under the Terms of the MIT LICENSE, see [LICENSE](LICENSE). 

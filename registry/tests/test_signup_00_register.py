@@ -117,7 +117,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
 
         # then click the button and wait
         button.click()
-        self.wait_for_element('body')
+        self.wait_for_element('.main-container')
 
         # check that we didn't get redirected
         self.assertEqual(self.current_url, '/portal/register/',
