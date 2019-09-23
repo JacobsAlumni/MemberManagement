@@ -28,7 +28,7 @@ class ClassField(CustomIntegerChoiceField):
     C_2024 = 2024
     C_2025 = 2025
     CHOICES = (
-        (OTHER, 'Other (please specifiy in comments)'),
+        (OTHER, 'Other (Please specify in comments)'),
         (C_2004, 'Class of 2004'),
         (C_2005, 'Class of 2005'),
         (C_2006, 'Class of 2006'),
