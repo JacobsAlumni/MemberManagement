@@ -8,7 +8,7 @@ from alumni.fields.major import MajorField
 from alumni.fields.year import ClassField
 
 
-class SocialTest(IntegrationTest, StaticLiveServerTestCase):
+class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_02_social.json']
 
     def setUp(self):
