@@ -55,7 +55,7 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.included, True)
         self.assertEqual(obj.birthdayVisible, False)
         self.assertEqual(obj.contactInfoVisible, True)
-    
+
     def test_signup_atlas_minimal(self):
         self.submit_form('/portal/setup/atlas/', 'input_id_submit', select_checkboxes={
             'id_included': True,
