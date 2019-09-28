@@ -114,7 +114,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
                              '/portal/setup/completed/', '{} redirects to completed setup'.format(url))
 
     def test_setup_completed(self):
-        self.load_fixture('registry/tests/fixtures/signup_08_finalize.json')
+        self.load_fixture('registry/tests/fixtures/signup_09_finalize.json')
         self.login('Mounfem')
 
         for url in PORTAL_FIXED:
