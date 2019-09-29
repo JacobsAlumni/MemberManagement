@@ -1,24 +1,24 @@
 FROM python:3.6-alpine
 
-# Install lxml requirements
-RUN apk add --no-cache g++ libxslt-dev
+# Install binary python dependencies
+RUN apk add --no-cache \
+    build-base \
+    libxslt-dev \
+    linux-headers \
+    pcre-dev \
+    python3-dev
 
-# Install nginx and configuration
-RUN apk add --no-cache nginx \
-    && mkdir -p /run/nginx/
-ADD docker/django.conf /etc/nginx/django.conf
+ADD docker/uwsgi.ini /app/uwsgi.ini
 
 # Add requirements and install dependencies
 ADD requirements.txt /app/
+ADD requirements-prod.txt /app/
 WORKDIR /app/
 
 # Add the entrypoint and add configuration
 RUN mkdir -p /var/www/static/ \
     && pip install -r requirements.txt \
-    && pip install gunicorn==19.7
-
-# /entrypoint.sh
-ADD docker/entrypoint.sh /entrypoint.sh
+    && pip install -r requirements-prod.txt
 
 # Install Django App and setup the setting module
 ADD manage.py /app/
@@ -30,6 +30,7 @@ ADD static/ /app/static/
 ADD custom_auth/ /app/custom_auth
 ADD atlas/ /app/atlas
 ADD payments/ /app/payments
+ADD docker/ /app/docker
 
 ENV DJANGO_SETTINGS_MODULE "MemberManagement.docker_settings"
 
@@ -64,9 +65,12 @@ ENV GSUITE_AUTH_FILE /data/credentials.json
 # Raven -- optional
 ENV DJANGO_RAVEN_DSN ""
 
+# Collect all the static files at build time
+RUN DJANGO_SECRET_KEY=setup python manage.py collectstatic --noinput
 
 # Volume and ports
 VOLUME /data/
 EXPOSE 80
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/docker/entrypoint.sh"]
+CMD ["uwsgi", "--ini", "/app/docker/uwsgi.ini"]
