@@ -13,7 +13,7 @@ from payments.models import SubscriptionInformation, MembershipInformation
 
 MOCKED_TIME = timezone.datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
-MOCKED_STARTER_CUSTOMER = mock.MagicMock(id='cus_Fq8yG7rLrc6sKZ')
+MOCKED_CUSTOMER = mock.MagicMock(id='cus_Fq8yG7rLrc6sKZ')
 
 
 class StarterTest(IntegrationTest, StaticLiveServerTestCase):
@@ -25,7 +25,7 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_setup_starter(self):
-        with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_STARTER_CUSTOMER, None)) as mocked:
+        with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
             # fill out the form an select the starter tier
             btn = self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
                 "id_tier": 'Starter (If graduated less than 2 years ago or not ready to financially contribute): free'

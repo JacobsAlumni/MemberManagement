@@ -16,7 +16,7 @@ MOCKED_TIME = timezone.datetime(
 MOCKED_CUSTOMER = mock.MagicMock(id='cus_Fq8yG7rLrc6sKZ')
 
 
-class ContributorTest(IntegrationTest, StaticLiveServerTestCase):
+class PatronTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_06_atlas.json']
 
     def setUp(self):
@@ -24,11 +24,11 @@ class ContributorTest(IntegrationTest, StaticLiveServerTestCase):
         self.login('Mounfem')
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
-    def test_setup_contributor(self):
+    def test_setup_patron(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
-            # fill out the form an select the contributor tier
+            # fill out the form an select the patron tier
             self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Contributor (Standard package if graduated more than 2 years ago): 39€ p.a.'
+                "id_tier": 'Patron (Premium package for those who want to contribute more): 249€ p.a.'
             })
 
             self.assertEqual(self.current_url, '/payments/subscribe/',
@@ -40,7 +40,7 @@ class ContributorTest(IntegrationTest, StaticLiveServerTestCase):
 
             # check that the membership object was created
             obj = Alumni.objects.first().membership
-            self.assertEqual(obj.tier, TierField.CONTRIBUTOR)
+            self.assertEqual(obj.tier, TierField.PATRON)
             self.assertEqual(obj.starterReason, '')
             self.assertEqual(obj.customer, 'cus_Fq8yG7rLrc6sKZ')
 
@@ -49,11 +49,11 @@ class ContributorTest(IntegrationTest, StaticLiveServerTestCase):
                 SubscriptionInformation.objects.get(
                     member=Alumni.objects.first())
 
-    def test_setup_contributor_fail(self):
+    def test_setup_patron_fail(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug")) as mocked:
             # fill out the form an select the payments tier
             self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Contributor (Standard package if graduated more than 2 years ago): 39€ p.a.'
+                "id_tier": 'Patron (Premium package for those who want to contribute more): 249€ p.a.'
             })
 
             # we stay on the same page
