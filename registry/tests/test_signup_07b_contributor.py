@@ -22,6 +22,17 @@ class ContributorTest(IntegrationTest, StaticLiveServerTestCase):
     def setUp(self):
         super().setUp()
         self.login('Mounfem')
+    
+    def test_setup_contributor_elements(self):
+        # fill out the form and select the contributor tier
+        self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
+            "id_tier": 'Contributor (Standard package if graduated more than 2 years ago): 39€ p.a.'
+        })
+
+        self.assertFalse(self.selenium.find_element_by_id('id_starterReason').is_displayed())
+        self.assertFalse(self.selenium.find_element_by_id('description-st').is_displayed())
+        self.assertTrue(self.selenium.find_element_by_id('description-co').is_displayed())
+        self.assertFalse(self.selenium.find_element_by_id('description-pa').is_displayed())
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_setup_contributor(self):
