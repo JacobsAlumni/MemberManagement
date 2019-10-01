@@ -22,7 +22,7 @@ class ContributorTest(IntegrationTest, StaticLiveServerTestCase):
     def setUp(self):
         super().setUp()
         self.login('Mounfem')
-    
+
     def test_setup_contributor_elements(self):
         # fill out the form and select the contributor tier
         self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
