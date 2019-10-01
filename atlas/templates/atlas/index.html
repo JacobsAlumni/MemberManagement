@@ -1,13 +1,14 @@
 {% extends "base/base.html" %}
 
 {% load registry_display %}
+{% load static %}
 
 {% block title %}Atlas{% endblock %}
 {% block pagetitle %}Jacobs Alumni Atlas{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
-<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+<link rel="stylesheet" href="{% static 'openlayers/js/ol.css' %}" type="text/css">
+<script src="{% static 'openlayers/js/ol.js' %} "></script>
 <style>
 .map {
     height: 400px;
