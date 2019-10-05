@@ -6,7 +6,8 @@ RUN apk add --no-cache \
     libxslt-dev \
     linux-headers \
     pcre-dev \
-    python3-dev
+    python3-dev \
+    curl
 
 ADD docker/uwsgi.ini /app/uwsgi.ini
 
@@ -71,6 +72,8 @@ RUN DJANGO_SECRET_KEY=setup python manage.py collectstatic --noinput
 # Volume and ports
 VOLUME /data/
 EXPOSE 80
+
+HEALTHCHECK CMD curl -f http://localhost/ || exit 1
 
 ENTRYPOINT ["/app/docker/entrypoint.sh"]
 CMD ["uwsgi", "--ini", "/app/docker/uwsgi.ini"]
