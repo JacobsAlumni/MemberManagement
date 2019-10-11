@@ -3,6 +3,7 @@ FROM python:3.6-alpine
 # Install binary python dependencies
 RUN apk add --no-cache \
     build-base \
+    mailcap \
     libxslt-dev \
     linux-headers \
     pcre-dev \
