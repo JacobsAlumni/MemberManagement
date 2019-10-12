@@ -15,8 +15,8 @@ MOCKED_TIME = timezone.datetime(
 MOCKED_SUBSCRIPTION = mock.MagicMock(id='sub_fake')
 
 
-class ContributorSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServerTestCase):
-    fixtures = ['registry/tests/fixtures/signup_07b_contributor.json']
+class PatronSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServerTestCase):
+    fixtures = ['registry/tests/fixtures/signup_07c_patron.json']
 
     def setUp(self):
         super().setUp()
@@ -37,7 +37,7 @@ class ContributorSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServ
                 self.assertListEqual(umock.call_args_list, [mock.call(
                     "cus_Fq8yG7rLrc6sKZ", "", "fake-token-id")])
                 self.assertListEqual(cmock.call_args_list, [mock.call(
-                    "cus_Fq8yG7rLrc6sKZ", "contributor-membership")])
+                    "cus_Fq8yG7rLrc6sKZ", "patron-membership")])
 
                 # check that the subscription object was created
                 obj = SubscriptionInformation.objects.get(
@@ -46,7 +46,7 @@ class ContributorSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServ
                 self.assertEqual(obj.end, None)
                 self.assertEqual(obj.subscription, 'sub_fake')
                 self.assertEqual(obj.external, False)
-                self.assertEqual(obj.tier, TierField.CONTRIBUTOR)
+                self.assertEqual(obj.tier, TierField.PATRON)
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_signup_card_error_update_method(self):
@@ -84,7 +84,7 @@ class ContributorSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServ
                 self.assertListEqual(umock.call_args_list, [mock.call(
                     "cus_Fq8yG7rLrc6sKZ", "", "fake-token-id")])
                 self.assertListEqual(cmock.call_args_list, [mock.call(
-                    "cus_Fq8yG7rLrc6sKZ", "contributor-membership")])
+                    "cus_Fq8yG7rLrc6sKZ", "patron-membership")])
 
                 # check that the subscription object was not created
                 with self.assertRaises(SubscriptionInformation.DoesNotExist):
@@ -105,7 +105,7 @@ class ContributorSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServ
                 self.assertListEqual(umock.call_args_list, [mock.call(
                     "cus_Fq8yG7rLrc6sKZ", "fake-source-id", "")])
                 self.assertListEqual(cmock.call_args_list, [mock.call(
-                    "cus_Fq8yG7rLrc6sKZ", "contributor-membership")])
+                    "cus_Fq8yG7rLrc6sKZ", "patron-membership")])
 
                 # check that the subscription object was created
                 obj = SubscriptionInformation.objects.get(
@@ -114,7 +114,7 @@ class ContributorSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServ
                 self.assertEqual(obj.end, None)
                 self.assertEqual(obj.subscription, 'sub_fake')
                 self.assertEqual(obj.external, False)
-                self.assertEqual(obj.tier, TierField.CONTRIBUTOR)
+                self.assertEqual(obj.tier, TierField.PATRON)
 
     mock.patch('django.utils.timezone.now',
                mock.Mock(return_value=MOCKED_TIME))
@@ -154,7 +154,7 @@ class ContributorSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServ
                 self.assertListEqual(umock.call_args_list, [mock.call(
                     "cus_Fq8yG7rLrc6sKZ", "fake-source-id", "")])
                 self.assertListEqual(cmock.call_args_list, [mock.call(
-                    "cus_Fq8yG7rLrc6sKZ", "contributor-membership")])
+                    "cus_Fq8yG7rLrc6sKZ", "patron-membership")])
 
                 # check that the subscription object was not created
                 with self.assertRaises(SubscriptionInformation.DoesNotExist):

@@ -1,8 +1,6 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from MemberManagement.tests.integration import IntegrationTest
 
-from django.utils import timezone
-
 from unittest import mock
 
 from alumni.models import Alumni
@@ -10,8 +8,6 @@ from alumni.fields.tier import TierField
 
 from payments.models import SubscriptionInformation, MembershipInformation
 
-MOCKED_TIME = timezone.datetime(
-    2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 MOCKED_CUSTOMER = mock.MagicMock(id='cus_Fq8yG7rLrc6sKZ')
 
 
@@ -37,7 +33,6 @@ class PatronTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertTrue(self.selenium.find_element_by_id(
             'description-pa').is_displayed())
 
-    @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_setup_patron(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
             # fill out the form an select the patron tier
