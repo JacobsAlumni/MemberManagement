@@ -1,4 +1,25 @@
 var stripe_integration_init = function(stripe_publishable_key) {
+    // make some thin wrappers around the stripe api
+    // which return faked id's when we do not have a publishable key]
+
+    // initialize stripe API, either with the real key or an obviously fake one for testing
+    var stripe = Stripe(stripe_publishable_key || 'fake' );
+
+    var create_token = function(data) {
+        if (!stripe_publishable_key)
+            return Promise.resolve({ token: { id: 'fake-token-id' } });
+        
+        return stripe.createToken(data);
+    }
+
+    var create_source = function(element, data) {
+        if (!stripe_publishable_key)
+            return Promise.resolve({ source: { id: 'fake-source-id' }});
+        
+        return stripe.createSource(element, data);
+    }
+
+
     // create an error elemenet
     var errorElement = document.getElementById('card-errors');
     var set_error = function(message){
@@ -14,8 +35,6 @@ var stripe_integration_init = function(stripe_publishable_key) {
     }
     set_error();
 
-    // initialize stripe API
-    var stripe = Stripe(stripe_publishable_key);
     var elements = stripe.elements();
 
     // custom element style
@@ -35,11 +54,26 @@ var stripe_integration_init = function(stripe_publishable_key) {
         }
     };
 
+    // function to be called when everything is ready
+    var cardReady = false;
+    var ibanReady = false;
+    var updateReadyState = function(mode) {
+        if (mode === 'card') cardReady = true;
+        if (mode === 'iban') ibanReady = true;
+        if (cardReady && ibanReady) {
+            document.getElementById('button_id_presubmit').removeAttribute('disabled');
+        }
+    }
+
     
-    // Create input elements for card and iban
+    // Create a card element
     var card = elements.create('card', { style: style });
+    card.addEventListener('ready', function() { updateReadyState('card'); });
     card.mount('#card-element');
+
+    // Create an iban element
     var iban = elements.create('iban', { style: style, supportedCountries: ['SEPA'] });
+    card.addEventListener('ready', function() { updateReadyState('iban')});
     iban.mount('#iban-element');
 
     // handle change errors properly
@@ -86,7 +120,7 @@ var stripe_integration_init = function(stripe_publishable_key) {
 
     // handle submitting a card
     var submitCard = function() {
-        stripe.createToken(card).then(function(result) {
+        create_token(card).then(function(result) {
             if (result.error) {
                 set_error(result.error.message);
                 return;
@@ -98,7 +132,7 @@ var stripe_integration_init = function(stripe_publishable_key) {
     
     // handle submitting a sepa token
     var submitSepa = function() {
-        stripe.createSource(iban, {
+        create_source(iban, {
             type: 'sepa_debit',
             currency: 'eur',
             owner: {

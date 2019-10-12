@@ -38,7 +38,7 @@ class IntegrationTest(SeleniumTestCase):
             return url[len(self.live_server_url):]
         return url
 
-    def wait_for_element(self, selector, timeout=10):
+    def wait_for_element(self, selector, timeout=10, clickable=False):
         """ Waits for a selector to become available.
         When selector is None, uses '.main-container'.
         """
@@ -48,9 +48,12 @@ class IntegrationTest(SeleniumTestCase):
         if selector is None:
             selector = '.main-container'
 
-        element = wait.until(expected_conditions.visibility_of_element_located(
-            (By.CSS_SELECTOR, selector)))
-        return element
+        if clickable:
+            condition = expected_conditions.element_to_be_clickable
+        else:
+            condition = expected_conditions.visibility_of_element_located
+
+        return wait.until(condition((By.CSS_SELECTOR, selector)))
 
 
     def sget(self, url, selector=None, timeout=10):

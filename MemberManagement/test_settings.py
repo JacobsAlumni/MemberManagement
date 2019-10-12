@@ -8,6 +8,10 @@ from .settings import *
 # No debug mode during testing, to be as close to production as possible
 DEBUG = False
 
+# Disable stripe keys in testing mode
+STRIPE_SECRET_KEY = None
+STRIPE_PUBLISHABLE_KEY = None
+
 # enforce minimization for the tests
 # so that we can test the production code
 HTML_MINIFY = True

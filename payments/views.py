@@ -1,6 +1,6 @@
 from payments import stripewrapper
 
-from datetime import datetime
+from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.utils import formats
@@ -89,7 +89,7 @@ class SubscribeView(SetupComponentView):
             member=self.request.user.alumni,
             tier=tier,
             subscription=sub.id,
-            start=datetime.now()
+            start=timezone.now()
         )
 
         return instance

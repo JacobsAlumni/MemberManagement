@@ -134,7 +134,7 @@
             </div>
             {% endif %}
 
-            <button class="uk-button uk-button-primary">{{ next_text }}</button>
+            <button id="button_id_presubmit" class="uk-button uk-button-primary" disabled='disabled'>{{ next_text }}</button>
         </form>
     </div>
 {% endblock %}
@@ -144,7 +144,7 @@
     <script src="{% static "js/payments/subscribe.js" %}" type="text/javascript"></script>
     <script type="text/javascript">
         window.onload = function() {
-            stripe_integration_init('{{ stripe_publishable_key }}');
+            stripe_integration_init({% if stripe_publishable_key %}'{{ stripe_publishable_key }}'{% else %}undefined{% endif %});
         }
     </script>
 {% endblock %}

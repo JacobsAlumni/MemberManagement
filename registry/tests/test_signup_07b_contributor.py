@@ -2,7 +2,6 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from MemberManagement.tests.integration import IntegrationTest
 
 from django.utils import timezone
-from datetime import timedelta
 
 from unittest import mock
 
