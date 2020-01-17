@@ -8,7 +8,7 @@ matrix:
       addons:
         chrome: stable
       before_install:
-        - export CHROMEDRIVER_VERSION=77.0.3865.40
+        - export CHROMEDRIVER_VERSION=79.0.3945.36
         - wget -N http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
         - mkdir chromedriver
         - unzip chromedriver_linux64.zip -d chromedriver
@@ -21,7 +21,7 @@ matrix:
       addons:
         firefox: latest
       before_install:
-        - export GECKODRIVER_VERSION=v0.25.0
+        - export GECKODRIVER_VERSION=v0.26.0
         - wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz
         - mkdir geckodriver
         - tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -C geckodriver
