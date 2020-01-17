@@ -1,4 +1,4 @@
-Django==2.1.11
+Django==2.2.9
 django-countries==5.3.3
 django-cookie-law==2.0.1
 django-impersonate==1.4.1
