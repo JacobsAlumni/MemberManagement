@@ -10,11 +10,11 @@ class TierField(CustomTextChoiceField):
 
     CHOICES = (
         (CONTRIBUTOR,
-         "Contributor (Standard package if graduated more than 2 years ago): 39€ p.a."),
+         "Contributor – Standard membership for 39€ p.a."),
         (STARTER,
-         "Starter (If graduated less than 2 years ago or not ready to financially contribute): free"),
+         "Starter – Free Membership (for those not ready or willing to financially contribute) for 0€ p.a."),
         (PATRON,
-         "Patron (Premium package for those who want to contribute more): 249€ p.a."),
+         "Patron – Premium membership (incl. additional benefits) for 249€ p.a."),
     )
 
     DEFAULT_CHOICE = CONTRIBUTOR

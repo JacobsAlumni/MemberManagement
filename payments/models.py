@@ -22,8 +22,6 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
 
     tier = TierField(help_text='Membership Tier')
 
-    starterReason = models.TextField(null=True, blank=True,
-                                     help_text="")
     customer = models.CharField(max_length=255, null=True, blank=True,
                                 help_text='The stripe customer id for the user')
 

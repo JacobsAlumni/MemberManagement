@@ -16,10 +16,7 @@ class MembershipInformationForm(forms.ModelForm):
 
     class Meta:
         model = MembershipInformation
-        fields = ['tier', 'starterReason']
-        labels = {
-            'starterReason': '',
-        }
+        fields = ['tier']
 
 
 class PaymentMethodForm(forms.Form):

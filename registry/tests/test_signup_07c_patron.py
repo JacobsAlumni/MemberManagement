@@ -21,11 +21,9 @@ class PatronTest(IntegrationTest, StaticLiveServerTestCase):
     def test_setup_patron_elements(self):
         # fill out the form and select the patron tier
         self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-            "id_tier": 'Patron (Premium package for those who want to contribute more): 249€ p.a.'
+            "id_tier": 'Patron – Premium membership (incl. additional benefits) for 249€ p.a.'
         })
 
-        self.assertFalse(self.selenium.find_element_by_id(
-            'id_starterReason').is_displayed())
         self.assertFalse(self.selenium.find_element_by_id(
             'description-st').is_displayed())
         self.assertFalse(self.selenium.find_element_by_id(
@@ -37,7 +35,7 @@ class PatronTest(IntegrationTest, StaticLiveServerTestCase):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
             # fill out the form an select the patron tier
             self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Patron (Premium package for those who want to contribute more): 249€ p.a.'
+                "id_tier": 'Patron – Premium membership (incl. additional benefits) for 249€ p.a.'
             })
 
             self.assertEqual(self.current_url, '/payments/subscribe/',
@@ -50,7 +48,6 @@ class PatronTest(IntegrationTest, StaticLiveServerTestCase):
             # check that the membership object was created
             obj = Alumni.objects.first().membership
             self.assertEqual(obj.tier, TierField.PATRON)
-            self.assertEqual(obj.starterReason, '')
             self.assertEqual(obj.customer, 'cus_Fq8yG7rLrc6sKZ')
 
             # Check that the subscription object was *not* created
@@ -62,7 +59,7 @@ class PatronTest(IntegrationTest, StaticLiveServerTestCase):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug")) as mocked:
             # fill out the form an select the payments tier
             self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Patron (Premium package for those who want to contribute more): 249€ p.a.'
+                "id_tier": 'Patron – Premium membership (incl. additional benefits) for 249€ p.a.'
             })
 
             # we stay on the same page

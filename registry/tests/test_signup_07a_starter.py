@@ -26,11 +26,9 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
     def test_setup_starter_elements(self):
         # fill out the form and select the starter tier
         self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-            "id_tier": 'Starter (If graduated less than 2 years ago or not ready to financially contribute): free'
+            "id_tier": 'Starter – Free Membership (for those not ready or willing to financially contribute) for 0€ p.a.'
         })
 
-        self.assertTrue(self.selenium.find_element_by_id(
-            'id_starterReason').is_displayed())
         self.assertTrue(self.selenium.find_element_by_id(
             'description-st').is_displayed())
         self.assertFalse(self.selenium.find_element_by_id(
@@ -41,18 +39,9 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_setup_starter(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
-            # fill out the form an select the starter tier
-            btn = self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Starter (If graduated less than 2 years ago or not ready to financially contribute): free'
+            self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
+                "id_tier": 'Starter – Free Membership (for those not ready or willing to financially contribute) for 0€ p.a.'
             })
-
-            # enter a reason
-            self.selenium.find_element_by_id(
-                'id_starterReason').send_keys('Because I am testing')
-
-            # click the submit button and wait for the page to load
-            btn.click()
-            self.wait_for_element(None)
 
             self.assertEqual(self.current_url, '/portal/setup/completed/',
                              'Check that the user gets redirected to the final page')
@@ -64,7 +53,6 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
             # check that the membership object was created
             obj = Alumni.objects.first().membership
             self.assertEqual(obj.tier, TierField.STARTER)
-            self.assertEqual(obj.starterReason, 'Because I am testing')
             self.assertEqual(obj.customer, 'cus_Fq8yG7rLrc6sKZ')
 
             # check that the subscription was created appropriately
@@ -80,12 +68,8 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug")) as mocked:
             # fill out the form an select the starter tier
             btn = self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Starter (If graduated less than 2 years ago or not ready to financially contribute): free'
+                "id_tier": 'Starter – Free Membership (for those not ready or willing to financially contribute) for 0€ p.a.'
             })
-
-            # enter a reason
-            self.selenium.find_element_by_id(
-                'id_starterReason').send_keys('Because I am testing')
 
             # click the submit button and wait for the page to load
             btn.click()

@@ -199,7 +199,7 @@ class AlumniAdminActions:
         'skills__alumniMentor',
 
         # Membership Data
-        'membership__tier', 'membership__starterReason',
+        'membership__tier',
 
         # Atlas Settings
         'atlas__secret', 'atlas__included', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',
