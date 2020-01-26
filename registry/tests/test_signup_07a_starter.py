@@ -26,7 +26,7 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
     def test_setup_starter_elements(self):
         # fill out the form and select the starter tier
         self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-            "id_tier": 'Starter – Free Membership (for those not ready or willing to financially contribute) for 0€ p.a.'
+            "id_tier": 'Starter – Free Membership for 0€ p.a.'
         })
 
         self.assertTrue(self.selenium.find_element_by_id(
@@ -40,7 +40,7 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
     def test_setup_starter(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
             self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Starter – Free Membership (for those not ready or willing to financially contribute) for 0€ p.a.'
+                "id_tier": 'Starter – Free Membership for 0€ p.a.'
             })
 
             self.assertEqual(self.current_url, '/portal/setup/completed/',
@@ -68,7 +68,7 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug")) as mocked:
             # fill out the form an select the starter tier
             btn = self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Starter – Free Membership (for those not ready or willing to financially contribute) for 0€ p.a.'
+                "id_tier": 'Starter – Free Membership for 0€ p.a.'
             })
 
             # click the submit button and wait for the page to load

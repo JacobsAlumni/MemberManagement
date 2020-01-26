@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
             name='PaymentInformation',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tier', alumni.fields.TierField(choices=[('co', 'Contributor (Standard package for graduation before 2016): 39€ p.a.'), ('pa', 'Patron – Premium membership (incl. additional benefits) for 249€ p.a. '), ('st', 'Starter (For graduation after 2016 or unable to financially contribute): 1 symbolic cent p.a.')], default='co', help_text='Membership Tier', max_length=2)),
+                ('tier', alumni.fields.TierField(choices=[('co', 'Contributor (Standard package for graduation before 2016): 39€ p.a.'), ('pa', 'Patron – Premium membership for 249€ p.a. '), ('st', 'Starter (For graduation after 2016 or unable to financially contribute): 1 symbolic cent p.a.')], default='co', help_text='Membership Tier', max_length=2)),
                 ('starterReason', models.TextField(blank=True, help_text='Please provide a short explanation on why you choose the starter plan. ', null=True)),
                 ('token', models.CharField(blank=True, help_text='The stripe card token for the user', max_length=255, null=True)),
                 ('customer', models.CharField(blank=True, help_text='The stripe customer id for the user', max_length=255, null=True)),
