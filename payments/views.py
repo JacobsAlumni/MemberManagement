@@ -1,18 +1,18 @@
-from payments import stripewrapper
+from datetime import datetime
 
-from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from django.utils import formats
+from django.utils import formats, timezone
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, FormView
+from django.views.generic import FormView, TemplateView
+
+from payments import stripewrapper
+from registry.decorators import require_setup_completed
+from registry.views.setup import SetupComponentView
 
 from .forms import MembershipInformationForm, PaymentMethodForm
 from .models import SubscriptionInformation
 from .plans import subscription_plans
-
-from registry.decorators import require_setup_completed
-from registry.views.setup import SetupComponentView
 
 
 class SignupView(SetupComponentView):
