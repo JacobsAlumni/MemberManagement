@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions
 
 from django_selenium_clean import SeleniumTestCase
 
+
 class IntegrationTest(SeleniumTestCase):
     """ An integration test base class using Selenium """
 
@@ -38,6 +39,10 @@ class IntegrationTest(SeleniumTestCase):
             return url[len(self.live_server_url):]
         return url
 
+    def element_exists(self, selector):
+        """ Checks if an element with the given selector exists on the page """
+        return len(self.selenium.find_elements(By.CSS_SELECTOR, selector)) > 0
+
     def wait_for_element(self, selector, timeout=10, clickable=False):
         """ Waits for a selector to become available.
         When selector is None, uses '.main-container'.
@@ -54,7 +59,6 @@ class IntegrationTest(SeleniumTestCase):
             condition = expected_conditions.visibility_of_element_located
 
         return wait.until(condition((By.CSS_SELECTOR, selector)))
-
 
     def sget(self, url, selector=None, timeout=10):
         """
