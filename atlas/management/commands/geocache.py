@@ -1,7 +1,14 @@
+import io
+import time
+import zipfile
+from contextlib import closing
+
+import requests
 from django.core.management.base import BaseCommand
+
 from atlas.models import GeoLocation
 
-import time
+DOWNLOAD_URL = "https://download.geonames.org/export/zip/allCountries.zip"
 
 
 class Command(BaseCommand):
@@ -11,10 +18,25 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'fn', help='geonames.org-downloaded file to pull data from')
+            'fn', nargs='?', help='Filename to import data from. If omitted, download a fresh file from the internet. ', default=None)
 
     def handle(self, *args, **options):
+        fn = options['fn']
+        if not fn:
+            self.handle_download()
+        else:
+            with open(fn, 'r') as f:
+                self.handle_file(f)
 
+    def handle_download(self):
+        now = time.time()
+        print('Downloading {}, this may take a few seconds. '.format(DOWNLOAD_URL))
+
+        r = requests.get(DOWNLOAD_URL)
+        with closing(r), zipfile.ZipFile(io.BytesIO(r.content)) as archive:
+            return self.handle_file(archive.open('allCountries.txt', 'r'))
+
+    def handle_file(self, f):
         # a new set of locations
         data = []
         contained = set()
@@ -22,27 +44,35 @@ class Command(BaseCommand):
         now = time.time()
 
         # get a list of objects to create
-        with open(options['fn']) as f:
-            for line in f:
-                fields = line.split('\t')
+        for line in f.readlines():
+            # decode the line if
+            try:
+                line = line.decode('utf-8')
+            except:
+                pass
 
-                try:
-                    country = fields[0]
-                    zip = GeoLocation.normalize_zip(fields[1], fields[0])
+            # split into fields
+            fields = line.split('\t')
 
-                    lat = float(fields[9])
-                    lon = float(fields[10])
-                except Exception as e:
-                    continue
+            # get the important fields
+            try:
+                country = fields[0]
+                zip = GeoLocation.normalize_zip(fields[1], fields[0])
 
-                if (country, zip) in contained:
-                    continue
-                else:
-                    contained.add((country, zip))
+                lat = float(fields[9])
+                lon = float(fields[10])
+            except Exception as e:
+                continue
 
-                data.append(GeoLocation(country=country,
-                                        zip=zip, lat=lat, lon=lon))
+            if (country, zip) in contained:
+                continue
+            else:
+                contained.add((country, zip))
 
+            data.append(GeoLocation(country=country,
+                                    zip=zip, lat=lat, lon=lon))
+
+        # and we're done reading, now write to the database
         print("Read {} different (country, zip) combinations in {} seconds. ".format(
             len(data), time.time() - now))
 
