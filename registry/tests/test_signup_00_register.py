@@ -137,7 +137,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_tos').get_attribute('class').split(' '), 'tos field marked up as incorrect')
 
-    def test_signup_invalidemail(self):
+    def test_signup_alumniemail(self):
         """ Tests that we can not complete the first setup page with a jacobs alumni email """
 
         self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
@@ -146,6 +146,32 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
             'id_lastName': 'Hood',
             'id_existingEmail': 'dhood@jacobs-alumni.de',
             'id_email': 'dhood@jacobs-alumni.de',
+            'id_username': 'Heak1991',
+        }, select_dropdowns={
+            'id_sex': 'Male',
+            'id_nationality': ('US',),
+            'id_category': (AlumniCategoryField.FACULTY,)
+        }, select_checkboxes={
+            'id_resetExistingEmailPassword': True,
+            'id_tos': True
+        }, script_value={
+            'id_birthday': '1991-04-09',
+        })
+
+        self.assertEqual(self.current_url, '/portal/register/',
+                         'Check that the user stays on the first page')
+        self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
+            'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')
+
+    def test_signup_jacobsemail(self):
+        """ Tests that we can not complete the first setup page with a jacobs alumni email """
+
+        self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
+            'id_firstName': 'David',
+            'id_middleName': 'L',
+            'id_lastName': 'Hood',
+            'id_existingEmail': 'dhood@jacobs-alumni.de',
+            'id_email': 'dhood@jacobs-university.de',
             'id_username': 'Heak1991',
         }, select_dropdowns={
             'id_sex': 'Male',

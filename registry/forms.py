@@ -7,6 +7,14 @@ from django.contrib.auth.models import User
 from django_forms_uikit.widgets import DatePickerInput
 
 
+EMAIL_BLACKLIST = [
+    'jacobs-alumni.de',
+    'jacobs-alumni.com',
+    'jacobs-alumni.eu',
+    'jacobs-university.de'
+]
+
+
 class RegistrationMixin():
     def raise_validation_error(self):
         raise forms.ValidationError("Please correct the error below.")
@@ -14,14 +22,12 @@ class RegistrationMixin():
     def clean_profile_fields(self, cleaned_data):
         if not 'email' in cleaned_data:
             return
-        if cleaned_data['email'].endswith('@jacobs-alumni.de'):
-            self.add_error('email', forms.ValidationError(
-                "Your private email address may not be a Jacobs Alumni email address. "))
-            return
-        if cleaned_data['email'].endswith('@jacobs-university.de'):
-            self.add_error('email', forms.ValidationError(
-                "Your private email address may not be a Jacobs University email address. "))
-            return
+        email = cleaned_data['email'].lower().strip()
+        for domain in EMAIL_BLACKLIST:
+            if email.endswith('@' + domain):
+                self.add_error('email', forms.ValidationError(
+                    "Your private email address may not end with '@{}'. ".format(domain)))
+                return
 
 
 class RegistrationForm(RegistrationMixin, forms.ModelForm):
