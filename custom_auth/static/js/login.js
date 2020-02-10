@@ -15,10 +15,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var loginText = document.getElementById('g-signin-text')
 
         var token = user.getAuthResponse().id_token
-        var firstName = user.getBasicProfile().getGivenName()
+        var givenName = user.getBasicProfile().getGivenName()
 
         // Update presentation to let user know they're being logged in
-        loginText.innerText = 'Hi ' + firstName + '!'
+        loginText.innerText = 'Hi ' + givenName + '!'
         loginBtn.disabled = true
 
 

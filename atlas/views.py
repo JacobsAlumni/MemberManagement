@@ -29,7 +29,7 @@ search = SearchFilter({
     'industry': 'job__industry',
     'job': 'job__job',
 }, [
-    'firstName', 'lastName', 'address__city',
+    'givenName', 'familyName', 'address__city',
     'jacobs__degree',
     'skills__otherDegrees', 'skills__spokenLanguages', 'skills__programmingLanguages', 'skills__areasOfInterest',
     'job__employer', 'job__position',
@@ -185,7 +185,7 @@ class SearchView(ListView):
             raise err
 
         paginator = Paginator(queryset.filter(
-            q).order_by('lastName'), self.paginate_by)
+            q).order_by('familyName'), self.paginate_by)
 
         try:
             page = paginator.page(page)

@@ -46,16 +46,16 @@ class RegistrationForm(RegistrationMixin, forms.ModelForm):
 
     class Meta:
         model = Alumni
-        fields = ['firstName', 'middleName', 'lastName', 'email',
+        fields = ['givenName', 'middleName', 'familyName', 'email',
                   'existingEmail', 'resetExistingEmailPassword', 'sex',
                   'birthday', 'nationality', 'category']
         widgets = {
             'birthday': DatePickerInput()
         }
         labels = {
-            "firstName": "First Name",
+            "givenName": "First Name",
             "middleName": "Middle Name",
-            "lastName": "Last Name",
+            "familyName": "Last Name",
             "existingEmail": "",
             "resetExistingEmailPassword": ""
         }
@@ -89,7 +89,7 @@ class RegistrationForm(RegistrationMixin, forms.ModelForm):
 class AlumniForm(RegistrationMixin, forms.ModelForm):
     class Meta:
         model = Alumni
-        fields = ['firstName', 'middleName', 'lastName', 'email', 'sex',
+        fields = ['givenName', 'middleName', 'familyName', 'email', 'sex',
                   'birthday', 'nationality', 'category']
         widgets = {
             'birthday': DatePickerInput()

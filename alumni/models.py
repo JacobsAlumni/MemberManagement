@@ -14,19 +14,19 @@ class Alumni(AlumniSubscriptionMixin, AlumniEmailMixin, AlumniRegistryMixin, mod
     profile = models.OneToOneField(User, on_delete=models.CASCADE)
 
     # name and basic contact information
-    firstName = models.CharField(max_length=255, help_text="Your first name")
+    givenName = models.CharField(max_length=255, help_text="Your given name")
     middleName = models.CharField(max_length=255, blank=True, null=True,
                                   help_text="Your middle name(s)")
-    lastName = models.CharField(max_length=255, help_text="Your last name")
+    familyName = models.CharField(max_length=255, help_text="Your family name")
 
     @property
     def fullName(self):
-        names = [self.firstName]
+        names = [self.givenName]
 
         if self.middleName is not None:
             names.append(self.middleName)
 
-        names.append(self.lastName)
+        names.append(self.familyName)
         return ' '.join(names)
 
     email = models.EmailField(

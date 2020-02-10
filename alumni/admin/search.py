@@ -1,5 +1,5 @@
 class AlumniSearch:
     search_fields = [
-        'firstName', 'middleName', 'lastName', 'email',
+        'givenName', 'middleName', 'familyName', 'email',
         'existingEmail', 'approval__gsuite', 'membership__customer'
     ]

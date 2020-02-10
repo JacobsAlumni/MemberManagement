@@ -130,7 +130,7 @@ class ApprovalView(FormView):
 
         # Create the new account
         messages.info(request, 'Creating a new account {}'.format(email))
-        uid = create_user(alumni.firstName, alumni.lastName, email, password)
+        uid = create_user(alumni.givenName, alumni.familyName, email, password)
         if uid is None:
             raise ValueError(
                 'Something went wrong while creating user account')

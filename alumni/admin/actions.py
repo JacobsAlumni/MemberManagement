@@ -171,7 +171,7 @@ class AlumniAdminActions:
         'profile__date_joined', 'profile__last_login',
 
         # Alumni Model
-        'firstName', 'middleName', 'lastName', 'email', 'existingEmail',
+        'givenName', 'middleName', 'familyName', 'email', 'existingEmail',
         'resetExistingEmailPassword', 'sex', 'birthday',
         'nationality', 'category',
 

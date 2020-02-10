@@ -22,9 +22,9 @@
         "pk": 1,
         "fields": {
             "profile": 1,
-            "firstName": "Anna",
+            "givenName": "Anna",
             "middleName": null,
-            "lastName": "Freytag",
+            "familyName": "Freytag",
             "email": "AnnaFreytag@dayrep.com",
             "existingEmail": null,
             "resetExistingEmailPassword": false,

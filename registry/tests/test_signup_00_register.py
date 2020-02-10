@@ -14,9 +14,9 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
 
         # fill out a new form on the register page
         self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
-            'id_firstName': 'Anna',
+            'id_givenName': 'Anna',
             'id_middleName': '',
-            'id_lastName': 'Freytag',
+            'id_familyName': 'Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
             'id_username': 'Mounfem',
         }, select_dropdowns={
@@ -37,9 +37,9 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         # check that the right alumni object was created
         obj = Alumni.objects.first()
         self.assertEqual(obj.profile.username, 'Mounfem')
-        self.assertEqual(obj.firstName, 'Anna')
+        self.assertEqual(obj.givenName, 'Anna')
         self.assertEqual(obj.middleName, None)
-        self.assertEqual(obj.lastName, 'Freytag')
+        self.assertEqual(obj.familyName, 'Freytag')
         self.assertEqual(obj.email, 'AnnaFreytag@dayrep.com')
         self.assertEqual(obj.existingEmail, None)
         self.assertEqual(obj.resetExistingEmailPassword, False)
@@ -60,9 +60,9 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
 
         # fill out a new form on the register page
         self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
-            'id_firstName': 'David',
+            'id_givenName': 'David',
             'id_middleName': 'L',
-            'id_lastName': 'Hood',
+            'id_familyName': 'Hood',
             'id_existingEmail': 'dhood@jacobs-alumni.de',
             'id_email': 'DavidLHood@armyspy.com',
             'id_username': 'Heak1991',
@@ -84,9 +84,9 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         # check that the right alumni object was created
         obj = Alumni.objects.first()
         self.assertEqual(obj.profile.username, 'Heak1991')
-        self.assertEqual(obj.firstName, 'David')
+        self.assertEqual(obj.givenName, 'David')
         self.assertEqual(obj.middleName, 'L')
-        self.assertEqual(obj.lastName, 'Hood')
+        self.assertEqual(obj.familyName, 'Hood')
         self.assertEqual(obj.email, 'DavidLHood@armyspy.com')
         self.assertEqual(obj.existingEmail, 'dhood@jacobs-alumni.de')
         self.assertEqual(obj.resetExistingEmailPassword, True)
@@ -107,9 +107,9 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
 
         # fill out the form first
         button = self.fill_out_form('/portal/register/', 'input_id_submit', send_form_keys={
-            'id_firstName': 'Anna',
+            'id_givenName': 'Anna',
             'id_middleName': '',
-            'id_lastName': 'Freytag',
+            'id_familyName': 'Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
             'id_username': 'Mounfem',
         }, select_dropdowns={
@@ -141,9 +141,9 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that we can not complete the first setup page with a jacobs alumni email """
 
         self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
-            'id_firstName': 'David',
+            'id_givenName': 'David',
             'id_middleName': 'L',
-            'id_lastName': 'Hood',
+            'id_familyName': 'Hood',
             'id_existingEmail': 'dhood@jacobs-alumni.de',
             'id_email': 'dhood@jacobs-alumni.de',
             'id_username': 'Heak1991',
@@ -167,9 +167,9 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that we can not complete the first setup page with a jacobs alumni email """
 
         self.submit_form('/portal/register/', 'input_id_submit', send_form_keys={
-            'id_firstName': 'David',
+            'id_givenName': 'David',
             'id_middleName': 'L',
-            'id_lastName': 'Hood',
+            'id_familyName': 'Hood',
             'id_existingEmail': 'dhood@jacobs-alumni.de',
             'id_email': 'dhood@jacobs-university.de',
             'id_username': 'Heak1991',
