@@ -13,7 +13,8 @@ class SkillsTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_signup_skills_complete(self):
         self.submit_form('/portal/setup/skills/', 'input_id_submit', send_form_keys={
-            'id_otherDegrees': 'German, English, Spanish',
+            'id_otherDegrees': 'Bachelor of Computer Science from IUB',
+            'id_spokenLanguages': 'German, English, Spanish',
             'id_programmingLanguages': 'HTML, CSS, JavaScript, Python',
             'id_areasOfInterest': 'Start-Ups, Surfing, Big Data, Human Rights'
         }, select_checkboxes={
@@ -24,7 +25,8 @@ class SkillsTest(IntegrationTest, StaticLiveServerTestCase):
                          'Check that the user gets redirected to the atlas page')
 
         obj = Alumni.objects.first().skills
-        self.assertEqual(obj.otherDegrees, "German, English, Spanish")
+        self.assertEqual(obj.otherDegrees, "Bachelor of Computer Science from IUB")
+        self.assertEqual(obj.spokenLanguages, "German, English, Spanish")
         self.assertEqual(obj.programmingLanguages, "HTML, CSS, JavaScript, Python")
         self.assertEqual(obj.areasOfInterest, "Start-Ups, Surfing, Big Data, Human Rights")
         self.assertEqual(obj.alumniMentor, True)
@@ -32,6 +34,7 @@ class SkillsTest(IntegrationTest, StaticLiveServerTestCase):
     def test_signup_job_empty(self):
         self.submit_form('/portal/setup/skills/', 'input_id_submit', send_form_keys={
             'id_otherDegrees': '',
+            'id_spokenLanguages': '',
             'id_programmingLanguages': '',
             'id_areasOfInterest': ''
         }, select_checkboxes={
@@ -43,6 +46,7 @@ class SkillsTest(IntegrationTest, StaticLiveServerTestCase):
 
         obj = Alumni.objects.first().skills
         self.assertEqual(obj.otherDegrees, '')
+        self.assertEqual(obj.spokenLanguages, '')
         self.assertEqual(obj.programmingLanguages, '')
         self.assertEqual(obj.areasOfInterest, '')
         self.assertEqual(obj.alumniMentor, False)
