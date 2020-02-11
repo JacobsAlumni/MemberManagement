@@ -6,6 +6,7 @@ jobs:
     # chrome
     - env:
       - SELENIUM_WEBDRIVER=default
+      - ENABLE_GEOCACHE_TEST=1
       addons:
         chrome: stable
       before_install:
@@ -19,6 +20,7 @@ jobs:
     # firefox
     - env:
         - SELENIUM_WEBDRIVER=firefox
+        - ENABLE_GEOCACHE_TEST=1
       addons:
         firefox: latest
       before_install:
