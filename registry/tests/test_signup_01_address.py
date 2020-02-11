@@ -60,16 +60,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
             '/portal/setup/address/', 'input_id_submit')
 
         # remove all the 'required' elements
-        self.selenium.execute_script("""
-        var inputs = document.getElementsByTagName('input');
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].removeAttribute('required');
-        }
-        var selects = document.getElementsByTagName('select');
-        for (var i = 0; i < selects.length; i++) {
-            selects[i].removeAttribute('required');
-        }
-        """)
+        self.disable_form_requirements()
 
         # then click the button and wait
         button.click()

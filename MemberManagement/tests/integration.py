@@ -151,3 +151,15 @@ class IntegrationTest(SeleniumTestCase):
 
         # wait for next element to be visible
         return self.wait_for_element(next_selector, timeout=timeout)
+
+    def disable_form_requirements(self):
+        self.selenium.execute_script("""
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].removeAttribute('required');
+        }
+        var selects = document.getElementsByTagName('select');
+        for (var i = 0; i < selects.length; i++) {
+            selects[i].removeAttribute('required');
+        }
+        """)
