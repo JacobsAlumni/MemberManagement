@@ -1,17 +1,16 @@
-from django.views.generic.base import View, TemplateResponseMixin
-
-from django.utils.decorators import method_decorator
-
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
+from django.views.generic.base import TemplateResponseMixin, View
 
 from alumni.models import Approval
-from registry.decorators import require_alumni
-from ..forms import RegistrationForm, AddressForm, JacobsForm, SocialMediaForm, \
-    JobInformationForm, SkillsForm, AtlasSettingsForm, SetupCompletedForm
-
 from MemberManagement.mixins import RedirectResponseMixin
+from registry.decorators import require_alumni
+
+from ..forms import (AddressForm, AtlasSettingsForm, JacobsForm,
+                     JobInformationForm, RegistrationForm, SetupCompletedForm,
+                     SkillsForm, SocialMediaForm)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -47,7 +46,6 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         """ returns True iff this setup component is the next valid setup component """
 
         raise NotImplementedError
-
 
     def dispatch_already_set(self):
         """ called when setup component already exists """
@@ -120,7 +118,7 @@ class RegisterView(SetupViewBase):
         return True
 
     def dispatch_already_set(self):
-        return self.redirect_response('/')
+        return self.redirect_response('root', reverse=True)
 
     def form_valid(self, form):
         """ Called when the form is valid and an instance is to be created """

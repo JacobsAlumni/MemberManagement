@@ -24,7 +24,7 @@
         <nav class="uk-navbar" {% if show_devel_warning %}style="background: #fef4f6;"{% endif %}>
             <!-- logo -->
             <div class="uk-navbar-left">
-                <a href="/" class="uk-navbar-item uk-logo">
+                <a href="{% url "root" %}" class="uk-navbar-item uk-logo">
                     <span class="logo-button uk-margin-small-right">
                         <img src="{%  static "media/favicon.png" %}" />
                     </span>

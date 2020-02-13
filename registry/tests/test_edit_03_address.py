@@ -1,4 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
 
 from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
@@ -16,10 +17,10 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
-        self.submit_form('/portal/edit/address/', 'input_id_submit')
+        self.submit_form('edit_address', 'input_id_submit')
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/address/',
+        self.assertEqual(self.current_url, reverse('edit_address'),
                          'Check that we stayed on the right page')
 
         # check that everything stayed the same
@@ -34,7 +35,7 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that adding a full address works """
 
         # enter nothing
-        self.submit_form('/portal/edit/address/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit_address', 'input_id_submit', send_form_keys={
             'id_address_line_1': '2986 Heron Way',
             'id_address_line_2': 'Attn. Anna Freytag',
             'id_city': 'Portland',
@@ -45,7 +46,7 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/address/',
+        self.assertEqual(self.current_url, reverse('edit_address'),
                          'Check that we stayed on the right page')
 
         # check that we edited it right
@@ -61,7 +62,7 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that adding a full address works """
 
         # enter nothing
-        button = self.fill_out_form('/portal/edit/address/', 'input_id_submit', send_form_keys={
+        button = self.fill_out_form('edit_address', 'input_id_submit', send_form_keys={
             'id_address_line_1': '',
             'id_address_line_2': '',
             'id_city': '',
@@ -77,7 +78,7 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.wait_for_element('.main-container')
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/address/',
+        self.assertEqual(self.current_url, reverse('edit_address'),
                          'Check that we stayed on the right page')
 
         # check that nothing was edited

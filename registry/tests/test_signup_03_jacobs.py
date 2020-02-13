@@ -1,11 +1,12 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.integration import IntegrationTest
+from django.urls import reverse
 
-from alumni.models import Alumni
 from alumni.fields.college import CollegeField
 from alumni.fields.degree import DegreeField
 from alumni.fields.major import MajorField
 from alumni.fields.year import ClassField
+from alumni.models import Alumni
+from MemberManagement.tests.integration import IntegrationTest
 
 
 class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
@@ -16,7 +17,7 @@ class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
         self.login('Mounfem')
 
     def test_signup_jacobs_complete(self):
-        self.submit_form('/portal/setup/jacobs/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_jacobs', 'input_id_submit', send_form_keys={
             'id_comments': 'I am not real',
         }, select_dropdowns={
             'id_college': 'Nordmetall',
@@ -25,7 +26,7 @@ class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
             'id_major': 'Physics',
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/job/',
+        self.assertEqual(self.current_url, reverse('setup_job'),
                          'Check that the user gets redirected to the job page')
 
         obj = Alumni.objects.first().jacobs
@@ -36,7 +37,7 @@ class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.comments, 'I am not real')
 
     def test_signup_jacobs_empty(self):
-        self.submit_form('/portal/setup/jacobs/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_jacobs', 'input_id_submit', send_form_keys={
             'id_comments': '',
         }, select_dropdowns={
             'id_college': None,
@@ -45,7 +46,7 @@ class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
             'id_major': 'Other (Please specify in comments)',
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/job/',
+        self.assertEqual(self.current_url, reverse('setup_job'),
                          'Check that the user gets redirected to the job page')
 
         obj = Alumni.objects.first().jacobs

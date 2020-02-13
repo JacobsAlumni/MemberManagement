@@ -1,6 +1,7 @@
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from alumni.fields.tier import TierField
@@ -30,7 +31,7 @@ class PatronSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServerTes
                 self.submit_card_details()
 
                 # check that things are as expected
-                self.assertEqual(self.current_url, '/portal/setup/completed/',
+                self.assertEqual(self.current_url, reverse('setup_setup'),
                                  'Check that the user gets redirected to the completed page')
 
                 # check that the mocks were called
@@ -56,7 +57,7 @@ class PatronSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServerTes
                 self.submit_card_details()
 
                 # check that things are as expected
-                self.assertEqual(self.current_url, '/payments/subscribe/',
+                self.assertEqual(self.current_url, reverse('setup_subscription'),
                                  'Check that the user stays on the first page')
 
                 # check that only the first mock was called
@@ -77,7 +78,7 @@ class PatronSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServerTes
                 self.submit_card_details()
 
                 # check that things are as expected
-                self.assertEqual(self.current_url, '/payments/subscribe/',
+                self.assertEqual(self.current_url, reverse('setup_subscription'),
                                  'Check that the user stays on the subscribe page')
 
                 # check that only the first mock was called
@@ -98,7 +99,7 @@ class PatronSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServerTes
                 self.submit_sepa_details()
 
                 # check that things are as expected
-                self.assertEqual(self.current_url, '/portal/setup/completed/',
+                self.assertEqual(self.current_url, reverse('setup_setup'),
                                  'Check that the user gets redirected to the completed page')
 
                 # check that the mocks were called
@@ -126,7 +127,7 @@ class PatronSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServerTes
                 self.submit_sepa_details()
 
                 # check that things are as expected
-                self.assertEqual(self.current_url, '/payments/subscribe/',
+                self.assertEqual(self.current_url, reverse('setup_subscription'),
                                  'Check that the user stays on the first page')
 
                 # check that only the first mock was called
@@ -147,7 +148,7 @@ class PatronSubscribeTest(CommonSignupTest, IntegrationTest, StaticLiveServerTes
                 self.submit_sepa_details()
 
                 # check that things are as expected
-                self.assertEqual(self.current_url, '/payments/subscribe/',
+                self.assertEqual(self.current_url, reverse('setup_subscription'),
                                  'Check that the user stays on the subscribe page')
 
                 # check that only the first mock was called

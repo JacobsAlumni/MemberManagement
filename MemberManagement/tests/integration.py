@@ -1,13 +1,11 @@
-from django.core.management import call_command
 from django.contrib.auth import get_user_model
-
-from seleniumlogin import force_login
-
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions
-
+from django.core.management import call_command
+from django.urls import reverse
 from django_selenium_clean import SeleniumTestCase
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import Select, WebDriverWait
+from seleniumlogin import force_login
 
 
 class IntegrationTest(SeleniumTestCase):
@@ -65,6 +63,11 @@ class IntegrationTest(SeleniumTestCase):
             Loads a URL using selenium from the live server and waits for the CSS selector (if any) to be available
             Returns the element selected, None if none is selected, or raises TimeoutException if a timeout occurs.
         """
+
+        # if the url does not start with '/', use reverse()
+        if not url.startswith('/'):
+            url = reverse(url)
+
         self.selenium.get(self.live_server_url + url)
         return self.wait_for_element(selector, timeout=timeout)
 

@@ -1,7 +1,9 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.integration import IntegrationTest
+from django.urls import reverse
 
 from alumni.models import Alumni
+from MemberManagement.tests.integration import IntegrationTest
+
 
 class SocialTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_01_address.json']
@@ -11,7 +13,7 @@ class SocialTest(IntegrationTest, StaticLiveServerTestCase):
         self.login('Mounfem')
 
     def test_signup_social_complete(self):
-        self.submit_form('/portal/setup/social/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_social', 'input_id_submit', send_form_keys={
             'id_facebook': 'https://facebook.com/anna.freytag',
             'id_linkedin': 'https://www.linkedin.com/in/anna-freytag-1234578',
             'id_twitter': 'https://twitter.com/anna.freytag',
@@ -19,18 +21,19 @@ class SocialTest(IntegrationTest, StaticLiveServerTestCase):
             'id_homepage': 'https://anna-freytag.com'
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/jacobs/',
+        self.assertEqual(self.current_url, reverse('setup_jacobs'),
                          'Check that the user gets redirected to the jacobs page')
 
         obj = Alumni.objects.first().social
         self.assertEqual(obj.facebook, 'https://facebook.com/anna.freytag')
-        self.assertEqual(obj.linkedin, 'https://www.linkedin.com/in/anna-freytag-1234578')
+        self.assertEqual(
+            obj.linkedin, 'https://www.linkedin.com/in/anna-freytag-1234578')
         self.assertEqual(obj.twitter, 'https://twitter.com/anna.freytag')
         self.assertEqual(obj.instagram, 'https://instagram.com/anna.freytag')
         self.assertEqual(obj.homepage, 'https://anna-freytag.com')
 
     def test_signup_social_empty(self):
-        self.submit_form('/portal/setup/social/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_social', 'input_id_submit', send_form_keys={
             'id_facebook': '',
             'id_linkedin': '',
             'id_twitter': '',
@@ -38,7 +41,7 @@ class SocialTest(IntegrationTest, StaticLiveServerTestCase):
             'id_homepage': ''
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/jacobs/',
+        self.assertEqual(self.current_url, reverse('setup_jacobs'),
                          'Check that the user gets redirected to the jacobs page')
 
         obj = Alumni.objects.first().social

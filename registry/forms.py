@@ -1,11 +1,10 @@
 from django import forms
-
-from alumni.models import Alumni, Address, JacobsData, SocialMedia, \
-    JobInformation, Skills, SetupCompleted
-from atlas.models import AtlasSettings
 from django.contrib.auth.models import User
-from django_forms_uikit.widgets import DatePickerInput
 
+from alumni.models import (Address, Alumni, JacobsData, JobInformation,
+                           SetupCompleted, Skills, SocialMedia)
+from atlas.models import AtlasSettings
+from django_forms_uikit.widgets import DatePickerInput
 
 EMAIL_BLACKLIST = [
     'jacobs-alumni.de',
@@ -35,9 +34,8 @@ class RegistrationForm(RegistrationMixin, forms.ModelForm):
     username = forms.SlugField(label='Username',
                                help_text='Select your username for the membership portal. '
                                          'We recommend your alumni email username, e.g. <em>ppan</em> for <em>Peter Pan</em>')
-
     _tos_help_text = 'I confirm that I have read and agree to the ' \
-                     '<a target="_blank" href="/privacy">Terms and Conditions' \
+                     '<a target="_blank" href="https://jacobs-alumni.de/privacy/">Terms and Conditions' \
                      '</a>, the <a target="_blank" href="' \
                      'https://jacobs-alumni.de/charter">Charter</a>, and the ' \
                      '<a target="_blank" href="https://www.jacobs-alumni.de/by-laws">Contributions By-Laws</a>. '

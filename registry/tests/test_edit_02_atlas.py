@@ -1,4 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
 
 from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
@@ -16,10 +17,10 @@ class EditAtlasTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
-        self.submit_form('/portal/edit/atlas/', 'input_id_submit')
+        self.submit_form('edit_atlas', 'input_id_submit')
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/atlas/',
+        self.assertEqual(self.current_url, reverse('edit_atlas'),
                          'Check that we stayed on the right page')
 
         # check that everything stayed the same
@@ -28,13 +29,13 @@ class EditAtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(self.obj.atlas.contactInfoVisible, True)
 
     def test_signup_atlas_birthday(self):
-        self.submit_form('/portal/edit/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('edit_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': True,
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, '/portal/edit/atlas/',
+        self.assertEqual(self.current_url, reverse('edit_atlas'),
                          'Check that we stayed on the right page')
 
         self.assertEqual(self.obj.atlas.included, True)
@@ -42,13 +43,13 @@ class EditAtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(self.obj.atlas.contactInfoVisible, False)
 
     def test_signup_atlas_contact(self):
-        self.submit_form('/portal/edit/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('edit_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': False,
             'id_contactInfoVisible': True,
         })
 
-        self.assertEqual(self.current_url, '/portal/edit/atlas/',
+        self.assertEqual(self.current_url, reverse('edit_atlas'),
                          'Check that we stayed on the right page')
 
         self.assertEqual(self.obj.atlas.included, True)
@@ -56,13 +57,13 @@ class EditAtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(self.obj.atlas.contactInfoVisible, True)
 
     def test_signup_atlas_minimal(self):
-        self.submit_form('/portal/edit/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('edit_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': False,
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, '/portal/edit/atlas/',
+        self.assertEqual(self.current_url, reverse('edit_atlas'),
                          'Check that we stayed on the right page')
 
         self.assertEqual(self.obj.atlas.included, True)
@@ -70,13 +71,13 @@ class EditAtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(self.obj.atlas.contactInfoVisible, False)
 
     def test_signup_atlas_empty(self):
-        self.submit_form('/portal/edit/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('edit_atlas', 'input_id_submit', select_checkboxes={
             'id_included': False,
             'id_birthdayVisible': False,
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, '/portal/edit/atlas/',
+        self.assertEqual(self.current_url, reverse('edit_atlas'),
                          'Check that we stayed on the right page')
 
         obj = Alumni.objects.first().atlas

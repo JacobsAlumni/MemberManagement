@@ -1,15 +1,14 @@
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.integration import IntegrationTest
-
-from django.utils import timezone
 from datetime import timedelta
-
 from unittest import mock
 
-from alumni.models import Alumni
-from alumni.fields.tier import TierField
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
+from django.utils import timezone
 
-from payments.models import SubscriptionInformation, MembershipInformation
+from alumni.fields.tier import TierField
+from alumni.models import Alumni
+from MemberManagement.tests.integration import IntegrationTest
+from payments.models import MembershipInformation, SubscriptionInformation
 
 MOCKED_TIME = timezone.datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
@@ -25,7 +24,7 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_setup_starter_elements(self):
         # fill out the form and select the starter tier
-        self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
+        self.fill_out_form('setup_membership', 'input_id_submit', select_dropdowns={
             "id_tier": 'Starter – Free Membership for 0€ p.a.'
         })
 
@@ -39,11 +38,11 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_setup_starter(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
-            self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
+            self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
                 "id_tier": 'Starter – Free Membership for 0€ p.a.'
             })
 
-            self.assertEqual(self.current_url, '/portal/setup/completed/',
+            self.assertEqual(self.current_url, reverse('setup_setup'),
                              'Check that the user gets redirected to the final page')
 
             # check that the stripe api was called with the object as a parameter
@@ -67,7 +66,7 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
     def test_setup_starter_fail(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug")) as mocked:
             # fill out the form an select the starter tier
-            btn = self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
+            btn = self.fill_out_form('setup_membership', 'input_id_submit', select_dropdowns={
                 "id_tier": 'Starter – Free Membership for 0€ p.a.'
             })
 
@@ -76,7 +75,7 @@ class StarterTest(IntegrationTest, StaticLiveServerTestCase):
             self.wait_for_element(None)
 
             # we stay on the same page
-            self.assertEqual(self.current_url, '/payments/membership/',
+            self.assertEqual(self.current_url, reverse('setup_membership'),
                              'Check that the user does not get redirected to the final page')
 
             # check that the stripe api was called with the object as a parameter

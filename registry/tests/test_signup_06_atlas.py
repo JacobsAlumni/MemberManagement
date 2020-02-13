@@ -1,7 +1,8 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.integration import IntegrationTest
+from django.urls import reverse
 
 from alumni.models import Alumni
+from MemberManagement.tests.integration import IntegrationTest
 
 
 class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
@@ -12,13 +13,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.login('Mounfem')
 
     def test_signup_atlas_all(self):
-        self.submit_form('/portal/setup/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': True,
             'id_contactInfoVisible': True,
         })
 
-        self.assertEqual(self.current_url, '/payments/membership/',
+        self.assertEqual(self.current_url, reverse('setup_membership'),
                          'Check that the user gets redirected to the membership page')
 
         obj = Alumni.objects.first().atlas
@@ -27,13 +28,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.contactInfoVisible, True)
 
     def test_signup_atlas_birthday(self):
-        self.submit_form('/portal/setup/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': True,
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, '/payments/membership/',
+        self.assertEqual(self.current_url, reverse('setup_membership'),
                          'Check that the user gets redirected to the membership page')
 
         obj = Alumni.objects.first().atlas
@@ -42,13 +43,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.contactInfoVisible, False)
 
     def test_signup_atlas_contact(self):
-        self.submit_form('/portal/setup/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': False,
             'id_contactInfoVisible': True,
         })
 
-        self.assertEqual(self.current_url, '/payments/membership/',
+        self.assertEqual(self.current_url, reverse('setup_membership'),
                          'Check that the user gets redirected to the membership page')
 
         obj = Alumni.objects.first().atlas
@@ -57,13 +58,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.contactInfoVisible, True)
 
     def test_signup_atlas_minimal(self):
-        self.submit_form('/portal/setup/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': False,
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, '/payments/membership/',
+        self.assertEqual(self.current_url, reverse('setup_membership'),
                          'Check that the user gets redirected to the membership page')
 
         obj = Alumni.objects.first().atlas
@@ -72,13 +73,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.contactInfoVisible, False)
 
     def test_signup_atlas_empty(self):
-        self.submit_form('/portal/setup/atlas/', 'input_id_submit', select_checkboxes={
+        self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': False,
             'id_birthdayVisible': False,
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, '/payments/membership/',
+        self.assertEqual(self.current_url, reverse('setup_membership'),
                          'Check that the user gets redirected to the membership page')
 
         obj = Alumni.objects.first().atlas

@@ -2,7 +2,7 @@ from selenium.webdriver.support.ui import Select
 
 class CommonSignupTest:
     def test_select_card(self):
-        element = self.sget('/payments/subscribe/', '#id_payment_type')
+        element = self.sget('setup_subscription', '#id_payment_type')
         submit = self.wait_for_element('#button_id_presubmit', clickable=True)
 
         # select debit card payment method
@@ -14,7 +14,7 @@ class CommonSignupTest:
             'stripe-iban-elements').is_displayed())
 
     def test_select_iban(self):
-        element = self.sget('/payments/subscribe/', '#id_payment_type')
+        element = self.sget('setup_subscription', '#id_payment_type')
         submit = self.wait_for_element('#button_id_presubmit', clickable=True)
 
         # select debit card payment method
@@ -29,7 +29,7 @@ class CommonSignupTest:
         """ Fills out and submits testing card details """
 
         # load the subscribe page and wait for the submit button to be clickable
-        element = self.sget('/payments/subscribe/', '#id_payment_type')
+        element = self.sget('setup_subscription', '#id_payment_type')
         submit = self.wait_for_element('#button_id_presubmit', clickable=True)
 
         # select debit card payment method
@@ -52,7 +52,7 @@ class CommonSignupTest:
         """ Fills out and submits testing SEPA details """
 
         # load the subscribe page and wait for the submit button to be clickable
-        element = self.sget('/payments/subscribe/', '#id_payment_type')
+        element = self.sget('setup_subscription', '#id_payment_type')
         submit = self.wait_for_element('#button_id_presubmit', clickable=True)
 
         # select sepa payment method
