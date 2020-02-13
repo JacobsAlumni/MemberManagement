@@ -1,7 +1,8 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.integration import IntegrationTest
+from django.urls import reverse
 
 from alumni.models import Alumni
+from MemberManagement.tests.integration import IntegrationTest
 
 
 class AddressTest(IntegrationTest, StaticLiveServerTestCase):
@@ -12,7 +13,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.login('Mounfem')
 
     def test_signup_address_minimal(self):
-        self.submit_form('/portal/setup/address/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_address', 'input_id_submit', send_form_keys={
             'id_address_line_1': 'Alt-Moabit 72',
             'id_address_line_2': '',
             'id_city': 'Breunsdorf',
@@ -22,7 +23,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
             'id_country': ('DE',)
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/social/',
+        self.assertEqual(self.current_url, reverse('setup_social'),
                          'Check that the user gets redirected to the social page')
 
         obj = Alumni.objects.first().address
@@ -34,7 +35,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.country.name, 'Germany')
 
     def test_signup_address_full(self):
-        self.submit_form('/portal/setup/address/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_address', 'input_id_submit', send_form_keys={
             'id_address_line_1': '2986 Heron Way',
             'id_address_line_2': 'Attn. Anna Freytag',
             'id_city': 'Portland',
@@ -44,7 +45,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
             'id_country': ('US',)
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/social/',
+        self.assertEqual(self.current_url, reverse('setup_social'),
                          'Check that the user gets redirected to the social page')
 
         obj = Alumni.objects.first().address
@@ -57,7 +58,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_signup_address_fail(self):
         button = self.fill_out_form(
-            '/portal/setup/address/', 'input_id_submit')
+            'setup_address', 'input_id_submit')
 
         # remove all the 'required' elements
         self.disable_form_requirements()
@@ -67,7 +68,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.wait_for_element('.main-container')
 
         # check that we didn't get redirected
-        self.assertEqual(self.current_url, '/portal/setup/address/',
+        self.assertEqual(self.current_url, reverse('setup_address'),
                          'Check that the user stays on the address page')
 
         for id_ in ['id_address_line_1', 'id_zip', 'id_city', 'id_country']:

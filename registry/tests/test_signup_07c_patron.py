@@ -1,4 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
 from MemberManagement.tests.integration import IntegrationTest
 
 from unittest import mock
@@ -20,7 +21,7 @@ class PatronTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_setup_patron_elements(self):
         # fill out the form and select the patron tier
-        self.fill_out_form('/payments/membership/', 'input_id_submit', select_dropdowns={
+        self.fill_out_form('setup_membership', 'input_id_submit', select_dropdowns={
             "id_tier": 'Patron – Premium membership for 249€ p.a.'
         })
 
@@ -34,11 +35,11 @@ class PatronTest(IntegrationTest, StaticLiveServerTestCase):
     def test_setup_patron(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
             # fill out the form an select the patron tier
-            self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
+            self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
                 "id_tier": 'Patron – Premium membership for 249€ p.a.'
             })
 
-            self.assertEqual(self.current_url, '/payments/subscribe/',
+            self.assertEqual(self.current_url, reverse('setup_subscription'),
                              'Check that the user gets redirected to the subscription page')
 
             # check that the stripe api was called with the object as a parameter
@@ -58,12 +59,12 @@ class PatronTest(IntegrationTest, StaticLiveServerTestCase):
     def test_setup_patron_fail(self):
         with mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug")) as mocked:
             # fill out the form an select the payments tier
-            self.submit_form('/payments/membership/', 'input_id_submit', select_dropdowns={
+            self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
                 "id_tier": 'Patron – Premium membership for 249€ p.a.'
             })
 
             # we stay on the same page
-            self.assertEqual(self.current_url, '/payments/membership/',
+            self.assertEqual(self.current_url, reverse('setup_membership'),
                              'Check that the user does not get redirected to the final page')
 
             # check that the stripe api was called with the object as a parameter

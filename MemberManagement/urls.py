@@ -14,18 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
-
-from django.views.generic import TemplateView, RedirectView
+from django.views.generic import RedirectView, TemplateView
 
 from .views import HomeView
 
 urlpatterns = [
     # Static Views
-    url(r'^$', HomeView.as_view()),
+    url(r'^$', HomeView.as_view(), name='root'),
     url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
 
     # Legacy urls
-    url(r'^register/$', RedirectView.as_view(pattern_name='register', permanent=False)),
+    url(r'^register/$', RedirectView.as_view(pattern_name='register',
+                                             permanent=False), name='root_register'),
     url(r'^privacy/$', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/',
                                             permanent=False), name='privacy'),
 

@@ -1,4 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
 
 from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
@@ -16,10 +17,10 @@ class EditSocialTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
-        self.submit_form('/portal/edit/social/', 'input_id_submit')
+        self.submit_form('edit_social', 'input_id_submit')
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/social/',
+        self.assertEqual(self.current_url, reverse('edit_social'),
                          'Check that we stayed on the right page')
 
         # check that everything stayed the same
@@ -37,7 +38,7 @@ class EditSocialTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
-        self.submit_form('/portal/edit/social/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit_social', 'input_id_submit', send_form_keys={
             'id_facebook': 'https://facebook.com/freytag',
             'id_linkedin': 'https://www.linkedin.com/in/freytag-1234578',
             'id_twitter': 'https://twitter.com/freytag',
@@ -46,7 +47,7 @@ class EditSocialTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/social/',
+        self.assertEqual(self.current_url, reverse('edit_social'),
                          'Check that we stayed on the right page')
 
         # check that everything updated
@@ -62,7 +63,7 @@ class EditSocialTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_edit_empty(self):
         # enter nothing
-        self.submit_form('/portal/edit/social/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit_social', 'input_id_submit', send_form_keys={
             'id_facebook': '',
             'id_linkedin': '',
             'id_twitter': '',
@@ -71,7 +72,7 @@ class EditSocialTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/social/',
+        self.assertEqual(self.current_url, reverse('edit_social'),
                          'Check that we stayed on the right page')
 
         # check that everything updated

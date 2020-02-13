@@ -1,4 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
 from MemberManagement.tests.integration import IntegrationTest
 
 from alumni.models import Alumni
@@ -14,7 +15,7 @@ class JobTest(IntegrationTest, StaticLiveServerTestCase):
         self.login('Mounfem')
 
     def test_signup_job_complete(self):
-        self.submit_form('/portal/setup/job/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_job', 'input_id_submit', send_form_keys={
             'id_employer': 'Solution Realty',
             'id_position': 'Junior Research Engineer',
         }, select_dropdowns={
@@ -22,7 +23,7 @@ class JobTest(IntegrationTest, StaticLiveServerTestCase):
             'id_job': 'Software Development / IT',
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/skills/',
+        self.assertEqual(self.current_url, reverse('setup_skills'),
                          'Check that the user gets redirected to the skills page')
 
         obj = Alumni.objects.first().job
@@ -32,7 +33,7 @@ class JobTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.job, JobField.SOFTWARE_DEVELOPMENT_IT)
 
     def test_signup_job_empty(self):
-        self.submit_form('/portal/setup/job/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_job', 'input_id_submit', send_form_keys={
             'id_employer': '',
             'id_position': '',
         }, select_dropdowns={
@@ -40,7 +41,7 @@ class JobTest(IntegrationTest, StaticLiveServerTestCase):
             'id_job': 'Other',
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/skills/',
+        self.assertEqual(self.current_url, reverse('setup_skills'),
                          'Check that the user gets redirected to the job page')
 
         obj = Alumni.objects.first().job

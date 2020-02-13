@@ -1,9 +1,10 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.integration import IntegrationTest
+from django.urls import reverse
 
-from alumni.models import Alumni
 from alumni.fields.industry import IndustryField
 from alumni.fields.job import JobField
+from alumni.models import Alumni
+from MemberManagement.tests.integration import IntegrationTest
 
 
 class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
@@ -18,10 +19,10 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
-        self.submit_form('/portal/edit/job/', 'input_id_submit')
+        self.submit_form('edit_job', 'input_id_submit')
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/job/',
+        self.assertEqual(self.current_url, reverse('edit_job'),
                          'Check that we stayed on the right page')
 
         # check that everything stayed the same
@@ -32,7 +33,7 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_edit_complete(self):
         # enter nothing
-        self.submit_form('/portal/edit/job/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit_job', 'input_id_submit', send_form_keys={
             'id_employer': 'Problem Dream',
             'id_position': 'Senior Production Consultant',
         }, select_dropdowns={
@@ -41,7 +42,7 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/job/',
+        self.assertEqual(self.current_url, reverse('edit_job'),
                          'Check that we stayed on the right page')
 
         # check that everything saved
@@ -52,7 +53,7 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_edit_empty(self):
         # enter nothing
-        self.submit_form('/portal/edit/job/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit_job', 'input_id_submit', send_form_keys={
             'id_employer': '',
             'id_position': '',
         }, select_dropdowns={
@@ -61,7 +62,7 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/job/',
+        self.assertEqual(self.current_url, reverse('edit_job'),
                          'Check that we stayed on the right page')
 
         # check that everything saved

@@ -1,11 +1,12 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.integration import IntegrationTest
+from django.urls import reverse
 
-from alumni.models import Alumni
 from alumni.fields.college import CollegeField
 from alumni.fields.degree import DegreeField
 from alumni.fields.major import MajorField
 from alumni.fields.year import ClassField
+from alumni.models import Alumni
+from MemberManagement.tests.integration import IntegrationTest
 
 
 class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
@@ -20,10 +21,10 @@ class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
-        self.submit_form('/portal/edit/jacobs/', 'input_id_submit')
+        self.submit_form('edit_jacobs', 'input_id_submit')
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/jacobs/',
+        self.assertEqual(self.current_url, reverse('edit_jacobs'),
                          'Check that we stayed on the right page')
 
         # check that everything stayed the same
@@ -34,7 +35,7 @@ class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(self.obj.jacobs.comments, 'I am not real')
 
     def test_edit_complete(self):
-        self.submit_form('/portal/edit/jacobs/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit_jacobs', 'input_id_submit', send_form_keys={
             'id_comments': 'I am real',
         }, select_dropdowns={
             'id_college': 'College III',
@@ -44,7 +45,7 @@ class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that we stayed on the right page
-        self.assertEqual(self.current_url, '/portal/edit/jacobs/',
+        self.assertEqual(self.current_url, reverse('edit_jacobs'),
                          'Check that we stayed on the right page')
 
         # check that everything stayed the same
@@ -55,7 +56,7 @@ class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(self.obj.jacobs.comments, 'I am real')
 
     def test_edit_empty(self):
-        self.submit_form('/portal/edit/jacobs/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit_jacobs', 'input_id_submit', send_form_keys={
             'id_comments': '',
         }, select_dropdowns={
             'id_college': '---------',
@@ -65,7 +66,7 @@ class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that we stayed on the right page
-        self.assertEqual(self.current_url, '/portal/edit/jacobs/',
+        self.assertEqual(self.current_url, reverse('edit_jacobs'),
                          'Check that we stayed on the right page')
 
         # check that everything stayed the same

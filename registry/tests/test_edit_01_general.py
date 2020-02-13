@@ -1,11 +1,12 @@
+import datetime
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
 
 from alumni.fields.category import AlumniCategoryField
 from alumni.fields.gender import GenderField
 from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
-
-import datetime
 
 
 class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
@@ -20,10 +21,10 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
-        self.submit_form('/portal/edit/', 'input_id_submit')
+        self.submit_form('edit', 'input_id_submit')
 
         # check that nothing happened
-        self.assertEqual(self.current_url, '/portal/edit/',
+        self.assertEqual(self.current_url, reverse('edit'),
                          'Check that we stayed on the right page')
 
         # check that everything stayed the same
@@ -44,7 +45,7 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
     def test_data_regular(self):
         """ Tests that all fields can be changed """
 
-        self.submit_form('/portal/edit/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit', 'input_id_submit', send_form_keys={
             'id_givenName': 'John',
             'id_middleName': 'C',
             'id_familyName': 'Day',
@@ -58,7 +59,7 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that we got redirected to the right url
-        self.assertEqual(self.current_url, '/portal/edit/',
+        self.assertEqual(self.current_url, reverse('edit'),
                          'Check that we stayed on the right page')
 
         # check that the right alumni object was created
@@ -79,12 +80,12 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that we can't use a jacobs email as private email """
 
         # enter nothing
-        self.submit_form('/portal/edit/', 'input_id_submit', send_form_keys={
+        self.submit_form('edit', 'input_id_submit', send_form_keys={
             'id_email': 'AnnaFreytag@jacobs-university.de',
         })
 
         # check that we stayed on the page, but the email field was marked incorrect
-        self.assertEqual(self.current_url, '/portal/edit/',
+        self.assertEqual(self.current_url, reverse('edit'),
                          'Check that we stayed on the right page')
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')

@@ -1,13 +1,14 @@
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from MemberManagement.tests.integration import IntegrationTest
-
-from django.utils import timezone
-
 from unittest import mock
 
-from alumni.models import Alumni
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
+from django.utils import timezone
 
-MOCKED_TIME = timezone.datetime(2019, 9, 19, 16, 42, 5, 269, tzinfo=timezone.utc)
+from alumni.models import Alumni
+from MemberManagement.tests.integration import IntegrationTest
+
+MOCKED_TIME = timezone.datetime(
+    2019, 9, 19, 16, 42, 5, 269, tzinfo=timezone.utc)
 
 
 class FinalizeTest(IntegrationTest, StaticLiveServerTestCase):
@@ -19,9 +20,9 @@ class FinalizeTest(IntegrationTest, StaticLiveServerTestCase):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_setup_finalize(self):
-        self.submit_form('/portal/setup/completed/', 'input_id_submit')
+        self.submit_form('setup_setup', 'input_id_submit')
 
-        self.assertEqual(self.current_url, '/portal/',
+        self.assertEqual(self.current_url, reverse('portal'),
                          'Check that the user gets redirected to the portal page')
 
         obj = Alumni.objects.first().setup

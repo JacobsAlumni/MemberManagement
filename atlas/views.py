@@ -1,24 +1,18 @@
-from django.conf import settings
-from django.http import Http404
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, ListView
 from django.core.exceptions import ObjectDoesNotExist
-
-from django.core.paginator import Paginator
-from django.core.paginator import EmptyPage
-from django.core.paginator import PageNotAnInteger
-
-from alumni.models import Alumni, Address
-
-from alumni.fields import CollegeField, ClassField, MajorField, DegreeField, IndustryField, JobField, CountryField
-
-from django.shortcuts import redirect
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView, TemplateView
 
+from alumni.fields import (ClassField, CollegeField, CountryField, DegreeField,
+                           IndustryField, JobField, MajorField)
+from alumni.models import Address, Alumni
 # Create a new SearchFilter instance
-from registry.search.filter import SearchFilter, ParsingError
+from registry.search.filter import ParsingError, SearchFilter
+
 search = SearchFilter({
     'city': 'address__city',
     'country': 'address__country',

@@ -1,4 +1,5 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
 from MemberManagement.tests.integration import IntegrationTest
 
 from alumni.models import Alumni
@@ -12,7 +13,7 @@ class SkillsTest(IntegrationTest, StaticLiveServerTestCase):
         self.login('Mounfem')
 
     def test_signup_skills_complete(self):
-        self.submit_form('/portal/setup/skills/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_skills', 'input_id_submit', send_form_keys={
             'id_otherDegrees': 'Bachelor of Computer Science from IUB',
             'id_spokenLanguages': 'German, English, Spanish',
             'id_programmingLanguages': 'HTML, CSS, JavaScript, Python',
@@ -21,7 +22,7 @@ class SkillsTest(IntegrationTest, StaticLiveServerTestCase):
             'id_alumniMentor': True,
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/atlas/',
+        self.assertEqual(self.current_url, reverse('setup_atlas'),
                          'Check that the user gets redirected to the atlas page')
 
         obj = Alumni.objects.first().skills
@@ -32,7 +33,7 @@ class SkillsTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.alumniMentor, True)
 
     def test_signup_job_empty(self):
-        self.submit_form('/portal/setup/skills/', 'input_id_submit', send_form_keys={
+        self.submit_form('setup_skills', 'input_id_submit', send_form_keys={
             'id_otherDegrees': '',
             'id_spokenLanguages': '',
             'id_programmingLanguages': '',
@@ -41,7 +42,7 @@ class SkillsTest(IntegrationTest, StaticLiveServerTestCase):
             'id_alumniMentor': False,
         })
 
-        self.assertEqual(self.current_url, '/portal/setup/atlas/',
+        self.assertEqual(self.current_url, reverse('setup_atlas'),
                          'Check that the user gets redirected to the atlas page')
 
         obj = Alumni.objects.first().skills

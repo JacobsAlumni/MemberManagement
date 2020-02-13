@@ -1,34 +1,36 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.urls import reverse
+
 from .integration import IntegrationTest
 
 PORTAL_FIXED = [
-    '/portal/',
-    '/portal/edit/',
-    '/portal/edit/address/',
-    '/portal/edit/social/',
-    '/portal/edit/jacobs/',
-    '/portal/edit/job/',
-    '/portal/edit/skills/',
-    '/portal/edit/atlas/'
+    reverse('portal'),
+    reverse('edit'),
+    reverse('edit_address'),
+    reverse('edit_social'),
+    reverse('edit_jacobs'),
+    reverse('edit_job'),
+    reverse('edit_skills'),
+    reverse('edit_atlas'),
 ]
 PORTAL_SETUP_URLS = [
-    '/',
-    '/register/',
-    '/portal/register/',
-    '/portal/setup/',
-    '/portal/setup/address/',
-    '/portal/setup/social/',
-    '/portal/setup/jacobs/',
-    '/portal/setup/job/',
-    '/portal/setup/skills/',
-    '/portal/setup/atlas/',
-    '/portal/setup/completed/'
+    reverse('root'),
+    reverse('root_register'),
+    reverse('register'),
+    reverse('setup'),
+    reverse('setup_address'),
+    reverse('setup_social'),
+    reverse('setup_jacobs'),
+    reverse('setup_job'),
+    reverse('setup_skills'),
+    reverse('setup_atlas'),
+    reverse('setup_setup'),
 ]
 SETUP_PROTECTED_URLS = PORTAL_SETUP_URLS + PORTAL_FIXED + [
-    '/payments/membership/',
-    '/payments/subscribe/',
-    '/payments/update/',
-    '/payments/'
+    reverse('setup_membership'),
+    reverse('setup_subscription'),
+    reverse('update_subscription'),
+    reverse('view_payments'),
 ]
 
 
@@ -36,17 +38,21 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
     """ Checks that the homepage redirects appropriatly for the different stages of approval """
 
     def test_none(self):
-        self.assertEqual(self.sfollow('/', '.main-container'), '/')
+        ROOT = reverse('root')
+        ROOT_REGISTER = reverse('root_register')
+        REGISTER = reverse('register')
+
+        self.assertEqual(self.sfollow('root', '.main-container'), ROOT)
         self.assertEqual(self.sfollow(
-            '/register/', '.main-container'), '/portal/register/')
-        self.assertEqual(self.sfollow('/portal/register/',
-                                      '.main-container'), '/portal/register/')
+            'root_register', '.main-container'), REGISTER)
+        self.assertEqual(self.sfollow('register',
+                                      '.main-container'), REGISTER)
 
         for url in SETUP_PROTECTED_URLS:
-            if url in ['/', '/register/', '/portal/register/']:
+            if url in [ROOT, ROOT_REGISTER, REGISTER]:
                 continue
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/auth/login/?next={}'.format(url), '{} redirects to login page'.format(url))
+                             reverse('login')+'?next={}'.format(url), '{} redirects to login page'.format(url))
 
     def test_setup_address(self):
         self.load_fixture('registry/tests/fixtures/signup_00_register.json')
@@ -55,7 +61,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
         # check that all the protected urls go to the first page of the setup
         for url in SETUP_PROTECTED_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/portal/setup/address/', '{} redirects to address setup'.format(url))
+                             reverse('setup_address'), '{} redirects to address setup'.format(url))
 
     def test_setup_social(self):
         self.load_fixture('registry/tests/fixtures/signup_01_address.json')
@@ -63,7 +69,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
 
         for url in SETUP_PROTECTED_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/portal/setup/social/', '{} redirects to social setup'.format(url))
+                             reverse('setup_social'), '{} redirects to social setup'.format(url))
 
     def test_setup_jacobs(self):
         self.load_fixture('registry/tests/fixtures/signup_02_social.json')
@@ -71,7 +77,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
 
         for url in SETUP_PROTECTED_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/portal/setup/jacobs/', '{} redirects to jacobs setup'.format(url))
+                             reverse('setup_jacobs'), '{} redirects to jacobs setup'.format(url))
 
     def test_setup_job(self):
         self.load_fixture('registry/tests/fixtures/signup_03_jacobs.json')
@@ -79,7 +85,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
 
         for url in SETUP_PROTECTED_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/portal/setup/job/', '{} redirects to job setup'.format(url))
+                             reverse('setup_job'), '{} redirects to job setup'.format(url))
 
     def test_setup_skills(self):
         self.load_fixture('registry/tests/fixtures/signup_04_job.json')
@@ -87,7 +93,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
 
         for url in SETUP_PROTECTED_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/portal/setup/skills/', '{} redirects to skills setup'.format(url))
+                             reverse('setup_skills'), '{} redirects to skills setup'.format(url))
 
     def test_setup_atlas(self):
         self.load_fixture('registry/tests/fixtures/signup_05_skills.json')
@@ -95,7 +101,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
 
         for url in SETUP_PROTECTED_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/portal/setup/atlas/', '{} redirects to atlas setup'.format(url))
+                             reverse('setup_atlas'), '{} redirects to atlas setup'.format(url))
 
     def test_setup_tier(self):
         self.load_fixture('registry/tests/fixtures/signup_06_atlas.json')
@@ -103,7 +109,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
 
         for url in SETUP_PROTECTED_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/payments/membership/', '{} redirects to membership setup'.format(url))
+                             reverse('setup_membership'), '{} redirects to membership setup'.format(url))
 
     def test_setup_starter(self):
         self.load_fixture('registry/tests/fixtures/signup_07a_starter.json')
@@ -111,7 +117,7 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
 
         for url in SETUP_PROTECTED_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/portal/setup/completed/', '{} redirects to completed setup'.format(url))
+                             reverse('setup_setup'), '{} redirects to completed setup'.format(url))
 
     def test_setup_completed(self):
         self.load_fixture('registry/tests/fixtures/signup_09_finalize.json')
@@ -123,4 +129,4 @@ class HomeAccessTest(IntegrationTest, StaticLiveServerTestCase):
 
         for url in PORTAL_SETUP_URLS:
             self.assertEqual(self.sfollow(url, '.main-container'),
-                             '/portal/', '{} redirects to portal home'.format(url))
+                             reverse('portal'), '{} redirects to portal home'.format(url))
