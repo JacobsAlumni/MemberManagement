@@ -25,6 +25,9 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
     customer = models.CharField(max_length=255, null=True, blank=True,
                                 help_text='The stripe customer id for the user')
 
+    stripe_check = models.BooleanField(
+        null=True, blank=True, help_text='Internal Column used by Stripe checking')
+
 
 @Alumni.register_component(7)
 class SubscriptionInformation(AlumniComponentMixin, models.Model):
@@ -40,7 +43,8 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
 
     subscription = models.CharField(max_length=255, null=True, blank=True,
                                     help_text='The Stripe Subscription ID for the given subscription')
-    external = models.BooleanField(default=False, help_text="Subscription is managed externally")
+    external = models.BooleanField(
+        default=False, help_text="Subscription is managed externally")
 
     tier = TierField(help_text='Membership Tier')
 
