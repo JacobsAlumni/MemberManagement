@@ -33,6 +33,30 @@ def get_stripe_customer_props(alumni):
     }
 
 
+def check_customer_stripe_props(alumni, customer):
+    """ Returns a list of errors for the customer """
+
+    header = 'Customer {0!r} (for user {1!r}): '.format(
+        customer.id, alumni.profile.username)
+
+    # errors to be populated
+    errors = []
+
+    # Compare fields that aren't identical
+    props = get_stripe_customer_props(alumni)
+    for p in props.keys():
+        expected = props[p]
+        got = getattr(customer, p)
+        if expected != got:
+            errors.append(
+                header + "Property {0!r}: Expected {1!r}, but got {2!r}".format(p, expected, got))
+
+    # TODO: Check plan subscription
+
+    # return the errors
+    return errors
+
+
 @as_safe_operation
 def create_customer(stripe, alumni):
     """ Creates a customer for the given alumni """
@@ -128,5 +152,17 @@ def get_methods_table(stripe, customer):
 
 @as_safe_operation
 def cancel_subscription(stripe, subscription):
+    """ Cancels a subscription """
+
     # cancel the subscription
     return stripe.Subscription.delete(subscription)
+
+
+@as_safe_operation
+def map_customers(stripe, fn):
+    """ Gets a list containing all customer ids """
+
+    # iterate over all the customers
+    customers = stripe.Customer.list(limit=100)
+    for customer in customers.auto_paging_iter():
+        fn(customer)
