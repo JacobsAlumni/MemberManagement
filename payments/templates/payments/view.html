@@ -48,15 +48,15 @@ Payment Information
         The following payment method(s) are on file for you:
     </p>
         
-    <ul>
+    <ul id="payment_methods">
         {% for method in methods %}
-            <li>{{ method | safe }}</li>
+            <li id="id_payment_method_{{ forloop.counter }}">{{ method | safe }}</li>
         {% endfor %}
     </ul>
 
     <p>
         {% if user.alumni.can_update_payment %}
-            <a href="{% url 'update_subscription' %}" class="uk-button uk-button-default">Update Payment Method</a>
+            <a href="{% url 'update_subscription' %}" class="uk-button uk-button-default" id='id_update_payment'>Update Payment Method</a>
         {% endif %}
     </p>
 {% else %}
@@ -80,7 +80,7 @@ Payment Information
     </thead>
     <tbody>
         {% for invoice in invoices %}
-            <tr>
+            <tr id="id_invoice_{{forloop.counter}}">
                 <td>
                     {{ invoice.date | safe }}
                 </td>
