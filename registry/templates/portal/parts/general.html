@@ -9,8 +9,8 @@
             <caption>General Information</caption>
             <tbody>
                 <tr>
-                    <td>First Name</td>
-                    <td>{{ user.alumni.firstName }}</td>
+                    <td>Given Name</td>
+                    <td>{{ user.alumni.givenName }}</td>
                 </tr>
 
                 {% if user.alumni.middleName is not None %}
@@ -21,8 +21,8 @@
                 {% endif %}
 
                 <tr>
-                    <td>Last Name</td>
-                    <td>{{ user.alumni.lastName }}</td>
+                    <td>Family Name</td>
+                    <td>{{ user.alumni.familyName }}</td>
                 </tr>
 
                 <tr>
