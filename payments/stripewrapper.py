@@ -1,9 +1,10 @@
 import stripe as stripeapi
 from raven.contrib.django.raven_compat.models import client
+from datetime import datetime
+import pytz
 
-
-def safe(operation):
-    """ Safely performs an operation with the stripe API """
+def _safe(operation):
+    """ Performs a potentially unsafe operation that interacts with the stripe api """
 
     result = None
 
@@ -16,37 +17,28 @@ def safe(operation):
     return result, None
 
 
-def as_safe_operation(f):
-    """ A decorator to turn a function into a safe operation """
+def _as_safe_operation(f):
+    """ Wraps a function with _safe """
 
     def _wrapper(*args, **kwargs):
-        return safe(lambda stripe: f(stripe, *args, **kwargs))
+        return _safe(lambda stripe: f(stripe, *args, **kwargs))
     return _wrapper
-
-
-def get_stripe_customer_props(alumni):
-    """ Gets props for a stripe customer given an alumni """
-
-    return {
-        'description': 'Alumni Customer for {0!r} ({1!r})'.format(alumni.fullName, alumni.profile.username),
-        'email': alumni.email,
-    }
 
 
 def check_customer_stripe_props(alumni, customer):
     """ Returns a list of errors for the customer """
 
     header = 'Customer {0!r} (for user {1!r}): '.format(
-        customer.id, alumni.profile.username)
+        customer['id'], alumni.profile.username)
 
     # errors to be populated
     errors = []
 
     # Compare fields that aren't identical
-    props = get_stripe_customer_props(alumni)
+    props = _get_stripe_customer_props(alumni)
     for p in props.keys():
         expected = props[p]
-        got = getattr(customer, p)
+        got = customer[p]
         if expected != got:
             errors.append(
                 header + "Property {0!r}: Expected {1!r}, but got {2!r}".format(p, expected, got))
@@ -57,25 +49,20 @@ def check_customer_stripe_props(alumni, customer):
     return errors
 
 
-@as_safe_operation
-def create_customer(stripe, alumni):
-    """ Creates a customer for the given alumni """
+@_as_safe_operation
+def create_customer(stripe, alumni_instance):
+    """ Creates a new customer for a given alumni """
 
-    props = get_stripe_customer_props(alumni)
-    return stripe.Customer.create(**props)
-
-
-@as_safe_operation
-def update_customer(stripe, customer, alumni):
-    props = get_stripe_customer_props(alumni)
-    return stripe.Customer.modify(customer, **props)
+    props = get_stripe_customer_props(alumni_instance)
+    customer = stripe.Customer.create(**props)
+    return customer.id
 
 
-@as_safe_operation
-def clear_all_payment_sources(stripe, customer):
+@_as_safe_operation
+def clear_all_payment_sources(stripe, customer_id):
     """ Removes all payment sources from an alumni """
 
-    for source in stripe.Customer.retrieve(customer).sources.list().data:
+    for source in stripe.Customer.retrieve(customer_id).sources.list().data:
         # cards can be deleted
         if source.object == 'card':
             source.delete()
@@ -87,82 +74,132 @@ def clear_all_payment_sources(stripe, customer):
     return True
 
 
-@as_safe_operation
-def update_payment_method(stripe, customer, source, card):
+@_as_safe_operation
+def update_payment_method(stripe, customer_id, source_id, card_id):
     """ Sets the default payment method for a customer to source or card """
 
     # clear all existing methods
-    cleared, err = clear_all_payment_sources(customer)
+    cleared, err = clear_all_payment_sources(customer_id)
     if err != None:
         return
 
     # update the source and card id
     update = {}
-    if source:
-        update['source'] = source
+    if source_id:
+        update['source'] = source_id
     else:
-        update['card'] = card
+        update['card'] = card_id
 
-    return stripe.Customer.modify(customer, **update)
-
-
-@as_safe_operation
-def create_subscription(stripe, customer, plan):
-    """ Creates a subscription for the customer """
-
-    # Creates a new subscription for the customer
-    return stripe.Customer.retrieve(customer).subscriptions.create(plan=plan)
+    stripe.Customer.modify(customer, **update)
+    return True
 
 
-@as_safe_operation
-def get_payment_table(stripe, customer):
+@_as_safe_operation
+def create_subscription(stripe, customer_id, plan_id):
+    """ Creates a subscription and returns its id """
+
+    subscription = stripe.Customer.retrieve(
+        customer_id).subscriptions.create(plan=plan_id)
+    return subscription.id
+
+
+@_as_safe_operation
+def get_payment_table(stripe, customer_id):
     """ gets a table of payments for a customer """
-    return [{
-        'lines': [l for l in iv.lines],
-        'date': iv.date,
-        'total': [iv.total, iv.currency],
-        'paid': iv.paid,
-        'closed': iv.closed
-    } for iv in stripe.Invoice.list(customer=customer)]
+
+    return [_invoice_to_dict(invoice_instance) for invoice_instance in stripe.Invoice.list(customer=customer_id)]
 
 
-@as_safe_operation
-def get_methods_table(stripe, customer):
-    def format_source(source):
-        if source.object == 'card':
-            return {
-                'kind': 'card',
-                'brand': source.brand,
-                'exp_month': source.exp_month,
-                'exp_year': source.exp_year,
-                'last4': source.last4
-            }
-        elif source.type == 'sepa_debit':
-            return {
-                'kind': 'sepa',
-                'last4': source.sepa_debit.last4,
-                'mandate_reference': source.sepa_debit.mandate_reference,
-                'mandate_url': source.sepa_debit.mandate_url,
-            }
-
-        return {'kind': 'unknown'}
-
-    return [format_source(source) for source in stripe.Customer.retrieve(customer).sources.list().data]
+def _invoice_to_dict(invoice_instance):
+    """ Turns an invoice instance into a dict for downstream consumption """
+    return {
+        'lines': [l for l in invoice_instance.lines],
+        'date': invoice_instance.date,
+        'total': [invoice_instance.total, invoice_instance.currency],
+        'paid': invoice_instance.paid,
+        'closed': invoice_instance.closed
+    }
 
 
-@as_safe_operation
-def cancel_subscription(stripe, subscription):
+@_as_safe_operation
+def get_methods_table(stripe, customer_id):
+    """ Gets a list of payment sources for a customer """
+
+    sources = stripe.Customer.retrieve(customer_id).sources.list().data
+    return [_source_to_dict(source_instance) for source_instance in sources]
+
+
+def _source_to_dict(source_instance):
+    """ Turns a source instance into a dict for downstream consumption """
+    if source_instance.object == 'card':
+        return {
+            'kind': 'card',
+            'brand': source_instance.brand,
+            'exp_month': source_instance.exp_month,
+            'exp_year': source_instance.exp_year,
+            'last4': source_instance.last4
+        }
+    elif source_instance.type == 'sepa_debit':
+        return {
+            'kind': 'sepa',
+            'last4': source_instance.sepa_debit.last4,
+            'mandate_reference': source_instance.sepa_debit.mandate_reference,
+            'mandate_url': source_instance.sepa_debit.mandate_url,
+        }
+
+    return {'kind': 'unknown'}
+
+
+@_as_safe_operation
+def cancel_subscription(stripe, subscription_id):
     """ Cancels a subscription """
 
-    # cancel the subscription
-    return stripe.Subscription.delete(subscription)
+    stripe.Subscription.delete(subscription_id)
+    return True
 
 
-@as_safe_operation
+@_as_safe_operation
+def get_customer_created(stripe, customer_id):
+    """ Gets the time when a customer was created """
+
+    timestamp = stripe.Customer.retrieve(customer_id).created
+    return datetime.utcfromtimestamp(timestamp).replace(tzinfo=pytz.utc)
+
+# todo: make api upgrade safe
+@_as_safe_operation
 def map_customers(stripe, fn):
-    """ Gets a list containing all customer ids """
+    """ Calls a function on every customer"""
 
     # iterate over all the customers
     customers = stripe.Customer.list(limit=100)
-    for customer in customers.auto_paging_iter():
-        fn(customer)
+    count = 0
+    for customer_instance in customers.auto_paging_iter():
+        fn(_customer_to_dict(customer_instance))
+        count += 1
+    return count
+
+
+def _customer_to_dict(customer_instance):
+    """ Turns a stripe customer instance into a dict for downstream consumption """
+    return {
+        'id': customer_instance.id,
+        'description': customer_instance.description,
+        'email': customer_instance.email,
+    }
+
+
+@_as_safe_operation
+def update_customer(stripe, customer_id, alumni_instance):
+    """ Updates a stripe customer with standard properties """
+    props = _get_stripe_customer_props(alumni_instance)
+    stripe.Customer.modify(customer_id, **props)
+    return True
+
+
+def _get_stripe_customer_props(alumni_instance):
+    """ Gets props for a stripe customer given an alumni """
+
+    return {
+        'description': 'Alumni Customer for {0!r} ({1!r})'.format(alumni_instance.fullName, alumni_instance.profile.username),
+        'email': alumni_instance.email,
+    }

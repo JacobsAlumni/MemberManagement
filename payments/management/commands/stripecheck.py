@@ -38,14 +38,15 @@ class Command(BaseCommand):
 
     def check_customer(self, tbar, stripe_customer):
         tbar.update(1)  # next customer seen
+        customer_id = stripe_customer["id"]
 
         # grab the customer in the db
         try:
             info = MembershipInformation.objects.get(
-                customer=stripe_customer.id)
+                customer=customer_id)
         except MembershipInformation.DoesNotExist:
             tbar.write('Customer {0!r}: Customer does not belong to any known Alumni'.format(
-                stripe_customer.id))
+                customer_id))
             return
 
         # we used it in the stripe check

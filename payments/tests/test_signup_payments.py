@@ -13,8 +13,6 @@ from .paymentmethod import PaymentMethodTest
 
 MOCKED_TIME = timezone.datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
-MOCKED_SUBSCRIPTION = mock.MagicMock(id='sub_fake')
-
 
 class SignupPaymentsTestMixin(PaymentMethodTest):
     def test_card_ok(self):
@@ -27,7 +25,7 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
-    @mock.patch('payments.stripewrapper.create_subscription', return_value=(MOCKED_SUBSCRIPTION, None))
+    @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_signup_card_ok(self, cmock, umock):
         # fill out and submit card details
         self.sget('setup_subscription', '#id_payment_type')
@@ -54,7 +52,7 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
-    @mock.patch('payments.stripewrapper.create_subscription', return_value=(MOCKED_SUBSCRIPTION, None))
+    @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_signup_card_error_update_method(self, cmock, umock):
         # fill out and submit card details
         self.sget('setup_subscription', '#id_payment_type')
@@ -99,7 +97,7 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
-    @mock.patch('payments.stripewrapper.create_subscription', return_value=(MOCKED_SUBSCRIPTION, None))
+    @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_signup_sepa(self, cmock, umock):
         self.sget('setup_subscription', '#id_payment_type')
         self.submit_sepa_details()
@@ -126,7 +124,7 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
     @mock.patch('django.utils.timezone.now',
                 mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
-    @mock.patch('payments.stripewrapper.create_subscription', return_value=(MOCKED_SUBSCRIPTION, None))
+    @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_signup_sepa_error_update_method(self, cmock, umock):
         # fill out and submit sepa details
         self.sget('setup_subscription', '#id_payment_type')

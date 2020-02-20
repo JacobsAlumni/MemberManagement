@@ -88,7 +88,7 @@ class SubscribeView(SetupComponentView):
         instance = SubscriptionInformation.objects.create(
             member=self.request.user.alumni,
             tier=tier,
-            subscription=sub.id,
+            subscription=sub,
             start=timezone.now()
         )
 

@@ -57,7 +57,7 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
             raise Exception('Can not cancel subscription: No subscription')
 
         # cancel the subscription
-        sub, err = stripewrapper.cancel_subscription(self.subscription)
+        _, err = stripewrapper.cancel_subscription(self.subscription)
         if err is not None:
             return False
 

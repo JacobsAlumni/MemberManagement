@@ -36,14 +36,13 @@ def fetch_from_stripe(sss, on_message):
         username = s.member.profile.username
         cid = s.member.membership.customer
 
-        date, e = stripewrapper.safe(
-            lambda stripe: stripe.Customer.retrieve(cid).created)
+        date, e = stripewrapper.get_customer_created(cid)
         if e is not None:
             on_message(
                 'Unable to retrieve customer creation date for {}'.format(username))
             continue
 
-        s.date = datetime.utcfromtimestamp(date).replace(tzinfo=pytz.utc)
+        s.date = date
         s.save()
 
         on_message('Updated {} date to {}'.format(username, s.date))
