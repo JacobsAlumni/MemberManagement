@@ -39,9 +39,9 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
         # check that the mocks were called
         self.assertListEqual(umock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", "", "fake-token-id")])
+            self.customer_id, "", "fake-token-id")])
         self.assertListEqual(cmock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", self.subscribe_field_value)])
+            self.customer_id, self.subscribe_field_value)])
 
         # check that the subscription object was created
         obj = SubscriptionInformation.objects.get(
@@ -66,7 +66,7 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
         # check that only the first mock was called
         self.assertListEqual(umock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", "", "fake-token-id")])
+            self.customer_id, "", "fake-token-id")])
         self.assertListEqual(cmock.call_args_list, [])
 
         # check that the subscription object was not created
@@ -88,9 +88,9 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
         # check that only the first mock was called
         self.assertListEqual(umock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", "", "fake-token-id")])
+            self.customer_id, "", "fake-token-id")])
         self.assertListEqual(cmock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", self.subscribe_field_value)])
+            self.customer_id, self.subscribe_field_value)])
 
         # check that the subscription object was not created
         with self.assertRaises(SubscriptionInformation.DoesNotExist):
@@ -110,9 +110,9 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
         # check that the mocks were called
         self.assertListEqual(umock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", "fake-source-id", "")])
+            self.customer_id, "fake-source-id", "")])
         self.assertListEqual(cmock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", self.subscribe_field_value)])
+            self.customer_id, self.subscribe_field_value)])
 
         # check that the subscription object was created
         obj = SubscriptionInformation.objects.get(
@@ -138,7 +138,7 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
         # check that only the first mock was called
         self.assertListEqual(umock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", "fake-source-id", "")])
+            self.customer_id, "fake-source-id", "")])
         self.assertListEqual(cmock.call_args_list, [])
 
         # check that the subscription object was not created
@@ -160,9 +160,9 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
 
         # check that only the first mock was called
         self.assertListEqual(umock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", "fake-source-id", "")])
+            self.customer_id, "fake-source-id", "")])
         self.assertListEqual(cmock.call_args_list, [mock.call(
-            "cus_Fq8yG7rLrc6sKZ", self.subscribe_field_value)])
+            self.customer_id, self.subscribe_field_value)])
 
         # check that the subscription object was not created
         with self.assertRaises(SubscriptionInformation.DoesNotExist):
@@ -178,9 +178,10 @@ class ContributorSubscribeTest(SignupPaymentsTestMixin, IntegrationTest, StaticL
         self.login('Mounfem')
         self.tier_field_value = TierField.CONTRIBUTOR
         self.subscribe_field_value = 'contributor-membership'
+        self.customer_id = 'cus_Fq8yG7rLrc6sKZ'
 
 
-class ContributorSubscribeTest(SignupPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
+class PatronSubscribeTest(SignupPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_07c_patron.json']
 
     def setUp(self):
@@ -188,3 +189,4 @@ class ContributorSubscribeTest(SignupPaymentsTestMixin, IntegrationTest, StaticL
         self.login('Mounfem')
         self.tier_field_value = TierField.PATRON
         self.subscribe_field_value = 'patron-membership'
+        self.customer_id = 'cus_Fq8yG7rLrc6sKZ'

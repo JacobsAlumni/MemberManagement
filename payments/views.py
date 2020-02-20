@@ -119,7 +119,7 @@ class UpdatePaymentView(FormView):
         if err is not None:
             form.add_error(
                 None, 'Something went wrong when talking to our payment service provider. Please try again later or contact support. ')
-            return None
+            return self.form_invalid(form)
 
         messages.success(self.request, 'Payment method has been updated. ')
 

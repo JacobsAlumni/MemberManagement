@@ -21,13 +21,15 @@ class IntegrationTest(SeleniumTestCase):
         return call_command('loaddata', path)
 
     def login(self, username):
-        """ Authenticates the user with the given username """
+        """ Authenticates the user with the given username and returns the user object """
 
         # use the force_login method to enforce login
         user = get_user_model().objects.get(username=username)
         # TODO: Switch this to the appropriate django-selenium-clean method
         # once the PR gets merged
         force_login(user, self.selenium, self.live_server_url)
+
+        return user
 
     @property
     def current_url(self):
