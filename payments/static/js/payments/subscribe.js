@@ -1,9 +1,8 @@
 var stripe_integration_init = function(stripe_publishable_key) {
     // make some thin wrappers around the stripe api
     // which return faked id's when we do not have a publishable key]
-
-    // initialize stripe API, either with the real key or an obviously fake one for testing
-    var stripe = Stripe(stripe_publishable_key || 'fake' );
+    
+    var stripe;
 
     var create_token = function(data) {
         if (!stripe_publishable_key)
@@ -34,6 +33,17 @@ var stripe_integration_init = function(stripe_publishable_key) {
         }
     }
     set_error();
+
+    // initialize stripe API, either with the real key or an obviously fake one for testing
+    // when initializing fails, bail out
+    try {
+        stripe = Stripe(stripe_publishable_key || 'fake' );
+    } catch(e) {
+        set_error('Unable to communicate with our payment provider. Please check your network connection. Contact support if the problem persists. ');
+        $("#stripe-iban-elements").hide();
+        $("#stripe-card-elements").hide();
+        return;
+    }
 
     var elements = stripe.elements();
 

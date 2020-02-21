@@ -58,6 +58,13 @@ class SubscribeView(SetupComponentView):
 
     template_name = 'payments/subscribe.html'
 
+    def get_context(self, *args, **kwargs):
+        context = super().get_context(*args, **kwargs)
+        context.update({
+            'alumni': self.request.user.alumni
+        })
+        return context
+
     @classmethod
     def setup_class(cls):
         return SubscriptionInformation
@@ -101,12 +108,13 @@ class UpdatePaymentView(FormView):
     template_name = 'payments/subscribe.html'
     form_class = PaymentMethodForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         context.update({
             'title': 'Update Payment Information',
             'updating': True,
-            'next_text': 'AUTHORIZE PAYMENT NOW'
+            'next_text': 'AUTHORIZE PAYMENT NOW',
+            'alumni': self.request.user.alumni,
         })
         return context
 

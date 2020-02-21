@@ -9,3 +9,8 @@ def stripe(request):
         'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
         'stripe_test_mode': IS_STRIPE_TEST_MODE
     }
+
+def tier(request):
+    return {
+        'selfservice_tier_enabled': settings.SELFSERVICE_TIER_ENABLED
+    }
