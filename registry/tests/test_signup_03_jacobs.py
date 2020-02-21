@@ -1,20 +1,15 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 
 from alumni.fields.college import CollegeField
 from alumni.fields.degree import DegreeField
 from alumni.fields.major import MajorField
 from alumni.fields.year import ClassField
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
 
 
 class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_02_social.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
+    user = 'Mounfem'
 
     def test_signup_jacobs_complete(self):
         self.submit_form('setup_jacobs', 'input_id_submit', send_form_keys={
@@ -26,15 +21,15 @@ class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
             'id_major': 'Physics',
         })
 
-        self.assertEqual(self.current_url, reverse('setup_job'),
-                         'Check that the user gets redirected to the job page')
+        self.assert_url_equal('setup_job',
+                              'Check that the user gets redirected to the job page')
 
-        obj = Alumni.objects.first().jacobs
-        self.assertEqual(obj.college, CollegeField.NORDMETALL)
-        self.assertEqual(obj.degree, DegreeField.BACHELOR_SCIENCE)
-        self.assertEqual(obj.graduation, ClassField.C_2011)
-        self.assertEqual(obj.major, MajorField.PHYSICS)
-        self.assertEqual(obj.comments, 'I am not real')
+        jacobs = self.user.alumni.jacobs
+        self.assertEqual(jacobs.college, CollegeField.NORDMETALL)
+        self.assertEqual(jacobs.degree, DegreeField.BACHELOR_SCIENCE)
+        self.assertEqual(jacobs.graduation, ClassField.C_2011)
+        self.assertEqual(jacobs.major, MajorField.PHYSICS)
+        self.assertEqual(jacobs.comments, 'I am not real')
 
     def test_signup_jacobs_empty(self):
         self.submit_form('setup_jacobs', 'input_id_submit', send_form_keys={
@@ -46,12 +41,12 @@ class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
             'id_major': 'Other (Please specify in comments)',
         })
 
-        self.assertEqual(self.current_url, reverse('setup_job'),
-                         'Check that the user gets redirected to the job page')
+        self.assert_url_equal('setup_job',
+                              'Check that the user gets redirected to the job page')
 
-        obj = Alumni.objects.first().jacobs
-        self.assertEqual(obj.college, None)
-        self.assertEqual(obj.degree, None)
-        self.assertEqual(obj.graduation, ClassField.OTHER)
-        self.assertEqual(obj.major, MajorField.OTHER)
-        self.assertEqual(obj.comments, '')
+        jacobs = self.user.alumni.jacobs
+        self.assertEqual(jacobs.college, None)
+        self.assertEqual(jacobs.degree, None)
+        self.assertEqual(jacobs.graduation, ClassField.OTHER)
+        self.assertEqual(jacobs.major, MajorField.OTHER)
+        self.assertEqual(jacobs.comments, '')

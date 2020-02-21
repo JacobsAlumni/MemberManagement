@@ -1,7 +1,6 @@
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 from django.utils import timezone
 
 from alumni.models import Alumni
@@ -13,18 +12,14 @@ MOCKED_TIME = timezone.datetime(
 
 class FinalizeTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_07a_starter.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
+    user = 'Mounfem'
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_setup_finalize(self):
         self.submit_form('setup_setup', 'input_id_submit')
 
-        self.assertEqual(self.current_url, reverse('portal'),
-                         'Check that the user gets redirected to the portal page')
+        self.assert_url_equal('portal',
+                              'Check that the user gets redirected to the portal page')
 
-        obj = Alumni.objects.first().setup
-        self.assertEqual(obj.date,
-                         MOCKED_TIME)
+        setup = self.user.alumni.setup
+        self.assertEqual(setup.date, MOCKED_TIME)

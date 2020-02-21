@@ -1,5 +1,4 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 
 from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
@@ -7,29 +6,23 @@ from MemberManagement.tests.integration import IntegrationTest
 
 class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
-        self.obj = Alumni.objects.get(profile__username='Mounfem')
+    user = 'Mounfem'
 
     def test_noedit(self):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
         self.submit_form('edit_address', 'input_id_submit')
-
-        # check that nothing happened
-        self.assertEqual(self.current_url, reverse('edit_address'),
-                         'Check that we stayed on the right page')
+        self.assert_url_equal('edit_address')
 
         # check that everything stayed the same
-        self.assertEqual(self.obj.address.address_line_1, 'Alt-Moabit 72')
-        self.assertEqual(self.obj.address.address_line_2, None)
-        self.assertEqual(self.obj.address.city, 'Breunsdorf')
-        self.assertEqual(self.obj.address.zip, '04574')
-        self.assertEqual(self.obj.address.state, 'Sachsen')
-        self.assertEqual(self.obj.address.country.name, 'Germany')
+        address = self.user.alumni.address
+        self.assertEqual(address.address_line_1, 'Alt-Moabit 72')
+        self.assertEqual(address.address_line_2, None)
+        self.assertEqual(address.city, 'Breunsdorf')
+        self.assertEqual(address.zip, '04574')
+        self.assertEqual(address.state, 'Sachsen')
+        self.assertEqual(address.country.name, 'Germany')
 
     def test_edit_full(self):
         """ Tests that adding a full address works """
@@ -46,16 +39,17 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that nothing happened
-        self.assertEqual(self.current_url, reverse('edit_address'),
-                         'Check that we stayed on the right page')
+        self.assert_url_equal('edit_address',
+                              'Check that we stayed on the right page')
 
         # check that we edited it right
-        self.assertEqual(self.obj.address.address_line_1, '2986 Heron Way')
-        self.assertEqual(self.obj.address.address_line_2, 'Attn. Anna Freytag')
-        self.assertEqual(self.obj.address.city, 'Portland')
-        self.assertEqual(self.obj.address.zip, '97205')
-        self.assertEqual(self.obj.address.state, 'Oregon')
-        self.assertEqual(self.obj.address.country.name,
+        address = self.user.alumni.address
+        self.assertEqual(address.address_line_1, '2986 Heron Way')
+        self.assertEqual(address.address_line_2, 'Attn. Anna Freytag')
+        self.assertEqual(address.city, 'Portland')
+        self.assertEqual(address.zip, '97205')
+        self.assertEqual(address.state, 'Oregon')
+        self.assertEqual(address.country.name,
                          'United States of America')
 
     def test_edit_noempty(self):
@@ -75,19 +69,20 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.disable_form_requirements()
 
         button.click()
-        self.wait_for_element('.main-container')
+        self.find_element('.main-container')
 
         # check that nothing happened
-        self.assertEqual(self.current_url, reverse('edit_address'),
-                         'Check that we stayed on the right page')
+        self.assert_url_equal('edit_address',
+                              'Check that we stayed on the right page')
 
         # check that nothing was edited
-        self.assertEqual(self.obj.address.address_line_1, 'Alt-Moabit 72')
-        self.assertEqual(self.obj.address.address_line_2, None)
-        self.assertEqual(self.obj.address.city, 'Breunsdorf')
-        self.assertEqual(self.obj.address.zip, '04574')
-        self.assertEqual(self.obj.address.state, 'Sachsen')
-        self.assertEqual(self.obj.address.country.name, 'Germany')
+        address = self.user.alumni.address
+        self.assertEqual(address.address_line_1, 'Alt-Moabit 72')
+        self.assertEqual(address.address_line_2, None)
+        self.assertEqual(address.city, 'Breunsdorf')
+        self.assertEqual(address.zip, '04574')
+        self.assertEqual(address.state, 'Sachsen')
+        self.assertEqual(address.country.name, 'Germany')
 
         # and fields were marked as incorrect
         for id_ in ['id_address_line_1', 'id_zip', 'id_city']:

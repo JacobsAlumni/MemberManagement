@@ -1,7 +1,6 @@
 import datetime
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 
 from alumni.fields.category import AlumniCategoryField
 from alumni.fields.gender import GenderField
@@ -32,8 +31,8 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that we got redirected to the right url
-        self.assertEqual(self.current_url, reverse('setup_address'),
-                         'Check that the user gets redirected to the second page')
+        self.assert_url_equal('setup_address',
+                              'Check that the user gets redirected to the second page')
 
         # check that the right alumni object was created
         obj = Alumni.objects.first()
@@ -79,8 +78,8 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         # check that we got redirected to the right url
-        self.assertEqual(self.current_url, reverse('setup_address'),
-                         'Check that the user gets redirected to the second page')
+        self.assert_url_equal('setup_address',
+                              'Check that the user gets redirected to the second page')
 
         # check that the right alumni object was created
         obj = Alumni.objects.first()
@@ -130,11 +129,11 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
 
         # then click the button and wait
         button.click()
-        self.wait_for_element('.main-container')
+        self.find_element('.main-container')
 
         # check that we didn't get redirected
-        self.assertEqual(self.current_url, reverse('register'),
-                         'Check that the user stays on the first page')
+        self.assert_url_equal('register',
+                              'Check that the user stays on the first page')
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_tos').get_attribute('class').split(' '), 'tos field marked up as incorrect')
 
@@ -159,15 +158,15 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
             'id_birthday': '1991-04-09',
         })
 
-        self.assertEqual(self.current_url, reverse('register'),
-                         'Check that the user stays on the first page')
+        self.assert_url_equal('register',
+                              'Check that the user stays on the first page')
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')
 
     def test_signup_jacobsemail(self):
         """ Tests that we can not complete the first setup page with a jacobs alumni email """
 
-        self.submit_form(reverse('register'), 'input_id_submit', send_form_keys={
+        self.submit_form('register', 'input_id_submit', send_form_keys={
             'id_givenName': 'David',
             'id_middleName': 'L',
             'id_familyName': 'Hood',
@@ -185,7 +184,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
             'id_birthday': '1991-04-09',
         })
 
-        self.assertEqual(self.current_url, reverse('register'),
-                         'Check that the user stays on the first page')
+        self.assert_url_equal(
+            'register', 'Check that the user stays on the first page')
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')

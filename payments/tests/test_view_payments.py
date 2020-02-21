@@ -40,61 +40,58 @@ MOCKED_TIME = timezone.datetime(
 
 class ViewPaymentsTestMixin:
     fixtures = ['registry/tests/fixtures/integration.json']
+    expect_update_enabled = None
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.get_methods_table', return_value=(METHODS_TABLE, None))
     @mock.patch('payments.stripewrapper.get_payment_table', return_value=(PAYMENTS_TABLE, None))
     def test_both_ok(self, mmock, pmock):
-        self.sget(reverse('view_payments'))
+        self.load_live_url('view_payments')
 
         # ensure that both payment methods are shown
-        self.assertTrue(self.element_exists('#id_payment_method_1'))
-        self.assertTrue(self.element_exists('#id_payment_method_2'))
-        self.assertEqual(self.element_exists(
-            '#id_update_payment'), self.payment_update_enabled)
-        self.assertTrue(self.element_exists('#id_invoice_1'))
+        self.assert_element_exists('#id_payment_method_1')
+        self.assert_element_exists('#id_payment_method_2')
+        if self.__class__.expect_update_enabled:
+            self.assert_element_exists('#id_update_payment')
+        else:
+            self.assert_element_not_exists('#id_update_payment')
+        self.assert_element_exists('#id_invoice_1')
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.get_methods_table', return_value=(None, 'Debug'))
     @mock.patch('payments.stripewrapper.get_payment_table', return_value=(PAYMENTS_TABLE, None))
     def test_payment_ok(self, mmock, pmock):
-        self.sget(reverse('view_payments'))
+        self.load_live_url('view_payments')
 
         # ensure that both payment methods are shown
-        self.assertFalse(self.element_exists('#id_payment_method_1'))
-        self.assertFalse(self.element_exists('#id_payment_method_2'))
-        self.assertFalse(self.element_exists('#id_update_payment'))
-        self.assertFalse(self.element_exists('#id_invoice_1'))
+        self.assert_element_not_exists('#id_payment_method_1')
+        self.assert_element_not_exists('#id_payment_method_2')
+        self.assert_element_not_exists('#id_update_payment')
+        self.assert_element_not_exists('#id_invoice_1')
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.get_methods_table', return_value=(METHODS_TABLE, 'Debug'))
     @mock.patch('payments.stripewrapper.get_payment_table', return_value=(None, 'Debug'))
     def test_methods_ok(self, mmock, pmock):
-        self.sget(reverse('view_payments'))
+        self.load_live_url('view_payments')
 
         # ensure that both payment methods are shown
-        self.assertFalse(self.element_exists('#id_payment_method_1'))
-        self.assertFalse(self.element_exists('#id_payment_method_2'))
-        self.assertFalse(self.element_exists('#id_update_payment'))
-        self.assertFalse(self.element_exists('#id_invoice_1'))
+        self.assert_element_not_exists('#id_payment_method_1')
+        self.assert_element_not_exists('#id_payment_method_2')
+        self.assert_element_not_exists('#id_update_payment')
+        self.assert_element_not_exists('#id_invoice_1')
 
 
 class ViewStarterPayments(ViewPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
-    def setUp(self):
-        super().setUp()
-        self.login('Ramila')
-        self.payment_update_enabled = False
+    user = 'Ramila'
+    expect_update_enabled = False
 
 
 class ViewContributorPayments(ViewPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
-    def setUp(self):
-        super().setUp()
-        self.login('eilie')
-        self.payment_update_enabled = True
+    user = 'eilie'
+    expect_update_enabled = True
 
 
 class ViewPatronPayments(ViewPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
-    def setUp(self):
-        super().setUp()
-        self.login('Douner')
-        self.payment_update_enabled = True
+    user = 'Douner'
+    expect_update_enabled = True

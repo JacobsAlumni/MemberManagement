@@ -1,18 +1,13 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 from MemberManagement.tests.integration import IntegrationTest
 
-from alumni.models import Alumni
 from alumni.fields.industry import IndustryField
 from alumni.fields.job import JobField
 
 
 class JobTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_03_jacobs.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
+    user = 'Mounfem'
 
     def test_signup_job_complete(self):
         self.submit_form('setup_job', 'input_id_submit', send_form_keys={
@@ -23,14 +18,14 @@ class JobTest(IntegrationTest, StaticLiveServerTestCase):
             'id_job': 'Software Development / IT',
         })
 
-        self.assertEqual(self.current_url, reverse('setup_skills'),
-                         'Check that the user gets redirected to the skills page')
+        self.assert_url_equal('setup_skills',
+                              'Check that the user gets redirected to the skills page')
 
-        obj = Alumni.objects.first().job
-        self.assertEqual(obj.employer, "Solution Realty")
-        self.assertEqual(obj.position, "Junior Research Engineer")
-        self.assertEqual(obj.industry, IndustryField.NANOTECHNOLOGY)
-        self.assertEqual(obj.job, JobField.SOFTWARE_DEVELOPMENT_IT)
+        job = self.user.alumni.job
+        self.assertEqual(job.employer, "Solution Realty")
+        self.assertEqual(job.position, "Junior Research Engineer")
+        self.assertEqual(job.industry, IndustryField.NANOTECHNOLOGY)
+        self.assertEqual(job.job, JobField.SOFTWARE_DEVELOPMENT_IT)
 
     def test_signup_job_empty(self):
         self.submit_form('setup_job', 'input_id_submit', send_form_keys={
@@ -41,11 +36,11 @@ class JobTest(IntegrationTest, StaticLiveServerTestCase):
             'id_job': 'Other',
         })
 
-        self.assertEqual(self.current_url, reverse('setup_skills'),
-                         'Check that the user gets redirected to the job page')
+        self.assert_url_equal('setup_skills',
+                              'Check that the user gets redirected to the job page')
 
-        obj = Alumni.objects.first().job
-        self.assertEqual(obj.employer, None)
-        self.assertEqual(obj.position, None)
-        self.assertEqual(obj.industry, IndustryField.OTHER)
-        self.assertEqual(obj.job, JobField.OTHER)
+        job = self.user.alumni.job
+        self.assertEqual(job.employer, None)
+        self.assertEqual(job.position, None)
+        self.assertEqual(job.industry, IndustryField.OTHER)
+        self.assertEqual(job.job, JobField.OTHER)

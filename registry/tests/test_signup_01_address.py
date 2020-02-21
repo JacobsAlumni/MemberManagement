@@ -1,16 +1,9 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
-
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
-
 
 class AddressTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_00_register.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
+    user = 'Mounfem'
 
     def test_signup_address_minimal(self):
         self.submit_form('setup_address', 'input_id_submit', send_form_keys={
@@ -23,16 +16,16 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
             'id_country': ('DE',)
         })
 
-        self.assertEqual(self.current_url, reverse('setup_social'),
-                         'Check that the user gets redirected to the social page')
+        self.assert_url_equal('setup_social',
+                              'Check that the user gets redirected to the social page')
 
-        obj = Alumni.objects.first().address
-        self.assertEqual(obj.address_line_1, 'Alt-Moabit 72')
-        self.assertEqual(obj.address_line_2, None)
-        self.assertEqual(obj.city, 'Breunsdorf')
-        self.assertEqual(obj.zip, '04574')
-        self.assertEqual(obj.state, None)
-        self.assertEqual(obj.country.name, 'Germany')
+        address = self.user.alumni.address
+        self.assertEqual(address.address_line_1, 'Alt-Moabit 72')
+        self.assertEqual(address.address_line_2, None)
+        self.assertEqual(address.city, 'Breunsdorf')
+        self.assertEqual(address.zip, '04574')
+        self.assertEqual(address.state, None)
+        self.assertEqual(address.country.name, 'Germany')
 
     def test_signup_address_full(self):
         self.submit_form('setup_address', 'input_id_submit', send_form_keys={
@@ -45,16 +38,16 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
             'id_country': ('US',)
         })
 
-        self.assertEqual(self.current_url, reverse('setup_social'),
-                         'Check that the user gets redirected to the social page')
+        self.assert_url_equal('setup_social',
+                              'Check that the user gets redirected to the social page')
 
-        obj = Alumni.objects.first().address
-        self.assertEqual(obj.address_line_1, '2986 Heron Way')
-        self.assertEqual(obj.address_line_2, 'Attn. Anna Freytag')
-        self.assertEqual(obj.city, 'Portland')
-        self.assertEqual(obj.zip, '97205')
-        self.assertEqual(obj.state, 'Oregon')
-        self.assertEqual(obj.country.name, 'United States of America')
+        address = self.user.alumni.address
+        self.assertEqual(address.address_line_1, '2986 Heron Way')
+        self.assertEqual(address.address_line_2, 'Attn. Anna Freytag')
+        self.assertEqual(address.city, 'Portland')
+        self.assertEqual(address.zip, '97205')
+        self.assertEqual(address.state, 'Oregon')
+        self.assertEqual(address.country.name, 'United States of America')
 
     def test_signup_address_fail(self):
         button = self.fill_out_form(
@@ -65,11 +58,11 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
 
         # then click the button and wait
         button.click()
-        self.wait_for_element('.main-container')
+        self.find_element('.main-container')
 
         # check that we didn't get redirected
-        self.assertEqual(self.current_url, reverse('setup_address'),
-                         'Check that the user stays on the address page')
+        self.assert_url_equal('setup_address',
+                              'Check that the user stays on the address page')
 
         for id_ in ['id_address_line_1', 'id_zip', 'id_city', 'id_country']:
             self.assertIn('uk-form-danger', self.selenium.find_element_by_id(id_).get_attribute(

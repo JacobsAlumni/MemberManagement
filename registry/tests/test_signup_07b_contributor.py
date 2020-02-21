@@ -1,5 +1,4 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 from MemberManagement.tests.integration import IntegrationTest
 
 from unittest import mock
@@ -14,10 +13,7 @@ MOCKED_CUSTOMER = mock.MagicMock(id='cus_Fq8yG7rLrc6sKZ')
 
 class ContributorTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_06_atlas.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
+    user = 'Mounfem'
 
     def test_setup_contributor_elements(self):
         # fill out the form and select the contributor tier
@@ -25,57 +21,52 @@ class ContributorTest(IntegrationTest, StaticLiveServerTestCase):
             "id_tier": 'Contributor – Standard membership for 39€ p.a.'
         })
 
-        self.assertFalse(self.selenium.find_element_by_id(
-            'description-st').is_displayed())
-        self.assertTrue(self.selenium.find_element_by_id(
-            'description-co').is_displayed())
-        self.assertFalse(self.selenium.find_element_by_id(
-            'description-pa').is_displayed())
+        self.assert_element_not_displayed('#description-st')
+        self.assert_element_displayed('#description-co')
+        self.assert_element_not_displayed('#description-pa')
 
-    def test_setup_contributor(self):
-        with mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None)) as mocked:
-            # fill out the form an select the contributor tier
-            self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Contributor – Standard membership for 39€ p.a.'
-            })
+    @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
+    def test_setup_contributor(self, mocked):
+        # fill out the form an select the contributor tier
+        self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
+            "id_tier": 'Contributor – Standard membership for 39€ p.a.'
+        })
 
-            self.assertEqual(self.current_url, reverse('setup_subscription'),
-                             'Check that the user gets redirected to the subscription page')
+        self.assert_url_equal('setup_subscription',
+                                'Check that the user gets redirected to the subscription page')
 
-            # check that the stripe api was called with the object as a parameter
-            obj = Alumni.objects.first()
-            self.assertListEqual(mocked.call_args_list, [mock.call(obj)])
+        # check that the stripe api was called with the object as a parameter
+        alumni = self.user.alumni
+        mocked.assert_has_calls([mock.call(alumni)])
 
-            # check that the membership object was created
-            obj = Alumni.objects.first().membership
-            self.assertEqual(obj.tier, TierField.CONTRIBUTOR)
-            self.assertEqual(obj.customer, 'cus_Fq8yG7rLrc6sKZ')
+        # check that the membership object was created
+        membership = alumni.membership
+        self.assertEqual(membership.tier, TierField.CONTRIBUTOR)
+        self.assertEqual(membership.customer, 'cus_Fq8yG7rLrc6sKZ')
 
-            # Check that the subscription object was *not* created
-            with self.assertRaises(SubscriptionInformation.DoesNotExist):
-                SubscriptionInformation.objects.get(
-                    member=Alumni.objects.first())
+        # Check that the subscription object was *not* created
+        with self.assertRaises(SubscriptionInformation.DoesNotExist):
+            SubscriptionInformation.objects.get(member=alumni)
 
-    def test_setup_contributor_fail(self):
-        with mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug")) as mocked:
-            # fill out the form an select the payments tier
-            self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
-                "id_tier": 'Contributor – Standard membership for 39€ p.a.'
-            })
+    @mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug"))
+    def test_setup_contributor_fail(self, mocked):
+        # fill out the form an select the payments tier
+        self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
+            "id_tier": 'Contributor – Standard membership for 39€ p.a.'
+        })
 
-            # we stay on the same page
-            self.assertEqual(self.current_url, reverse('setup_membership'),
-                             'Check that the user does not get redirected to the final page')
+        # we stay on the same page
+        self.assert_url_equal('setup_membership',
+                                'Check that the user does not get redirected to the final page')
 
-            # check that the stripe api was called with the object as a parameter
-            obj = Alumni.objects.first()
-            self.assertListEqual(mocked.call_args_list, [mock.call(obj)])
+        # check that the stripe api was called with the object as a parameter
+        alumni = self.user.alumni
+        mocked.assert_has_calls([mock.call(alumni)])
 
-            # Check that the membership object was *not* created
-            with self.assertRaises(MembershipInformation.DoesNotExist):
-                Alumni.objects.first().membership
+        # Check that the membership object was *not* created
+        with self.assertRaises(MembershipInformation.DoesNotExist):
+            alumni.membership
 
-            # Check that the subscription object was *not* created
-            with self.assertRaises(SubscriptionInformation.DoesNotExist):
-                SubscriptionInformation.objects.get(
-                    member=Alumni.objects.first())
+        # Check that the subscription object was *not* created
+        with self.assertRaises(SubscriptionInformation.DoesNotExist):
+            SubscriptionInformation.objects.get(member=alumni)

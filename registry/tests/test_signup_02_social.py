@@ -1,16 +1,10 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
-
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
 
 
 class SocialTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_01_address.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
+    user = 'Mounfem'
 
     def test_signup_social_complete(self):
         self.submit_form('setup_social', 'input_id_submit', send_form_keys={
@@ -21,16 +15,16 @@ class SocialTest(IntegrationTest, StaticLiveServerTestCase):
             'id_homepage': 'https://anna-freytag.com'
         })
 
-        self.assertEqual(self.current_url, reverse('setup_jacobs'),
-                         'Check that the user gets redirected to the jacobs page')
+        self.assert_url_equal('setup_jacobs',
+                              'Check that the user gets redirected to the jacobs page')
 
-        obj = Alumni.objects.first().social
-        self.assertEqual(obj.facebook, 'https://facebook.com/anna.freytag')
+        social = self.user.alumni.social
+        self.assertEqual(social.facebook, 'https://facebook.com/anna.freytag')
         self.assertEqual(
-            obj.linkedin, 'https://www.linkedin.com/in/anna-freytag-1234578')
-        self.assertEqual(obj.twitter, 'https://twitter.com/anna.freytag')
-        self.assertEqual(obj.instagram, 'https://instagram.com/anna.freytag')
-        self.assertEqual(obj.homepage, 'https://anna-freytag.com')
+            social.linkedin, 'https://www.linkedin.com/in/anna-freytag-1234578')
+        self.assertEqual(social.twitter, 'https://twitter.com/anna.freytag')
+        self.assertEqual(social.instagram, 'https://instagram.com/anna.freytag')
+        self.assertEqual(social.homepage, 'https://anna-freytag.com')
 
     def test_signup_social_empty(self):
         self.submit_form('setup_social', 'input_id_submit', send_form_keys={
@@ -41,12 +35,12 @@ class SocialTest(IntegrationTest, StaticLiveServerTestCase):
             'id_homepage': ''
         })
 
-        self.assertEqual(self.current_url, reverse('setup_jacobs'),
-                         'Check that the user gets redirected to the jacobs page')
+        self.assert_url_equal('setup_jacobs',
+                              'Check that the user gets redirected to the jacobs page')
 
-        obj = Alumni.objects.first().social
-        self.assertEqual(obj.facebook, None)
-        self.assertEqual(obj.linkedin, None)
-        self.assertEqual(obj.twitter, None)
-        self.assertEqual(obj.instagram, None)
-        self.assertEqual(obj.homepage, None)
+        social = self.user.alumni.social
+        self.assertEqual(social.facebook, None)
+        self.assertEqual(social.linkedin, None)
+        self.assertEqual(social.twitter, None)
+        self.assertEqual(social.instagram, None)
+        self.assertEqual(social.homepage, None)

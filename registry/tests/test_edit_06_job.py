@@ -1,5 +1,4 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 
 from alumni.fields.industry import IndustryField
 from alumni.fields.job import JobField
@@ -9,27 +8,21 @@ from MemberManagement.tests.integration import IntegrationTest
 
 class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
-        self.obj = Alumni.objects.get(profile__username='Mounfem')
+    user = 'Mounfem'
 
     def test_noedit(self):
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
         self.submit_form('edit_job', 'input_id_submit')
-
-        # check that nothing happened
-        self.assertEqual(self.current_url, reverse('edit_job'),
-                         'Check that we stayed on the right page')
+        self.assert_url_equal('edit_job')
 
         # check that everything stayed the same
-        self.assertEqual(self.obj.job.employer, "Solution Realty")
-        self.assertEqual(self.obj.job.position, "Junior Research Engineer")
-        self.assertEqual(self.obj.job.industry, IndustryField.NANOTECHNOLOGY)
-        self.assertEqual(self.obj.job.job, JobField.SOFTWARE_DEVELOPMENT_IT)
+        job = self.user.alumni.job
+        self.assertEqual(job.employer, "Solution Realty")
+        self.assertEqual(job.position, "Junior Research Engineer")
+        self.assertEqual(job.industry, IndustryField.NANOTECHNOLOGY)
+        self.assertEqual(job.job, JobField.SOFTWARE_DEVELOPMENT_IT)
 
     def test_edit_complete(self):
         # enter nothing
@@ -40,16 +33,14 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
             'id_industry': 'Military',
             'id_job': 'Retail',
         })
-
-        # check that nothing happened
-        self.assertEqual(self.current_url, reverse('edit_job'),
-                         'Check that we stayed on the right page')
+        self.assert_url_equal('edit_job')
 
         # check that everything saved
-        self.assertEqual(self.obj.job.employer, "Problem Dream")
-        self.assertEqual(self.obj.job.position, "Senior Production Consultant")
-        self.assertEqual(self.obj.job.industry, IndustryField.MILITARY)
-        self.assertEqual(self.obj.job.job, JobField.RETAIL)
+        job = self.user.alumni.job
+        self.assertEqual(job.employer, "Problem Dream")
+        self.assertEqual(job.position, "Senior Production Consultant")
+        self.assertEqual(job.industry, IndustryField.MILITARY)
+        self.assertEqual(job.job, JobField.RETAIL)
 
     def test_edit_empty(self):
         # enter nothing
@@ -60,13 +51,11 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
             'id_industry': 'Other',
             'id_job': 'Other',
         })
-
-        # check that nothing happened
-        self.assertEqual(self.current_url, reverse('edit_job'),
-                         'Check that we stayed on the right page')
+        self.assert_url_equal('edit_job')
 
         # check that everything saved
-        self.assertEqual(self.obj.job.employer, None)
-        self.assertEqual(self.obj.job.position, None)
-        self.assertEqual(self.obj.job.industry, IndustryField.OTHER)
-        self.assertEqual(self.obj.job.job, JobField.OTHER)
+        job = self.user.alumni.job
+        self.assertEqual(job.employer, None)
+        self.assertEqual(job.position, None)
+        self.assertEqual(job.industry, IndustryField.OTHER)
+        self.assertEqual(job.job, JobField.OTHER)

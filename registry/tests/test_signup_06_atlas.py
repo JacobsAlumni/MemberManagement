@@ -1,16 +1,9 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
-
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
-
 
 class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_05_skills.json']
-
-    def setUp(self):
-        super().setUp()
-        self.login('Mounfem')
+    user = 'Mounfem'
 
     def test_signup_atlas_all(self):
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
@@ -19,13 +12,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
             'id_contactInfoVisible': True,
         })
 
-        self.assertEqual(self.current_url, reverse('setup_membership'),
-                         'Check that the user gets redirected to the membership page')
+        self.assert_url_equal('setup_membership',
+                              'Check that the user gets redirected to the membership page')
 
-        obj = Alumni.objects.first().atlas
-        self.assertEqual(obj.included, True)
-        self.assertEqual(obj.birthdayVisible, True)
-        self.assertEqual(obj.contactInfoVisible, True)
+        atlas = self.user.alumni.atlas
+        self.assertEqual(atlas.included, True)
+        self.assertEqual(atlas.birthdayVisible, True)
+        self.assertEqual(atlas.contactInfoVisible, True)
 
     def test_signup_atlas_birthday(self):
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
@@ -34,13 +27,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, reverse('setup_membership'),
-                         'Check that the user gets redirected to the membership page')
+        self.assert_url_equal('setup_membership',
+                              'Check that the user gets redirected to the membership page')
 
-        obj = Alumni.objects.first().atlas
-        self.assertEqual(obj.included, True)
-        self.assertEqual(obj.birthdayVisible, True)
-        self.assertEqual(obj.contactInfoVisible, False)
+        atlas = self.user.alumni.atlas
+        self.assertEqual(atlas.included, True)
+        self.assertEqual(atlas.birthdayVisible, True)
+        self.assertEqual(atlas.contactInfoVisible, False)
 
     def test_signup_atlas_contact(self):
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
@@ -49,13 +42,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
             'id_contactInfoVisible': True,
         })
 
-        self.assertEqual(self.current_url, reverse('setup_membership'),
-                         'Check that the user gets redirected to the membership page')
+        self.assert_url_equal('setup_membership',
+                              'Check that the user gets redirected to the membership page')
 
-        obj = Alumni.objects.first().atlas
-        self.assertEqual(obj.included, True)
-        self.assertEqual(obj.birthdayVisible, False)
-        self.assertEqual(obj.contactInfoVisible, True)
+        atlas = self.user.alumni.atlas
+        self.assertEqual(atlas.included, True)
+        self.assertEqual(atlas.birthdayVisible, False)
+        self.assertEqual(atlas.contactInfoVisible, True)
 
     def test_signup_atlas_minimal(self):
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
@@ -64,13 +57,13 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, reverse('setup_membership'),
-                         'Check that the user gets redirected to the membership page')
+        self.assert_url_equal('setup_membership',
+                              'Check that the user gets redirected to the membership page')
 
-        obj = Alumni.objects.first().atlas
-        self.assertEqual(obj.included, True)
-        self.assertEqual(obj.birthdayVisible, False)
-        self.assertEqual(obj.contactInfoVisible, False)
+        atlas = self.user.alumni.atlas
+        self.assertEqual(atlas.included, True)
+        self.assertEqual(atlas.birthdayVisible, False)
+        self.assertEqual(atlas.contactInfoVisible, False)
 
     def test_signup_atlas_empty(self):
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
@@ -79,10 +72,10 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
             'id_contactInfoVisible': False,
         })
 
-        self.assertEqual(self.current_url, reverse('setup_membership'),
-                         'Check that the user gets redirected to the membership page')
+        self.assert_url_equal('setup_membership',
+                              'Check that the user gets redirected to the membership page')
 
-        obj = Alumni.objects.first().atlas
-        self.assertEqual(obj.included, False)
-        self.assertEqual(obj.birthdayVisible, False)
-        self.assertEqual(obj.contactInfoVisible, False)
+        atlas = self.user.alumni.atlas
+        self.assertEqual(atlas.included, False)
+        self.assertEqual(atlas.birthdayVisible, False)
+        self.assertEqual(atlas.contactInfoVisible, False)
