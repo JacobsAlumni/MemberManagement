@@ -53,7 +53,7 @@ def check_customer_stripe_props(alumni, customer):
 def create_customer(stripe, alumni_instance):
     """ Creates a new customer for a given alumni """
 
-    props = get_stripe_customer_props(alumni_instance)
+    props = _get_stripe_customer_props(alumni_instance)
     customer = stripe.Customer.create(**props)
     return customer.id
 
