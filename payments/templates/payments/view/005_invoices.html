@@ -1,0 +1,51 @@
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">
+            Invoices
+            {% include "payments/stripe_bage.html" %}
+        </h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <thead>
+                <tr>
+                    <th>Date (UTC)</th>
+                    <th>Description</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                    <tr id="id_invoice_{{forloop.counter}}">
+                        <td>
+                            {{ invoice.date | safe }}
+                        </td>
+                        <td>
+                            {% for l in invoice.lines %}
+                                {% if l %}
+                                    {{ l | safe }} <br />
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{ invoice.total | safe }}
+                        </td>
+                        <td>
+                            {% if invoice.paid %}
+                                <span class="uk-label uk-label-success">Paid</span>
+                            {% elif invoice.closed %}
+                                <span class="uk-label uk-label-danger">Unpaid</span>
+                            {% elif invoice.upcoming %}
+                                <span class="uk-label">Upcoming</span>
+                                <span class="uk-label uk-label-warning">Not final</span>
+                            {% else %}
+                                <span class="uk-label uk-label-warning">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

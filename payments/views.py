@@ -6,13 +6,15 @@ from django.utils import formats, timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, TemplateView
 
+from alumni.fields import TierField
 from payments import stripewrapper
 from registry.decorators import require_setup_completed
 from registry.views.setup import SetupComponentView
 
+from MemberManagement.mixins import RedirectResponseMixin
+
 from .forms import MembershipInformationForm, PaymentMethodForm
 from .models import SubscriptionInformation
-from .plans import subscription_plans
 
 
 class SignupView(SetupComponentView):
@@ -24,7 +26,10 @@ class SignupView(SetupComponentView):
 
     def get_context(self, form):
         context = super().get_context(form)
-        context['confirm_text'] = 'Confirm Membership'
+        context.update({
+            'confirm_text': 'Confirm Membership',
+            'updating': False
+        })
         return context
 
     def form_valid(self, form):
@@ -39,7 +44,7 @@ class SignupView(SetupComponentView):
         # store the information
         instance = form.save(commit=False)
         instance.member = self.request.user.alumni
-        instance.customer = customer.id
+        instance.customer = customer
         instance.save()
 
         # if we selected the starter tier, create subscription information now
@@ -69,10 +74,66 @@ class SubscribeView(SetupComponentView):
     def setup_class(cls):
         return SubscriptionInformation
 
+    def should_setup_component(self):
+        """ Check if we should setup this component """
+
+        # by default, we are not in payment update mode
+        self.payment_update_mode = False
+
+        # if the subscription object is not the first unset component
+        # then we shouldn't set it up right now and redirect instead
+        if not super().should_setup_component():
+            return False
+
+        membership = self.request.user.alumni.membership
+        desired_tier = membership.desired_tier
+
+        # if there is no desired_tier, then the subscription object is
+        # the first unset tier and we should set it up right now.
+        if desired_tier is None:
+            return True
+
+        # we are in update_payment mode mode
+        self.payment_update_mode = True
+
+        # try updating the instance right now
+        instance, err = membership.change_tier(desired_tier)
+        if err is not None:
+            # abort the tier upgrade
+            membership.desired_tier = None
+            membership.save()
+
+            # and produce an error message
+            messages.error(
+                self.request, 'Unable to change tier: {}. Please contact support if the problem persists. '.format(err))
+
+            return False
+
+        # show an info message depending on if we update or not
+        if instance is not None:
+            messages.success(self.request, 'Tier has been changed to {}'.format(
+                TierField.get_description(desired_tier)))
+        else:
+            messages.info(
+                self.request, 'Please enter your payment details to complete the tier change. ')
+
+        # if we don't have an instance yet, we need the user to enter payment details
+        return instance is None
+
+    def dispatch_should_not(self):
+        if not self.payment_update_mode:
+            return super().dispatch_should_not()
+
+        # if the subscription was in update mode and we shouldn't set it up
+        # then we should immediatly redirect to the memebership page
+        return self.redirect_response('update_membership', reverse=True)
+
     def form_valid(self, form):
+        """ Form has been validated """
+
         # Attach the payment source to the customer
-        customer = self.request.user.alumni.membership.customer
-        _, err = form.attach_to_customer(customer)
+        membership = self.request.user.alumni.membership
+        _, err = form.attach_to_customer(membership.customer)
 
         # if the error is not, return
         if err is not None:
@@ -80,26 +141,24 @@ class SubscribeView(SetupComponentView):
                 None, 'Something went wrong when talking to our payment service provider. Please try again later or contact support. ')
             return None
 
-        # grab tier and plan
-        tier = self.request.user.alumni.membership.tier
-        plan = subscription_plans[tier].stripe_id
-
-        # create a subscription on the plan
-        sub, err = stripewrapper.create_subscription(customer, plan)
-        if err is not None:
+        instance = membership.create_subscription()
+        if instance is None:
             form.add_error(
                 None, 'Something went wrong trying to create the subscription. Please try again later or contact support. ')
-            return None
-
-        # Create the object
-        instance = SubscriptionInformation.objects.create(
-            member=self.request.user.alumni,
-            tier=tier,
-            subscription=sub,
-            start=timezone.now()
-        )
 
         return instance
+
+    def dispatch_success(self, validated):
+        """ called upon successful setup """
+
+        # if this was not created from an update operation, do nothing
+        if not validated.created_from_update:
+            return super().dispatch_success(validated)
+
+        # we suceeded
+        messages.success(self.request, 'Tier has been changed to {}'.format(
+            TierField.get_description(self.request.user.alumni.membership.tier)))
+        return self.redirect_response('update_membership', reverse=True)
 
 
 @method_decorator(require_setup_completed, name='dispatch')
@@ -132,6 +191,35 @@ class UpdatePaymentView(FormView):
         messages.success(self.request, 'Payment method has been updated. ')
 
         return self.form_invalid(form)
+
+
+@method_decorator(require_setup_completed, name='dispatch')
+@method_decorator(user_passes_test(lambda user: user.alumni.can_update_tier), name='dispatch')
+class UpdateTierView(RedirectResponseMixin, FormView):
+    template_name = 'payments/tier.html'
+    form_class = MembershipInformationForm
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context.update({
+            'title': 'Change Membership Tier',
+            'updating': True,
+            'next_text': 'Change Tier',
+            'confirm_text': 'Change Tier',
+            'alumni': self.request.user.alumni,
+        })
+        return context
+
+    def form_valid(self, form):
+        membership = self.request.user.alumni.membership
+
+        # update the desired tier to what the user selected
+        desired_tier = form.cleaned_data['tier']
+        membership.desired_tier = desired_tier
+        membership.save()
+
+        # redirect to the setup_subscription page
+        return self.redirect_response('setup_subscription', reverse=True)
 
 
 class PaymentsTableMixin:
@@ -183,7 +271,8 @@ class PaymentsTableMixin:
                     'date': cls.format_datetime(iv['date']),
                     'total': cls.format_total(iv['total'][0], iv['total'][1]),
                     'paid': iv['paid'],
-                    'closed': iv['closed']
+                    'closed': iv['closed'],
+                    'upcoming': iv['upcoming']
                 } for iv in invoices]
             except Exception as e:
                 err = e

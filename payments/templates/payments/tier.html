@@ -1,5 +1,6 @@
 {% extends "setup/setup.html" %}
 {% load static %}
+{% load registry_display %}
 
 {% block head %}
 <script type="text/javascript">
@@ -9,6 +10,34 @@
 </script>
 
 <script src="{% static "js/payments/tier.js" %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block pagetitle %}
+    {% if updating %}
+    <a href="{% url "view_payments" %}" class="uk-button uk-button-default uk-button-small">
+        <span uk-icon="icon: arrow-left"></span>
+        Back to Membership
+    </a>
+    {% endif %}
+    {{ title }}
+{% endblock %}
+
+{% block preform %}
+    {% if updating %}
+    <div class="div_id_pre_tier">
+        <label class="uk-form-label" for="id_pre_tier">
+            Current Tier *
+        </label>
+        <div class="uk-form-controls-text uk-hidden@m">
+            <p></p>
+        </div>
+        <div class="uk-form-controls uk-form-controls-text">
+            <select name="payment_type" class="uk-select " id="id_pre_tier" disabled="disabled">
+                <option>{{ alumni.membership | get_choice_field:"tier" }}</option>
+            </select>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}
 
 {% block extracontent %}
@@ -58,16 +87,42 @@
         </div>
     </div>
 </div>
+
+
 <div class="uk-alert-warning" uk-alert>
-    <a class="uk-alert-close" uk-close></a>
-    <p>
-        Please double check the tier you selected before continuing. <br />
-        {% if selfservice_tier_enabled %}
-            You will be able to change tiers on your own only after the setup process is completed. 
-            If you change your mind later during the signup process, you can contact support by writing an email to <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>. 
+    <ul>
+        <li>
+            Always double check the selected tier before continuing. 
+        </li>
+
+        {% if updating %}
+            <li>
+                When upgrading from the starter to a payed tier, you will be asked to enter payment information. <br />
+                Once you start the upgrade, you will not be able to use the portal until this is complete. 
+            </li>
+            <li>
+                When switching between payed tiers, your existing payment method will be reused. <br />
+                Your payment cycle remains the same, and the up- or downgrade will be <b>pro-rated</b>. <br />
+                This means that if you e.g. change tiers 6 months after first becoming a member, you will pay 50% of the old price plus 50% of the new price.
+            </li>
+            <li>
+                If you decide to downgrade to the starter tier, your subscription will be cancelled immediatly and your payment methods will be deleted. <br />
+            </li>
         {% else %}
-            Changing tiers is possible later, but you will have to write an email to <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a> for them do so <b>manually</b>. 
+            {% if selfservice_tier_enabled %}
+                <li>
+                    You will be able to change tiers on your own only after the setup process is completed.  <br />
+                    If you change your mind later during the signup process, you can contact support by writing an email to <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>. 
+                </li>
+            {% else %}
+                <li>
+                    Changing tiers is possible later, but you will have to write an email to <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a> for them do so <b>manually</b>. 
+                </li>
+            {% endif %}
         {% endif %}
-    </p>
+        <li>
+            If you have any questions, comments or concerns, contact support by writing an email to <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>. 
+        </li>
+    </ul>
 </div>
 {% endblock %}

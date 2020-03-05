@@ -7,8 +7,6 @@
 {% block content %}
 <div class="uk-tile uk-tile-muted">
 
-    {% include "approval/messages.html" %}
-
     <form class="uk-form-horizontal" method="POST">
         {% csrf_token %}
         {{ form | as_uikit_form }}

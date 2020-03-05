@@ -14,10 +14,11 @@
     {% if updating %}
     <a href="{% url "view_payments" %}" class="uk-button uk-button-default uk-button-small">
         <span uk-icon="icon: arrow-left"></span>
-        Back to Payment Information
+        Back to Membership
     </a>
     {% endif %}
     {{ title }}
+    {% include "payments/stripe_bage.html" %}
 {% endblock %}
 
 {% block content %}
@@ -46,15 +47,6 @@
         </p>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="uk-alert{% if message.tags %}-{{ message.tags }}{% endif %}" uk-alert>
-                <a class="uk-alert-close" uk-close></a>
-                <p>{{ message }}</p>
-            </div>
-        {% endfor %}
-    {% endif %}
-
     <div>
         <form class="uk-form-horizontal">
             <div id="div_id_tier">
@@ -66,7 +58,13 @@
                 </div>
                 <div class="uk-form-controls uk-form-controls-text">
                     <select name="payment_type" class="uk-select " id="id_tier" disabled="disabled">
-                        <option>{{ alumni.membership | get_choice_field:"tier" }}</option>
+                        <option>
+                            {% if alumni.membership.desired_tier %}
+                                {{ alumni.membership | get_choice_field:"desired_tier" }}
+                            {% else %}
+                                {{ alumni.membership | get_choice_field:"tier" }}
+                            {% endif %}
+                        </option>
                       </select>
                 </div>
 
@@ -78,13 +76,13 @@
                     {% if updating %}
                         You can not change tiers on this page. 
                     {% else %}
-                        It is not possible to change tiers on your own at this point of the signup process. 
+                        It is not possible to change tiers on your own at this point. 
                         If you absolutely need to change your tier, please contact support by writing an email to <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>. 
                     {% endif %}
                     
                     {% if selfservice_tier_enabled %}
                         {% if updating %}{% else %}
-                            You will be able to change tiers once you have completed your registration. 
+                            You will be able to change tiers once you have entered payment details. 
                         {% endif %}
                     {% endif %}
                 </div>
@@ -96,7 +94,7 @@
             {{ form | as_uikit_form }}
 
             <!-- Elements for Card -->
-            <div id="stripe-card-elements">
+            <div id="stripe-card-elements" style='display: none; '>
                 <label for="card-element" class="uk-form-label">
                     Credit or debit card *
                 </label>
@@ -106,7 +104,7 @@
             </div>
 
             <!-- Elements for IBAN -->
-            <div id="stripe-iban-elements">
+            <div id="stripe-iban-elements" style='display: none; '>
 
                 <div class="uk-form-controls uk-form-controls-text uk-alert-warning" uk-alert>
                     By providing your IBAN and confirming this payment, you are authorizing Jacobs Alumni Association and Stripe, our payment service provider, to send instructions to your bank to debit your account and your bank to debit your account in accordance with those instructions. 
@@ -152,7 +150,7 @@
                         </li>
                         <li>
                             {% if selfservice_tier_enabled %}
-                                Once your application is completed, you can change your membership tier in the membership portal.
+                                Upon entering your payment details, you can change your membership tier on your own in the membership portal.
                             {% else %}
                                 You can always change your tier by contacting support. 
                             {% endif %}

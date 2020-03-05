@@ -5,7 +5,7 @@ from django.urls import reverse as reverse_func
 class RedirectResponseMixin:
     """ A mixin that can be used to redirect the user """
 
-    def redirect_response(self, url, reverse=False, permanent=False):
+    def redirect_response(self, url, reverse=True, permanent=False):
         if reverse:
             url = reverse_func(url)
 

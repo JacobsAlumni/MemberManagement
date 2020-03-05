@@ -17,4 +17,18 @@ class TierField(CustomTextChoiceField):
          "Patron – Premium membership for 249€ p.a."),
     )
 
-    DEFAULT_CHOICE = CONTRIBUTOR
+    STRIPE_IDS = {
+        CONTRIBUTOR: "contributor-membership",
+        STARTER: "starter-membership",
+        PATRON: "patron-membership"
+    }
+
+    @staticmethod
+    def get_description(value):
+        for (k, v) in TierField.CHOICES:
+            if k == value:
+                return v
+
+    @staticmethod
+    def get_stripe_id(value):
+        return TierField.STRIPE_IDS[value]
