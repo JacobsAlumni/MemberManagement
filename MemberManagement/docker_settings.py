@@ -11,6 +11,9 @@ DEBUG = False
 ENABLE_DEVEL_WARNING = os.environ.setdefault(
     "DJANGO_ENABLE_DEVEL_WARNING", "") == "1"
 
+SELFSERVICE_TIER_ENABLED = os.environ.setdefault(
+    "SELFSERVICE_TIER_ENABLED", "") == "1"
+
 # we want to allow all hosts
 ALLOWED_HOSTS = os.environ.setdefault("DJANGO_ALLOWED_HOSTS", "").split(",")
 
