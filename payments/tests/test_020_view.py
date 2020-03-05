@@ -1,8 +1,6 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 
-from alumni.models import Alumni
-from MemberManagement.tests.integration import IntegrationTest
+from MemberManagement.tests.integration import IntegrationTest, IntegrationTestBase
 
 from unittest import mock
 
@@ -30,7 +28,8 @@ PAYMENTS_TABLE = [
         'date': 543795200,
         'total': [3900, 'eur'],
         'paid': True,
-        'closed': True
+        'closed': True,
+        'upcoming': False,
     }
 ]
 
@@ -38,7 +37,7 @@ MOCKED_TIME = timezone.datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 
 
-class ViewPaymentsTestMixin:
+class ViewPaymentsTestBase(IntegrationTestBase):
     fixtures = ['registry/tests/fixtures/integration.json']
     expect_update_enabled = None
 
@@ -51,10 +50,20 @@ class ViewPaymentsTestMixin:
         # ensure that both payment methods are shown
         self.assert_element_exists('#id_payment_method_1')
         self.assert_element_exists('#id_payment_method_2')
-        if self.__class__.expect_update_enabled:
+
+        # check that the update payment button is shown
+        if self.__class__.expect_updatepayment_enabled:
             self.assert_element_exists('#id_update_payment')
         else:
             self.assert_element_not_exists('#id_update_payment')
+
+        # check that the update tier button is shown
+        if self.__class__.expect_updatetier_enabled:
+            self.assert_element_exists('#id_update_tier')
+        else:
+            self.assert_element_not_exists('#id_update_tier')
+
+        # and the invoice is visible too
         self.assert_element_exists('#id_invoice_1')
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
@@ -82,16 +91,19 @@ class ViewPaymentsTestMixin:
         self.assert_element_not_exists('#id_invoice_1')
 
 
-class ViewStarterPayments(ViewPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
+class ViewStarterPayments(ViewPaymentsTestBase, IntegrationTest, StaticLiveServerTestCase):
     user = 'Ramila'
-    expect_update_enabled = False
+    expect_updatepayment_enabled = False
+    expect_updatetier_enabled = True
 
 
-class ViewContributorPayments(ViewPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
+class ViewContributorPayments(ViewPaymentsTestBase, IntegrationTest, StaticLiveServerTestCase):
     user = 'eilie'
-    expect_update_enabled = True
+    expect_updatepayment_enabled = True
+    expect_updatetier_enabled = True
 
 
-class ViewPatronPayments(ViewPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
+class ViewPatronPayments(ViewPaymentsTestBase, IntegrationTest, StaticLiveServerTestCase):
     user = 'Douner'
-    expect_update_enabled = True
+    expect_updatepayment_enabled = True
+    expect_updatetier_enabled = True

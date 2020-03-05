@@ -1,7 +1,9 @@
 import stripe as stripeapi
 from raven.contrib.django.raven_compat.models import client
 from datetime import datetime
+import time
 import pytz
+
 
 def _safe(operation):
     """ Performs a potentially unsafe operation that interacts with the stripe api """
@@ -90,7 +92,7 @@ def update_payment_method(stripe, customer_id, source_id, card_id):
     else:
         update['card'] = card_id
 
-    stripe.Customer.modify(customer, **update)
+    stripe.Customer.modify(customer_id, **update)
     return True
 
 
@@ -104,20 +106,50 @@ def create_subscription(stripe, customer_id, plan_id):
 
 
 @_as_safe_operation
+def update_subscription(stripe, subscription_id, new_plan_id):
+    """ Updates the subscription with the given id to the one with the new id """
+
+    subscription = stripe.Subscription.retrieve(subscription_id)
+    proration_date = int(time.time())
+
+    stripe.Subscription.modify(
+        subscription.id,
+        items=[{
+            'id': subscription['items']['data'][0].id,
+            'plan': new_plan_id,
+        }],
+        proration_date=proration_date,
+    )
+
+    return True
+
+
+@_as_safe_operation
 def get_payment_table(stripe, customer_id):
     """ gets a table of payments for a customer """
+    invoices = [_invoice_to_dict(invoice_instance, upcoming=False)
+                for invoice_instance in stripe.Invoice.list(customer=customer_id)]
 
-    return [_invoice_to_dict(invoice_instance) for invoice_instance in stripe.Invoice.list(customer=customer_id)]
+    try:
+        upcoming = stripe.Invoice.upcoming(customer=customer_id)
+    except stripe.error.InvalidRequestError as e:
+        upcoming = None
+
+    if upcoming is not None:
+        invoices = [_invoice_to_dict(upcoming, upcoming=True)] + invoices
+
+    return invoices
 
 
-def _invoice_to_dict(invoice_instance):
+def _invoice_to_dict(invoice_instance, upcoming):
     """ Turns an invoice instance into a dict for downstream consumption """
     return {
         'lines': [l for l in invoice_instance.lines],
         'date': invoice_instance.date,
         'total': [invoice_instance.total, invoice_instance.currency],
+        'upcoming': upcoming,
         'paid': invoice_instance.paid,
-        'closed': invoice_instance.closed
+        'closed': invoice_instance.closed,
     }
 
 

@@ -33,7 +33,7 @@ class PaymentMethodForm(forms.Form):
         else:
             source_id = None
         cleaned_data['source_id'] = source_id
-        source_is_blank = source_id is '' or source_id is None
+        source_is_blank = source_id == '' or source_id is None
 
         # extract card id
         if 'card_token' in cleaned_data:
@@ -41,7 +41,7 @@ class PaymentMethodForm(forms.Form):
         else:
             card_token = None
         cleaned_data['card_token'] = card_token
-        card_is_blank = card_token is '' or card_token is None
+        card_is_blank = card_token == '' or card_token is None
 
         if source_is_blank and card_is_blank:
             raise forms.ValidationError(

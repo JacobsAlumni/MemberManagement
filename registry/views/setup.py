@@ -38,37 +38,36 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
     setup_redirect_url = 'setup'
 
     def has_setup_component(self):
-        """ returns True iff this setup routine has already been performed """
+        """ Function that is called on every request to check if this component has been setup """
 
         raise NotImplementedError
 
     def should_setup_component(self):
-        """ returns True iff this setup component is the next valid setup component """
+        """ Function that is called to perform pre-setup hooks and check if further (user-based) setup is required """
 
         raise NotImplementedError
 
     def dispatch_already_set(self):
-        """ called when setup component already exists """
+        """ Called when the setup component is already setup """
 
         raise NotImplementedError
 
     def dispatch_should_not(self):
-        """ called when should_setup_component returns false """
+        """ Called when the setup component is not setup and also should not be """
 
         return self.dispatch_already_set()
 
     def form_valid(self, form):
-        """ Called when the form is valid and an instance is to be created """
-
+        """ Called when the setup form has been successfully submitted """
         raise NotImplementedError
 
     def dispatch_success(self, validated):
-        """ called upon successful setup """
+        """ Called on True-ish return of form_valid() with the returned value """
 
         return self.redirect_response(self.__class__.setup_redirect_url, reverse=True)
 
     def get_context(self, form):
-        """ builds context for instantiating the template """
+        """ Builds the context for instatiating the content when a page is rendered """
 
         return {
             'form': form,
@@ -78,6 +77,8 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         }
 
     def dispatch(self, *args, **kwargs):
+        """ Dispatches this form """
+
         # if we already have the setup component
         # then call the appropriate dispatch method
         if self.has_setup_component():

@@ -1,19 +1,17 @@
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.urls import reverse
 from django.utils import timezone
 
-from alumni.fields.tier import TierField
 from MemberManagement.tests.integration import IntegrationTest
 from payments.models import SubscriptionInformation
 
-from .paymentmethod import PaymentMethodTest
+from .stripefrontend import StripeFrontendTestMixin
 
 MOCKED_TIME = timezone.datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 
-class SignupPaymentsTestMixin(PaymentMethodTest):
+class SignupPaymentsTestBase(StripeFrontendTestMixin):
     def test_card_ok(self):
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.assert_card_selectable()
@@ -155,13 +153,13 @@ class SignupPaymentsTestMixin(PaymentMethodTest):
                 member=self.user.alumni)
 
 
-class ContributorSubscribeTest(SignupPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
+class ContributorSubscribeTest(SignupPaymentsTestBase, IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_07b_contributor.json']
     user = 'Mounfem'
     subscribe_field_value = 'contributor-membership'
 
 
-class PatronSubscribeTest(SignupPaymentsTestMixin, IntegrationTest, StaticLiveServerTestCase):
+class PatronSubscribeTest(SignupPaymentsTestBase, IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_07c_patron.json']
     user = 'Mounfem'
     subscribe_field_value = 'patron-membership'

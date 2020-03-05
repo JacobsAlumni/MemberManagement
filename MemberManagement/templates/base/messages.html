@@ -1,0 +1,14 @@
+{% if messages %}
+    {% for message in messages %}
+        <div
+            class="message uk-alert-{% if message.level == DEFAULT_MESSAGE_LEVELS.DEBUG %}danger{% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}success{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}warning{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}danger{% else %}primary{% endif %}"
+            id="id_message_{{forloop.index}}"
+            uk-alert
+        >
+            <p>
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.DEBUG %}<b>DEBUG</b>{% endif %}
+                {{ message }}
+            </p>
+        </div>
+    {% endfor %}
+{% endif %}

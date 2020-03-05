@@ -14,6 +14,7 @@
 <div>
     <form class="uk-form-horizontal" method="POST">
         {% csrf_token %}
+        {% block preform %}{% endblock %}
         {{ form | as_uikit_form }}
         {% block extracontent %}{% endblock %}
         <input type="submit" id="input_id_submit" class="uk-button uk-button-primary" value="{{ next_text }}">
