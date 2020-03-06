@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from django.utils import formats, timezone
+from django.utils import formats
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, TemplateView
 
@@ -79,6 +79,7 @@ class SubscribeView(SetupComponentView):
 
         # by default, we are not in payment update mode
         self.payment_update_mode = False
+        self.payment_update_error = None
 
         # if the subscription object is not the first unset component
         # then we shouldn't set it up right now and redirect instead
@@ -97,25 +98,16 @@ class SubscribeView(SetupComponentView):
         self.payment_update_mode = True
 
         # try updating the instance right now
-        instance, err = membership.change_tier(desired_tier)
+        instance, err = membership.change_tier()
         if err is not None:
             # abort the tier upgrade
             membership.desired_tier = None
             membership.save()
 
-            # and produce an error message
-            messages.error(
-                self.request, 'Unable to change tier: {}. Please contact support if the problem persists. '.format(err))
+            # and store the payment error to be displayed
+            self.payment_update_error = err
 
             return False
-
-        # show an info message depending on if we update or not
-        if instance is not None:
-            messages.success(self.request, 'Tier has been changed to {}'.format(
-                TierField.get_description(desired_tier)))
-        else:
-            messages.info(
-                self.request, 'Please enter your payment details to complete the tier change. ')
 
         # if we don't have an instance yet, we need the user to enter payment details
         return instance is None
@@ -124,9 +116,24 @@ class SubscribeView(SetupComponentView):
         if not self.payment_update_mode:
             return super().dispatch_should_not()
 
+        if self.payment_update_error is None:
+            tier = self.request.user.alumni.membership.tier
+            messages.success(self.request, 'Tier has been changed to {}'.format(
+                TierField.get_description(tier)))
+        else:
+            messages.error(self.request, 'Unable to change tier: {}. Please try again or contact support. '.format(
+                self.payment_update_error))
+
         # if the subscription was in update mode and we shouldn't set it up
         # then we should immediatly redirect to the memebership page
         return self.redirect_response('update_membership', reverse=True)
+
+    def dispatch_form(self, form):
+        if self.payment_update_mode:
+            messages.info(
+                self.request, 'Please enter your payment details to complete the tier change. ')
+
+        return super().dispatch_form(form)
 
     def form_valid(self, form):
         """ Form has been validated """

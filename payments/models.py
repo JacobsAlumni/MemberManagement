@@ -66,8 +66,11 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
             instance.created_from_update = True
         return instance
 
-    def change_tier(self, desired_tier):
+    def change_tier(self):
         """ Designates this user as changing tier """
+
+        # the tier we want to switch to
+        desired_tier = self.desired_tier
 
         # if the desired tier is none, we are already done
         if desired_tier is None:
@@ -150,6 +153,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         # end the current subscription, set the new tier
         sub.set_end()
         self.tier = desired_tier
+        self.desired_tier = None
         self.save()
 
         # Create the new subscription
