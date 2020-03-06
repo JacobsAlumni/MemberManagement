@@ -76,6 +76,11 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
             'next_text': self.__class__.setup_next_text,
         }
 
+    def dispatch_form(self, form):
+        """ Called to dispatch the form to be filled out """
+
+        return self.render_to_response(self.get_context(form))
+
     def dispatch(self, *args, **kwargs):
         """ Dispatches this form """
 
@@ -103,7 +108,7 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
                 return self.dispatch_success(success)
 
         # else render the form
-        return self.render_to_response(self.get_context(form))
+        return self.dispatch_form(form)
 
 
 class RegisterView(SetupViewBase):
