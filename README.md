@@ -21,7 +21,7 @@ The entire application can be run locally for a development setup and via [Docke
 
 ### Local Development Instance
 
-To run a local instance, install Python 3.5 or newer, then clone this repository and afterwards set up a [virtal environment](https://docs.python.org/3/library/venv.html) as follows:
+To run a local instance, install Python 3.6 or newer, then clone this repository and afterwards set up a [virtal environment](https://docs.python.org/3/library/venv.html) as follows:
 
 ```bash
 # Create and activate venv in venv/ 
