@@ -16,11 +16,13 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.views.generic import RedirectView, TemplateView
 
-from .views import HomeView
+from .views import HomeView, HealthCheckDynamic, HealthCheckStatic
 
 urlpatterns = [
     # Static Views
     url(r'^$', HomeView.as_view(), name='root'),
+    url(r'^healthcheck/$', HealthCheckDynamic.as_view(), name='healthcheck'),
+    url(r'^healthcheck/static/$', HealthCheckStatic.as_view(), name='healthcheck'),
     url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
 
     # Legacy urls

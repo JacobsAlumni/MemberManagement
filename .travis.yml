@@ -29,6 +29,24 @@ jobs:
         - mkdir geckodriver
         - tar -xzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -C geckodriver
         - export PATH=$PATH:$PWD/geckodriver
+    
+    # docker + smoketest
+    - services:
+      - docker
+      
+      install:
+        - docker pull python:3.8-alpine
+      
+      script:
+        - docker build -t jacobsalumni/membermanagement .
+        - docker run -d --name=smoke -e DJANGO_SECRET_KEY=smoke -p 8080:80 jacobsalumni/membermanagement
+        - sleep 10
+        - curl http://localhost:8080/healthcheck/
+        - curl -L http://localhost:8080/healthcheck/static
+      
+      after_script:
+        - docker stop smoke
+    
 
 python:
   - "3.8"
