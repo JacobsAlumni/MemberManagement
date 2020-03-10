@@ -95,12 +95,12 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         # - Starter -> Contributor
         # - Starter -> Patron
         if self.tier == TierField.STARTER:
-            return self._upgrade_to_payed(desired_tier)
+            return self._upgrade_to_paid(desired_tier)
 
-        # we switch between payed tiers and pro-rate
+        # we switch between paid tiers and pro-rate
         # Contributor -> Patron
         # Patron -> Contributor
-        return self._switch_payed_tier(desired_tier)
+        return self._switch_paid_tier(desired_tier)
 
     def _downgrade_to_starter(self):
         # cancel the active subscription
@@ -126,7 +126,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         # and return the instance
         return instance, None
 
-    def _upgrade_to_payed(self, desired_tier):
+    def _upgrade_to_paid(self, desired_tier):
         """ Upgrades from the free to the desired tier """
 
         # store the 'desired' tier, so that we know to ask for payment details
@@ -135,8 +135,8 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
 
         return None, None
 
-    def _switch_payed_tier(self, desired_tier):
-        """ Switches the payed tier """
+    def _switch_paid_tier(self, desired_tier):
+        """ Switches the paid tier """
 
         # find the current subscription
         sub = self.member.subscription

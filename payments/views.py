@@ -125,7 +125,7 @@ class SubscribeView(SetupComponentView):
                 self.payment_update_error))
 
         # if the subscription was in update mode and we shouldn't set it up
-        # then we should immediatly redirect to the memebership page
+        # then we should immediately redirect to the memebership page
         return self.redirect_response('update_membership', reverse=True)
 
     def dispatch_form(self, form):

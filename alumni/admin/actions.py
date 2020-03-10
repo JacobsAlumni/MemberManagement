@@ -57,7 +57,7 @@ def get_model_prop(modeladmin, obj, field, default=None):
 def to_excel(value):
     """ Turns any value into a value understood by excel """
 
-    # if we know the type, return it immediatly
+    # if we know the type, return it immediately
     if isinstance(value, cell.KNOWN_TYPES):
         return value
 
