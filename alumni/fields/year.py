@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .custom import CustomIntegerChoiceField
 
 __all__ = ['ClassField']

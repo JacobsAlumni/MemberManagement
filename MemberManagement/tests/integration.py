@@ -30,9 +30,9 @@ class DummyTestBase():
 class IntegrationTestBase(DummyTestBase):
     """ A base class for integration tests """
 
-    user = None  # type: User
-    selenium = None  # type: SeleniumWrapper
-    live_server_url = None  # type: str
+    user: User = None
+    selenium: SeleniumWrapper = None
+    live_server_url: str = None
 
     def load_fixture(self, path: str) -> None:
         """ Loads a fixture for use in unit tests """

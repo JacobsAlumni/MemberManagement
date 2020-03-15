@@ -1,4 +1,10 @@
+from __future__ import annotations
+
 from django.db import models
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Tuple, Union, Optional
 
 __all__ = ['CustomTextChoiceField', 'CustomIntegerChoiceField']
 
@@ -8,14 +14,14 @@ class CustomChoiceFieldMixin:
 
     CHOICES = []
     @classmethod
-    def get_class_choices(cls):
+    def get_class_choices(cls) -> List[Tuple[str, Union[str, int]]]:
         """ Returns the choices used by this class """
 
         return cls.CHOICES
 
     DEFAULT_CHOICE = None  # the default choice
     @classmethod
-    def get_class_default(cls):
+    def get_class_default(cls) -> Optional[Union[str, int]]:
         """ Returns the default choice of this class """
 
         return cls.DEFAULT_CHOICE
@@ -25,7 +31,7 @@ class CustomTextChoiceField(CustomChoiceFieldMixin, models.CharField):
     """ A Custom Choice Field for Text """
 
     @classmethod
-    def get_class_max_length(cls):
+    def get_class_max_length(cls) -> int:
         """ Returns the maximum length of this class """
         choices = cls.get_class_choices()
         return max([len(k) for (k, v) in choices])

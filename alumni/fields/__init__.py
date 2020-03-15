@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 from .college import CollegeField
 from .category import AlumniCategoryField

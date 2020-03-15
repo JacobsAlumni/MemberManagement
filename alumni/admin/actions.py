@@ -1,18 +1,22 @@
+from __future__ import annotations
+from custom_auth.models import GoogleAssociation
+from custom_auth.management.commands.linkgsuite import link_gsuite_users
+from openpyxl.cell import cell
+from openpyxl import styles
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 import openpyxl
 
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponse
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any, List, Iterator, Optional, Callable
+    from django.contrib.admin import ModelAdmin
+    from django.http import HttpRequest
+    from django.db.models import QuerySet
+    ExcelCellType = Any
 
-from django.contrib.auth import get_user_model
-
-from openpyxl import styles
-from openpyxl.cell import cell
-
-from custom_auth.management.commands.linkgsuite import link_gsuite_users
-from custom_auth.models import GoogleAssociation
-
-
-def get_direct_prop(obj, fields):
+def get_direct_prop(obj: Any, fields: List[str]) -> Any:
     """ Gets a model property of an object """
 
     # shouldn't happen, but whatever
@@ -39,7 +43,7 @@ def get_direct_prop(obj, fields):
         return get_direct_prop(getattr(obj, fields[0]), fields[1:])
 
 
-def get_model_prop(modeladmin, obj, field, default=None):
+def get_model_prop(modeladmin: ModelAdmin, obj: Any, field: str, default: Any = None) -> Any:
     """ Gets a model property or None"""
     try:
         try:
@@ -54,7 +58,7 @@ def get_model_prop(modeladmin, obj, field, default=None):
         return default
 
 
-def to_excel(value):
+def to_excel(value: Any) -> ExcelCellType:
     """ Turns any value into a value understood by excel """
 
     # if we know the type, return it immediately
@@ -74,13 +78,13 @@ def to_excel(value):
         return str(value)
 
 
-def export_as_xslx_action(description="Export selected objects as XSLX file",
-                          fields=None, header=True):
+def export_as_xslx_action(description: str = "Export selected objects as XSLX file",
+                          fields: Optional[Iterator[str]] = None, header: bool = True) -> Callable[[ModelAdmin, HttpRequest, QuerySet], HttpResponse]:
     """
     Return an action that exports the given fields as XSLX files
     """
 
-    def export_as_xslx(modeladmin, request, queryset):
+    def export_as_xslx(modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet) -> HttpResponse:
 
         # get fields to export
         opts = modeladmin.model._meta
@@ -139,7 +143,7 @@ def export_as_xslx_action(description="Export selected objects as XSLX file",
     return export_as_xslx
 
 
-def link_to_gsuite_action(modeladmin, request, queryset):
+def link_to_gsuite_action(modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet) -> None:
     """ Link to GSuite links users to a GSuite Account """
     profiles = get_user_model().objects.filter(alumni__in=queryset)
 
@@ -150,7 +154,7 @@ def link_to_gsuite_action(modeladmin, request, queryset):
 link_to_gsuite_action.short_description = 'Link Users to GSuite'
 
 
-def unlink_from_gsuite_action(modeladmin, request, queryset):
+def unlink_from_gsuite_action(modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet) -> None:
     """ Unlink Users from GSuite """
 
     count, _ = GoogleAssociation.objects.filter(
@@ -208,12 +212,8 @@ class AlumniAdminActions:
         'setup__date',
     )
 
-    xslx_export = export_as_xslx_action("Export as XSLX",
-                                        fields=full_export_fields)
-
     actions = [
-        'xslx_export',
-        'csv_export',
+        export_as_xslx_action("Export as XSLX", fields=full_export_fields),
         link_to_gsuite_action,
         unlink_from_gsuite_action
     ]
