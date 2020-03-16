@@ -1,19 +1,20 @@
+from __future__ import annotations
+
 from django import template
 from django.template.loader import get_template
-from django import VERSION as DJANGO_VERSION
 
-if DJANGO_VERSION >= (1, 10, 0):
-    context_class = dict
-else:
-    # Django<1.10 compatibility
-    from django.template import Context
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from django.forms import Form, Field
+    from django.forms.widgets import Widget
 
-    context_class = Context
 
 register = template.Library()
 
 
-def _get_widget_class(name):
+def _get_widget_class(name: str) -> str:
+    """ Gets the name of a widget """
+
     if name.startswith('checkbox'):
         return 'uk-checkbox'
     if name.startswith('select') or name.startswith('lazyselectmultiple'):
@@ -25,7 +26,7 @@ def _get_widget_class(name):
     return 'uk-input'
 
 
-def _add_class(widget, cls):
+def _add_class(widget: Widget, cls: str) -> None:
     if cls is not None:
         try:
             widget.attrs["class"] += cls
@@ -33,9 +34,10 @@ def _add_class(widget, cls):
             widget.attrs["class"] = cls + " "
 
 
-def _preprocess_fields(form):
-    for afield, field in zip(form, form.fields):
+def _preprocess_fields(form: Form) -> Form:
+    """ Preprocess fields """
 
+    for afield, field in zip(form, form.fields):
         # add a class for the input element
         name = form.fields[field].widget.__class__.__name__.lower()
         _add_class(form.fields[field].widget, _get_widget_class(name))
@@ -49,16 +51,16 @@ def _preprocess_fields(form):
 
 
 @register.filter
-def as_uikit_form(form):
+def as_uikit_form(form: Form) -> str:
+    """ Renders a form using UIKit """
     template = get_template("uikit/form.html")
     form = _preprocess_fields(form)
-
-    c = context_class({
+    return template.render({
         "form": form,
     })
-    return template.render(c)
 
 
 @register.filter
-def css_class(field):
+def css_class(field: Field) -> str:
+    """ The CSS class of a widget """
     return field.field.widget.__class__.__name__.lower()
