@@ -1,12 +1,18 @@
+from __future__ import annotations
+
 from selenium.webdriver.support.ui import Select
 from MemberManagement.tests.integration import IntegrationTestBase
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional
 
 
 class StripeFrontendTestMixin(IntegrationTestBase):
     _payment_type_element = '#id_payment_type'
     _submit_button_element = '#button_id_presubmit'
 
-    def assert_card_selectable(self):
+    def assert_card_selectable(self) -> None:
         element = self.find_element(self.__class__._payment_type_element)
         submit = self.find_element('#button_id_presubmit', clickable=True)
 
@@ -16,7 +22,7 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         self.assert_element_displayed('#stripe-card-elements')
         self.assert_element_not_displayed('#stripe-iban-elements')
 
-    def assert_iban_selectable(self):
+    def assert_iban_selectable(self) -> None:
         element = self.find_element(self.__class__._payment_type_element)
         submit = self.find_element(
             self.__class__._submit_button_element, clickable=True)
@@ -28,7 +34,7 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         self.assert_element_not_displayed('#stripe-card-elements')
         self.assert_element_displayed('#stripe-iban-elements')
 
-    def submit_card_details(self, cardnumber='4242 4242 4242 4242', exp_date='12/50', cvc='123', postal='12345', next_selector=None):
+    def submit_card_details(self, cardnumber: str = '4242 4242 4242 4242', exp_date: str = '12/50', cvc: str = '123', postal: str = '12345', next_selector: Optional[str] = None) -> None:
         """ Fills out and submits testing card details """
 
         # load the subscribe page and wait for the submit button to be clickable
@@ -53,7 +59,7 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         self.find_element(
             next_selector or self.__class__._find_element_selector)
 
-    def submit_sepa_details(self, iban='DE89370400440532013000', name='Anna Freytag', next_selector=None):
+    def submit_sepa_details(self, iban: str = 'DE89370400440532013000', name: str = 'Anna Freytag', next_selector: Optional[str] = None) -> None:
         """ Fills out and submits testing SEPA details """
 
         # load the subscribe page and wait for the submit button to be clickable

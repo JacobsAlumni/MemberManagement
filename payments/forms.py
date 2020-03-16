@@ -1,15 +1,20 @@
+from __future__ import annotations
+
 from payments import stripewrapper
 
 from django import forms
 
 from payments.models import MembershipInformation
-from raven.contrib.django.raven_compat.models import client
 
 from alumni.fields import PaymentTypeField
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any
+
 
 class MembershipInformationForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.fields['tier'].help_text = None
@@ -24,7 +29,7 @@ class PaymentMethodForm(forms.Form):
     source_id = forms.CharField(widget=forms.HiddenInput(), required=False)
     card_token = forms.CharField(widget=forms.HiddenInput(), required=False)
 
-    def clean(self):
+    def clean(self) -> None:
         cleaned_data = self.cleaned_data
 
         # extract source id
@@ -53,7 +58,7 @@ class PaymentMethodForm(forms.Form):
 
         return cleaned_data
 
-    def attach_to_customer(self, customer):
+    def attach_to_customer(self, customer: str) -> bool:
         source_id = self.cleaned_data['source_id']
         token = self.cleaned_data['card_token']
         return stripewrapper.update_payment_method(customer, source_id, token)

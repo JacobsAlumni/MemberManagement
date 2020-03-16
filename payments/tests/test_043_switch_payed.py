@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -9,6 +11,11 @@ from MemberManagement.tests.integration import (IntegrationTest,
 
 MOCKED_TIME = timezone.datetime(
     2020, 2, 4, 15, 52, 27, 62000, tzinfo=timezone.utc)
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional
+    from datetime import datetime
 
 
 class SwitchTestBase(IntegrationTestBase):
@@ -22,7 +29,7 @@ class SwitchTestBase(IntegrationTestBase):
         self.start_time = self.user.alumni.subscription.start
         self.end_time = self.user.alumni.subscription.end
 
-    def _assert_subscription_equal(self, instance, tier=None, subscription=None, external=False, start=None, end=None):
+    def _assert_subscription_equal(self, instance: SubscriptionInformation, tier: Optional[str] = None, subscription: Optional[str] = None, external: bool = False, start: Optional[datetime] = None, end: Optional[datetime] = None) -> None:
         """ Asserts that a subscription instance is equal"""
 
         self.assertEqual(instance.start, start)
@@ -31,7 +38,7 @@ class SwitchTestBase(IntegrationTestBase):
         self.assertEqual(instance.external, external)
         self.assertEqual(instance.tier, tier)
 
-    def _assert_tier_unchanged(self):
+    def _assert_tier_unchanged(self) -> None:
         """ Asserts that the tier is still the original tier and has not changed """
 
         subscription = self.user.alumni.subscription
@@ -39,7 +46,7 @@ class SwitchTestBase(IntegrationTestBase):
             subscription, subscription=self.start_subscription, tier=self.start_tier, start=self.start_time, end=self.end_time)
         self.assertEqual(self.user.alumni.membership.tier, self.start_tier)
 
-    def _assert_tier_changed(self):
+    def _assert_tier_changed(self) -> None:
         # check that the new subscription was created
         subscription = self.user.alumni.subscription
         self.assertEqual(self.user.alumni.membership.tier,
@@ -55,7 +62,7 @@ class SwitchTestBase(IntegrationTestBase):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_subscription', return_value=(True, None))
-    def test_switch_ok(self, umock):
+    def test_switch_ok(self, umock: mock.Mock) -> None:
         # select to upgrade the membership
         self.submit_form('update_membership', 'input_id_submit', select_dropdowns={
             "id_tier": TierField.get_description(self.__class__.target_tier)
@@ -76,7 +83,7 @@ class SwitchTestBase(IntegrationTestBase):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_subscription', return_value=(None, "Debug Test"))
-    def test_switch_fail(self, umock):
+    def test_switch_fail(self, umock: mock.Mock) -> None:
         # select to upgrade the membership
         self.submit_form('update_membership', 'input_id_submit', select_dropdowns={
             "id_tier": TierField.get_description(self.__class__.target_tier)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -8,20 +10,26 @@ from MemberManagement.tests.integration import IntegrationTest
 
 from .stripefrontend import StripeFrontendTestMixin
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from datetime import datetime
+    from typing import Optional
+    from ..models import SubscriptionInformation
+
 MOCKED_TIME = timezone.datetime(
     2020, 2, 4, 15, 52, 27, 62000, tzinfo=timezone.utc)
 
 
 class UpgradeNoopTestBase(StripeFrontendTestMixin):
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
 
-        self.start_tier = self.user.alumni.membership.tier
-        self.start_subscription = self.user.alumni.subscription.subscription
-        self.start_time = self.user.alumni.subscription.start
-        self.end_time = self.user.alumni.subscription.end
+        self.start_tier: str = self.user.alumni.membership.tier
+        self.start_subscription: Optional[str] = self.user.alumni.subscription.subscription
+        self.start_time: datetime = self.user.alumni.subscription.start
+        self.end_time: Optional[datetime] = self.user.alumni.subscription.end
 
-    def _assert_subscription_equal(self, instance, tier=None, subscription=None, external=False, start=None, end=None):
+    def _assert_subscription_equal(self, instance: SubscriptionInformation, tier: Optional[str]=None, subscription: Optional[str]=None, external: bool=False, start: Optional[datetime]=None, end: Optional[datetime]=None) -> None:
         """ Asserts that a subscription instance is equal"""
 
         self.assertEqual(instance.start, start)
@@ -31,7 +39,7 @@ class UpgradeNoopTestBase(StripeFrontendTestMixin):
         self.assertEqual(instance.tier, tier)
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
-    def test_noop_ok(self):
+    def test_noop_ok(self) -> None:
         self.submit_form('update_membership', 'input_id_submit', select_dropdowns={
             "id_tier": TierField.get_description(self.start_tier)
         })

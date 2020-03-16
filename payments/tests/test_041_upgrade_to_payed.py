@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -11,19 +14,23 @@ from .stripefrontend import StripeFrontendTestMixin
 MOCKED_TIME = timezone.datetime(
     2020, 2, 4, 15, 52, 27, 62000, tzinfo=timezone.utc)
 
+if TYPE_CHECKING:
+    from typing import Optional
+    from datetime import datetime
+
 
 class UpgradeTestBase(StripeFrontendTestMixin):
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
 
-        self.start_tier = self.user.alumni.membership.tier
-        self.subscribe_field_value = TierField.get_stripe_id(
+        self.start_tier: str = self.user.alumni.membership.tier
+        self.subscribe_field_value: str = TierField.get_stripe_id(
             self.__class__.target_tier)
 
-        self.start_time = self.user.alumni.subscription.start
-        self.end_time = self.user.alumni.subscription.end
+        self.start_time: datetime = self.user.alumni.subscription.start
+        self.end_time: Optional[datetime] = self.user.alumni.subscription.end
 
-    def _assert_subscription_equal(self, instance, tier=None, subscription=None, external=False, start=None, end=None):
+    def _assert_subscription_equal(self, instance: SubscriptionInformation, tier: Optional[str] = None, subscription: Optional[str] = None, external: bool = False, start: Optional[datetime] = None, end: Optional[datetime] = None) -> None:
         """ Asserts that a subscription instance is equal"""
 
         self.assertEqual(instance.start, start)
@@ -32,7 +39,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
         self.assertEqual(instance.external, external)
         self.assertEqual(instance.tier, tier)
 
-    def _assert_tier_unchanged(self):
+    def _assert_tier_unchanged(self) -> None:
         """ Asserts that the tier is still the original tier and has not changed """
 
         subscription = self.user.alumni.subscription
@@ -40,7 +47,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
             subscription, tier=self.start_tier, start=self.start_time, end=self.end_time)
         self.assertEqual(self.user.alumni.membership.tier, self.start_tier)
 
-    def _assert_select_redirect_payment(self):
+    def _assert_select_redirect_payment(self) -> None:
         """ Asserts that selecting an update redirects to the payment method """
 
         # select to upgrade the membership
@@ -59,7 +66,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
-    def test_upgrade_card_ok(self, cmock, umock):
+    def test_upgrade_card_ok(self, cmock: mock.Mock, umock: mock.Mock) -> None:
 
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
@@ -93,7 +100,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
-    def test_upgrade_card_error_update_method(self, cmock, umock):
+    def test_upgrade_card_error_update_method(self, cmock: mock.Mock, umock: mock.Mock) -> None:
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_card_details()
@@ -114,7 +121,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, Exception('Debug Error')))
-    def test_upgrade_card_error_create_subscription(self, cmock, umock):
+    def test_upgrade_card_error_create_subscription(self, cmock: mock.Mock, umock: mock.Mock) -> None:
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_card_details()
@@ -136,7 +143,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
-    def test_upgrade_sepa(self, cmock, umock):
+    def test_upgrade_sepa(self, cmock: mock.Mock, umock: mock.Mock) -> None:
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_sepa_details()
@@ -169,7 +176,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
-    def test_upgrade_sepa_error_update_method(self, cmock, umock):
+    def test_upgrade_sepa_error_update_method(self, cmock: mock.Mock, umock: mock.Mock) -> None:
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_sepa_details()
@@ -190,7 +197,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, Exception('Debug Error')))
-    def test_upgrade_sepa_error_create_subscription(self, cmock, umock):
+    def test_upgrade_sepa_error_create_subscription(self, cmock: mock.Mock, umock: mock.Mock) -> None:
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_sepa_details()

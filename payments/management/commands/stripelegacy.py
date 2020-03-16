@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.core.management.base import BaseCommand
 
 from payments import stripewrapper
@@ -7,15 +9,20 @@ from alumni.fields import TierField
 
 from datetime import timedelta
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any, Iterable, Callable
+    from argparse import ArgumentParser
+
 
 class Command(BaseCommand):
     help = 'Removes legacy data from Stripe'
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser):
         parser.add_argument(
             'users', nargs='*', help='Usernames of user(s) to update. If empty, update all users. ')
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args: Any, **kwargs: Any) -> None:
         # Get the user objects from the database
         usernames = kwargs['users']
         if len(usernames) == 0:
@@ -29,7 +36,7 @@ class Command(BaseCommand):
         clear_legacy_data(subs, lambda x: print(x))
 
 
-def clear_legacy_data(subs, on_message):
+def clear_legacy_data(subs: Iterable[SubscriptionInformation], on_message: Callable[[str], None]) -> None:
     """ Links GSuite Users """
 
     subs = subs.select_related('member__membership')

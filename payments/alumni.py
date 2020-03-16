@@ -1,12 +1,19 @@
+from __future__ import annotations
+
 from django.conf import settings
 
 from alumni.fields import TierField
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional
+    from .models import SubscriptionInformation
 
 
 class AlumniSubscriptionMixin:
 
     @property
-    def subscription(self):
+    def subscription(self) -> Optional[SubscriptionInformation]:
         """ Gets the active subscription of the user """
         subscriptions = self.subscriptioninformation_set
         tier = self.membership.tier
@@ -19,7 +26,7 @@ class AlumniSubscriptionMixin:
         return subscriptions.filter(tier=tier, end__isnull=True).order_by('-start').first()
 
     @property
-    def can_update_payment(self):
+    def can_update_payment(self) -> bool:
         """ Checks if the user is allowed to update their payment method """
 
         sub = self.subscription
@@ -30,6 +37,6 @@ class AlumniSubscriptionMixin:
         return stripesub is not None and stripesub != ''
 
     @property
-    def can_update_tier(self):
+    def can_update_tier(self) -> bool:
         """ Checks if the user can change their tier """
         return self.setup_completed and settings.SELFSERVICE_TIER_ENABLED

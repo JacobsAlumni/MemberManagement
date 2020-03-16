@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db import models
 
 from django.utils import timezone
@@ -10,6 +12,11 @@ from registry.alumni import AlumniComponentMixin
 
 from payments import stripewrapper
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, Any
+    from datetime import datetime, timedelta
+
 
 @Alumni.register_component(6)
 class MembershipInformation(AlumniComponentMixin, models.Model):
@@ -17,22 +24,22 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
 
     SETUP_COMPONENT_NAME = 'membership'
 
-    member = models.OneToOneField(
+    member: Alumni = models.OneToOneField(
         Alumni, related_name='membership', on_delete=models.CASCADE)
 
-    tier = TierField(default=TierField.CONTRIBUTOR,
-                     help_text='Membership Tier')
+    tier: str = TierField(default=TierField.CONTRIBUTOR,
+                          help_text='Membership Tier')
 
-    desired_tier = TierField(null=True, blank=True,
-                             help_text='Desired Membership Tier')
+    desired_tier: Optional[str] = TierField(null=True, blank=True,
+                                            help_text='Desired Membership Tier')
 
-    customer = models.CharField(max_length=255, null=True, blank=True,
-                                help_text='The stripe customer id for the user')
+    customer: Optional[str] = models.CharField(max_length=255, null=True, blank=True,
+                                               help_text='The stripe customer id for the user')
 
-    stripe_check = models.BooleanField(
+    stripe_check: Optional[bool] = models.BooleanField(
         null=True, blank=True, help_text='Internal Column used by Stripe checking')
 
-    def create_subscription(self):
+    def create_subscription(self) -> Optional[SubscriptionInformation]:
         """ Creates a new subscription when newly entered payment details are available """
 
         # if we have a 'desired_tier' this should be used to create the subscription
@@ -66,7 +73,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
             instance.created_from_update = True
         return instance
 
-    def change_tier(self):
+    def change_tier(self) -> (Optional[SubscriptionInformation], Optional[str]):
         """ Designates this user as changing tier """
 
         # the tier we want to switch to
@@ -102,7 +109,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         # Patron -> Contributor
         return self._switch_paid_tier(desired_tier)
 
-    def _downgrade_to_starter(self):
+    def _downgrade_to_starter(self) -> (Optional[SubscriptionInformation], Optional[str]):
         # cancel the active subscription
         sub = self.member.subscription
         if sub is not None:
@@ -126,7 +133,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         # and return the instance
         return instance, None
 
-    def _upgrade_to_paid(self, desired_tier):
+    def _upgrade_to_paid(self, desired_tier: str) -> (None, None):
         """ Upgrades from the free to the desired tier """
 
         # store the 'desired' tier, so that we know to ask for payment details
@@ -135,7 +142,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
 
         return None, None
 
-    def _switch_paid_tier(self, desired_tier):
+    def _switch_paid_tier(self, desired_tier: str) -> (Optional[SubscriptionInformation], Optional[str]):
         """ Switches the paid tier """
 
         # find the current subscription
@@ -166,27 +173,27 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
 class SubscriptionInformation(AlumniComponentMixin, models.Model):
     SETUP_COMPONENT_NAME = 'subscription'
 
-    member = models.ForeignKey(
+    member: Alumni = models.ForeignKey(
         Alumni, on_delete=models.CASCADE)
 
-    start = models.DateTimeField(
+    start: datetime = models.DateTimeField(
         help_text='The start date for the subscription')
-    end = models.DateTimeField(
+    end: Optional[datetime] = models.DateTimeField(
         blank=True, null=True, help_text='The end date for the subscription')
 
-    subscription = models.CharField(max_length=255, null=True, blank=True,
-                                    help_text='The Stripe Subscription ID for the given subscription')
-    external = models.BooleanField(
+    subscription: Optional[str] = models.CharField(max_length=255, null=True, blank=True,
+                                                   help_text='The Stripe Subscription ID for the given subscription')
+    external: bool = models.BooleanField(
         default=False, help_text="Subscription is managed externally")
 
-    tier = TierField(help_text='Membership Tier')
+    tier: str = TierField(help_text='Membership Tier')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.created_from_update = False
 
     @classmethod
-    def component_exists(cls, alumni):
+    def component_exists(cls, alumni: Alumni) -> bool:
         """ Checks if an alumni has this component set """
 
         # if we don't have a subscription the component does not exist
@@ -201,7 +208,7 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
         # if the desired_tier is already done, then we are done
         return obj.desired_tier is None
 
-    def cancel(self):
+    def cancel(self) -> bool:
         """ Cancels this subscription along with the stripe subscription """
         if self.end is not None:
             raise Exception('Subscription already cancelled')
@@ -219,20 +226,20 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
 
         return True
 
-    def set_end(self):
+    def set_end(self) -> None:
         """ Marks this subscription as having ended """
 
         self.end = timezone.now()
         self.save()
 
     @property
-    def active(self):
+    def active(self) -> bool:
         """ Property indicating if the subscription is active """
 
         return self.end is None or (self.end > timezone.now())
 
     @property
-    def time_left(self):
+    def time_left(self) -> Optional[timedelta]:
         """ Return the time left until the subscription expires or None """
 
         # if we are not active or are no longer active
@@ -243,12 +250,12 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
         return timezone.now() - self.end
 
     @classmethod
-    def create_starter_subscription(cls, alumni):
+    def create_starter_subscription(cls, alumni: Alumni) -> SubscriptionInformation:
         # creates a new starter subscription
         return cls.start_new_subscription(alumni, None, length=timedelta(days=2 * 365))
 
     @classmethod
-    def start_new_subscription(cls, alumni, subscription, length=None, tier=None):
+    def start_new_subscription(cls, alumni: Alumni, subscription: Optional[str], length: Optional[timedelta] = None, tier: Optional[str] = None) -> SubscriptionInformation:
         # the new subscription starts now
         start = timezone.now()
 

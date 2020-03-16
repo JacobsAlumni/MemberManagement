@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from MemberManagement.tests.integration import IntegrationTest, IntegrationTestBase
@@ -44,7 +46,7 @@ class ViewPaymentsTestBase(IntegrationTestBase):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.get_methods_table', return_value=(METHODS_TABLE, None))
     @mock.patch('payments.stripewrapper.get_payment_table', return_value=(PAYMENTS_TABLE, None))
-    def test_both_ok(self, mmock, pmock):
+    def test_both_ok(self, mmock: mock.Mock, pmock: mock.Mock) -> None:
         self.load_live_url('view_payments')
 
         # ensure that both payment methods are shown
@@ -69,7 +71,7 @@ class ViewPaymentsTestBase(IntegrationTestBase):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.get_methods_table', return_value=(None, 'Debug'))
     @mock.patch('payments.stripewrapper.get_payment_table', return_value=(PAYMENTS_TABLE, None))
-    def test_payment_ok(self, mmock, pmock):
+    def test_payment_ok(self, mmock: mock.Mock, pmock: mock.Mock) -> None:
         self.load_live_url('view_payments')
 
         # ensure that both payment methods are shown
@@ -81,7 +83,7 @@ class ViewPaymentsTestBase(IntegrationTestBase):
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.get_methods_table', return_value=(METHODS_TABLE, 'Debug'))
     @mock.patch('payments.stripewrapper.get_payment_table', return_value=(None, 'Debug'))
-    def test_methods_ok(self, mmock, pmock):
+    def test_methods_ok(self, mmock: mock.Mock, pmock: mock.Mock) -> None:
         self.load_live_url('view_payments')
 
         # ensure that both payment methods are shown

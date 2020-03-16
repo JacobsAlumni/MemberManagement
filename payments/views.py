@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from django.contrib import messages
@@ -16,6 +18,12 @@ from MemberManagement.mixins import RedirectResponseMixin
 from .forms import MembershipInformationForm, PaymentMethodForm
 from .models import SubscriptionInformation
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Dict, Any, Optional
+    from .models import MembershipInformation
+    from django.http import HttpResponse
+
 
 class SignupView(SetupComponentView):
     setup_name = 'Tier Selection'
@@ -24,7 +32,7 @@ class SignupView(SetupComponentView):
 
     template_name = 'payments/tier.html'
 
-    def get_context(self, form):
+    def get_context(self, form: MembershipInformationForm) -> Dict[str, Any]:
         context = super().get_context(form)
         context.update({
             'confirm_text': 'Confirm Membership',
@@ -32,7 +40,7 @@ class SignupView(SetupComponentView):
         })
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, form: MembershipInformationForm) -> Optional[MembershipInformation]:
 
         # Create the stripe customer
         customer, err = stripewrapper.create_customer(self.request.user.alumni)
@@ -63,7 +71,7 @@ class SubscribeView(SetupComponentView):
 
     template_name = 'payments/subscribe.html'
 
-    def get_context(self, *args, **kwargs):
+    def get_context(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context(*args, **kwargs)
         context.update({
             'alumni': self.request.user.alumni
@@ -71,10 +79,10 @@ class SubscribeView(SetupComponentView):
         return context
 
     @classmethod
-    def setup_class(cls):
+    def setup_class(cls) -> SubscriptionInformation:
         return SubscriptionInformation
 
-    def should_setup_component(self):
+    def should_setup_component(self) -> bool:
         """ Check if we should setup this component """
 
         # by default, we are not in payment update mode
@@ -112,7 +120,7 @@ class SubscribeView(SetupComponentView):
         # if we don't have an instance yet, we need the user to enter payment details
         return instance is None
 
-    def dispatch_should_not(self):
+    def dispatch_should_not(self) -> HttpResponse:
         if not self.payment_update_mode:
             return super().dispatch_should_not()
 
@@ -128,14 +136,14 @@ class SubscribeView(SetupComponentView):
         # then we should immediately redirect to the memebership page
         return self.redirect_response('update_membership', reverse=True)
 
-    def dispatch_form(self, form):
+    def dispatch_form(self, form: PaymentMethodForm) -> HttpResponse:
         if self.payment_update_mode:
             messages.info(
                 self.request, 'Please enter your payment details to complete the tier change. ')
 
         return super().dispatch_form(form)
 
-    def form_valid(self, form):
+    def form_valid(self, form: PaymentMethodForm) -> Optional[SubscriptionInformation]:
         """ Form has been validated """
 
         # Attach the payment source to the customer
@@ -155,7 +163,7 @@ class SubscribeView(SetupComponentView):
 
         return instance
 
-    def dispatch_success(self, validated):
+    def dispatch_success(self, validated: SubscriptionInformation) -> HttpResponse:
         """ called upon successful setup """
 
         # if this was not created from an update operation, do nothing
@@ -174,7 +182,7 @@ class UpdatePaymentView(FormView):
     template_name = 'payments/subscribe.html'
     form_class = PaymentMethodForm
 
-    def get_context_data(self, *args, **kwargs):
+    def get_context_data(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
         context.update({
             'title': 'Update Payment Information',
@@ -184,7 +192,7 @@ class UpdatePaymentView(FormView):
         })
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, form: PaymentMethodForm) -> HttpResponse:
         # Attach the payment source to the customer
         customer = self.request.user.alumni.membership.customer
         _, err = form.attach_to_customer(customer)
@@ -206,7 +214,7 @@ class UpdateTierView(RedirectResponseMixin, FormView):
     template_name = 'payments/tier.html'
     form_class = MembershipInformationForm
 
-    def get_context_data(self, *args, **kwargs):
+    def get_context_data(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
         context.update({
             'title': 'Change Membership Tier',
@@ -217,7 +225,7 @@ class UpdateTierView(RedirectResponseMixin, FormView):
         })
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, form: MembershipInformationForm) -> HttpResponse:
         membership = self.request.user.alumni.membership
 
         # update the desired tier to what the user selected
@@ -231,13 +239,13 @@ class UpdateTierView(RedirectResponseMixin, FormView):
 
 class PaymentsTableMixin:
     @classmethod
-    def format_datetime(cls, epoch, format="DATETIME_FORMAT"):
+    def format_datetime(cls, epoch: int, format: str="DATETIME_FORMAT") -> str:
         """ Formats seconds since epoch as a readable date """
         date_joined = datetime.fromtimestamp(epoch)
         return formats.date_format(date_joined, format)
 
     @classmethod
-    def format_description(cls, line):
+    def format_description(cls, line: Dict[str, any]) -> str:
         """ Formats the description line of an invoice """
         # if we have a description, return it
         if line.description is not None:
@@ -257,7 +265,7 @@ class PaymentsTableMixin:
             raise Exception("Non-subscription without description")
 
     @classmethod
-    def format_total(cls, amount, cur):
+    def format_total(cls, amount: float, cur: str) -> str:
         """ Formats the total """
         if cur == "eur":
             return "%0.2f €" % (amount / 100)
@@ -267,7 +275,7 @@ class PaymentsTableMixin:
             raise Exception("unknown currency {}".format(cur))
 
     @classmethod
-    def get_invoice_table(cls, customer):
+    def get_invoice_table(cls, customer: Dict[str, Any]) -> (Optional[List[Dict[str, Any]]], Optional[str]):
         invoices, err = stripewrapper.get_payment_table(customer)
         described = []
 
@@ -282,14 +290,14 @@ class PaymentsTableMixin:
                     'upcoming': iv['upcoming']
                 } for iv in invoices]
             except Exception as e:
-                err = e
+                err = str(e)
         else:
             err = 'Something went wrong. Please try again later or contact support. '
 
         return invoices, err
 
     @classmethod
-    def format_method(cls, source):
+    def format_method(cls, source: Dict[str, Any]) -> str:
         if source['kind'] == 'card':
             return '{} Card ending in {} (valid until {}/{})'.format(source['brand'], source['last4'], source['exp_month'], source['exp_year'])
         elif source['kind'] == 'sepa':
@@ -298,7 +306,7 @@ class PaymentsTableMixin:
             return 'Unknown Payment Method. Please contact support. '
 
     @classmethod
-    def get_method_table(cls, customer):
+    def get_method_table(cls, customer: str) -> (Optional[List[Dict[str, Any]]], Optional[str]) :
         methods, err = stripewrapper.get_methods_table(customer)
         if err is None:
             methods = [cls.format_method(method) for method in methods]
@@ -312,7 +320,7 @@ class PaymentsTableMixin:
 class PaymentsView(PaymentsTableMixin, TemplateView):
     template_name = 'payments/view.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         customer = self.request.user.alumni.membership.customer

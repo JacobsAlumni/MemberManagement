@@ -1,11 +1,20 @@
+from __future__ import annotations
+from alumni.models import Alumni
+from typing import TypeVar, Optional, Callable, List, Any, Dict
+
 import stripe as stripeapi
 from raven.contrib.django.raven_compat.models import client
 from datetime import datetime
 import time
 import pytz
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import TypeVar, Callable, Optional, List
+    T = TypeVar['T']
 
-def _safe(operation):
+
+def _safe(operation: Callable[[stripeapi], T]) -> Callable[[T], (Optional[T], Optional[str])]:
     """ Performs a potentially unsafe operation that interacts with the stripe api """
 
     result = None
@@ -19,7 +28,7 @@ def _safe(operation):
     return result, None
 
 
-def _as_safe_operation(f):
+def _as_safe_operation(f: Callable[..., T]) -> Callable[..., (Optional[T], Optional[str])]:
     """ Wraps a function with _safe """
 
     def _wrapper(*args, **kwargs):
@@ -27,7 +36,7 @@ def _as_safe_operation(f):
     return _wrapper
 
 
-def check_customer_stripe_props(alumni, customer):
+def check_customer_stripe_props(alumni: Alumni, customer: str) -> List[str]:
     """ Returns a list of errors for the customer """
 
     header = 'Customer {0!r} (for user {1!r}): '.format(
@@ -52,7 +61,7 @@ def check_customer_stripe_props(alumni, customer):
 
 
 @_as_safe_operation
-def create_customer(stripe, alumni_instance):
+def create_customer(stripe: stripeapi, alumni_instance: Alumni) -> str:
     """ Creates a new customer for a given alumni """
 
     props = _get_stripe_customer_props(alumni_instance)
@@ -61,7 +70,7 @@ def create_customer(stripe, alumni_instance):
 
 
 @_as_safe_operation
-def clear_all_payment_sources(stripe, customer_id):
+def clear_all_payment_sources(stripe: stripapi, customer_id: str) -> str:
     """ Removes all payment sources from an alumni """
 
     for source in stripe.Customer.retrieve(customer_id).sources.list().data:
@@ -77,7 +86,7 @@ def clear_all_payment_sources(stripe, customer_id):
 
 
 @_as_safe_operation
-def update_payment_method(stripe, customer_id, source_id, card_id):
+def update_payment_method(stripe: stripapi, customer_id: str, source_id: Optional[str], card_id: Optional[str]) -> Optional[bool]:
     """ Sets the default payment method for a customer to source or card """
 
     # clear all existing methods
@@ -97,7 +106,7 @@ def update_payment_method(stripe, customer_id, source_id, card_id):
 
 
 @_as_safe_operation
-def create_subscription(stripe, customer_id, plan_id):
+def create_subscription(stripe: stripeapi, customer_id: str, plan_id: str) -> str:
     """ Creates a subscription and returns its id """
 
     subscription = stripe.Customer.retrieve(
@@ -106,7 +115,7 @@ def create_subscription(stripe, customer_id, plan_id):
 
 
 @_as_safe_operation
-def update_subscription(stripe, subscription_id, new_plan_id):
+def update_subscription(stripe: stripeapi, subscription_id: str, new_plan_id: str) -> str:
     """ Updates the subscription with the given id to the one with the new id """
 
     subscription = stripe.Subscription.retrieve(subscription_id)
@@ -125,7 +134,7 @@ def update_subscription(stripe, subscription_id, new_plan_id):
 
 
 @_as_safe_operation
-def get_payment_table(stripe, customer_id):
+def get_payment_table(stripe: stripeapi, customer_id: str) -> List[Dict[str, Any]]:
     """ gets a table of payments for a customer """
     invoices = [_invoice_to_dict(invoice_instance, upcoming=False)
                 for invoice_instance in stripe.Invoice.list(customer=customer_id)]
@@ -141,7 +150,7 @@ def get_payment_table(stripe, customer_id):
     return invoices
 
 
-def _invoice_to_dict(invoice_instance, upcoming):
+def _invoice_to_dict(invoice_instance: stripeapi.Invoice, upcoming: bool) -> Dict[str, Any]:
     """ Turns an invoice instance into a dict for downstream consumption """
     return {
         'lines': [l for l in invoice_instance.lines],
@@ -154,14 +163,14 @@ def _invoice_to_dict(invoice_instance, upcoming):
 
 
 @_as_safe_operation
-def get_methods_table(stripe, customer_id):
+def get_methods_table(stripe: stripeapi, customer_id: str) -> List[Dict[str, str]]:
     """ Gets a list of payment sources for a customer """
 
     sources = stripe.Customer.retrieve(customer_id).sources.list().data
     return [_source_to_dict(source_instance) for source_instance in sources]
 
 
-def _source_to_dict(source_instance):
+def _source_to_dict(source_instance: stripeapi.Source) -> Dict[str, str]:
     """ Turns a source instance into a dict for downstream consumption """
     if source_instance.object == 'card':
         return {
@@ -183,7 +192,7 @@ def _source_to_dict(source_instance):
 
 
 @_as_safe_operation
-def cancel_subscription(stripe, subscription_id):
+def cancel_subscription(stripe: stripeapi, subscription_id: str) -> bool:
     """ Cancels a subscription """
 
     stripe.Subscription.delete(subscription_id)
@@ -191,7 +200,7 @@ def cancel_subscription(stripe, subscription_id):
 
 
 @_as_safe_operation
-def get_customer_created(stripe, customer_id):
+def get_customer_created(stripe: stripeapi, customer_id: str) -> datetime:
     """ Gets the time when a customer was created """
 
     timestamp = stripe.Customer.retrieve(customer_id).created
@@ -199,7 +208,7 @@ def get_customer_created(stripe, customer_id):
 
 # todo: make api upgrade safe
 @_as_safe_operation
-def map_customers(stripe, fn):
+def map_customers(stripe: stripeapi, fn: Callable[[Dict[str, str]], None]) -> int:
     """ Calls a function on every customer"""
 
     # iterate over all the customers
@@ -211,7 +220,7 @@ def map_customers(stripe, fn):
     return count
 
 
-def _customer_to_dict(customer_instance):
+def _customer_to_dict(customer_instance: stripeapi.Customer) -> Dict[str, str]:
     """ Turns a stripe customer instance into a dict for downstream consumption """
     return {
         'id': customer_instance.id,
@@ -221,14 +230,14 @@ def _customer_to_dict(customer_instance):
 
 
 @_as_safe_operation
-def update_customer(stripe, customer_id, alumni_instance):
+def update_customer(stripe: stripeapi, customer_id: str, alumni_instance: Alumni) -> bool:
     """ Updates a stripe customer with standard properties """
     props = _get_stripe_customer_props(alumni_instance)
     stripe.Customer.modify(customer_id, **props)
     return True
 
 
-def _get_stripe_customer_props(alumni_instance):
+def _get_stripe_customer_props(alumni_instance: Alumni) -> Dict[str, str]:
     """ Gets props for a stripe customer given an alumni """
 
     return {

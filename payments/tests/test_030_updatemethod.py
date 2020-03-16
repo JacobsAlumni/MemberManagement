@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -12,17 +14,17 @@ MOCKED_TIME = timezone.datetime(
 
 
 class SignupPaymentsTestBase(StripeFrontendTestMixin):
-    def test_card_ok(self):
+    def test_card_ok(self) -> None:
         self.load_live_url('update_subscription', '#id_payment_type')
         self.assert_card_selectable()
 
-    def test_iban_ok(self):
+    def test_iban_ok(self) -> None:
         self.load_live_url('update_subscription', '#id_payment_type')
         self.assert_iban_selectable()
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
-    def test_signup_card_ok(self, umock):
+    def test_signup_card_ok(self, umock: mock.Mock) -> None:
         # fill out and submit card details
         self.load_live_url('update_subscription', '#id_payment_type')
         self.submit_card_details()
@@ -38,7 +40,7 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
-    def test_signup_card_error_update_method(self, umock):
+    def test_signup_card_error_update_method(self, umock: mock.Mock) -> None:
         # fill out and submit card details
         self.load_live_url('update_subscription', '#id_payment_type')
         self.submit_card_details()
@@ -55,7 +57,7 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
-    def test_signup_sepa_ok(self, umock):
+    def test_signup_sepa_ok(self, umock: mock.Mock) -> None:
         # fill out and submit card details
         self.load_live_url('update_subscription', '#id_payment_type')
         self.submit_sepa_details()
@@ -71,7 +73,7 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
-    def test_signup_sepa_error_update_method(self, umock):
+    def test_signup_sepa_error_update_method(self, umock: mock.Mock) -> None:
         # fill out and submit card details
         self.load_live_url('update_subscription', '#id_payment_type')
         self.submit_sepa_details()

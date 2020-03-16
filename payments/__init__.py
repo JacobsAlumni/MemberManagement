@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # Sets up the stripe api key
 from django.conf import settings
 import stripe

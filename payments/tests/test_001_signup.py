@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import timedelta
 from unittest import mock
 
@@ -15,7 +17,7 @@ MOCKED_CUSTOMER = 'cus_Fq8yG7rLrc6sKZ'
 
 
 class SignupTestBase(IntegrationTestBase):
-    def test_setup_tier_elements(self):
+    def test_setup_tier_elements(self) -> None:
         # fill out the tier and check that the right tier into is displayed
         self.fill_out_form('setup_membership', 'input_id_submit', select_dropdowns={
             "id_tier": TierField.get_description(self.__class__.tier)
@@ -30,7 +32,7 @@ class SignupTestBase(IntegrationTestBase):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
-    def test_setup_tier_ok(self, mocked):
+    def test_setup_tier_ok(self, mocked: mock.Mock) -> None:
         # fill out the form an select the contributor tier
         self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
             "id_tier": TierField.get_description(self.__class__.tier)
@@ -53,7 +55,7 @@ class SignupTestBase(IntegrationTestBase):
             SubscriptionInformation.objects.get(member=alumni)
 
     @mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug"))
-    def test_setup_tier_fail(self, mocked):
+    def test_setup_tier_fail(self, mocked: mock.Mock) -> None:
         # fill out the form an select the starter tier
         btn = self.fill_out_form('setup_membership', 'input_id_submit', select_dropdowns={
             "id_tier": TierField.get_description(self.__class__.tier)
@@ -87,7 +89,7 @@ class StarterSignupTest(SignupTestBase, IntegrationTest, StaticLiveServerTestCas
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
-    def test_setup_tier_ok(self, mocked):
+    def test_setup_tier_ok(self, mocked: mock.Mock) -> None:
         self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
             "id_tier": TierField.get_description(TierField.STARTER)
         })
