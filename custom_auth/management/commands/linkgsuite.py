@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db import transaction
 
 from django.core.management.base import BaseCommand
@@ -6,17 +8,24 @@ from django.contrib.auth import get_user_model
 from custom_auth.gsuite import make_directory_service
 from custom_auth.models import GoogleAssociation
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Callable
+    from django.contrib.auth.models import User
+    from django.db.models import QuerySet
+    from argparse import ArgumentParser
+
 
 class Command(BaseCommand):
     help = 'Links Google and Portal Accounts'
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
             'users', nargs='*', help='Usernames of user(s) to update. If empty, update all users. ')
         parser.add_argument('--remove-password', '-r', action='store_true', dest='remove_password',
                             help='If provided, remove password login for non-staff non-superuser users. ')
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **kwargs) -> None:
         # Get the user objects from the database
         usernames = kwargs['users']
         if len(usernames) == 0:
@@ -27,7 +36,7 @@ class Command(BaseCommand):
         link_gsuite_users(users, kwargs['remove_password'], lambda x: print(x))
 
 
-def link_gsuite_users(users, remove, on_message):
+def link_gsuite_users(users: QuerySet, remove: bool, on_message: Callable[str, None]) -> None:
     """ Links GSuite Users """
 
     # Create a GSuite Service

@@ -1,16 +1,21 @@
+from __future__ import annotations
+
 from .models import GoogleAssociation
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from django.core.exceptions import ValidationError
-
-
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional
+    from django.http import HttpRequest
+    from django.contrib.auth.models import User
+
 
 class GoogleTokenBackend():
-    def authenticate(self, request, token=None):
+    def authenticate(self, request: HttpRequest, token: Optional[str] = None) -> Optional[User]:
         try:
             idinfo = id_token.verify_oauth2_token(
                 token, requests.Request(), settings.GSUITE_OAUTH_CLIENT_ID)
@@ -26,14 +31,14 @@ class GoogleTokenBackend():
             user_id = idinfo['sub']
 
             # Find a local user with corresponding Google user ID
-            user = GoogleAssociation.objects.get(google_user_id=user_id)
+            assoc = GoogleAssociation.objects.get(google_user_id=user_id)
 
-            return user.user
+            return assoc.user
 
         except (ValueError, GoogleAssociation.DoesNotExist):
             return None
 
-    def get_user(self, user_id):
+    def get_user(self, user_id: str) -> Optional[User]:
         try:
             return get_user_model().objects.get(pk=user_id)
         except get_user_model().DoesNotExist:

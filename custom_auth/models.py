@@ -1,16 +1,23 @@
+from __future__ import annotations
+
 from django.db import models
 from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
 
-from custom_auth.gsuite import make_directory_service, get_user_id
+from custom_auth.gsuite import get_user_id
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional
+    from django.contrib.auth.models import User
+    from googleapiclient.discovery import Resource
 
 class GoogleAssociation(models.Model):
-    user = models.ForeignKey(auth.get_user_model(), on_delete=models.CASCADE)
-    google_user_id = models.CharField(max_length=64)
+    user: User = models.ForeignKey(auth.get_user_model(), on_delete=models.CASCADE)
+    google_user_id: str = models.CharField(max_length=64)
 
     @classmethod
-    def link_user(cls, user, service=None):
+    def link_user(cls, user: User, service: Optional[Resource]=None) -> Optional[GoogleAssociation]:
         # Get the approval object
         try:
             approval = user.alumni.approval

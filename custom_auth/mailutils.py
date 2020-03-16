@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.conf import settings
 from django.core import mail
 from django.template import loader
@@ -10,8 +12,12 @@ from email.mime.text import MIMEText
 from bs4 import BeautifulSoup
 from base64 import decodestring
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Union, List, Any
 
-def send_email(destination, subject, template, **kwargs):
+
+def send_email(destination: Union[str, List[str]], subject: str, template: str, **kwargs: Any) -> int:
     """ Sends an html email to the given receiver using the provided html template and name """
 
     # Make sure that destionation is a list
@@ -27,7 +33,7 @@ def send_email(destination, subject, template, **kwargs):
     return email.send()
 
 
-def _create_email_message(subject, html, from_email, recipient_list):
+def _create_email_message(subject: str, html: str, from_email: str, recipient_list: Listr[str]) -> EmailMessage:
     """ Creates a connection for the email to be sent """
 
     # Extract images out of the email
@@ -55,7 +61,7 @@ def _create_email_message(subject, html, from_email, recipient_list):
 BASE_64_STRING = 'data:image/png;base64,'
 
 
-def _extract_images(html):
+def _extract_images(html: str) -> (str, List[MIMEImage]):
     soup = BeautifulSoup(html, features='lxml')
     images = []
 
@@ -77,7 +83,7 @@ def _extract_images(html):
     return str(soup), images
 
 
-def _make_base64_image(image, cid):
+def _make_base64_image(image: str, cid: str) -> MIMEImage:
     """ Generates a single new image from a base64 string """
     img = MIMEImage(decodestring(bytes(image, 'ascii')), 'png')
     img.add_header('Content-Id', '<{}>'.format(cid))

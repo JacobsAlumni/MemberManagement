@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 from django.conf import settings
 from django.contrib.auth import authenticate, login, views
-from django.core import mail
 from django.core.exceptions import SuspiciousOperation
-from django.http import (HttpResponse, HttpResponseBadRequest,
+from django.http import (HttpResponse,
                          HttpResponseForbidden, HttpResponseRedirect)
 from django.shortcuts import render
-from django.template import loader
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -15,18 +15,19 @@ from sesame import utils as token_utils
 
 from alumni.models import Alumni as UserModel
 
-from . import backend, forms, mailutils
+from . import forms, mailutils
 
-# Create your views here.
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 class TokenEmailSentView(views.TemplateView):
     template_name = 'auth/token_sent.html'
 
-# Tries to log a user in with a token they received via email
 
-
-def email_token_login(request):
+def email_token_login(request: HttpRequest) -> HttpResponse:
+    """ Tries to login a user with a token they received via email """
     if request.method != 'POST':
         # Render a template to cause a POST request
         get_token = request.GET.get('token', None)
@@ -46,8 +47,8 @@ def email_token_login(request):
         return render(request, 'auth/token_login.html', context={'error': True})
 
 
-# Tries to log a user in using a token supplied by Google. Called only by AJAX
-def google_token_login(request):
+def google_token_login(request: HttpRequest) -> HttpResponse:
+    """ Tries to log a user in using a token supplied by Google. Called only by AJAX """
     if request.method != 'POST':
         raise SuspiciousOperation('Wrong request method')
 

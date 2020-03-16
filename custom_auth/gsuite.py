@@ -1,10 +1,18 @@
+from __future__ import annotations
+
 from django.conf import settings
 
 from google.oauth2 import service_account
 import googleapiclient.discovery
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Optional
+    from google.oauth2.service_account import Credentials
+    from googleapiclient.discovery import Resource
 
-def make_delegated_credentials(scopes):
+
+def make_delegated_credentials(scopes: List[str]) -> Credentials:
     """ Creates a delegated_credentials object """
     credentials = service_account.Credentials.from_service_account_file(
         settings.GSUITE_AUTH_FILE, scopes=scopes)
@@ -13,7 +21,7 @@ def make_delegated_credentials(scopes):
     return delegated_credentials
 
 
-def make_directory_service():
+def make_directory_service() -> Resource:
     """ Makes a Google API directory service """
 
     delegated_credentials = make_delegated_credentials(
@@ -21,7 +29,7 @@ def make_directory_service():
     return googleapiclient.discovery.build('admin', 'directory_v1', credentials=delegated_credentials)
 
 
-def get_user_id(username, service=None):
+def get_user_id(username: str, service: Optional[Resource]=None) -> Optional[str]:
     """ Gets the gsuite user id of a given user """
 
     if service is None:
@@ -35,7 +43,7 @@ def get_user_id(username, service=None):
     return result['id']
 
 
-def create_user(givenName, familyName, email, password, service=None):
+def create_user(givenName: str, familyName: str, email: str, password: str, service: Optional[Resource]=None) -> str:
     """ Creates a user with the given username and password """
 
     if service is None:
@@ -56,7 +64,7 @@ def create_user(givenName, familyName, email, password, service=None):
     return result['id']
 
 
-def patch_user(username, password=None, service=None):
+def patch_user(username: str, password: Optional[str]=None, service: Optional[Resource]=None) -> str:
     """ Patches a (potentially suspended) user to have the password and be in the right organization """
 
     if service is None:

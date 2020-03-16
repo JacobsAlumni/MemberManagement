@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.conf.urls import url
 from django.views import generic as generic_views
 from . import views

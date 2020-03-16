@@ -1,14 +1,22 @@
-from django.conf import settings
-from .mailutils import send_email
+from __future__ import annotations
+
 import datetime
+
+from django.conf import settings
+from django.shortcuts import render
 
 from alumni import fields
 
-from django.shortcuts import render
+from .mailutils import send_email
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, Dict, Any
+    from django.http import HttpRequest, HttpResponse
 
 
 class AlumniEmailMixin:
-    def __get_email_context(self, password=None, back=False):
+    def __get_email_context(self, password: Optional[str]=None, back: bool=False) -> Dict[str, Any]:
         """ Gets the context for a welcome (back) email sent to this user """
 
         return {
@@ -23,7 +31,7 @@ class AlumniEmailMixin:
             'Password': password,
         }
 
-    def send_welcome_email(self, password=None, back=False):
+    def send_welcome_email(self, password: Optional[str]=None, back: bool=False) -> int:
         """ Sends a user a Welcome (or welcome back) email """
 
         context = self.__get_email_context(password=password, back=back)
@@ -39,7 +47,7 @@ class AlumniEmailMixin:
         else:
             return send_email(destination, settings.GSUITE_EMAIL_WELCOME_SUBJECT, 'emails/approval/new.html', **context)
 
-    def render_welcome_email(self, request, password=None, back=False):
+    def render_welcome_email(self, request: HttpRequest, password: Optional[str]=None, back: bool=False) -> HttpResponse:
         """ Previews the welcome (back) email for this user into a request """
 
         context = self.__get_email_context(password=password, back=back)
