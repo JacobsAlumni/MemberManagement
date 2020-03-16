@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -12,6 +14,13 @@ from alumni.fields import (ClassField, CollegeField, CountryField, DegreeField,
 from alumni.models import Address, Alumni
 # Create a new SearchFilter instance
 from registry.search.filter import ParsingError, SearchFilter
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Dict, Any
+    from django.contrib.auth.models import User
+    from django.core.paginator import Paginator
+    from django.http import HttpRequest, HttpResponse
 
 search = SearchFilter({
     'city': 'address__city',
@@ -41,7 +50,7 @@ ADVANCED_SEARCH_FIELDS = [
 ]
 
 
-def can_view_atlas(user):
+def can_view_atlas(user: User) -> bool:
     """ Function that checks if access to atlas functionality is available """
     if not user.is_authenticated:
         return False
@@ -64,7 +73,7 @@ def can_view_atlas(user):
     return True
 
 
-def make_pagination_ui_ctx(page):
+def make_pagination_ui_ctx(page: Paginator) -> Dict[str, Any]:
     """ Computes the layout of the pagination UI element """
     context = {}
 
@@ -109,12 +118,12 @@ def make_pagination_ui_ctx(page):
 class HomeView(TemplateView):
     template_name = 'atlas/index.html'
 
-    def get_template_names(self):
+    def get_template_names(self) -> str:
         if not can_view_atlas(self.request.user):
             return 'atlas/denied.html'
         return 'atlas/index.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['search_fields'] = ADVANCED_SEARCH_FIELDS
 
@@ -129,7 +138,7 @@ class HomeView(TemplateView):
 class ProfileView(TemplateView):
     template_name = 'atlas/profile.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
         context = super(ProfileView, self).get_context_data(**kwargs)
         # Find the user with the given id and approved approval
         context['alumni'] = get_object_or_404(
@@ -139,7 +148,7 @@ class ProfileView(TemplateView):
 
         return context
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not can_view_atlas(request.user):
             raise Http404
         return super(ProfileView, self).get(request, *args, **kwargs)
@@ -151,7 +160,7 @@ class SearchView(ListView):
     template_name = "atlas/search.html"
     paginate_by = 10
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
 
         # Get the context from the parent
         context = super(SearchView, self).get_context_data(**kwargs)
@@ -193,7 +202,7 @@ class SearchView(ListView):
 
         return context
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if not can_view_atlas(request.user):
             raise Http404
 

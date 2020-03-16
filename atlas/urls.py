@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.conf.urls import url
 
 from .views import HomeView, SearchView, ProfileView

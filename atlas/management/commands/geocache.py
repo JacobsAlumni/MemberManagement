@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import io
 import sys
 import time
@@ -10,6 +12,11 @@ from tqdm import tqdm
 
 from atlas.models import GeoLocation
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from argparse import ArgumentParser
+    from typing import IO
+
 # Using our own mirror to not abuse geonames.org bandwidth too much
 # DOWNLOAD_URL = "https://download.geonames.org/export/zip/allCountries.zip"
 DOWNLOAD_URL = "https://github.com/JacobsAlumni/geonames.org-mirror/releases/download/v2020.01/allCountries.zip"
@@ -17,14 +24,14 @@ DOWNLOAD_URL = "https://github.com/JacobsAlumni/geonames.org-mirror/releases/dow
 class Command(BaseCommand):
     help = 'Updates Address GeoLocation caches using export of geonames.org'
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
             'fn', nargs='?', help='Filename to import data from. If omitted, download a fresh file from the internet. ', default=None)
         parser.add_argument(
             '--url', default=DOWNLOAD_URL, help='URL to download zipped data from. '
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options) -> None:
         fn = options['fn']
         if not fn:
             self.handle_download(options['url'])
@@ -32,7 +39,7 @@ class Command(BaseCommand):
             with open(fn, 'r') as f:
                 self.handle_file(f)
 
-    def handle_download(self, url):
+    def handle_download(self, url: str) -> None:
         now = time.time()
 
         # download into memory
@@ -43,7 +50,7 @@ class Command(BaseCommand):
         with zipfile.ZipFile(data) as archive:
             return self.handle_file(archive.open('allCountries.txt', 'r'))
 
-    def _fetch_with_tqdm(self, url):
+    def _fetch_with_tqdm(self, url: str) -> None:
         """ Fetchs a URL with requests and tqdm. Returns a BytesIO """
 
         # grab the total file size and create an appropriate bar
@@ -65,7 +72,7 @@ class Command(BaseCommand):
         pbar.close()
         return buffer
 
-    def handle_file(self, f):
+    def handle_file(self, f: IO[str]) -> None:
         # a new set of locations
         data = []
         contained = set()

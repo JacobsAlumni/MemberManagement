@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from django.test import TestCase
 from atlas.models import GeoLocation
 from django.core import management
 import os
 
 class GeoCacheTest(TestCase):
-    def test_download(self):
+    def test_download(self) -> None:
         if os.environ.get('ENABLE_GEOCACHE_TEST', "0") != "1":
             self.skipTest('Skipping, set ENABLE_GEOCACHE_TEST=1 to enable')
 
