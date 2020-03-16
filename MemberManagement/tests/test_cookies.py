@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import time
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -6,7 +8,7 @@ from MemberManagement.tests.integration import IntegrationTest
 
 
 class CookieTest(IntegrationTest, StaticLiveServerTestCase):
-    def test_cookiebanner_works(self):
+    def test_cookiebanner_works(self) -> None:
 
         # check that loading the page for the first time shows the banner
         self.load_live_url('root')

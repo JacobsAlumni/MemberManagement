@@ -1,36 +1,37 @@
+from __future__ import annotations
+
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.urls import reverse
-from django_selenium_clean import SeleniumTestCase, SeleniumWrapper
-from selenium.webdriver.remote.webelement import WebElement
+from django_selenium_clean import SeleniumTestCase
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from seleniumlogin import force_login
-from typing import Optional
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, Type, Any, List, Dict
+    from django.contrib.auth.models import User
+    from django_selenium_clean import SeleniumWrapper
+    from selenium.webdriver.remote.webelement import WebElement
 
 
 class DummyTestBase():
-    def assertTrue(self, expr: bool, msg: str = None):
-        """Check that the expression is true."""
-        raise NotImplementedError
+    """ A dummy base class for type-hinting within integration tests """
 
-    def assertFalse(self, expr: bool, msg: str = None):
-        """Check that the expression is false."""
-        raise NotImplementedError
-
-    def assertRaises(self, expected_exception, *args, **kwargs):
-        """ Fail unless an exception of class expected_exception is raised
-           by the callable when invoked with specified positional and
-           keyword arguments. """
-        raise NotImplementedError
+    def assertTrue(self, expr: bool, msg: Optional[str] = None) -> None: ...
+    def assertFalse(self, expr: bool, msg: Optional[str] = None) -> None: ...
+    def assertRaises(
+        self, expected_exception: Type[Exception], *args: Any, **kwargs: Any): ...
+    def assertEqual(self, first: str, second: str,
+                    msg: Optional[str] = None) -> None: ...
 
 
 class IntegrationTestBase(DummyTestBase):
     """ A base class for integration tests """
 
-    user: User = None
+    user: Optional[User] = None
     selenium: SeleniumWrapper = None
     live_server_url: str = None
 
@@ -61,13 +62,7 @@ class IntegrationTestBase(DummyTestBase):
             return url[len(self.live_server_url):]
         return url
 
-    def assertEqual(self, first: str, second: str, msg: str = None):
-        """Fail if the two objects are unequal as determined by the '=='
-           operator.
-        """
-        raise NotImplementedError
-
-    def assert_url_equal(self, url: str, *args, **kwargs):
+    def assert_url_equal(self, url: str, *args: Any, **kwargs: Any) -> None:
         """ Asserts that the current url is equal to the (pontially resolvable) url """
 
         got = self._current_url
@@ -86,26 +81,26 @@ class IntegrationTestBase(DummyTestBase):
             return element.is_displayed()
         return False
 
-    def assert_element_exists(self, selector: str, *args):
+    def assert_element_exists(self, selector: str, *args: Any) -> None:
         """ Asserts that an element exists on the current page """
         return self.assertTrue(self._element_exists(selector), *args)
 
-    def assert_element_not_exists(self, selector: str, *args):
+    def assert_element_not_exists(self, selector: str, *args: Any) -> None:
         """ Asserts that an element does not exist on the current page """
         return self.assertFalse(self._element_exists(selector), *args)
 
-    def assert_element_displayed(self, selector: str, *args):
+    def assert_element_displayed(self, selector: str, *args: Any) -> None:
         """ Asserts that an element with the given selector is displayed """
         return self.assertTrue(self._element_displayed(selector), *args)
 
-    def assert_element_not_displayed(self, selector: str, *args):
+    def assert_element_not_displayed(self, selector: str, *args: Any) -> None:
         """ Asserts that an element with the given selector is not displayed """
         return self.assertFalse(self._element_displayed(selector), *args)
 
     _find_element_timeout = 10
     _find_element_selector = '.main-container'
 
-    def find_element(self, selector: str, timeout: int = None, clickable: bool = False) -> WebElement:
+    def find_element(self, selector: str, timeout: Optional[int] = None, clickable: bool = False) -> WebElement:
         """ Finds an element by a selector and waits for it to become available """
         if timeout is None:
             timeout = self.__class__._find_element_timeout
@@ -121,7 +116,7 @@ class IntegrationTestBase(DummyTestBase):
 
         return wait.until(condition((By.CSS_SELECTOR, selector)))
 
-    def _resolve_url(self, url: str, args=None, kwargs=None, reverse_get_params=None) -> str:
+    def _resolve_url(self, url: str, args: Optional[List[Any]] = None, kwargs: Optional[Dict[str, Any]] = None, reverse_get_params: Optional[Dict[str, Any]] = None) -> str:
         """ Resolves a url pattern into a url """
 
         # If it's an absolute url, the test case is wrong
@@ -141,7 +136,7 @@ class IntegrationTestBase(DummyTestBase):
         # and return the resolved url
         return resolved
 
-    def load_live_url(self, url_pattern: str, selector: str = None, url_args=None, url_kwargs=None, url_reverse_get_params=None, selector_timeout: int = None) -> WebElement:
+    def load_live_url(self, url_pattern: str, selector: str = None, url_args: Optional[List[Any]] = None, url_kwargs: Optional[Dict[str, Any]] = None, url_reverse_get_params: Optional[Dict[str, Any]] = None, selector_timeout: Optional[int] = None) -> WebElement:
         """
             Loads an url from the selenium from the live server and waits for the CSS selector (if any) to be available
             Returns the element selected, None if none is selected, or raises TimeoutException if a timeout occurs.
@@ -166,7 +161,7 @@ class IntegrationTestBase(DummyTestBase):
         # and check that it's equal
         return self.assert_url_equal(new_url, args=new_url_args, kwargs=new_url_kwargs, reverse_get_params=new_url_reverse_get_params, *args)
 
-    def fill_out_form(self, url_pattern: str, submit_button: str = None, send_form_keys=None, select_dropdowns=None, select_checkboxes=None, script_value=None, selector: str = None, url_args=None, url_kwargs=None, url_reverse_get_params=None, selector_timeout: int = None) -> WebElement:
+    def fill_out_form(self, url_pattern: str, submit_button: str = None, send_form_keys: Optional[Dict[str, str]] = None, select_dropdowns: Optional[Dict[str, str]] = None, select_checkboxes: Optional[Dict[str, bool]] = None, script_value: Optional[Dict[str, str]] = None, selector: Optional[str] = None, url_args: Optional[List[str]] = None, url_kwargs: Optional[Dict[str, Any]] = None, url_reverse_get_params: Optional[Dict[str, Any]] = None, selector_timeout: Optional[int] = None) -> WebElement:
         """
             Loads a URL using selenium from the live server and waits for the element with the submit_button id to be
             available.
@@ -233,7 +228,7 @@ class IntegrationTestBase(DummyTestBase):
         # return the button
         return button
 
-    def submit_form(self, *args, next_selector: str = None, selector_timeout: int = None, **kwargs) -> WebElement:
+    def submit_form(self, *args: Any, next_selector: Optional[str] = None, selector_timeout: Optional[int] = None, **kwargs: Any) -> WebElement:
         """ Fills out and submit a form, then returns the body element of the submitted page """
 
         # fill out the form and click the submit button
@@ -244,7 +239,7 @@ class IntegrationTestBase(DummyTestBase):
         # wait for next element to be visible
         return self.find_element(next_selector, timeout=selector_timeout)
 
-    def disable_form_requirements(self):
+    def disable_form_requirements(self) -> None:
         self.selenium.execute_script("""
         var inputs = document.getElementsByTagName('input');
         for (var i = 0; i < inputs.length; i++) {

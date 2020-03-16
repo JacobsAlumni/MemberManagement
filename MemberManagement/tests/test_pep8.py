@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import os.path
 import unittest
@@ -13,7 +15,7 @@ ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 class Pep8ComplianceTest(unittest.TestCase):
     """Run PEP8 on all files in this directory and subdirectories."""
 
-    def _ignore(self, directory):
+    def _ignore(self, directory: str) -> bool:
         """Should the directory be ignored?"""
 
         for pattern in ignore_patterns:
@@ -21,7 +23,7 @@ class Pep8ComplianceTest(unittest.TestCase):
                 return True
         return False
 
-    def test_pep8_compliance(self):
+    def test_pep8_compliance(self) -> None:
         style = pycodestyle.StyleGuide(quiet=False, ignore="E501")
         errors = 0
         for root, _, files in os.walk(ROOT):
