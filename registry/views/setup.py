@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -12,10 +14,16 @@ from ..forms import (AddressForm, AtlasSettingsForm, JacobsForm,
                      JobInformationForm, RegistrationForm, SetupCompletedForm,
                      SkillsForm, SocialMediaForm)
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any, Optional, Dict
+    from django.http import HttpResponse
+    from django.forms import Form
+    from django.db.models import Model
 
 @method_decorator(login_required, name='dispatch')
 class SetupView(RedirectResponseMixin, View):
-    def get(self, *args, **kwargs):
+    def get(self, *args: Any, **kwargs: Any) -> HttpResponse:
         component = self.request.user.alumni.get_first_unset_component()
 
         if component is None:
@@ -29,44 +37,44 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
     """ A base class for all setup views """
 
     http_method_names = ['get', 'post']
-    template_name = 'setup/setup.html'
+    template_name: str = 'setup/setup.html'
 
-    setup_name = None
-    setup_subtitle = ''
-    setup_next_text = ''
-    setup_form_class = None
-    setup_redirect_url = 'setup'
+    setup_name: Optional[str] = None
+    setup_subtitle: str = ''
+    setup_next_text: str = ''
+    setup_form_class: Type[Form] = None
+    setup_redirect_url: str = 'setup'
 
-    def has_setup_component(self):
+    def has_setup_component(self) -> bool:
         """ Function that is called on every request to check if this component has been setup """
 
         raise NotImplementedError
 
-    def should_setup_component(self):
+    def should_setup_component(self) -> bool:
         """ Function that is called to perform pre-setup hooks and check if further (user-based) setup is required """
 
         raise NotImplementedError
 
-    def dispatch_already_set(self):
+    def dispatch_already_set(self) -> HttpResponse:
         """ Called when the setup component is already setup """
 
         raise NotImplementedError
 
-    def dispatch_should_not(self):
+    def dispatch_should_not(self) -> HttpResponse:
         """ Called when the setup component is not setup and also should not be """
 
         return self.dispatch_already_set()
 
-    def form_valid(self, form):
+    def form_valid(self, form: Form) -> Any:
         """ Called when the setup form has been successfully submitted """
         raise NotImplementedError
 
-    def dispatch_success(self, validated):
+    def dispatch_success(self, validated: Any) -> HttpResponse:
         """ Called on True-ish return of form_valid() with the returned value """
 
         return self.redirect_response(self.__class__.setup_redirect_url, reverse=True)
 
-    def get_context(self, form):
+    def get_context(self, form: Form) -> Dict[str, Any]:
         """ Builds the context for instatiating the content when a page is rendered """
 
         return {
@@ -76,12 +84,12 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
             'next_text': self.__class__.setup_next_text,
         }
 
-    def dispatch_form(self, form):
+    def dispatch_form(self, form: Form) -> HttpResponse:
         """ Called to dispatch the form to be filled out """
 
         return self.render_to_response(self.get_context(form))
 
-    def dispatch(self, *args, **kwargs):
+    def dispatch(self, *args: Any, **kwargs: Any) -> HttpResponse:
         """ Dispatches this form """
 
         # if we already have the setup component
@@ -117,16 +125,16 @@ class RegisterView(SetupViewBase):
     setup_next_text = 'Continue Application'
     setup_form_class = RegistrationForm
 
-    def has_setup_component(self):
+    def has_setup_component(self) -> bool:
         return self.request.user.is_authenticated
 
-    def should_setup_component(self):
+    def should_setup_component(self) -> bool:
         return True
 
-    def dispatch_already_set(self):
+    def dispatch_already_set(self) -> HttpResponse:
         return self.redirect_response('root', reverse=True)
 
-    def form_valid(self, form):
+    def form_valid(self, form: RegistrationForm) -> HttpResponse:
         """ Called when the form is valid and an instance is to be created """
 
         # Create the user
@@ -157,23 +165,23 @@ class SetupComponentView(SetupViewBase):
     setup_next_text = 'Continue'
 
     @classmethod
-    def setup_class(cls):
+    def setup_class(cls) -> Type[Model]:
         return cls.setup_form_class.Meta.model
 
-    def has_setup_component(self):
+    def has_setup_component(self) -> bool:
         return self.request.user.alumni.has_component(self.__class__.setup_class())
 
-    def should_setup_component(self):
+    def should_setup_component(self) -> bool:
         component = self.request.user.alumni.get_first_unset_component()
         if component is None:
             return False
 
         return component is self.__class__.setup_class()
 
-    def dispatch_already_set(self):
+    def dispatch_already_set(self) -> HttpResponse:
         return self.redirect_response('portal', reverse=True)
 
-    def form_valid(self, form):
+    def form_valid(self, form: Form) -> Model:
         """ Called when the form is valid and an instance is to be created """
         instance = form.save(commit=False)
         instance.member = self.request.user.alumni

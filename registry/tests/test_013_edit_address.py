@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
 
 
@@ -8,7 +9,7 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
     user = 'Mounfem'
 
-    def test_noedit(self):
+    def test_noedit(self) -> None:
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
@@ -24,7 +25,7 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(address.state, 'Sachsen')
         self.assertEqual(address.country.name, 'Germany')
 
-    def test_edit_full(self):
+    def test_edit_full(self) -> None:
         """ Tests that adding a full address works """
 
         # enter nothing
@@ -52,7 +53,7 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(address.country.name,
                          'United States of America')
 
-    def test_edit_noempty(self):
+    def test_edit_noempty(self) -> None:
         """ Tests that adding a full address works """
 
         # enter nothing

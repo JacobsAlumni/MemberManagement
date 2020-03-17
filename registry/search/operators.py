@@ -1,13 +1,19 @@
-import operator
-from django.db import models
-
-import functools
-
 """This module holds all the logical and non-logical operators and static
 definitions used in QBuilder."""
 
+from __future__ import annotations
 
-def build_text_search(text, fields):
+import operator
+from django.db.models import Q
+
+import functools
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Dict, List
+
+
+def build_text_search(text: str, fields: Dict[str, str]) -> Q:
     """ Builds a query object from a string and the given search fields """
 
     # This code has been adapted from Django Admin
@@ -33,7 +39,7 @@ def build_text_search(text, fields):
 
     # split the text into bits
     for bit in text.split():
-        or_queries = [models.Q(**{orm_lookup: bit})
+        or_queries = [Q(**{orm_lookup: bit})
                       for orm_lookup in orm_lookups]
         bitsearch = functools.reduce(operator.or_, or_queries)
         searches.append(bitsearch)
@@ -41,7 +47,7 @@ def build_text_search(text, fields):
     return functools.reduce(operator.and_, searches)
 
 
-def get_operators(field_map):
+def get_operators(field_map: List[str]) -> Dict[str, Dict[str, Callable[..., Q]]]:
     """ Gets implementations of operators """
 
     # Binary logic expressions
@@ -57,7 +63,7 @@ def get_operators(field_map):
         def impl(x, y):
             if not x in field_map:
                 raise KeyError('Unknown search field: {}'.format(x))
-            return models.Q(**{field_map[x] + '__' + dj_filter: y})
+            return Q(**{field_map[x] + '__' + dj_filter: y})
         return impl
 
     def not_eq(x, y):

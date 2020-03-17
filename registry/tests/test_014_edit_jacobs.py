@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from alumni.fields.college import CollegeField
 from alumni.fields.degree import DegreeField
 from alumni.fields.major import MajorField
 from alumni.fields.year import ClassField
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
 
 
@@ -12,7 +13,7 @@ class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
     user = 'Mounfem'
 
-    def test_noedit(self):
+    def test_noedit(self) -> None:
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
@@ -27,7 +28,7 @@ class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(jacobs.major, MajorField.PHYSICS)
         self.assertEqual(jacobs.comments, 'I am not real')
 
-    def test_edit_complete(self):
+    def test_edit_complete(self) -> None:
         self.submit_form('edit_jacobs', 'input_id_submit', send_form_keys={
             'id_comments': 'I am real',
         }, select_dropdowns={
@@ -46,7 +47,7 @@ class EditJacobsTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(jacobs.major, MajorField.HUMANITIES)
         self.assertEqual(jacobs.comments, 'I am real')
 
-    def test_edit_empty(self):
+    def test_edit_empty(self) -> None:
         self.submit_form('edit_jacobs', 'input_id_submit', send_form_keys={
             'id_comments': '',
         }, select_dropdowns={

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.contrib import messages
@@ -8,12 +10,18 @@ from ..decorators import require_setup_completed
 from ..forms import AlumniForm, AddressForm, JacobsForm, SocialMediaForm, \
     JobInformationForm, SkillsForm, AtlasSettingsForm
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, Type
+    from django.forms import Form
+    from django.http import HttpRequest, HttpResponse
 
-def editViewFactory(prop, FormClass, name):
+
+def editViewFactory(prop: Optional[str], FormClass: Type[Form], name: str) -> Callable[[HttpRequest], HttpResponse]:
     """ Generates an edit view for a given section of the profile """
 
     @require_setup_completed
-    def edit(request):
+    def edit(request: HttpRequest) -> HttpResponse:
 
         # figure out the edit url to redirect to
         if prop is None:

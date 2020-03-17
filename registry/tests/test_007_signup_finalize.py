@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.utils import timezone
 
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
 
 MOCKED_TIME = timezone.datetime(
@@ -15,7 +16,7 @@ class FinalizeTest(IntegrationTest, StaticLiveServerTestCase):
     user = 'Mounfem'
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
-    def test_setup_finalize(self):
+    def test_setup_finalize(self) -> None:
         self.submit_form('setup_setup', 'input_id_submit')
 
         self.assert_url_equal('portal',

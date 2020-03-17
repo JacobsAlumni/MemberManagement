@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from MemberManagement.tests.integration import IntegrationTest
 
@@ -9,7 +11,7 @@ class JobTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_03_jacobs.json']
     user = 'Mounfem'
 
-    def test_signup_job_complete(self):
+    def test_signup_job_complete(self) -> None:
         self.submit_form('setup_job', 'input_id_submit', send_form_keys={
             'id_employer': 'Solution Realty',
             'id_position': 'Junior Research Engineer',
@@ -27,7 +29,7 @@ class JobTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(job.industry, IndustryField.NANOTECHNOLOGY)
         self.assertEqual(job.job, JobField.SOFTWARE_DEVELOPMENT_IT)
 
-    def test_signup_job_empty(self):
+    def test_signup_job_empty(self) -> None:
         self.submit_form('setup_job', 'input_id_submit', send_form_keys={
             'id_employer': '',
             'id_position': '',

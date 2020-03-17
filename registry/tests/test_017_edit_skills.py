@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
 
 
@@ -8,7 +9,7 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
     user = 'Mounfem'
 
-    def test_noedit(self):
+    def test_noedit(self) -> None:
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
@@ -27,7 +28,7 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
                          "Start-Ups, Surfing, Big Data, Human Rights")
         self.assertEqual(skills.alumniMentor, False)
 
-    def test_edit_complete(self):
+    def test_edit_complete(self) -> None:
         # enter nothing
         self.submit_form('edit_skills', 'input_id_submit', send_form_keys={
             'id_otherDegrees': 'Fancy Degree from FancyU',
@@ -50,7 +51,7 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(skills.areasOfInterest, "Nothing at all")
         self.assertEqual(skills.alumniMentor, True)
 
-    def test_edit_empty(self):
+    def test_edit_empty(self) -> None:
         # enter nothing
         self.submit_form('edit_skills', 'input_id_submit', send_form_keys={
             'id_otherDegrees': '',

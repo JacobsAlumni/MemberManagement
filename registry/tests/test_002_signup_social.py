@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from MemberManagement.tests.integration import IntegrationTest
 
@@ -6,7 +8,7 @@ class SocialTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_01_address.json']
     user = 'Mounfem'
 
-    def test_signup_social_complete(self):
+    def test_signup_social_complete(self) -> None:
         self.submit_form('setup_social', 'input_id_submit', send_form_keys={
             'id_facebook': 'https://facebook.com/anna.freytag',
             'id_linkedin': 'https://www.linkedin.com/in/anna-freytag-1234578',
@@ -26,7 +28,7 @@ class SocialTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(social.instagram, 'https://instagram.com/anna.freytag')
         self.assertEqual(social.homepage, 'https://anna-freytag.com')
 
-    def test_signup_social_empty(self):
+    def test_signup_social_empty(self) -> None:
         self.submit_form('setup_social', 'input_id_submit', send_form_keys={
             'id_facebook': '',
             'id_linkedin': '',

@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
 
 
@@ -8,7 +9,7 @@ class EditSocialTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
     user = 'Mounfem'
 
-    def test_noedit(self):
+    def test_noedit(self) -> None:
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
@@ -27,7 +28,7 @@ class EditSocialTest(IntegrationTest, StaticLiveServerTestCase):
                          'https://instagram.com/anna.freytag')
         self.assertEqual(social.homepage, 'https://anna-freytag.com')
 
-    def test_edit_complete(self):
+    def test_edit_complete(self) -> None:
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
@@ -52,7 +53,7 @@ class EditSocialTest(IntegrationTest, StaticLiveServerTestCase):
                          'https://instagram.com/freytag')
         self.assertEqual(social.homepage, 'https://freytag.com')
 
-    def test_edit_empty(self):
+    def test_edit_empty(self) -> None:
         # enter nothing
         self.submit_form('edit_social', 'input_id_submit', send_form_keys={
             'id_facebook': '',

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from alumni.fields.college import CollegeField
@@ -11,7 +13,7 @@ class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_02_social.json']
     user = 'Mounfem'
 
-    def test_signup_jacobs_complete(self):
+    def test_signup_jacobs_complete(self) -> None:
         self.submit_form('setup_jacobs', 'input_id_submit', send_form_keys={
             'id_comments': 'I am not real',
         }, select_dropdowns={
@@ -31,7 +33,7 @@ class JacobsTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(jacobs.major, MajorField.PHYSICS)
         self.assertEqual(jacobs.comments, 'I am not real')
 
-    def test_signup_jacobs_empty(self):
+    def test_signup_jacobs_empty(self) -> None:
         self.submit_form('setup_jacobs', 'input_id_submit', send_form_keys={
             'id_comments': '',
         }, select_dropdowns={

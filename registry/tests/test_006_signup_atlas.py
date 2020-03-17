@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from MemberManagement.tests.integration import IntegrationTest
 
@@ -5,7 +7,7 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_05_skills.json']
     user = 'Mounfem'
 
-    def test_signup_atlas_all(self):
+    def test_signup_atlas_all(self) -> None:
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': True,
@@ -20,7 +22,7 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(atlas.birthdayVisible, True)
         self.assertEqual(atlas.contactInfoVisible, True)
 
-    def test_signup_atlas_birthday(self):
+    def test_signup_atlas_birthday(self) -> None:
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': True,
@@ -35,7 +37,7 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(atlas.birthdayVisible, True)
         self.assertEqual(atlas.contactInfoVisible, False)
 
-    def test_signup_atlas_contact(self):
+    def test_signup_atlas_contact(self) -> None:
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': False,
@@ -50,7 +52,7 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(atlas.birthdayVisible, False)
         self.assertEqual(atlas.contactInfoVisible, True)
 
-    def test_signup_atlas_minimal(self):
+    def test_signup_atlas_minimal(self) -> None:
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': True,
             'id_birthdayVisible': False,
@@ -65,7 +67,7 @@ class AtlasTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(atlas.birthdayVisible, False)
         self.assertEqual(atlas.contactInfoVisible, False)
 
-    def test_signup_atlas_empty(self):
+    def test_signup_atlas_empty(self) -> None:
         self.submit_form('setup_atlas', 'input_id_submit', select_checkboxes={
             'id_included': False,
             'id_birthdayVisible': False,

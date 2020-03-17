@@ -1,12 +1,18 @@
-import PreJsPy
+from __future__ import annotations
+
+from PreJsPy import PreJsPy
 import functools
 
 from . import operators as ops
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Dict, List, Optional, Any
+    from django.db.models import QuerySet, Q
 
 class SearchFilter(object):
-    def __init__(self, field_map, plain_search_fields):
-        self.parser = PreJsPy.PreJsPy()
+    def __init__(self, field_map: Dict[str, str], plain_search_fields: List[str]) -> Q:
+        self.parser = PreJsPy()
         self.parser.setTertiaryOperatorEnabled(False)
         self.parser.setUnaryOperators([
             'not', '!', '~'
@@ -30,7 +36,7 @@ class SearchFilter(object):
 
         self.builder = QueryBuilder(field_map, plain_search_fields)
 
-    def __call__(self, queryset, query):
+    def __call__(self, queryset: QuerySet, query: str) -> (Q, Optional[Exception]):
         try:
             parsed = self.parser.parse(query)
         except Exception as e:
@@ -49,14 +55,14 @@ class SearchFilter(object):
 class QueryBuilder(object):
     """Generates a Django Q object from a PreJSPy filter JSON object"""
 
-    def __init__(self, field_map, plain_search_fields):
+    def __init__(self, field_map: Dict[str, str], plain_search_fields: List[str]):
         self.ops = ops.get_operators(field_map)
         self.fields = plain_search_fields
 
-    def __call__(self, filter_obj):
+    def __call__(self, filter_obj: Any) -> Q:
         return self.translate(filter_obj, finalize=True)
 
-    def translate(self, filter_obj, finalize=False):
+    def translate(self, filter_obj: any, finalize: bool=False) -> Q:
         if not filter_obj:
             raise ValueError("Filter was empty")
 
@@ -87,7 +93,7 @@ class QueryBuilder(object):
 
         return res
 
-    def _generate_binary(self, filter_obj):
+    def _generate_binary(self, filter_obj: Any) -> Q:
         try:
             left = filter_obj['left']
             right = filter_obj['right']
@@ -106,7 +112,7 @@ class QueryBuilder(object):
 
         return op(self.translate(left), self.translate(right))
 
-    def _generate_unary(self, filter_obj):
+    def _generate_unary(self, filter_obj: Any) -> Q:
         try:
             argument = filter_obj['argument']
             filter_type = filter_obj['operator']
@@ -124,7 +130,7 @@ class QueryBuilder(object):
 
         return op(self.translate(argument))
 
-    def _generate_compound(self, filter_obj):
+    def _generate_compound(self, filter_obj: Any) -> Q:
         """Compound expressions are implicitly converted into a series of
         AND connected clauses."""
 
@@ -140,7 +146,7 @@ class QueryBuilder(object):
 
         return functools.reduce(self.ops['and_fn'], clauses)
 
-    def _generate_literal(self, literal):
+    def _generate_literal(self, literal: Any) -> Any:
         try:
             if literal['type'] == ops.IDENTITY_TYPE:
                 return literal['name']
@@ -151,13 +157,13 @@ class QueryBuilder(object):
         except KeyError as e:
             raise ValueError("Invalid literal: " + str(e))
 
-    def _finalize(self, s):
+    def _finalize(self, s: str) -> Q:
         """ Generates a string search """
         return ops.build_text_search(s, self.fields)
 
 
 class ParsingError(Exception):
-    def __init__(self, message, caused_by):
+    def __init__(self, message: str, caused_by: Exception):
         super().__init__(message)
         self.message = message
         self.caused_by = caused_by

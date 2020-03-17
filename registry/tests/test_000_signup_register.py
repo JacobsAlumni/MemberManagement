@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -9,7 +11,7 @@ from MemberManagement.tests.integration import IntegrationTest
 
 
 class SignupTest(IntegrationTest, StaticLiveServerTestCase):
-    def test_signup_regular(self):
+    def test_signup_regular(self) -> None:
         """ Tests that we can complete the first setup page with a regular user """
 
         # fill out a new form on the register page
@@ -55,7 +57,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.gsuite, None)
         self.assertEqual(obj.time, None)
 
-    def test_signup_faculty(self):
+    def test_signup_faculty(self) -> None:
         """ Tests that we can complete the first signup page for a faculty member """
 
         # fill out a new form on the register page
@@ -102,7 +104,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(obj.gsuite, None)
         self.assertEqual(obj.time, None)
 
-    def test_signup_notos(self):
+    def test_signup_notos(self) -> None:
         """ Tests that we can not submit a form without having accepted the TOS """
 
         # fill out the form first
@@ -137,7 +139,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_tos').get_attribute('class').split(' '), 'tos field marked up as incorrect')
 
-    def test_signup_alumniemail(self):
+    def test_signup_alumniemail(self) -> None:
         """ Tests that we can not complete the first setup page with a jacobs alumni email """
 
         self.submit_form('register', 'input_id_submit', send_form_keys={
@@ -163,7 +165,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')
 
-    def test_signup_jacobsemail(self):
+    def test_signup_jacobsemail(self) -> None:
         """ Tests that we can not complete the first setup page with a jacobs alumni email """
 
         self.submit_form('register', 'input_id_submit', send_form_keys={

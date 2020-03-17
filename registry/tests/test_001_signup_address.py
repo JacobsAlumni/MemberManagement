@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from MemberManagement.tests.integration import IntegrationTest
 
@@ -5,7 +7,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_00_register.json']
     user = 'Mounfem'
 
-    def test_signup_address_minimal(self):
+    def test_signup_address_minimal(self) -> None:
         self.submit_form('setup_address', 'input_id_submit', send_form_keys={
             'id_address_line_1': 'Alt-Moabit 72',
             'id_address_line_2': '',
@@ -27,7 +29,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(address.state, None)
         self.assertEqual(address.country.name, 'Germany')
 
-    def test_signup_address_full(self):
+    def test_signup_address_full(self) -> None:
         self.submit_form('setup_address', 'input_id_submit', send_form_keys={
             'id_address_line_1': '2986 Heron Way',
             'id_address_line_2': 'Attn. Anna Freytag',
@@ -49,7 +51,7 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertEqual(address.state, 'Oregon')
         self.assertEqual(address.country.name, 'United States of America')
 
-    def test_signup_address_fail(self):
+    def test_signup_address_fail(self) -> None:
         button = self.fill_out_form(
             'setup_address', 'input_id_submit')
 

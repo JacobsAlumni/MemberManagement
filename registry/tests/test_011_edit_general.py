@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import datetime
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from alumni.fields.category import AlumniCategoryField
 from alumni.fields.gender import GenderField
-from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest
 
 
@@ -12,7 +13,7 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
     user = 'Mounfem'
 
-    def test_noedit(self):
+    def test_noedit(self) -> None:
         """ Tests that entering nothing doesn't change anything """
 
         # enter nothing
@@ -36,7 +37,7 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
             list(map(lambda c: c.name, alumni.nationality)), ['Germany'])
         self.assertEqual(alumni.category, AlumniCategoryField.REGULAR)
 
-    def test_data_regular(self):
+    def test_data_regular(self) -> None:
         """ Tests that all fields can be changed """
 
         self.submit_form('edit', 'input_id_submit', send_form_keys={
@@ -69,7 +70,7 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
             list(map(lambda c: c.name, alumni.nationality)), ['Gambia'])
         self.assertEqual(alumni.category, AlumniCategoryField.REGULAR)
 
-    def test_nojacobsemail(self):
+    def test_nojacobsemail(self) -> None:
         """ Tests that we can't use a jacobs email as private email """
 
         # enter nothing

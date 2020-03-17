@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django import forms
 from django.contrib.auth.models import User
 
@@ -5,6 +7,10 @@ from alumni.models import (Address, Alumni, JacobsData, JobInformation,
                            SetupCompleted, Skills, SocialMedia)
 from atlas.models import AtlasSettings
 from django_forms_uikit.widgets import DatePickerInput
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Dict, Any
 
 EMAIL_BLACKLIST = [
     'jacobs-alumni.de',
@@ -15,10 +21,10 @@ EMAIL_BLACKLIST = [
 
 
 class RegistrationMixin():
-    def raise_validation_error(self):
+    def raise_validation_error(self) -> None:
         raise forms.ValidationError("Please correct the error below.")
 
-    def clean_profile_fields(self, cleaned_data):
+    def clean_profile_fields(self, cleaned_data: Dict[str, Any]) -> None:
         if not 'email' in cleaned_data:
             return
         email = cleaned_data['email'].lower().strip()
@@ -61,7 +67,7 @@ class RegistrationForm(RegistrationMixin, forms.ModelForm):
             "birthday": "",
         }
 
-    def clean(self):
+    def clean(self) -> None:
         # individual field's clean methods have already been called
         cleaned_data = self.cleaned_data
 
@@ -96,7 +102,7 @@ class AlumniForm(RegistrationMixin, forms.ModelForm):
             "birthday": "",
         }
 
-    def clean(self):
+    def clean(self) -> None:
         self.clean_profile_fields(self.cleaned_data)
         return super().clean()
 

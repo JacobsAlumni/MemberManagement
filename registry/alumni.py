@@ -1,20 +1,27 @@
+from __future__ import annotations
+
 import bisect
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, List, Type, Callable, Optional
+    from alumni.models import Alumni
 
 
 class AlumniComponentMixin:
     """ Mixin representing a component """
 
-    SETUP_COMPONENT_NAME = None
-    COMPONENT_SETUP_URL = None
+    SETUP_COMPONENT_NAME: str = None
+    COMPONENT_SETUP_URL: Optional[str] = None
 
     @classmethod
-    def component_exists(cls, alumni):
+    def component_exists(cls, alumni: Alumni) -> bool:
         """ Checks if an alumni has this component set """
 
         return cls.objects.filter(member=alumni).exists()
 
     @classmethod
-    def component_name(cls):
+    def component_name(cls) -> str:
         """ Gets the component name """
         name = cls.SETUP_COMPONENT_NAME
         if name is not None:
@@ -23,7 +30,7 @@ class AlumniComponentMixin:
         return cls.member.field.remote_field.name
 
     @classmethod
-    def component_setup_url(cls):
+    def component_setup_url(cls) -> (str, bool):
         url = cls.COMPONENT_SETUP_URL
         if url is not None:
             return url, False
@@ -32,14 +39,14 @@ class AlumniComponentMixin:
 
 
 class AlumniRegistryMixin:
-    components = []  # the list of components used by the alumni model
-    component_prios = []  # the corresponding alumni priority mixin
+    components: List[Type[AlumniComponentMixin]] = []  # the list of components used by the alumni model
+    component_prios: List[int] = []  # the corresponding alumni priority mixin
 
     @classmethod
-    def register_component(cls, prio):
+    def register_component(cls, prio: int) -> Callable[[Type[AlumniComponentMixin]], Type[AlumniComponentMixin]]:
         """ A decorator to add a component to the list of components """
 
-        def decorator(f):
+        def decorator(f: Type[AlumniComponentMixin]) -> Type[AlumniComponentMixin]:
 
             # raise an error for the component
             if not issubclass(f, AlumniComponentMixin):
@@ -57,7 +64,7 @@ class AlumniRegistryMixin:
             return f
         return decorator
 
-    def has_component(self, component):
+    def has_component(self, component: Type[AlumniComponentMixin]) -> bool:
         """ Checks if this alumni has a given component"""
 
         if issubclass(component, AlumniComponentMixin):
@@ -66,7 +73,7 @@ class AlumniRegistryMixin:
             raise TypeError(
                 "expected 'component' to be a subclass of AlumniComponentMixin")
 
-    def get_first_unset_component(self):
+    def get_first_unset_component(self) -> Optional[Type[AlumniComponentMixin]]:
         """ Gets the first unset component or returns None if it
         already exists. """
 
@@ -77,6 +84,6 @@ class AlumniRegistryMixin:
         return None
 
     @property
-    def setup_completed(self):
+    def setup_completed(self) -> bool:
         """ Checks if a user has completed setup """
         return self.get_first_unset_component() is None
