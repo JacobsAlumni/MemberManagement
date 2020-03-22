@@ -216,6 +216,25 @@ class UpgradeTestBase(StripeFrontendTestMixin):
         # nothing has changed
         self._assert_tier_unchanged()
 
+    @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
+    @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
+    @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, None))
+    def test_cancel(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self._assert_select_redirect_payment()
+        self.submit_cancel()
+
+        # check that we get back to the subscription
+        self.assert_url_equal('update_membership',
+                              'Check that the user is sent back on the update membership page')
+        self.assert_element_exists('div.message.uk-alert-success')
+
+        # check that the mocks were called
+        umock.assert_not_called()
+        cmock.assert_not_called()
+
+        # check that we are on the right tier
+        self._assert_tier_unchanged()
+
 
 class ContributorUpgradeTest(UpgradeTestBase, IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']

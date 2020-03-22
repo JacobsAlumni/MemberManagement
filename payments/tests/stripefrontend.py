@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 class StripeFrontendTestMixin(IntegrationTestBase):
     _payment_type_element = '#id_payment_type'
     _submit_button_element = '#button_id_presubmit'
+    _starter_button_element = '#button_id_starter'
 
     def assert_card_selectable(self) -> None:
         element = self.find_element(self.__class__._payment_type_element)
@@ -33,6 +34,18 @@ class StripeFrontendTestMixin(IntegrationTestBase):
 
         self.assert_element_not_displayed('#stripe-card-elements')
         self.assert_element_displayed('#stripe-iban-elements')
+
+    def assert_cancel_selectable(self) -> None:
+        self.assert_element_displayed(self.__class__._starter_button_element)
+
+    def assert_cancel_not_selectable(self) -> None:
+        self.assert_element_not_exists(self.__class__._starter_button_element)
+
+    def submit_cancel(self, next_selector: Optional[str] = None) -> None:
+        """ Clicks the submit cancel button """
+        self.find_element(self.__class__._starter_button_element).click()
+        self.find_element(
+            next_selector or self.__class__._find_element_selector)
 
     def submit_card_details(self, cardnumber: str = '4242 4242 4242 4242', exp_date: str = '12/50', cvc: str = '123', postal: str = '12345', next_selector: Optional[str] = None) -> None:
         """ Fills out and submits testing card details """

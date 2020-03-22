@@ -1,4 +1,9 @@
-var stripe_integration_init = function(stripe_publishable_key) {
+/**
+ * Activates the stripe integration
+ * @param {string} stripe_publishable_key 
+ * @param {boolean} allow_go_to_starter 
+ */
+var stripe_integration_init = function(stripe_publishable_key, allow_go_to_starter) {
     // make some thin wrappers around the stripe api
     // which return faked id's when we do not have a publishable key]
     
@@ -72,6 +77,9 @@ var stripe_integration_init = function(stripe_publishable_key) {
         if (mode === 'iban') ibanReady = true;
         if (cardReady && ibanReady) {
             document.getElementById('button_id_presubmit').removeAttribute('disabled');
+            if (allow_go_to_starter) {
+                starterButton.removeAttribute('disabled');
+            }
         }
     }
 
@@ -111,7 +119,6 @@ var stripe_integration_init = function(stripe_publishable_key) {
     }).trigger('change');
 
 
-    // handle form suibmission
     // Handle form submission
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function (event) {
@@ -128,6 +135,17 @@ var stripe_integration_init = function(stripe_publishable_key) {
         }
     });
 
+    // create a starter button
+    var starterButton;
+    if (allow_go_to_starter) {
+        starterButton = document.getElementById('button_id_starter');
+        starterButton.addEventListener('click', function(event){
+            event.preventDefault();
+            
+            submitForm(undefined, undefined, true);
+        });
+    }
+
     // handle submitting a card
     var submitCard = function() {
         create_token(card).then(function(result) {
@@ -136,7 +154,7 @@ var stripe_integration_init = function(stripe_publishable_key) {
                 return;
             }
             
-            submitForm(result.token.id, undefined);
+            submitForm(result.token.id, undefined, false);
         });
     };
     
@@ -155,11 +173,11 @@ var stripe_integration_init = function(stripe_publishable_key) {
                 return;
             }
 
-            submitForm(undefined, result.source.id);
+            submitForm(undefined, result.source.id, false);
         })
     };
 
-    var submitForm = function(card_token, source_id) {
+    var submitForm = function(card_token, source_id, go_to_starter) {
         // unmount both elements to be sure they do not leak
         // any data to the server
         card.unmount();
@@ -169,6 +187,9 @@ var stripe_integration_init = function(stripe_publishable_key) {
         document.getElementById('id_card_token').value = card_token || '';
         document.getElementById('id_source_id').value = source_id || '';
         document.getElementById('name').value = '';
+        if (allow_go_to_starter) {
+            document.getElementById('id_go_to_starter').value = go_to_starter ? 'true' : '';
+        }
 
         // and submit the form
         document.getElementById("payment-form").submit();

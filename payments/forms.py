@@ -29,7 +29,7 @@ class PaymentMethodForm(forms.Form):
     source_id = forms.CharField(widget=forms.HiddenInput(), required=False)
     card_token = forms.CharField(widget=forms.HiddenInput(), required=False)
 
-    def clean(self) -> None:
+    def clean(self) -> Any:
         cleaned_data = self.cleaned_data
 
         # extract source id
@@ -58,7 +58,34 @@ class PaymentMethodForm(forms.Form):
 
         return cleaned_data
 
-    def attach_to_customer(self, customer: str) -> bool:
+    def attach_to_customer(self, customer: str) -> [Optional[bool], Optional[str]]:
         source_id = self.cleaned_data['source_id']
         token = self.cleaned_data['card_token']
         return stripewrapper.update_payment_method(customer, source_id, token)
+
+
+class CancellablePaymentMethodForm(PaymentMethodForm):
+    go_to_starter = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def clean(self) -> Any:
+        cleaned_data = self.cleaned_data
+
+        # if 'go to starter' is set, go to starter instead
+        if 'go_to_starter' in cleaned_data:
+            if cleaned_data['go_to_starter'] == 'true':
+                return cleaned_data
+            else:
+                cleaned_data['go_to_starter'] = ''
+
+        return super().clean()
+
+    @property
+    def user_go_to_starter(self) -> bool:
+        return self.cleaned_data['go_to_starter'] == 'true'
+
+    def attach_to_customer(self, customer: str) -> [Optional[bool], Optional[str]]:
+        # if go to starter was set, don't do anything
+        if self.cleaned_data['go_to_starter']:
+            return True, None
+
+        return super().attach_to_customer(customer)

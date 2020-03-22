@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -10,8 +11,11 @@ from payments.models import SubscriptionInformation
 
 from .stripefrontend import StripeFrontendTestMixin
 
+from alumni.fields import TierField
+
 MOCKED_TIME = timezone.datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
+MOCKED_END = MOCKED_TIME + timedelta(days=2 * 365)
 
 
 class SignupPaymentsTestBase(StripeFrontendTestMixin):
@@ -22,6 +26,10 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
     def test_iban_ok(self) -> None:
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.assert_iban_selectable()
+
+    def test_cancel(self) -> None:
+        self.load_live_url('setup_subscription', '#id_payment_type')
+        self.assert_cancel_selectable()
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
@@ -164,6 +172,32 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
         with self.assertRaises(SubscriptionInformation.DoesNotExist):
             SubscriptionInformation.objects.get(
                 member=self.user.alumni)
+
+    @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
+    @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
+    @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, None))
+    def test_signup_cancel(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.load_live_url('setup_subscription', '#id_payment_type')
+        self.submit_cancel()
+
+        # check that things are as expected
+        self.assert_url_equal('setup_setup',
+                              'Check that the user gets redirected to the completed page')
+
+        # check that the mocks were called
+        umock.assert_not_called()
+        cmock.assert_not_called()
+
+        # check that we are on the right tier
+        self.assertEqual(self.user.alumni.membership.tier, TierField.STARTER)
+
+        # check that the subscription object was created
+        subscription = self.user.alumni.subscription
+        self.assertEqual(subscription.start, MOCKED_TIME)
+        self.assertEqual(subscription.end, MOCKED_END)
+        self.assertEqual(subscription.subscription, None)
+        self.assertEqual(subscription.external, False)
+        self.assertEqual(subscription.tier, TierField.STARTER)
 
 
 class ContributorSubscribeTest(SignupPaymentsTestBase, IntegrationTest, StaticLiveServerTestCase):

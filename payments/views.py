@@ -15,7 +15,7 @@ from registry.views.setup import SetupComponentView
 
 from MemberManagement.mixins import RedirectResponseMixin
 
-from .forms import MembershipInformationForm, PaymentMethodForm
+from .forms import MembershipInformationForm, PaymentMethodForm, CancellablePaymentMethodForm
 from .models import SubscriptionInformation
 
 from typing import TYPE_CHECKING
@@ -66,7 +66,7 @@ class SignupView(SetupComponentView):
 class SubscribeView(SetupComponentView):
     setup_name = 'Payment Information'
     setup_subtitle = ''
-    setup_form_class = PaymentMethodForm
+    setup_form_class = CancellablePaymentMethodForm
     setup_next_text = 'CONFIRM MEMBERSHIP & AUTHORIZE PAYMENT NOW'
 
     template_name = 'payments/subscribe.html'
@@ -74,7 +74,8 @@ class SubscribeView(SetupComponentView):
     def get_context(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context(*args, **kwargs)
         context.update({
-            'alumni': self.request.user.alumni
+            'alumni': self.request.user.alumni,
+            'allow_go_to_starter': True,
         })
         return context
 
@@ -136,14 +137,14 @@ class SubscribeView(SetupComponentView):
         # then we should immediately redirect to the memebership page
         return self.redirect_response('update_membership', reverse=True)
 
-    def dispatch_form(self, form: PaymentMethodForm) -> HttpResponse:
+    def dispatch_form(self, form: CancellablePaymentMethodForm) -> HttpResponse:
         if self.payment_update_mode:
             messages.info(
                 self.request, 'Please enter your payment details to complete the tier change. ')
 
         return super().dispatch_form(form)
 
-    def form_valid(self, form: PaymentMethodForm) -> Optional[SubscriptionInformation]:
+    def form_valid(self, form: CancellablePaymentMethodForm) -> Optional[SubscriptionInformation]:
         """ Form has been validated """
 
         # Attach the payment source to the customer
@@ -156,7 +157,12 @@ class SubscribeView(SetupComponentView):
                 None, 'Something went wrong when talking to our payment service provider. Please try again later or contact support. ')
             return None
 
-        instance = membership.create_subscription()
+        # we went to the starter tier
+        if not form.user_go_to_starter:
+            instance = membership.create_subscription()
+        else:
+            instance = membership.cancel_create_subscription()
+
         if instance is None:
             form.add_error(
                 None, 'Something went wrong trying to create the subscription. Please try again later or contact support. ')
@@ -189,6 +195,7 @@ class UpdatePaymentView(FormView):
             'updating': True,
             'next_text': 'AUTHORIZE PAYMENT NOW',
             'alumni': self.request.user.alumni,
+            'allow_go_to_starter': False,
         })
         return context
 

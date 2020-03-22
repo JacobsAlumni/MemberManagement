@@ -22,6 +22,10 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
         self.load_live_url('update_subscription', '#id_payment_type')
         self.assert_iban_selectable()
 
+    def test_cancel(self) -> None:
+        self.load_live_url('update_subscription', '#id_payment_type')
+        self.assert_cancel_not_selectable()
+
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     def test_signup_card_ok(self, umock: mock.Mock) -> None:

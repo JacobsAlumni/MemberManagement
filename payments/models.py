@@ -73,6 +73,41 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
             instance.created_from_update = True
         return instance
 
+    def cancel_create_subscription(self) -> Optional[SubscriptionInformation]:
+        """ Cancels creating a susbcription and goes to the starter tier instead """
+
+        if self.desired_tier is not None:
+            update_mode = True
+        else:
+            update_mode = False
+
+        # if we already have a subscription
+        sub = self.member.subscription
+        the_sub = None
+        if sub is not None:
+            # if it is starter => done
+            if sub.tier != TierField.STARTER:
+                raise Exception(
+                    'Can not cancel creating subscription: Existing subscription is not Starter Tier. ')
+
+            the_sub = sub
+
+        # create the subscription
+        if the_sub is None:
+            the_sub = SubscriptionInformation.create_starter_subscription(
+                self.member)
+
+        # store the new state
+        self.tier = TierField.STARTER
+        self.desired_tier = None
+        self.save()
+
+        # log if we were in update mode
+        the_sub.created_from_update = update_mode
+
+        # and return it
+        return the_sub
+
     def change_tier(self) -> (Optional[SubscriptionInformation], Optional[str]):
         """ Designates this user as changing tier """
 
@@ -252,7 +287,7 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
     @classmethod
     def create_starter_subscription(cls, alumni: Alumni) -> SubscriptionInformation:
         # creates a new starter subscription
-        return cls.start_new_subscription(alumni, None, length=timedelta(days=2 * 365))
+        return cls.start_new_subscription(alumni, None, length=timedelta(days=2 * 365), tier=TierField.STARTER)
 
     @classmethod
     def start_new_subscription(cls, alumni: Alumni, subscription: Optional[str], length: Optional[timedelta] = None, tier: Optional[str] = None) -> SubscriptionInformation:
