@@ -208,6 +208,9 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
 class SubscriptionInformation(AlumniComponentMixin, models.Model):
     SETUP_COMPONENT_NAME = 'subscription'
 
+    class Meta:
+        ordering = ['-start']
+
     member: Alumni = models.ForeignKey(
         Alumni, on_delete=models.CASCADE)
 

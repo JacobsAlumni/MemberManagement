@@ -1,0 +1,43 @@
+{% load registry_display %}
+
+<div class="uk-card uk-card-default">
+    <div class="uk-card-header">
+        <h3 class="uk-card-title uk-margin-remove-bottom">
+            Membership History
+        </h3>
+    </div>
+    <div class="uk-card-body">
+        <table class="uk-table uk-table-small">
+            <thead>
+                <tr>
+                    <th>Tier</th>
+                    <th>From (UTC)</th>
+                    <th>Until (UTC)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in user.alumni.subscriptioninformation_set.all %}
+                    <tr id="id_sub_{{forloop.counter}}">
+                        <td>
+                            {{ sub | get_choice_field:"tier" }}
+                        </td>
+                        <td>
+                            {{ sub.start }}
+                        </td>
+                        <td>
+                            {% if sub.end %}
+                            {{ sub.end }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sub.active %}
+                                <span class="uk-label uk-label-success">Active</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
