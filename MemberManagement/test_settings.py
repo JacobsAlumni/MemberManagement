@@ -12,9 +12,6 @@ DEBUG = False
 STRIPE_SECRET_KEY = None
 STRIPE_PUBLISHABLE_KEY = None
 
-# enable updating tier so that we can test it
-SELFSERVICE_TIER_ENABLED = True
-
 # enforce minimization for the tests
 # so that we can test the production code
 HTML_MINIFY = True

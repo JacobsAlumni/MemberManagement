@@ -80,7 +80,6 @@ TEMPLATES = [
                 'MemberManagement.context_processors.google_analytics_id',
                 'registry.context_processors.devel_warning',
                 'payments.context_processors.stripe',
-                'payments.context_processors.tier',
                 'atlas.context_processors.atlas_allowed',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -150,8 +149,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'custom_auth.backend.GoogleTokenBackend'
 ]
-
-SELFSERVICE_TIER_ENABLED = False
 
 SESAME_MAX_AGE = 300  # Emailed tokens expire after 5 minutes
 

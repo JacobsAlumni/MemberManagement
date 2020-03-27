@@ -17,8 +17,3 @@ def stripe(request: HttpRequest) -> Dict[str, Any]:
         'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
         'stripe_test_mode': IS_STRIPE_TEST_MODE
     }
-
-def tier(request: HttpRequest) -> Dict[str, Any]:
-    return {
-        'selfservice_tier_enabled': settings.SELFSERVICE_TIER_ENABLED
-    }

@@ -35,8 +35,3 @@ class AlumniSubscriptionMixin:
 
         stripesub = sub.subscription
         return stripesub is not None and stripesub != ''
-
-    @property
-    def can_update_tier(self) -> bool:
-        """ Checks if the user can change their tier """
-        return self.setup_completed and settings.SELFSERVICE_TIER_ENABLED

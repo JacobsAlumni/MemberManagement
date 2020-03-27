@@ -40,9 +40,6 @@ ENV DJANGO_SETTINGS_MODULE "MemberManagement.docker_settings"
 # disable / enable the devel warning shown on the page
 ENV DJANGO_ENABLE_DEVEL_WARNING "1"
 
-# disable / enable self-service tier up and downgrades
-ENV SELFSERVICE_TIER_ENABLED "0"
-
 # The secret key used for django
 ENV DJANGO_SECRET_KEY ""
 

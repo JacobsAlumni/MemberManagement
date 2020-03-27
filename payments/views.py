@@ -183,7 +183,6 @@ class SubscribeView(SetupComponentView):
 
 
 @method_decorator(require_setup_completed, name='dispatch')
-@method_decorator(user_passes_test(lambda user: user.alumni.can_update_payment), name='dispatch')
 class UpdatePaymentView(FormView):
     template_name = 'payments/subscribe.html'
     form_class = PaymentMethodForm
@@ -216,7 +215,6 @@ class UpdatePaymentView(FormView):
 
 
 @method_decorator(require_setup_completed, name='dispatch')
-@method_decorator(user_passes_test(lambda user: user.alumni.can_update_tier), name='dispatch')
 class UpdateTierView(RedirectResponseMixin, FormView):
     template_name = 'payments/tier.html'
     form_class = MembershipInformationForm
