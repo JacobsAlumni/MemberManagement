@@ -41,3 +41,7 @@ urlpatterns = [
     url(r'^atlas/', include('atlas.urls')),
     url(r'^payments/', include('payments.urls')),
 ]
+
+# make an http 500 handler in case things go wrong
+error_handler = TemplateView.as_view(template_name="base/error.html")
+def handler500(request): return error_handler(request)
