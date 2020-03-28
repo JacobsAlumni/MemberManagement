@@ -1,16 +1,7 @@
 {% extends "setup/setup.html" %}
 {% load static %}
 {% load registry_display %}
-
-{% block head %}
-<script type="text/javascript">
-    window.onload = function() {
-        tier_change_init("{{ next_text | escapejs }}", "{{ confirm_text | escapejs }}")
-    }
-</script>
-
-<script src="{% static "js/payments/tier.js" %}" type="text/javascript"></script>
-{% endblock %}
+{% load render_bundle from webpack_loader %}
 
 {% block pagetitle %}
     {% if updating %}
@@ -118,4 +109,14 @@
         </li>
     </ul>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+
+<script>
+    window.tier_next_text = "{{ next_text | escapejs }}";
+    window.tier_confirm_text = "{{ confirm_text | escapejs }}";
+</script>
+{% render_bundle "tier" "js" %}
 {% endblock %}

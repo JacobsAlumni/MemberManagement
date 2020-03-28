@@ -25,7 +25,9 @@ module.exports = {
     'login': [
       './assets/src/login/index.ts',
       './assets/src/login/index.css',
-    ]
+    ],
+
+    'tier': './assets/src/tier/index.ts',
   },
 
   // magic .ts and .js

@@ -1,3 +1,3 @@
 interface Window {
-    jsTestModeFlag: boolean;
+    readonly jsTestModeFlag: boolean;
 }
