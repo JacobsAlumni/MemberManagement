@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from django_countries.fields import Country
     from atlas.models import AtlasSettings
     from payments.models import MembershipInformation
+    from atlas.models import GeoLocation
 
 
 class Alumni(AlumniSubscriptionMixin, AlumniEmailMixin, AlumniRegistryMixin, models.Model):

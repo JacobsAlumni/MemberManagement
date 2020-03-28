@@ -47,15 +47,20 @@ class GeoLocation(models.Model):
         unique_together = (('country', 'zip'))
 
     @classmethod
-    def getLoc(cls, country: str, zip: str) -> Union[Tuple[float, float], Tuple[None, None]]:
+    def getLocInstance(cls, country: str, zip: str) -> Optional[GeoLocation]:
         try:
-            instance = cls.objects.get(
+            return cls.objects.get(
                 country=country, zip=cls.normalize_zip(zip, country.code))
         except cls.DoesNotExist:
-            warnings.warn('No location for combination: {} {}'.format(
-                country.code, cls.normalize_zip(zip, country.code)))
-            return None, None
+            #warnings.warn('No location for combination: {} {}'.format(
+            #    country.code, cls.normalize_zip(zip, country.code)))
+            return None
 
+    @classmethod
+    def getLoc(cls, country: str, zip: str) -> Union[Tuple[float, float], Tuple[None, None]]:
+        instance = cls.getLocInstance(country, zip)
+        if instance is None:
+            return None, None
         return instance.lat, instance.lon
 
     @classmethod

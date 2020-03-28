@@ -14,24 +14,14 @@ module.exports = {
 
   // all the entry points
   entry: {
-    // the base entry point that is included everywhere!
-    'base': [
-      './assets/src/base/index.ts',
-      './assets/src/base/index.scss',
-    ],
-
-    'token_login': './assets/src/token_login/index.ts',
-
-    'login': [
-      './assets/src/login/index.ts',
-      './assets/src/login/index.css',
-    ],
-
+    'atlas': './assets/src/atlas/index.ts',
+    'base': './assets/src/base/index.ts',
+    'login': './assets/src/login/index.ts',
+    'profile': './assets/src/profile/index.ts',
+    'search_form': './assets/src/search_form/index.ts',
+    'subscribe': './assets/src/subscribe/index.ts',
     'tier': './assets/src/tier/index.ts',
-    'subscribe': [
-      './assets/src/subscribe/index.ts',
-      './assets/src/subscribe/index.css',
-    ],
+    'token_login': './assets/src/token_login/index.ts',
   },
 
   // magic .ts and .js

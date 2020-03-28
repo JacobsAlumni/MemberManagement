@@ -5,6 +5,7 @@ from django.core.management import call_command
 from django.urls import reverse
 from django_selenium_clean import SeleniumTestCase
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from seleniumlogin import force_login
@@ -176,6 +177,39 @@ class IntegrationTestBase(DummyTestBase):
         # and check that it's equal
         return self.assert_url_equal(new_url, args=new_url_args, kwargs=new_url_kwargs, reverse_get_params=new_url_reverse_get_params, *args)
 
+    def hover_element(self, id_: str) -> WebElement:
+        """ Hovers over an element with the given ID """
+        element = self.selenium.find_element_by_id(id_)
+
+        hover = ActionChains(self.selenium).move_to_element(element)
+        hover.perform()
+
+        return element
+
+    def select_dropdown(self, id_: str, value: str) -> Select:
+        """ Selects text of a dropdown by value """
+
+        select = Select(self.selenium.find_element_by_id(id_))
+
+        # if we are a multiple select, deselect all of them
+        if select.is_multiple:
+            select.deselect_all()
+
+        # if the value was set to none, do nothing
+        if value is None:
+            return select
+
+        # if we have a string, select by visible text
+        if isinstance(value, str):
+            select.select_by_visible_text(value)
+
+        # else select all the ones by the given value
+        else:
+            for v in value:
+                select.select_by_value(v)
+
+        return select
+
     def fill_out_form(self, url_pattern: str, submit_button: str = None, send_form_keys: Optional[Dict[str, str]] = None, select_dropdowns: Optional[Dict[str, str]] = None, select_checkboxes: Optional[Dict[str, bool]] = None, script_value: Optional[Dict[str, str]] = None, selector: Optional[str] = None, url_args: Optional[List[str]] = None, url_kwargs: Optional[Dict[str, Any]] = None, url_reverse_get_params: Optional[Dict[str, Any]] = None, selector_timeout: Optional[int] = None) -> WebElement:
         """
             Loads a URL using selenium from the live server and waits for the element with the submit_button id to be
@@ -207,24 +241,7 @@ class IntegrationTestBase(DummyTestBase):
         # select inside the specified dropdowns
         if select_dropdowns is not None:
             for id_, value in select_dropdowns.items():
-                select = Select(self.selenium.find_element_by_id(id_))
-
-                # if we are a multiple select, deselect all of them
-                if select.is_multiple:
-                    select.deselect_all()
-
-                # if the value was set to none, do nothing
-                if value is None:
-                    continue
-
-                # if we have a string, select by visible text
-                if isinstance(value, str):
-                    select.select_by_visible_text(value)
-
-                # else select all the ones by the given value
-                else:
-                    for v in value:
-                        select.select_by_value(v)
+                self.select_dropdown(id_, value)
 
         # select the checkboxes
         if select_checkboxes is not None:

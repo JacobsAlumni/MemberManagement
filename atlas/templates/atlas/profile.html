@@ -2,41 +2,37 @@
 
 {% load registry_display %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 
 {% block title %}Member{% endblock %}
 
 
 {% block head %}
-<link rel="stylesheet" href="{% static "openlayers/css/ol.css" %}" type="text/css">
-<style>
-    .map {
-        height: 400px;
-        width: 100%;
-    }
-</style>
-<script src="{% static "openlayers/js/ol.js"%}"></script>
+{% render_bundle "profile" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
     {{ alumni.fullName }}
             
     {% if alumni.atlas.contactInfoVisible %}
-        {% if alumni.social.facebook %}
-            <a class="uk-icon-button" target="_blank" href="{{alumni.social.facebook}}" uk-icon="icon: facebook" alt="Facebook">
-            </a>
-        {% endif %}
-        {% if alumni.social.linkedin %}
-            <a class="uk-icon-button" target="_blank" href="{{alumni.social.linkedin}}" uk-icon="icon: linkedin" alt="LinkedIn">
-            </a>
-        {% endif %}
-        {% if alumni.social.twitter %}
-            <a class="uk-icon-button" target="_blank" href="{{alumni.social.twitter}}" uk-icon="icon: twitter" alt="Twitter">
-            </a>
-        {% endif %}
-        {% if alumni.social.instagram %}
-            <a class="uk-icon-button" target="_blank" href="{{alumni.social.instagram}}" uk-icon="icon: instagram" alt="instagram">
-            </a>
-        {% endif %}
+        <span id="id_socials">
+            {% if alumni.social.facebook %}
+                <a class="uk-icon-button" target="_blank" href="{{alumni.social.facebook}}" uk-icon="icon: facebook" alt="Facebook">
+                </a>
+            {% endif %}
+            {% if alumni.social.linkedin %}
+                <a class="uk-icon-button" target="_blank" href="{{alumni.social.linkedin}}" uk-icon="icon: linkedin" alt="LinkedIn">
+                </a>
+            {% endif %}
+            {% if alumni.social.twitter %}
+                <a class="uk-icon-button" target="_blank" href="{{alumni.social.twitter}}" uk-icon="icon: twitter" alt="Twitter">
+                </a>
+            {% endif %}
+            {% if alumni.social.instagram %}
+                <a class="uk-icon-button" target="_blank" href="{{alumni.social.instagram}}" uk-icon="icon: instagram" alt="instagram">
+                </a>
+            {% endif %}
+        </span>
     {% endif %}
 
     <span class="uk-label">{{ alumni |get_choice_field:"category"|safe }}
@@ -47,11 +43,13 @@
     <div>
         <p class="uk-article-lead">
             {% if alumni.atlas.contactInfoVisible %}
-                <a href="mailto:{{alumni.approval.gsuite}}">{{alumni.approval.gsuite}}</a>
-                {% if alumni.social.homepage %}
-                &nbsp;-&nbsp; <a href="{{alumni.social.homepage}}" target="_blank">{{alumni.social.homepage}}</a>
-                {% endif %}
-                <br />
+                <span id="id_contact">
+                    <a href="mailto:{{alumni.approval.gsuite}}">{{alumni.approval.gsuite}}</a>
+                    {% if alumni.social.homepage %}
+                    &nbsp;-&nbsp; <a href="{{alumni.social.homepage}}" target="_blank">{{alumni.social.homepage}}</a>
+                    {% endif %}
+                    <br />
+                </span>
             {% endif %}
 
             {% if alumni.jacobs.degree %}
@@ -154,59 +152,11 @@
 
     </div>
 </div>
+{% endblock %}
 
-<script type="text/javascript">
-    // apply the college color (if any)
-    var collegeEle = document.getElementById('college');
-    if (collegeEle) {
-        var college = parseInt(collegeEle.getAttribute('data-college'), 10);
-        var collegeColor = ['', 'red', 'blue', 'green', 'yellow', 'white'][college];
-        var collegeBackground = ['white', 'white', 'white', 'white', 'black', 'black'][college];
-        collegeEle.style.backgroundColor = collegeColor;
-        collegeEle.style.color = collegeBackground;
-    }
-
-    // get the point and feature
-    var point = {{ alumni_coords }};
-    var proj = ol.proj.fromLonLat([point[1], point[0]]);
-    var feature = new ol.Feature(
-        new ol.geom.Point(proj)
-    );
-
-    // create a feature layer
-    var featureLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: [feature]
-        }),
-        style: function(feature) {
-            return new ol.style.Style({
-                image: new ol.style.Circle({
-                    radius: 10,
-                    stroke: new ol.style.Stroke({
-                        color: '#fff'
-                    }),
-                    fill: new ol.style.Fill({
-                        color: '#3399CC'
-                    })
-                }),
-            });
-        }
-    });
-
-    // the source for all the images is OpenStreetMap
-    var raster = new ol.layer.Tile({
-        source: new ol.source.OSM()
-    });
-
-    // finally: create a map
-    var map = new ol.Map({
-        layers: [raster, featureLayer],
-        target: 'map',
-        view: new ol.View({
-            center: proj,
-            zoom: 4
-        })
-    });
-
-</script>
+{% block extrascripts %}
+    <script type="text/javascript">
+        window.alumni_profile_point = {{ alumni_coords }};
+    </script>
+    {% render_bundle "profile" "js" %}
 {% endblock %}

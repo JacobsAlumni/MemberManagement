@@ -1,8 +1,3 @@
-interface Window {
-    readonly tier_next_text: string;
-    readonly tier_confirm_text: string;
-}
-
 const TierField = document.getElementById('id_tier') as HTMLSelectElement;
 const Description = document.getElementById('description') as HTMLDivElement;
 const DescriptionChildren = Array.prototype.slice.call(Description.children[0].children) as Array<HTMLDivElement>;

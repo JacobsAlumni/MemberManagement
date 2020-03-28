@@ -1,3 +1,5 @@
+{% load render_bundle from webpack_loader %}
+
 <p class="uk-article-lead">
     <form action="{% url 'atlas_search' %}" method="GET" id="searchForm">
         <div uk-grid>
@@ -36,13 +38,14 @@
 
             <div class="uk-width-2-5@m uk-button-group">
                 <!-- Search -->
-                <button type="submit" class="uk-input uk-button uk-button-primary">
+                <button type="submit" id="id_button_search" class="uk-input uk-button uk-button-primary">
                     Search
                     <span uk-icon="icon: search"></span>
                 </button>
 
                 <!-- Advanced Search Button -->
-                <input type="button" class="uk-button uk-button-default" value="Advanced" />
+                <input type="button" id="id_button_advanced" class="uk-button uk-button-default" value="Advanced" />
+
                 <div uk-dropdown>
                     <div class="uk-form-horizontal">
                         <table id="advancedFieldTable">
@@ -52,7 +55,7 @@
                                         <td data-selector="{{ field.0 }}">{{ field.1 }}</td>
                                         <td>
                                             <div class="uk-button-group">
-                                                <select class="uk-select" style="min-width: 200px; ">
+                                                <select class="uk-select" style="min-width: 200px; " id="aft_id_select_{{field.0}}">
                                                     {% for kv in field.2 %}
                                                         <option value="{{ kv.0 }}">{{ kv.1 }}</option>
                                                     {% endfor %}
@@ -70,34 +73,4 @@
     </form>
 </p>
 
-<script>
-    (function(){
-        // the thing to add to the search
-        var searchInput = document.getElementById('searchInput');
-
-        // select the advanced table
-        var tableBody = document.getElementById('advancedFieldTable').children[0];
-        Array.prototype.forEach.call(tableBody.children, function(advancedField){
-            var selector = advancedField.children[0].getAttribute('data-selector');
-            var select = advancedField.children[1].children[0].children[0];
-
-            var button = document.createElement('button');
-            advancedField.children[1].children[0].appendChild(button);
-            button.setAttribute('type', 'button');
-            button.className = 'uk-button uk-button-default';
-            button.innerHTML = '+';
-
-            button.addEventListener('click', function(evt){
-                evt.stopImmediatePropagation();
-                var value = select.options[select.selectedIndex].value;
-                searchInput.value = searchInput.value + ' ' + selector + ': ' + value;
-                return false;
-            }, false);
-        });
-
-        // on submitting the form, remove all the extra fields in the table
-        searchInput.form.addEventListener("submit", function(){
-            advancedTable.parentElement.removeChild(advancedTable);
-        }, false);
-    })();
-</script>
+{% render_bundle "search_form" %}

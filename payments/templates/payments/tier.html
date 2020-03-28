@@ -112,10 +112,9 @@
 {% endblock %}
 
 {% block extrascripts %}
-
-<script>
-    window.tier_next_text = "{{ next_text | escapejs }}";
-    window.tier_confirm_text = "{{ confirm_text | escapejs }}";
-</script>
-{% render_bundle "tier" "js" %}
+    <script>
+        window.tier_next_text = "{{ next_text | escapejs }}";
+        window.tier_confirm_text = "{{ confirm_text | escapejs }}";
+    </script>
+    {% render_bundle "tier" "js" %}
 {% endblock %}
