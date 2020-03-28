@@ -7,7 +7,7 @@ import unittest
 import pycodestyle
 
 ignore_patterns = (
-    'venv', '.git', '__pycache__', 'migrations')
+    'venv', '.git', '__pycache__', 'migrations', 'node_modules')
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 

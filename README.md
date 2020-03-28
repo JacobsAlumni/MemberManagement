@@ -21,7 +21,7 @@ The entire application can be run locally for a development setup and via [Docke
 
 ### Local Development Instance
 
-To run a local instance, install Python 3.6 or newer, then clone this repository and afterwards set up a [virtal environment](https://docs.python.org/3/library/venv.html) as follows:
+To run a local instance, install Python 3.6 or newer, then clone this repository and afterwards set up a [virtual environment](https://docs.python.org/3/library/venv.html) as follows:
 
 ```bash
 # Create and activate venv in venv/ 
@@ -31,12 +31,28 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
+# Install development dependencies
+pip install -r requirements-dev.txt
+
 # Run migrations
 python manage.py migrate
 ```
 
+Afterwards install the frontend dependencies using [yarn](https://yarnpkg.com/):
+
+```bash
+yarn
+```
+
+
 By default a local instance is then configured to store data in a local `db.sqlite3` database. 
-Thus one can simply run the application like any other Django App using:
+One needs to start the django app in two parts, one part building the frontend dependencies using:
+
+```bash
+yarn dev
+```
+
+and in a seperate terminal the normal django development server:
 
 ```bash
 python manage.py runserver
@@ -72,7 +88,6 @@ The following portal-related apps exist:
 - `custom_auth/` -- GSuite-integration, including login and approval (purpose 2)
 - `payments/` -- Stripe + payments integration (purpose 3)
 - `atlas/` -- user-facing search of atlas data (purpose 6)
-
 The following independent apps also exist:
 
 - `django_forms_uikit` -- rendering django forms using the uikit framework
@@ -99,8 +114,9 @@ pytest
 By default, the tests are running in headless mode. 
 To enforce a visible browser, instead use:
 
-```
-SELENIUM_HEADLESS=0 pytest
+```bash
+yarn build # ensure that static assets have been built
+SELENIUM_HEADLESS=0 pytest # to run headless
 ```
 
 Travis CI runs Chrome and Firefox tests in headless mode after every commit.  

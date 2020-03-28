@@ -1,0 +1,28 @@
+{
+  "name": "member_management",
+  "version": "1.0.0",
+  "repository": "git@github.com:JacobsAlumni/MemberManagement.git",
+  "author": "Tom Wiesing <tkw01536@gmail.com>",
+  "license": "GPL3",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^13.9.5",
+    "@types/uikit": "^3.3.0",
+    "css-loader": "^3.4.2",
+    "jquery": "^3.4.1",
+    "mini-css-extract-plugin": "^0.9.0",
+    "node-sass": "^4.13.1",
+    "nodep-date-input-polyfill": "^5.2.0",
+    "sass-loader": "^8.0.2",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "uikit": "^3.3.7",
+    "webpack": "^4.42.1",
+    "webpack-bundle-tracker": "^0.4.3",
+    "webpack-cli": "^3.3.11"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "dev": "NODE_ENV=development webpack --config webpack.config.js --watch"
+  }
+}

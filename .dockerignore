@@ -7,6 +7,9 @@ MemberManagement/prod_settings.py
 venv/
 ENV/
 
+node_modules/
+assets/bundles/
+
 # Countries data
 allCountries.txt
 allCountries.zip

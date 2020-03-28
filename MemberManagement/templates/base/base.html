@@ -1,5 +1,6 @@
 {% load static %}
 {% load cookielaw_tags %}
+{% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -14,7 +15,8 @@
         <meta name="keywords" content="Jacobs Alumni Association, Jacobs University Bremen, Jacobs University, Alumni Association, Jacobs, Alumni, Association, Bremen" />
 
         <link rel="icon" type="image/png" href="{%  static "media/favicon.png" %}" />
-        <link href="{% static "uikit/css/style.min.css" %}" rel="stylesheet" />
+        
+        {% render_bundle "base" "css" %}
 
         {% if google_analytics_id %}
         <script async src="https://www.googletagmanager.com/gtag/js?id={{google_analytics_id}}"></script>
@@ -54,11 +56,8 @@
         {% endblock %}
 
         {% block scripts %}
-            <script src="{% static "nodep-date-input-polyfill/nodep-date-input-polyfill.dist.js" %}"></script>
-            <script src="{% static "jquery/js/jquery-3.3.1.min.js" %}"></script>
+            {% render_bundle "base" "js" %}            
             <script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
-            <script src="{% static "uikit/js/uikit.min.js" %}" type="text/javascript"></script>
-            <script src="{% static "uikit/js/uikit-icons.min.js" %}" type="text/javascript"></script>
         {% endblock %}
     </body>
 </html>

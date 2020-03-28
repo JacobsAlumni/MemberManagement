@@ -1,4 +1,20 @@
-FROM python:3.8-alpine
+# image for building node dependencies
+FROM node:12-alpine as frontend
+
+# install node dependencies
+ADD package.json /app/package.json
+ADD yarn.lock /app/yarn.lock
+WORKDIR /app/
+RUN yarn install
+
+# install frontend scripts + build
+ADD tsconfig.json /app/tsconfig.json
+ADD webpack.config.js /app/webpack.config.js
+ADD assets/ /app/assets/
+RUN yarn build
+
+# image for python
+FROM python:3.8-alpine 
 
 # Install binary python dependencies
 RUN apk add --no-cache \
@@ -16,7 +32,7 @@ ADD requirements.txt /app/
 ADD requirements-prod.txt /app/
 WORKDIR /app/
 
-# Add the entrypoint and add configuration
+# install all the python runtime dependencies
 RUN mkdir -p /var/www/static/ \
     && pip install -r requirements.txt \
     && pip install -r requirements-prod.txt
@@ -33,6 +49,11 @@ ADD atlas/ /app/atlas
 ADD payments/ /app/payments
 ADD docker/ /app/docker
 
+# copy over the frontend assets
+COPY --from=frontend /app/webpack-stats.json /app/webpack-stats.json
+COPY --from=frontend /app/assets/bundles /app/assets/bundles/
+
+# default settings are in MemberManagement
 ENV DJANGO_SETTINGS_MODULE "MemberManagement.docker_settings"
 
 ### ALL THE CONFIGURATION

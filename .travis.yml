@@ -50,10 +50,14 @@ jobs:
 
 python:
   - "3.8"
+node:
+  - "12"
 
 install:
+  - yarn
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
 
 script:
+  - yarn build
   - pytest
