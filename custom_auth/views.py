@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from sesame import utils as token_utils
+from .authutils import generate_login_token
 
 from alumni.models import Alumni as UserModel
 
@@ -105,9 +105,7 @@ class ClientIdLoginView(views.LoginView):
 
             try:
                 user = UserModel.objects.get(email=email)
-                token_params = token_utils.get_parameters(user.profile)
-
-                token_str = token_params['url_auth_token']
+                token_str = generate_login_token(user.profile)
                 abs_url = "{}?token={}&next={}".format(
                     self.request.build_absolute_uri(reverse(email_token_login)), token_str, next_url)
 

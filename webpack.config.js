@@ -19,6 +19,13 @@ module.exports = {
       './assets/src/base/index.ts',
       './assets/src/base/index.scss',
     ],
+
+    'token_login': './assets/src/token_login/index.ts',
+
+    'login': [
+      './assets/src/login/index.ts',
+      './assets/src/login/index.css',
+    ]
   },
 
   // magic .ts and .js

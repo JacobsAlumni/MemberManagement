@@ -1,18 +1,14 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 
 {% block title %}Membership Portal - Token Login{% endblock %}
 
 {% block head %}
-<script>
 {% if not error %}
-// Automatically submit the hidden form to log the user in.
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('token_form').submit()
-})
+    {% render_bundle "token_login" %}
 {% endif %}
-</script>
 {% endblock %}
 
 {% block pagetitle %}

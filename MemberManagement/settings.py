@@ -24,6 +24,7 @@ SECRET_KEY = 'wn_2m*p3v6i&+!cjf-%6j0yc1a3g2j%h@h865@=wcons^4skox'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+JS_TEST_MODE_FLAG = False
 ENABLE_DEVEL_WARNING = True
 
 ALLOWED_HOSTS = []
@@ -78,6 +79,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'MemberManagement.context_processors.google_analytics_id',
+                'MemberManagement.context_processors.js_testmode_flag',
                 'registry.context_processors.devel_warning',
                 'payments.context_processors.stripe',
                 'atlas.context_processors.atlas_allowed',

@@ -7,6 +7,7 @@ from .settings import *
 
 # No debug mode during testing, to be as close to production as possible
 DEBUG = False
+JS_TEST_MODE_FLAG = True
 
 # Disable stripe keys in testing mode
 STRIPE_SECRET_KEY = None

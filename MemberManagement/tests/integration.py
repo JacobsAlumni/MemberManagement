@@ -116,7 +116,7 @@ class IntegrationTestBase(DummyTestBase):
 
         return wait.until(condition((By.CSS_SELECTOR, selector)))
 
-    def _resolve_url(self, url: str, args: Optional[List[Any]] = None, kwargs: Optional[Dict[str, Any]] = None, reverse_get_params: Optional[Dict[str, Any]] = None) -> str:
+    def _resolve_url(self, url: str, args: Optional[List[Any]] = None, kwargs: Optional[Dict[str, Any]] = None, get_params: Option[Dict[str, str]] = None, reverse_get_params: Optional[Dict[str, Any]] = None) -> str:
         """ Resolves a url pattern into a url """
 
         # If it's an absolute url, the test case is wrong
@@ -127,16 +127,31 @@ class IntegrationTestBase(DummyTestBase):
         # the url itself is resolved using 'reverse'
         resolved = reverse(url, args=args, kwargs=kwargs)
 
-        # if we have 'reverse_get_params', reverse all of them
+        # extra get parameters
+        extra_args = {}
+        has_extra_args = False
+
+        # extra url params
+        if get_params is not None:
+            has_extra_args = True
+            extra_args.update(get_params)
+
+        # reversed get params
         if reverse_get_params is not None:
+            has_extra_args = True
+            for (k, v) in reverse_get_params.items():
+                extra_args[k] = reverse(v)
+
+        # if we had some extra arguments
+        if has_extra_args:
             resolved = resolved + '?' + \
-                '&'.join(['{}={}'.format(k, reverse(v))
-                          for (k, v) in reverse_get_params.items()])
+                '&'.join(['{}={}'.format(k, v)
+                          for (k, v) in extra_args.items()])
 
         # and return the resolved url
         return resolved
 
-    def load_live_url(self, url_pattern: str, selector: str = None, url_args: Optional[List[Any]] = None, url_kwargs: Optional[Dict[str, Any]] = None, url_reverse_get_params: Optional[Dict[str, Any]] = None, selector_timeout: Optional[int] = None) -> WebElement:
+    def load_live_url(self, url_pattern: str, selector: str = None, url_args: Optional[List[Any]] = None, url_kwargs: Optional[Dict[str, Any]] = None, url_get_params: Option[Dict[str, str]] = None, url_reverse_get_params: Optional[Dict[str, Any]] = None, selector_timeout: Optional[int] = None) -> WebElement:
         """
             Loads an url from the selenium from the live server and waits for the CSS selector (if any) to be available
             Returns the element selected, None if none is selected, or raises TimeoutException if a timeout occurs.
@@ -144,7 +159,7 @@ class IntegrationTestBase(DummyTestBase):
 
         # resolve the url and load it
         url = self._resolve_url(
-            url_pattern, args=url_args, kwargs=url_kwargs, reverse_get_params=url_reverse_get_params)
+            url_pattern, args=url_args, kwargs=url_kwargs, get_params=url_get_params, reverse_get_params=url_reverse_get_params)
         self.selenium.get(self.live_server_url + url)
 
         # wait for the element

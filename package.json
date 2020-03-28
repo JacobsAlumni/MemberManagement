@@ -6,6 +6,8 @@
   "license": "GPL3",
   "private": true,
   "dependencies": {
+    "@types/gapi": "^0.0.39",
+    "@types/gapi.auth2": "^0.0.51",
     "@types/node": "^13.9.5",
     "@types/uikit": "^3.3.0",
     "css-loader": "^3.4.2",

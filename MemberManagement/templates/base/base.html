@@ -18,15 +18,16 @@
         
         {% render_bundle "base" "css" %}
 
-        {% if google_analytics_id %}
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{google_analytics_id}}"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
+        <script type='text/javascript'>window.jsTestModeFlag = {% if js_test_mode_flag %}true{% else %}false{% endif %};</script>
 
-            gtag('config', '{{google_analytics_id}}');
-        </script>
+        {% if google_analytics_id %}
+            <script async src="https://www.googletagmanager.com/gtag/js?id={{google_analytics_id}}"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', "{{google_analytics_id | escapejs }}");
+            </script>
         {% endif %}
 
         {% block head %}

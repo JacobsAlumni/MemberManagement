@@ -1,31 +1,13 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
+
 
 {% block title %}Membership Portal - Jacobs University Bremen Alumni {% endblock %}
 
 {% block head %}
-<style type="text/css">
-    #g-signin-icon {
-        margin-left: -30px;
-        padding-right: 30px;
-    }
-</style>
-
-<!-- Sign in with Google -->
-<script>
-var google_login_settings = {
-    client_id: '{{ client_id }}',
-    hosted_domain: '{{ gsuite_domain }}',
-    prompt: 'select_account'
-}
-
-var login_script_settings = {
-    next: "{{ next }}",
-    token_endpoint: "{% url 'token_login' %}"
-}
-</script>
-<script type="text/javascript"  src="{% static "js/login.js" %}"></script>
+    {% render_bundle "login" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
@@ -48,7 +30,7 @@ Login
     <form id="local-login" class="uk-form-horizontal" method="POST">
         {% csrf_token %}
         {{ form | as_uikit_form }}
-        <input type="submit" class="uk-button uk-button-primary" value="Login">
+        <input type="submit" class="uk-button uk-button-primary" value="Login" id="input_id_login">
     </form>
 </div>
 
@@ -56,18 +38,17 @@ Login
 {% block scripts %}
 {{ block.super }}
 
-<script type="text/javascript">
-
-    // Workaround for Login Button not working properly
-    // is to only load it onload, and also add it dynamically
-    // see e.g. https://github.com/google/google-api-javascript-client/issues/397
-
-    window.onload = function() {
-        var scriptNode = document.createElement('script');
-        scriptNode.src = "https://apis.google.com/js/platform.js?onload=init";
-        scriptNode.type = 'text/javascript';
-        scriptNode.charset = 'utf-8';
-        document.getElementsByTagName('head')[0].appendChild(scriptNode);
+<script>
+    window.google_login_settings = {
+        client_id: "{{ client_id | escapejs }}",
+        hosted_domain: "{{ gsuite_domain | escapejs }}",
+        prompt: "select_account",
+    }
+    
+    window.login_script_settings = {
+        next: "{{ next | escapejs }}",
+        token_endpoint: "{% url 'token_login' %}"
     }
 </script>
+{% render_bundle "login" "js" %}
 {% endblock %}
