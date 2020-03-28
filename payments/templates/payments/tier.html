@@ -111,8 +111,7 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-{{ block.super }}
+{% block extrascripts %}
 
 <script>
     window.tier_next_text = "{{ next_text | escapejs }}";

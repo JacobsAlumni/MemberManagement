@@ -57,8 +57,8 @@
         {% endblock %}
 
         {% block scripts %}
-            {% render_bundle "base" "js" %}            
-            <script src="{% static "cookielaw/js/cookielaw.js" %}"></script>
+            {% render_bundle "base" "js" %}
+            {% block extrascripts %}{% endblock %}
         {% endblock %}
     </body>
 </html>
