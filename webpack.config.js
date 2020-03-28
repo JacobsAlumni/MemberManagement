@@ -28,6 +28,10 @@ module.exports = {
     ],
 
     'tier': './assets/src/tier/index.ts',
+    'subscribe': [
+      './assets/src/subscribe/index.ts',
+      './assets/src/subscribe/index.css',
+    ],
   },
 
   // magic .ts and .js

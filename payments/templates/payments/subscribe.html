@@ -2,12 +2,13 @@
 {% load uikit_tags %}
 {% load static %}
 {% load registry_display %}
+{% load render_bundle from webpack_loader %}
 
 {% block title %}Membership Data{% endblock %}
 
+
 {% block head %}
-    <!-- the styles -->
-    <link rel="stylesheet" href="{% static "css/payments/stripe.css" %}" type="text/css">
+    {% render_bundle "subscribe" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
@@ -187,13 +188,9 @@
 {% block scripts %}
     {{ block.super }}
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="{% static "js/payments/subscribe.js" %}" type="text/javascript"></script>
-    <script type="text/javascript">
-        window.onload = function() {
-            stripe_integration_init(
-                {% if stripe_publishable_key %}'{{ stripe_publishable_key }}'{% else %}undefined{% endif %}, 
-                {% if allow_go_to_starter %}true{% else %}false{% endif %}
-            );
-        }
+    <script>
+        window.stripe_publishable_key = {% if stripe_publishable_key %}"{{ stripe_publishable_key | escapejs }}"{% else %}undefined{% endif %};
+        window.allow_go_to_starter = {% if allow_go_to_starter %}true{% else %}false{% endif %};
     </script>
+    {% render_bundle "subscribe" "js" %}
 {% endblock %}
