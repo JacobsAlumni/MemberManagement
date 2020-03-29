@@ -5,7 +5,7 @@ from django.db import transaction
 from django.core.management.base import BaseCommand
 
 from django.contrib.auth import get_user_model
-from custom_auth.gsuite import make_directory_service
+from custom_auth.utils.gsuite import make_directory_service
 from custom_auth.models import GoogleAssociation
 
 from typing import TYPE_CHECKING

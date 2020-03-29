@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from .authutils import generate_login_token
+from .utils.auth import generate_login_token
 
 from alumni.models import Alumni as UserModel
 

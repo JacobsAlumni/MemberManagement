@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
 
-from custom_auth.gsuite import get_user_id
+from custom_auth.utils.gsuite import get_user_id
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

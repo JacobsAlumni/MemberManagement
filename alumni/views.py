@@ -13,7 +13,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 from raven.contrib.django.raven_compat.models import client
 
-from custom_auth.gsuite import create_user, get_user_id, patch_user
+from custom_auth.utils.gsuite import create_user, get_user_id, patch_user
 from custom_auth.models import GoogleAssociation
 
 from .forms import UserApprovalForm
@@ -137,7 +137,7 @@ class ApprovalView(FormView):
 
         # Create the new account
         messages.info(request, 'Creating a new account {}'.format(email))
-        uid = create_user(alumni.givenName, alumni.familyName, email, password)
+        uid = create_user(alumni, email, password)
         if uid is None:
             raise ValueError(
                 'Something went wrong while creating user account')
@@ -159,7 +159,7 @@ class ApprovalView(FormView):
 
         # Patch existing account
         messages.info(request, 'Patching account {}'.format(email))
-        uid = patch_user(email)
+        uid = patch_user(alumni, email)
         if uid is None:
             raise ValueError(
                 'Something went wrong while patching user account')
@@ -184,7 +184,7 @@ class ApprovalView(FormView):
 
         # Patch existing account
         messages.info(request, 'Patching account + password {}'.format(email))
-        uid = patch_user(email, password=password)
+        uid = patch_user(alumni, email, password=password)
         if uid is None:
             raise ValueError(
                 'Something went wrong while patching user account')

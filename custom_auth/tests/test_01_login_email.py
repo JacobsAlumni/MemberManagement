@@ -8,7 +8,7 @@ from unittest import mock
 
 from django.contrib.auth.models import User
 
-from custom_auth.authutils import generate_login_token
+from custom_auth.utils.auth import generate_login_token
 
 
 class EmailLoginTest(IntegrationTest, StaticLiveServerTestCase):
