@@ -77,7 +77,11 @@ All configuration can be set via environment variables, see [Dockerfile](Dockerf
 
 ## Weekly jobs
 
-This 
+To run the weekly jobs, use:
+
+```bash
+python manage.py runjobs weekly
+```
 
 ## Code Structure
 
