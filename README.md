@@ -75,6 +75,10 @@ For Docker purposes the configuration file `MemberManagement/docker_settings.py`
 By default, it also uses a local sqlite database. 
 All configuration can be set via environment variables, see [Dockerfile](Dockerfile) for details. 
 
+## Weekly jobs
+
+This 
+
 ## Code Structure
 
 The code is layed out as any other Django app.

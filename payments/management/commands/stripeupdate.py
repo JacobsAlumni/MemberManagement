@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
 
 def update_stripe_members(members: Iterable[MembershipInformation], on_message: Callable[[str], None]) -> None:
-    """ Links GSuite Users """
+    """ Updates all stripe members """
 
     for member in members:
         _, error = stripewrapper.update_customer(
