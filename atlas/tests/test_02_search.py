@@ -62,8 +62,6 @@ class SearchResultsTest(IntegrationTest, StaticLiveServerTestCase):
     def test_search_advanced_college(self) -> None:
         submit_button = self.fill_out_form('atlas_home', 'id_button_search')
 
-        # hover the advanced button
-        self.hover_element('id_button_advanced')
         self.select_dropdown('aft_id_select_college', 'Krupp')
         self.selenium.find_element_by_id('aft_id_button_college').click()
 
@@ -76,8 +74,6 @@ class SearchResultsTest(IntegrationTest, StaticLiveServerTestCase):
             'searchInput': 'Elena'
         })
 
-        # hover the advanced button
-        self.hover_element('id_button_advanced')
         self.select_dropdown('aft_id_select_college', 'Krupp')
         self.selenium.find_element_by_id('aft_id_button_college').click()
 
