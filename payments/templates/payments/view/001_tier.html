@@ -8,10 +8,18 @@
     </div>
     <div class="uk-card-body">
         Your current tier: <b>{{ user.alumni.membership | get_choice_field:"tier" }}</b>
+        {% if user.alumni.starter_has_expired %}
+            <span class="uk-label uk-label-danger">Expired</span>
+        {% endif %}
     </div>
-    {% if user.alumni.setup_completed %}
+    
         <div class="uk-card-footer">
-            <a href="{% url 'update_membership' %}" class="uk-button uk-button-text" id='id_update_tier'>Change Tier</a>
+            {% if user.alumni.can_extend_starter %}
+                <a href="{% url 'extend_starter' %}" class="uk-button uk-button-text" id='id_extend_starter'>Extend Starter</a>
+            {% endif %}
+            {% if user.alumni.setup_completed %}
+                <a href="{% url 'update_membership' %}" class="uk-button uk-button-text" id='id_update_tier'>Change Tier</a>
+            {% endif %}
+            
         </div>
-    {% endif %}
 </div>

@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+{% load uikit_tags %}
+{% load render_bundle from webpack_loader %}
+
+{% block title %}Extend Membership{% endblock %}
+
+{% block pagetitle %}
+    <a href="{% url "view_payments" %}" class="uk-button uk-button-default uk-button-small">
+        <span uk-icon="icon: arrow-left"></span>
+        Back to Membership
+    </a>
+    Extend Membership
+{% endblock %}
+
+{% block content %}
+
+{% if error %}
+    {% include "payments/view/error.html" %}
+{% else %}
+    <div class="uk-alert uk-alert-danger" uk-alert>
+        <h3>Starter Membership Expired</h3>
+        <p>
+            Your current <i>Starter Membership</i> has expired. 
+            As per our charter, you can decide to renew the starter period for one year. 
+        </p>
+    </div>
+
+    <form class="uk-form-horizontal" method="POST">
+
+        {% csrf_token %}
+        {{ form | as_uikit_form }}
+
+        <div id='description' style='display: none; '>
+            <div class="uk-form-controls uk-form-controls-text">
+                {% include "payments/description/starter.html" %}
+                {% include "payments/description/contributor.html" %}
+                {% include "payments/description/patron.html" %}
+            </div>
+        </div>
+    </form>
+{% endif %}
+<!-- TODO: Some javascript-->
+{% endblock %}
+
+{% block extrascripts %}
+    <script>
+        window.tier_next_text = undefined;
+        window.tier_confirm_text = undefined;
+    </script>
+    {% render_bundle "tier" "js" %}
+{% endblock %}

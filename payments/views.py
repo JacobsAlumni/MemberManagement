@@ -15,7 +15,7 @@ from registry.views.setup import SetupComponentView
 
 from MemberManagement.mixins import RedirectResponseMixin
 
-from .forms import MembershipInformationForm, PaymentMethodForm, CancellablePaymentMethodForm
+from .forms import MembershipInformationForm, PaymentMethodForm, CancellablePaymentMethodForm, ExtendStarterForm
 from .models import SubscriptionInformation
 
 from typing import TYPE_CHECKING
@@ -319,6 +319,14 @@ class PaymentsTableMixin:
             err = 'Something went wrong. Please try again later or contact support. '
 
         return methods, err
+
+@method_decorator(require_setup_completed, name='dispatch')
+@method_decorator(user_passes_test(lambda user: user.alumni.can_extend_starter), name='dispatch')
+class ExtendStarterView(FormView):
+    template_name = 'payments/extend.html'
+    form_class = ExtendStarterForm
+    def form_valid(self, form: ExtendStarterForm) -> HttpResponse:
+        return super().form_valid(form)
 
 
 @method_decorator(require_setup_completed, name='dispatch')

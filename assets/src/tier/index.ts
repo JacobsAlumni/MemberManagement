@@ -1,7 +1,7 @@
 const TierField = document.getElementById('id_tier') as HTMLSelectElement;
 const Description = document.getElementById('description') as HTMLDivElement;
 const DescriptionChildren = Array.prototype.slice.call(Description.children[0].children) as Array<HTMLDivElement>;
-const SubmitButton = document.getElementById('input_id_submit') as HTMLInputElement;
+const SubmitButton = document.getElementById('input_id_submit') as HTMLInputElement | null;
 
 // handle changes to the field
 var handleChange = function() {
@@ -12,7 +12,9 @@ var handleChange = function() {
     }
     const selectedTier = document.getElementById('description-' + selected) as HTMLDivElement;
     selectedTier.style.display = 'block';
-    SubmitButton.value = (selected === 'st') ? window.tier_confirm_text : window.tier_next_text;
+    if (SubmitButton && window.tier_confirm_text && window.tier_next_text) {
+        SubmitButton.value = (selected === 'st') ? window.tier_confirm_text : window.tier_next_text;
+    }
 }
 
 TierField.onchange = handleChange;

@@ -35,3 +35,27 @@ class AlumniSubscriptionMixin:
 
         stripesub = sub.subscription
         return stripesub is not None and stripesub != ''
+
+    @property
+    def can_extend_starter(self) -> bool:
+        """ Checks if the subscription can be renewed starter """
+        sub = self.subscription
+        if sub is None:
+            return False
+
+        # DEBUG HACK HACK HACK
+        return self.subscription.tier == 'st'
+
+        #return sub.can_extend_starter
+    
+    @property
+    def starter_has_expired(self) -> bool:
+        """ Checks if the subscription can be renewed starter """
+        sub = self.subscription
+        if sub is None:
+            return False
+        # DEBUG HACK HACK HACK
+        return self.subscription.tier == 'st'
+
+        return self.subscription.starter_has_expired
+        

@@ -17,12 +17,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from .views import SignupView, SubscribeView, PaymentsView, UpdatePaymentView, UpdateTierView
+from .views import SignupView, SubscribeView, PaymentsView, UpdatePaymentView, UpdateTierView, ExtendStarterView
 
 urlpatterns = [
     url(r'^membership/$', SignupView.as_view(), name='setup_membership'),
     url(r'^change/$', UpdateTierView.as_view(), name='update_membership'),
     url(r'^subscribe/$', SubscribeView.as_view(), name='setup_subscription'),
     url(r'^update/$', UpdatePaymentView.as_view(), name='update_subscription'),
+    url(r'^extend/$', ExtendStarterView.as_view(), name='extend_starter'),
     url(r'^$', PaymentsView.as_view(), name='view_payments'),
 ]

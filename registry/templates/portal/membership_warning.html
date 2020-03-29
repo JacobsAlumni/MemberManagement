@@ -6,5 +6,15 @@
         If you are a new member, we will be reviewing your application and get back to you with your Google account details.
     </p>
 </div>
+{% endif %}
+
+{% if user.alumni.starter_has_expired %}
+<div class="uk-alert uk-alert-warning" uk-alert>
+    <h3>Starter Membership Expired</h3>
+    <p>
+        Your <i>Starter Membership</i> has expired. 
+        Please <a href="{% url 'extend_starter' %}">extend your starter membership. </a>
+    </p>
+</div>
 
 {% endif %}

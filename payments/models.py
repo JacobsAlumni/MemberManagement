@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from django.db import models
 
+from enum import Enum
+
 from django.utils import timezone
 from datetime import timedelta
 
@@ -203,6 +205,16 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
             self.member, subscription, tier=desired_tier)
         return instance, None
 
+class StarterRenewalState(Enum):
+    AHEAD_WEEK_4 = 28   # 3 weeks  < _ <= 4 weeks 
+    AHEAD_WEEK_3 = 21   # 2 weeks  < _ <= 3 weeks 
+    AHEAD_WEEK_2 = 14   # 1 weeks  < _ <= 2 weeks 
+    AHEAD_WEEK_1 = 7    # 0 weeks  < _ <= 1 week 
+    BEHIND_WEEK_1 = -7  # -1 week  < _ <= 0 weeks 
+    BEHIND_WEEK_2 = -14 # -2 weeks < _ <= -1 weeks 
+    BEHIND_WEEK_3 = -21 # -3 weeks < _ <= -2 weeks 
+    BEHIND_WEEK_4 = -28 #            _ <= -3 weeks 
+
 
 @Alumni.register_component(7)
 class SubscriptionInformation(AlumniComponentMixin, models.Model):
@@ -312,3 +324,48 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
 
         # and create the new subscription
         return cls.objects.create(member=alumni, start=start, end=end, subscription=subscription, tier=tier)
+    
+    @property
+    def can_extend_starter(self) -> bool:
+        """ Checks if the user can renew the starter tier """
+
+        if self.tier != TierField.STARTER:
+            return False
+        
+        return self.starter_renewal_state is not None
+    
+    @property
+    def starter_has_expired(self) -> bool:
+        state = self.starter_renewal_state
+        if state is None:
+            return False
+        
+        return state < 0
+    
+    @property
+    def starter_renewal_state(self) -> Optional[StarterRenewlState]:
+        """ Returns the state of starter renewal """
+
+        if self.tier != TierField.STARTER:
+            return None
+        
+        # compute the number of days left 
+        diff: int = (timezone.now() - self.end).days
+
+        if diff > StarterRenewalState.AHEAD_WEEK_4:
+            return None
+        elif diff > StarterRenewalState.AHEAD_WEEK_3:
+            return StarterRenewalState.AHEAD_WEEK_4
+        elif diff > StarterRenewalState.AHEAD_WEEK_2:
+            return StarterRenewalState.AHEAD_WEEK_3
+        elif diff > StarterRenewalState.AHEAD_WEEK_1:
+            return StarterRenewalState.AHEAD_WEEK_2
+        elif diff >= 0:
+            return StarterRenewalState.AHEAD_WEEK_1
+        elif diff > StarterRenewalState.BEHIND_WEEK_1:
+            return StarterRenewalState.BEHIND_WEEK_1
+        elif diff > StarterRenewalState.BEHIND_WEEK_2:
+            return StarterRenewalState.BEHIND_WEEK_2
+        elif diff > StarterRenewalState.BEHIND_WEEK_3:
+            return StarterRenewalState.BEHIND_WEEK_3
+        return StarterRenewalState.BEHIND_WEEK_4

@@ -6,12 +6,11 @@ from django import forms
 
 from payments.models import MembershipInformation
 
-from alumni.fields import PaymentTypeField
+from alumni.fields import PaymentTypeField, TierField
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Any
-
 
 class MembershipInformationForm(forms.ModelForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -23,6 +22,8 @@ class MembershipInformationForm(forms.ModelForm):
         model = MembershipInformation
         fields = ['tier']
 
+class ExtendStarterForm(forms.Form):
+    tier = forms.ChoiceField(choices=TierField.CHOICES, required=True)
 
 class PaymentMethodForm(forms.Form):
     payment_type = forms.ChoiceField(choices=PaymentTypeField.CHOICES)
