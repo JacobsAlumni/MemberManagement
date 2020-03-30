@@ -116,7 +116,8 @@ The integration tests run headless by default and support the following browsers
 To run tests make sure that development dependencies are installed and then run:
 
 ```
-pytest
+yarn build # ensure that static assets have been built
+pytest # to run the tests
 ```
 
 By default, the tests are running in headless mode. 
