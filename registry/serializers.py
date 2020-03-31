@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 class CreateUserSerializer(serializers.Serializer):
     firstNames = serializers.CharField()
-    middleNames = serializers.CharField()
+    middleNames = serializers.CharField(required=False, allow_blank=True)
     lastNames = serializers.CharField()
 
     birthDate = serializers.DateField()

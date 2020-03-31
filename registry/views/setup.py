@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateResponseMixin, View
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from alumni.models import Approval
 from MemberManagement.mixins import RedirectResponseMixin
@@ -118,8 +119,7 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         # else render the form
         return self.dispatch_form(form)
 
-
-class RegisterView(SetupViewBase):
+class LegacyRegisterView(SetupViewBase):
     setup_name = 'Register'
     setup_subtitle = 'Enter your General Information - just the basics'
     setup_next_text = 'Continue Application'

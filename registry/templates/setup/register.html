@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+{% load render_entrypoint from webpack_loader %}
+
+{% block head%}
+{% render_entrypoint 'registry__signup' 'css' %}
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block pagetitle %}
+{{ title }}
+{% if subtitle %}
+    <span class="uk-text-muted"> - {{ subtitle }}</span>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div id="signupform">
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+{% render_entrypoint 'registry__signup' 'js' %}
+{% endblock %}

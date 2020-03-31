@@ -16,6 +16,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.views.generic import TemplateView
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .views.registry import PortalView
 from .views import setup as setup_views
@@ -28,7 +30,9 @@ urlpatterns = [
     url(r'^$', PortalView.as_view(), name='portal'),
 
     # Registration
-    url(r'^register/$', setup_views.RegisterView.as_view(), name='register'),
+    url(r'^register/$', ensure_csrf_cookie(TemplateView.as_view(template_name='setup/register.html')), name='register'),
+    url(r'^register/legacy/$', setup_views.LegacyRegisterView.as_view(), name='legacy_register'),
+    
     url(r'api/register/$', api_views.CreateUserView.as_view(), name='api_register'),
 
     # Initial data Setup

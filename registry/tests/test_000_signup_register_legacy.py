@@ -15,7 +15,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that we can complete the first setup page with a regular user """
 
         # fill out a new form on the register page
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        self.submit_form('legacy_register', 'input_id_submit', send_form_keys={
             'id_givenName': 'Anna',
             'id_middleName': '',
             'id_familyName': 'Freytag',
@@ -61,7 +61,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that we can complete the first signup page for a faculty member """
 
         # fill out a new form on the register page
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        self.submit_form('legacy_register', 'input_id_submit', send_form_keys={
             'id_givenName': 'David',
             'id_middleName': 'L',
             'id_familyName': 'Hood',
@@ -108,7 +108,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         """ Tests that we can not submit a form without having accepted the TOS """
 
         # fill out the form first
-        button = self.fill_out_form('register', 'input_id_submit', send_form_keys={
+        button = self.fill_out_form('legacy_register', 'input_id_submit', send_form_keys={
             'id_givenName': 'Anna',
             'id_middleName': '',
             'id_familyName': 'Freytag',
@@ -134,7 +134,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         self.find_element('.main-container')
 
         # check that we didn't get redirected
-        self.assert_url_equal('register',
+        self.assert_url_equal('legacy_register',
                               'Check that the user stays on the first page')
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_tos').get_attribute('class').split(' '), 'tos field marked up as incorrect')
@@ -142,7 +142,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
     def test_signup_alumniemail(self) -> None:
         """ Tests that we can not complete the first setup page with a jacobs alumni email """
 
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        self.submit_form('legacy_register', 'input_id_submit', send_form_keys={
             'id_givenName': 'David',
             'id_middleName': 'L',
             'id_familyName': 'Hood',
@@ -160,7 +160,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
             'id_birthday': '1991-04-09',
         })
 
-        self.assert_url_equal('register',
+        self.assert_url_equal('legacy_register',
                               'Check that the user stays on the first page')
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')
@@ -168,7 +168,7 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
     def test_signup_jacobsemail(self) -> None:
         """ Tests that we can not complete the first setup page with a jacobs alumni email """
 
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        self.submit_form('legacy_register', 'input_id_submit', send_form_keys={
             'id_givenName': 'David',
             'id_middleName': 'L',
             'id_familyName': 'Hood',
@@ -187,6 +187,6 @@ class SignupTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         self.assert_url_equal(
-            'register', 'Check that the user stays on the first page')
+            'legacy_register', 'Check that the user stays on the first page')
         self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
             'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')

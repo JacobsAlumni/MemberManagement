@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const BundleTracker = require('webpack4-bundle-tracker');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -30,6 +31,8 @@ module.exports = {
 
     'payments__subscribe': './assets/src/payments/subscribe/index.ts',
     'payments__tier': './assets/src/payments/tier/index.ts',
+
+    'registry__signup': './assets/src/registry/signup/index.ts',
   },
 
   // magic .ts and .js
@@ -40,20 +43,26 @@ module.exports = {
   // ts-loader
   module: {
     rules: [
+      // Vue SFC
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      },
 
       // typescript
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
         exclude: /node_modules/,
+        options: { appendTsSuffixTo: [/\.vue$/] }
       },
 
       // css
       {
         test: /\.css$/i,
         use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
+          isDevelopment ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader'
         ],
       },
 
@@ -61,11 +70,30 @@ module.exports = {
       {
         test: /\.s[ac]ss$/i,
         use: [
-          MiniCssExtractPlugin.loader,
+          isDevelopment ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
           'sass-loader',
         ],
       },
+
+      // Vue SFC - pug templates
+      {
+        test: /\.pug$/,
+        loader: 'pug-plain-loader'
+      },
+
+      // Vue SFC - referenced images
+      {
+        test: /\.(png|jpg|gif)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,
+            },
+          },
+        ],
+      }
     ],
   },
 
@@ -93,6 +121,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name]-[hash].css'
     }),
+    new VueLoaderPlugin()
   ],
 
 }
