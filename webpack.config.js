@@ -1,6 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
-const BundleTracker = require('webpack-bundle-tracker');
+const BundleTracker = require('webpack4-bundle-tracker');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -61,9 +61,15 @@ module.exports = {
     ],
   },
 
-  // split all the chunks
   optimization: {
-    splitChunks: false,
+    // we don't want a runtime chunk, because otherwise we can't have multiple entry points
+    // runtimechunk: single won't work, as otherwise the main script might get run multiple times!
+    runtimeChunk: false,
+    
+    // split all the chunks, hopefully make some things smaller
+    splitChunks: {
+      chunks: 'all'
+    }
   },
 
 

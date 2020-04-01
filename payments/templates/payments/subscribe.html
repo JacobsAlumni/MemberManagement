@@ -2,13 +2,13 @@
 {% load uikit_tags %}
 {% load static %}
 {% load registry_display %}
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 
 {% block title %}Membership Data{% endblock %}
 
 
 {% block head %}
-    {% render_bundle "subscribe" "css" %}
+    {% render_entrypoint "subscribe" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
@@ -192,5 +192,5 @@
         window.stripe_publishable_key = {% if stripe_publishable_key %}"{{ stripe_publishable_key | escapejs }}"{% else %}undefined{% endif %};
         window.allow_go_to_starter = {% if allow_go_to_starter %}true{% else %}false{% endif %};
     </script>
-    {% render_bundle "subscribe" "js" %}
+    {% render_entrypoint "subscribe" "js" %}
 {% endblock %}

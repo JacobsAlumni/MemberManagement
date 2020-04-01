@@ -2,13 +2,13 @@
 
 {% load registry_display %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 
 {% block title %}Member{% endblock %}
 
 
 {% block head %}
-{% render_bundle "profile" "css" %}
+{% render_entrypoint "profile" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
@@ -158,5 +158,5 @@
     <script type="text/javascript">
         window.alumni_profile_point = {{ alumni_coords }};
     </script>
-    {% render_bundle "profile" "js" %}
+    {% render_entrypoint "profile" "js" %}
 {% endblock %}

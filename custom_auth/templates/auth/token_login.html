@@ -1,13 +1,13 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 
 {% block title %}Membership Portal - Token Login{% endblock %}
 
 {% block head %}
 {% if not error %}
-    {% render_bundle "token_login" %}
+    {% render_entrypoint "token_login" %}
 {% endif %}
 {% endblock %}
 

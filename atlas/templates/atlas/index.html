@@ -2,13 +2,13 @@
 
 {% load registry_display %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 
 {% block title %}Atlas{% endblock %}
 {% block pagetitle %}Jacobs Alumni Atlas{% endblock %}
 
 {% block head %}
-{% render_bundle "atlas" "css" %}
+{% render_entrypoint "atlas" "css" %}
 {% endblock %}
 
 
@@ -24,6 +24,6 @@
     <script type="text/javascript">
         window.atlas_people_coords = {{ people_coords }};
     </script>
-    {% render_bundle "atlas" "js" %}
+    {% render_entrypoint "atlas" "js" %}
 {% endblock %}
 

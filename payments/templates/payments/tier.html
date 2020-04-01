@@ -1,7 +1,7 @@
 {% extends "setup/setup.html" %}
 {% load static %}
 {% load registry_display %}
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 
 {% block pagetitle %}
     {% if updating %}
@@ -118,5 +118,5 @@
         window.tier_next_text = "{{ next_text | escapejs }}";
         window.tier_confirm_text = "{{ confirm_text | escapejs }}";
     </script>
-    {% render_bundle "tier" "js" %}
+    {% render_entrypoint "tier" "js" %}
 {% endblock %}

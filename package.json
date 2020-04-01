@@ -23,8 +23,8 @@
     "typescript": "^3.8.3",
     "uikit": "^3.3.7",
     "webpack": "^4.42.1",
-    "webpack-bundle-tracker": "^0.4.3",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack4-bundle-tracker": "^0.0.1-beta"
   },
   "scripts": {
     "build": "webpack --config webpack.config.js",

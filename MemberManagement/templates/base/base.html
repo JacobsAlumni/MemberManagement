@@ -1,6 +1,6 @@
 {% load static %}
 {% load cookielaw_tags %}
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -16,7 +16,7 @@
 
         <link rel="icon" type="image/png" href="{%  static "media/favicon.png" %}" />
         
-        {% render_bundle "base" "css" %}
+        {% render_entrypoint "base" "css" %}
 
         <script type='text/javascript'>window.jsTestModeFlag = {% if js_test_mode_flag %}true{% else %}false{% endif %};</script>
 
@@ -57,7 +57,7 @@
         {% endblock %}
 
         {% block scripts %}
-            {% render_bundle "base" "js" %}
+            {% render_entrypoint "base" "js" %}
             {% block extrascripts %}{% endblock %}
         {% endblock %}
     </body>

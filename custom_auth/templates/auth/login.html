@@ -1,13 +1,13 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 
 
 {% block title %}Membership Portal - Jacobs University Bremen Alumni {% endblock %}
 
 {% block head %}
-    {% render_bundle "login" "css" %}
+    {% render_entrypoint "login" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
@@ -49,5 +49,5 @@ Login
         token_endpoint: "{% url 'token_login' %}"
     }
 </script>
-{% render_bundle "login" "js" %}
+{% render_entrypoint "login" "js" %}
 {% endblock %}

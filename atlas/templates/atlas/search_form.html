@@ -1,4 +1,4 @@
-{% load render_bundle from webpack_loader %}
+{% load render_entrypoint from webpack_loader %}
 
 <p class="uk-article-lead">
     <form action="{% url 'atlas_search' %}" method="GET" id="searchForm">
@@ -73,4 +73,4 @@
     </form>
 </p>
 
-{% render_bundle "search_form" %}
+{% render_entrypoint "search_form" %}
