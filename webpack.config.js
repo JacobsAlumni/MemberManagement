@@ -14,14 +14,17 @@ module.exports = {
 
   // all the entry points
   entry: {
-    'atlas': './assets/src/atlas/index.ts',
-    'base': './assets/src/base/index.ts',
-    'login': './assets/src/login/index.ts',
-    'profile': './assets/src/profile/index.ts',
-    'search_form': './assets/src/search_form/index.ts',
-    'subscribe': './assets/src/subscribe/index.ts',
-    'tier': './assets/src/tier/index.ts',
-    'token_login': './assets/src/token_login/index.ts',
+    'base__base': './assets/src/base/base/index.ts',
+
+    'atlas__atlas': './assets/src/atlas/atlas/index.ts',
+    'atlas__profile': './assets/src/atlas/profile/index.ts',
+    'atlas__search_form': './assets/src/atlas/search_form/index.ts',
+
+    'custom_auth__login': './assets/src/custom_auth/login/index.ts',
+    'custom_auth__token_login': './assets/src/custom_auth/token_login/index.ts',
+
+    'payments__subscribe': './assets/src/payments/subscribe/index.ts',
+    'payments__tier': './assets/src/payments/tier/index.ts',
   },
 
   // magic .ts and .js

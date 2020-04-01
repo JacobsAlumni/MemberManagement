@@ -8,7 +8,7 @@
 {% block pagetitle %}Jacobs Alumni Atlas{% endblock %}
 
 {% block head %}
-{% render_entrypoint "atlas" "css" %}
+{% render_entrypoint "atlas__atlas" "css" %}
 {% endblock %}
 
 
@@ -24,6 +24,6 @@
     <script type="text/javascript">
         window.atlas_people_coords = {{ people_coords }};
     </script>
-    {% render_entrypoint "atlas" "js" %}
+    {% render_entrypoint "atlas__atlas" "js" %}
 {% endblock %}
 

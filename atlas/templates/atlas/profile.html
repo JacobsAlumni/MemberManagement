@@ -8,7 +8,7 @@
 
 
 {% block head %}
-{% render_entrypoint "profile" "css" %}
+{% render_entrypoint "atlas__profile" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
@@ -158,5 +158,5 @@
     <script type="text/javascript">
         window.alumni_profile_point = {{ alumni_coords }};
     </script>
-    {% render_entrypoint "profile" "js" %}
+    {% render_entrypoint "atlas__profile" "js" %}
 {% endblock %}

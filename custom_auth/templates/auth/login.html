@@ -7,7 +7,7 @@
 {% block title %}Membership Portal - Jacobs University Bremen Alumni {% endblock %}
 
 {% block head %}
-    {% render_entrypoint "login" "css" %}
+    {% render_entrypoint "custom_auth__login" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
@@ -49,5 +49,5 @@ Login
         token_endpoint: "{% url 'token_login' %}"
     }
 </script>
-{% render_entrypoint "login" "js" %}
+{% render_entrypoint "custom_auth__login" "js" %}
 {% endblock %}

@@ -8,7 +8,7 @@
 
 
 {% block head %}
-    {% render_entrypoint "subscribe" "css" %}
+    {% render_entrypoint "payments__subscribe" "css" %}
 {% endblock %}
 
 {% block pagetitle %}
@@ -192,5 +192,5 @@
         window.stripe_publishable_key = {% if stripe_publishable_key %}"{{ stripe_publishable_key | escapejs }}"{% else %}undefined{% endif %};
         window.allow_go_to_starter = {% if allow_go_to_starter %}true{% else %}false{% endif %};
     </script>
-    {% render_entrypoint "subscribe" "js" %}
+    {% render_entrypoint "payments__subscribe" "js" %}
 {% endblock %}
