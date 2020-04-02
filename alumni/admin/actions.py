@@ -203,7 +203,7 @@ class AlumniAdminActions:
         'skills__alumniMentor',
 
         # Membership Data
-        'membership__tier', 'membership__desired_tier'
+        'membership__tier', 'membership__desired_tier',
 
         # Atlas Settings
         'atlas__secret', 'atlas__included', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',
