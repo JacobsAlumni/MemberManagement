@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import time
+import base64
+
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.urls import reverse
@@ -12,7 +15,7 @@ from seleniumlogin import force_login
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Optional, Type, Any, List, Dict
+    from typing import Optional, Type, Any, List, Dict, Union, IO
     from django.contrib.auth.models import User
     from django_selenium_clean import SeleniumWrapper
     from selenium.webdriver.remote.webelement import WebElement
@@ -117,6 +120,10 @@ class IntegrationTestBase(DummyTestBase):
 
         return wait.until(condition((By.CSS_SELECTOR, selector)))
 
+    def find_next_sibling(self, element: WebElement) -> Optional[WebElement]:
+        """ Finds the next sibling of an element """
+        return self.selenium.execute_script("return arguments[0].nextElementSibling; ", element)
+
     def _resolve_url(self, url: str, args: Optional[List[Any]] = None, kwargs: Optional[Dict[str, Any]] = None, get_params: Option[Dict[str, str]] = None, reverse_get_params: Optional[Dict[str, Any]] = None) -> str:
         """ Resolves a url pattern into a url """
 
@@ -186,10 +193,14 @@ class IntegrationTestBase(DummyTestBase):
 
         return element
 
-    def select_dropdown(self, id_: str, value: str) -> Select:
+    def select_dropdown(self, id_or_element: Union[str, WebElement], value: str) -> Select:
         """ Selects text of a dropdown by value """
 
-        select = Select(self.selenium.find_element_by_id(id_))
+        # if we don't have an element, select it by selector
+        if isinstance(id_or_element, str):
+            id_or_element = self.selenium.find_element_by_id(id_or_element)
+
+        select = Select(id_or_element)
 
         # if we are a multiple select, deselect all of them
         if select.is_multiple:
@@ -282,6 +293,52 @@ class IntegrationTestBase(DummyTestBase):
             selects[i].removeAttribute('required');
         }
         """)
+
+    def get_form_download(self, form: WebElement) -> [bool, IO[bytes]]:
+        """ Virtually submits a form and intercepts the resulting downloaded file as a BytesIO """
+        self.selenium.execute_script("""
+        window.xhr_done = false;
+        window.xhr_ok = null;
+        window.xhr_data = null;
+
+        function create_form_xhr(form) {
+            const xhr = new XMLHttpRequest();
+            setup_xhr_handler(xhr);
+            const fd = new FormData(form);
+            xhr.open('POST', form.getAttribute('action') || window.location.href);
+            xhr.send(fd);
+            return xhr;
+        }
+        function setup_xhr_handler(xhr) {
+            xhr.responseType = 'blob';
+            xhr.onload = function() {
+                const reader  = new FileReader();
+                reader.onloadend = function() {
+                    window.xhr_data = reader.result;
+                    window.xhr_ok = xhr.status === 200;
+                    window.xhr_done = true;
+                };
+                reader.readAsDataURL(xhr.response);
+            };
+        }
+        create_form_xhr(arguments[0].form);
+        """, form)
+
+        xhr_done = False
+        while xhr_done == False:
+            xhr_done = self.selenium.execute_script("return window.xhr_done;");
+            time.sleep(0.1)
+
+        xhr_ok = self.selenium.execute_script("return window.xhr_ok;")
+        xhr_data = self.selenium.execute_script("return window.xhr_data; ")
+
+
+        # if there is some data, return it
+        if xhr_data is not None:
+            xhr_data = xhr_data.split(",")[1]
+            xhr_data = base64.b64decode(xhr_data)
+
+        return xhr_ok, xhr_data
 
 
 class IntegrationTest(SeleniumTestCase, IntegrationTestBase):

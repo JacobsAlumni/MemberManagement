@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 import openpyxl
+from openpyxl.utils import get_column_letter
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -133,7 +134,7 @@ def export_as_xslx_action(description: str = "Export selected objects as XSLX fi
                 except:
                     pass
             adjusted_width = (max_length + 2) * 1.2
-            ws.column_dimensions[column].width = adjusted_width
+            ws.column_dimensions[get_column_letter(column)].width = adjusted_width
 
         # and export
         wb.save(response)
