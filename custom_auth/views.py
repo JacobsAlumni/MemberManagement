@@ -112,6 +112,8 @@ class ClientIdLoginView(views.LoginView):
                 mailutils.send_email(user.email, 'Jacobs Alumni Association - Login Link',
                                      'emails/token_email.html', name=user.givenName, login_url=abs_url)
 
+                if settings.DEBUG:
+                    print(abs_url)
             except UserModel.DoesNotExist:
                 # Can't complain to the user here, or we'll give away that we don't know this address.
                 pass
