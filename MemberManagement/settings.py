@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'webpack_loader',
     'django_extensions',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
