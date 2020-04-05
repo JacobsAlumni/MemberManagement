@@ -14,7 +14,11 @@ module.exports = {
 
   // all the entry points
   entry: {
-    'base__base': './assets/src/base/base/index.ts',
+    'base__base': [
+      'jacobs-alumni-style',
+      'nodep-date-input-polyfill',
+      './assets/src/base/base/cookielaw.js'
+    ],
 
     'atlas__atlas': './assets/src/atlas/atlas/index.ts',
     'atlas__profile': './assets/src/atlas/profile/index.ts',

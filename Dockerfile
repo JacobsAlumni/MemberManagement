@@ -1,6 +1,9 @@
 # image for building node dependencies
 FROM node:12-alpine as frontend
 
+RUN apk add --no-cache \
+    git
+
 # install node dependencies
 ADD package.json /app/package.json
 ADD yarn.lock /app/yarn.lock
