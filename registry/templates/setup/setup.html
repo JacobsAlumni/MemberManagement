@@ -17,7 +17,7 @@
         {% block preform %}{% endblock %}
         {{ form | as_uikit_form }}
         {% block extracontent %}{% endblock %}
-        <input type="submit" id="input_id_submit" class="uk-button uk-button-primary" value="{{ next_text }}">
+        <input type="submit" id="input_id_submit" class="uk-button uk-button-primary" value="{{ next_text }}" {% block extrasubmitattrs %}{% endblock %}>
     </form>
 </div>
 {% endblock %}
