@@ -159,7 +159,7 @@ class IntegrationTestBase(DummyTestBase):
         # and return the resolved url
         return resolved
 
-    def load_live_url(self, url_pattern: str, selector: str = None, url_args: Optional[List[Any]] = None, url_kwargs: Optional[Dict[str, Any]] = None, url_get_params: Option[Dict[str, str]] = None, url_reverse_get_params: Optional[Dict[str, Any]] = None, selector_timeout: Optional[int] = None) -> WebElement:
+    def load_live_url(self, url_pattern: str, selector: str = None, url_args: Optional[List[Any]] = None, url_kwargs: Optional[Dict[str, Any]] = None, url_get_params: Option[Dict[str, str]] = None, url_reverse_get_params: Optional[Dict[str, Any]] = None, selector_timeout: Optional[int] = None, selector_clickable: bool = False) -> WebElement:
         """
             Loads an url from the selenium from the live server and waits for the CSS selector (if any) to be available
             Returns the element selected, None if none is selected, or raises TimeoutException if a timeout occurs.
@@ -171,7 +171,7 @@ class IntegrationTestBase(DummyTestBase):
         self.selenium.get(self.live_server_url + url)
 
         # wait for the element
-        return self.find_element(selector, timeout=selector_timeout)
+        return self.find_element(selector, timeout=selector_timeout, clickable=selector_clickable)
 
     def assert_url_follow(self, url: str, new_url: str, url_args=None, url_kwargs=None, url_reverse_get_params=None, new_url_args=None, new_url_kwargs=None, new_url_reverse_get_params=None, *args, url_selector: str = None, url_selector_timeout: int = None):
         """ Asserts that loading url (with selector selector) in the browser redirects to new_url
@@ -240,7 +240,7 @@ class IntegrationTestBase(DummyTestBase):
 
         # get the element on the page
         button = self.load_live_url(url_pattern, selector=selector, url_args=url_args, url_kwargs=url_kwargs,
-                                    url_reverse_get_params=url_reverse_get_params, selector_timeout=selector_timeout)
+                                    url_reverse_get_params=url_reverse_get_params, selector_timeout=selector_timeout, selector_clickable=True)
 
         # send_keys to the specified form elements
         if send_form_keys is not None:
