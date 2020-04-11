@@ -1,4 +1,5 @@
 import "./index.css";
+import getCookie from "../../base/utils/cookie";
 
 /**
  * Workaround for Login Button not working properly
@@ -11,21 +12,6 @@ function loadGoogleAPI() {
     scriptNode.type = 'text/javascript';
     scriptNode.charset = 'utf-8';
     document.getElementsByTagName('head')[0].appendChild(scriptNode);
-}
-
-/**
- * Gets a cookie with the given name
- * @param name name of cookie to get
- */
-function getCookie(name: string): string | null {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
 }
 
 document.addEventListener('DOMContentLoaded', function () {
