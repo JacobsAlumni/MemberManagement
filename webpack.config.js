@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const BundleTracker = require('webpack4-bundle-tracker');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -94,4 +95,8 @@ module.exports = {
     }),
   ],
 
+}
+
+if (!isDevelopment) {
+  module.exports.plugins.push(new CleanWebpackPlugin());
 }
