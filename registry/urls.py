@@ -32,7 +32,7 @@ urlpatterns = [
     # Registration
     url(r'^register/$', ensure_csrf_cookie(TemplateView.as_view(template_name='setup/register.html')), name='register'),
     url(r'^register/legacy/$', setup_views.LegacyRegisterView.as_view(), name='legacy_register'),
-    
+
     url(r'api/register/$', api_views.CreateUserView.as_view(), name='api_register'),
 
     # Initial data Setup
