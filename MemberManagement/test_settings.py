@@ -2,6 +2,8 @@
 Django Testing settings for MemberManagement project.
 """
 
+from django_selenium_test import make_chrome_driver, make_firefox_driver
+
 # import the default settings
 from .settings import *
 
@@ -20,32 +22,11 @@ HTML_MINIFY = True
 # Selenium test settings
 from selenium import webdriver
 
-if os.environ.get("SELENIUM_HEADLESS", "1") == "1":
-    # chrome
-    from selenium.webdriver.chrome.options import Options as ChromeOptions
-    chrome_options = ChromeOptions()
-    chrome_options.add_argument("--headless")
-
-    # firefox
-    from selenium.webdriver.firefox.options import Options as FirefoxOptions
-    firefox_options = FirefoxOptions()
-    firefox_options.add_argument("--headless")
-
-else:
-    chrome_options = None
-    firefox_options = None
+headless = os.environ.get("SELENIUM_HEADLESS", "1") == "1"
 
 SELENIUM_WEBDRIVERS = {
-    'default': {
-        'callable': webdriver.Chrome,
-        'args': (),
-        'kwargs': {'options': chrome_options},
-    },
-    'firefox': {
-        'callable': webdriver.Firefox,
-        'args': (),
-        'kwargs': {'options': firefox_options},
-    },
+    'default': make_chrome_driver([], {}, headless=headless),
+    'firefox': make_firefox_driver([], {}, headless=headless),
     'safari': {
         'callable': webdriver.Safari,
         'args': (),

@@ -45,7 +45,7 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         """ Clicks the submit cancel button """
         self.find_element(self.__class__._starter_button_element).click()
         self.find_element(
-            next_selector or self.__class__._find_element_selector)
+            next_selector or self.__class__.find_element_selector)
 
     def submit_card_details(self, cardnumber: str = '4242 4242 4242 4242', exp_date: str = '12/50', cvc: str = '123', postal: str = '12345', next_selector: Optional[str] = None) -> None:
         """ Fills out and submits testing card details """
@@ -70,7 +70,7 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         # submit the form and wait for the next page to load
         submit.click()
         self.find_element(
-            next_selector or self.__class__._find_element_selector)
+            next_selector or self.__class__.find_element_selector)
 
     def submit_sepa_details(self, iban: str = 'DE89370400440532013000', name: str = 'Anna Freytag', next_selector: Optional[str] = None) -> None:
         """ Fills out and submits testing SEPA details """
@@ -96,4 +96,4 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         # submit the form
         submit.click()
         self.find_element(
-            next_selector or self.__class__._find_element_selector)
+            next_selector or self.__class__.find_element_selector)
