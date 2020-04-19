@@ -83,15 +83,22 @@ class Address(AlumniComponentMixin, models.Model):
     member: Alumni = models.OneToOneField(
         Alumni, related_name='address', on_delete=models.CASCADE)
 
-    address_line_1: str = models.CharField(max_length=255,
+    def is_filled(self) -> bool:
+        """ Checks if the user has filled out this component """
+
+        return (self.address_line_1) and (self.city) and (self.zip) and (self.country)
+
+    address_line_1: str = models.CharField(max_length=255, blank=True, null=True,
                                            help_text="E.g. Campus Ring 1")
     address_line_2: Optional[str] = models.CharField(max_length=255, blank=True, null=True,
                                                      help_text="E.g. Apt 007 (optional)")
-    city: str = models.CharField(max_length=255, help_text="E.g. Bremen")
-    zip: str = models.CharField(max_length=255, help_text="E.g. 28759")
+    city: str = models.CharField(
+        max_length=255, blank=True, null=True, help_text="E.g. Bremen")
+    zip: str = models.CharField(
+        max_length=255, help_text="E.g. 28759", blank=True, null=True)
     state: Optional[str] = models.CharField(max_length=255, blank=True, null=True,
                                             help_text="E.g. Bremen (optional)")
-    country: Country = fields.CountryField()
+    country: Country = fields.CountryField(blank=True, null=True)
 
     @property
     def coords(self, default: Optional[Union[List[float], List[None]]] = None) -> Union[List[float], List[None]]:
@@ -136,6 +143,12 @@ class JacobsData(AlumniComponentMixin, models.Model):
 
     member: Alumni = models.OneToOneField(
         Alumni, related_name='jacobs', on_delete=models.CASCADE)
+
+    def is_filled(self) -> bool:
+        """ Checks if the user has filled out this component """
+
+        # jacobs data is filled if there is a graduation year and major that aren't "other"
+        return (self.graduation != fields.ClassField.OTHER) and (self.major != fields.MajorField.OTHER)
 
     college: Optional[int] = fields.CollegeField(null=True, blank=True)
     graduation: int = fields.ClassField()

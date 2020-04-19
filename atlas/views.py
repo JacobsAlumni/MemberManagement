@@ -67,8 +67,22 @@ def can_view_atlas(user: User) -> bool:
         except ObjectDoesNotExist:
             return False
 
-        # we need to make sure that they have chosen to be included in the
-        return user.alumni.atlas.included
+        # they need to be in the atlas
+        try:
+            atlas = user.alumni.atlas
+        except ObjectDoesNotExist:
+            return False
+        if not atlas.included:
+            return False
+
+        # they have to have filled their address
+        # so that we can locate them on the map
+        try:
+            address = user.alumni.address
+        except ObjectDoesNotExist:
+            return False
+        if not address.is_filled():
+            return False
 
     return True
 

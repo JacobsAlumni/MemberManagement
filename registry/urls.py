@@ -30,10 +30,8 @@ urlpatterns = [
     url(r'^$', PortalView.as_view(), name='portal'),
 
     # Registration
-    url(r'^register/$', ensure_csrf_cookie(TemplateView.as_view(template_name='setup/register.html')), name='register'),
-    url(r'^register/legacy/$', setup_views.LegacyRegisterView.as_view(), name='legacy_register'),
-
-    url(r'api/register/$', api_views.CreateUserView.as_view(), name='api_register'),
+    url(r'^register/$', setup_views.RegisterView.as_view(), name='register'),
+    url(r'^register/validate/$', api_views.RegistrationValidationView.as_view(), name='register_validate'),
 
     # Initial data Setup
     url(r'^setup/$', setup_views.SetupView.as_view(), name='setup'),

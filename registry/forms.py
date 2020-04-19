@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 from alumni.models import (Address, Alumni, JacobsData, JobInformation,
                            SetupCompleted, Skills, SocialMedia)
+from alumni.fields import AlumniCategoryField, TierField
 from atlas.models import AtlasSettings
 from django_forms_uikit.widgets import DatePickerInput
 
@@ -35,37 +36,22 @@ class RegistrationMixin():
                 return
 
 
-class RegistrationForm(RegistrationMixin, forms.ModelForm):
+class RegistrationForm(RegistrationMixin, forms.Form):
     """ A form for registering users """
-    username = forms.SlugField(label='Username',
-                               help_text='Select your username for the membership portal. '
-                                         'We recommend your alumni email username, e.g. <em>ppan</em> for <em>Peter Pan</em>')
-    _tos_help_text = 'I confirm that I have read and agree to the ' \
-                     '<a target="_blank" href="https://jacobs-alumni.de/privacy/">Terms and Conditions' \
-                     '</a>, the <a target="_blank" href="' \
-                     'https://jacobs-alumni.de/charter">Charter</a>, and the ' \
-                     '<a target="_blank" href="https://www.jacobs-alumni.de/by-laws">Contributions By-Laws</a>. '
-    tos = forms.BooleanField(label='Terms and Conditions',
-                             help_text=_tos_help_text)
 
-    class Meta:
-        model = Alumni
-        fields = ['givenName', 'middleName', 'familyName', 'email',
-                  'existingEmail', 'resetExistingEmailPassword', 'sex',
-                  'birthday', 'nationality', 'category']
-        widgets = {
-            'birthday': DatePickerInput()
-        }
-        labels = {
-            "givenName": "First Name",
-            "middleName": "Middle Name",
-            "familyName": "Last Name",
-            "existingEmail": "",
-            "resetExistingEmailPassword": ""
-        }
-        help_texts = {
-            "birthday": "",
-        }
+    givenNames = forms.CharField(required=True)
+    middleNames = forms.CharField(required=False)
+    familyNames = forms.CharField(required=True)
+
+    email = forms.EmailField(required=True)
+
+    birthday = forms.DateField()
+    email = forms.EmailField()
+
+    memberType = forms.ChoiceField(choices=AlumniCategoryField.CHOICES)
+    memberTier = forms.ChoiceField(choices=TierField.CHOICES)
+
+    tos = forms.BooleanField(required=True)
 
     def clean(self) -> None:
         # individual field's clean methods have already been called
@@ -109,6 +95,13 @@ class AlumniForm(RegistrationMixin, forms.ModelForm):
 
 class AddressForm(forms.ModelForm):
     """ A form for the Address of an Alumni """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['address_line_1'].required = True
+        self.fields['city'].required = True
+        self.fields['zip'].required = True
+        self.fields['country'].required = True
 
     class Meta:
         model = Address

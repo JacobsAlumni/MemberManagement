@@ -119,10 +119,12 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         # else render the form
         return self.dispatch_form(form)
 
-class LegacyRegisterView(SetupViewBase):
+@method_decorator(ensure_csrf_cookie, name='dispatch')
+class RegisterView(SetupViewBase):
     setup_name = 'Register'
-    setup_subtitle = 'Enter your General Information - just the basics'
+    setup_subtitle = 'Enter your Data'
     setup_next_text = 'Continue Application'
+    template_name = 'setup/register.html'
     setup_form_class = RegistrationForm
 
     def has_setup_component(self) -> bool:
@@ -137,7 +139,7 @@ class LegacyRegisterView(SetupViewBase):
     def form_valid(self, form: RegistrationForm) -> HttpResponse:
         """ Called when the form is valid and an instance is to be created """
 
-        # Create the user
+        # TODO: Generate username here
         username = form.cleaned_data['username']
         user = User.objects.create_user(username, None, password=None)
         user.save()

@@ -37,6 +37,10 @@ class AlumniComponentMixin:
 
         return 'setup_{}'.format(cls.component_name()), True
 
+    def is_filled(self) -> Optional[bool]:
+        """ Checks if the user has filled out this component """
+        return None
+
 
 class AlumniRegistryMixin:
     components: List[Type[AlumniComponentMixin]] = []  # the list of components used by the alumni model
