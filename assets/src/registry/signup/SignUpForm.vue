@@ -3,6 +3,7 @@ import Vue from "vue";
 import Component from 'vue-class-component';
 
 import getCookie from "../../base/utils/cookie";
+import VueValidatable from "../../base/utils/validate";
 import {MemberType, MemberTypeDescriptions, MemberTier, getAllowedTiers, MemberTierShortTitles, MemberTierDescriptions} from "../../base/utils/membership";
 
 const emailProviders = [
@@ -18,40 +19,73 @@ const emailProviders = [
 ];
 
 // the default birthdaye
-const birthDateDefault = new Date();
-birthDateDefault.setFullYear(birthDateDefault.getFullYear() - 24);
-const birthDateDefaultString = `${birthDateDefault.getFullYear()}-${(birthDateDefault.getMonth() + 1)
+const birthDayDefault = new Date();
+birthDayDefault.setFullYear(birthDayDefault.getFullYear() - 24);
+const birthDayDefaultString = `${birthDayDefault.getFullYear()}-${(birthDayDefault.getMonth() + 1)
         .toString()
-        .padStart(2, "0")}-${birthDateDefault
+        .padStart(2, "0")}-${birthDayDefault
         .getDate()
         .toString()
         .padStart(2, "0")}`;
 
 
 @Component
-export default class SignupForm extends Vue {
+export default class SignupForm extends VueValidatable {
   declare $refs: {
     memberType: HTMLInputElement;
+    registerForm: HTMLFormElement;
   };
 
-  // datea
-  showDetailedName = false;
-  fullName = "";
-  firstNames = "";
-  middleNames = "";
-  lastNames = "";
-  email = "";
-  tos = false;
-  showEmailSuggestions = false;
-  birthDate = birthDateDefaultString;
-  accountExists = false;
-  alumniemail = "";
-  showMembershipType = false;
-  memberType = MemberType.Alumnus;
-  memberTier = MemberTier.Contributor;
-  csrf_token = getCookie('csrftoken')!;
+  // form validation
+  get formInstance() {
+    return this.$refs.registerForm;
+  }
+  readonly formKeys = ['givenNames', 'middleNames', 'familyNames', 'birthDate', 'email', 'memberType', 'memberTier', 'tos'];
+  readonly validateEndpoint = "/portal/register/validate/";
+  readonly submitEndpoint = undefined;
 
-  // computed data
+
+  // full / detailed name
+  fullName = "";
+  showDetailedName = false;
+
+  givenNames = "";
+  middleNames = "";
+  familyNames = "";
+
+  handleFullNameChange(event: KeyboardEvent & {target: HTMLInputElement}) {
+      const nameParts = event.target?.value.split(" ");
+
+      this.givenNames = nameParts[0];
+      this.middleNames = nameParts.slice(1, nameParts.length - 1).join(" ");
+      this.familyNames = nameParts[nameParts.length - 1];
+
+      if (event.target.value === "") {
+        this.showDetailedName = false;
+      } else if (nameParts.length > 2) {
+        this.showDetailedName = true;
+      }
+
+      // and also validate
+      this.validateFormDebounced()
+  }
+
+  handlePartNameChange() {
+    this.fullName = [this.givenNames, this.middleNames, this.familyNames]
+      .filter(a => a !== "")
+      .join(" ");
+
+      if (this.fullName === "") {
+        this.showDetailedName = false;
+        this.$refs.memberType.focus();
+      }
+
+    // and run validation
+    this.validateFormDebounced()
+  }
+  
+  // email
+  email = "";
   get emailSuggestions(): string[] {
     const emailParts = this.$data.email.split("@");
     if (!this.email || !emailParts) {
@@ -62,6 +96,22 @@ export default class SignupForm extends Vue {
       providerDomain => emailParts[0] + "@" + providerDomain
     );
   }
+
+  // birthday
+  birthday = birthDayDefaultString;
+
+  
+  tos = false;
+  showEmailSuggestions = false;
+  accountExists = false;
+  alumniemail = "";
+  showMembershipType = false;
+  memberType = MemberType.Alumnus;
+  memberTier = MemberTier.Contributor;
+  csrf_token = getCookie('csrftoken')!;
+
+  // computed data
+
 
   get alumniEmailSuggestions(): string[] {
     const emailParts = this.$data.alumniemail.split("@");
@@ -84,35 +134,11 @@ export default class SignupForm extends Vue {
   }
 
   //methods
-  checkName(event: KeyboardEvent & {target: HTMLInputElement}) {
-      const nameParts = event.target?.value.split(" ");
-
-      this.firstNames = nameParts[0];
-      this.middleNames = nameParts.slice(1, nameParts.length - 1).join(" ");
-      this.lastNames = nameParts[nameParts.length - 1];
-
-      if (event.target.value === "") {
-        this.showDetailedName = false;
-      } else if (nameParts.length > 2) {
-        this.showDetailedName = true;
-      }
-  }
-
-  updateFullName() {
-    this.fullName = [this.firstNames, this.middleNames, this.lastNames]
-      .filter(a => a !== "")
-      .join(" ");
-
-      if (this.fullName === "") {
-        this.showDetailedName = false;
-        this.$refs.memberType.focus();
-      }
-  }
 
   showMembership() {
     this.showMembershipType = true;
 
-      const memberType = this.$refs.memberType as HTMLElement;
+      const memberType = this.$refs.memberType;
 
       setTimeout(() => memberType.focus(), 200);
       setTimeout(
@@ -125,59 +151,61 @@ export default class SignupForm extends Vue {
       );
   }
 
-  submitRegistration() {
-    fetch('/portal/api/register/', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': this.csrf_token
-      },
-      body: JSON.stringify(this.$data)
-    })
-  }
-
 }
 </script>
 
 <template lang="pug">
 div
-  form.uk-form-horizontal.uk-align-center(class='uk-width-1-2@s' method='POST')
+  form.uk-form-horizontal.uk-align-center(class='uk-width-1-2@s' method='POST' ref='registerForm')
+    .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.__all__")
+      p {{ error.message }}
+
     .uk-form-row.uk-margin-bottom
       #div_id_fullName
         label.uk-form-label(for='id_givenName') Full Name *
         .uk-form-controls
-          input.uk-input(ref='name' maxlength='255' name='fullname' required='' type='text' @input='checkName' autocomplete='name' autofocus='' v-model='fullName' placeholder='Jonathan Smith')
-      #div_id_givenName.uk-margin-large-left.uk-margin-top(v-show='showDetailedName')
-        label.uk-form-label(for='id_givenName') Given Names *
+          input.uk-input(ref='name' maxlength='255' name='fullname' required='' type='text' @input='handleFullNameChange' autocomplete='name' autofocus='' v-model='fullName' placeholder='Jonathan Smith')
+      #div_id_givenNames.uk-margin-large-left.uk-margin-top(v-show='showDetailedName')
+        label.uk-form-label(for='id_givenNames') Given Names *
         .uk-form-controls.uk-form-controls-text
-          input#id_givenName.uk-input(maxlength='255' name='givenName' v-model='firstNames' required='' type='text' @input='updateFullName')
-      #div_id_middleName.uk-margin-large-left(v-show='showDetailedName')
-        label.uk-form-label(for='id_middleName') Middle Names
+          input#id_givenNames.uk-input(maxlength='255' name='givenNames' v-model='givenNames' required='' type='text' @input='handlePartNameChange')
+          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.givenNames")
+            p {{ error.message }}
+      #div_id_middleNames.uk-margin-large-left(v-show='showDetailedName')
+        label.uk-form-label(for='id_middleNames') Middle Names
         .uk-form-controls.uk-form-controls-text
-          input#id_middleName.uk-input(maxlength='255' name='middleNames' type='text' v-model='middleNames' @input='updateFullName')
-      #div_id_familyName.uk-margin-large-left(v-show='showDetailedName')
-        label.uk-form-label(for='id_familyName') Family Names *
+          input#id_middleNames.uk-input(maxlength='255' name='middleNames' type='text' v-model='middleNames' @input='handlePartNameChange')
+          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.middleNames")
+            p {{ error.message }}
+      #div_id_familyNames.uk-margin-large-left(v-show='showDetailedName')
+        label.uk-form-label(for='id_familyNames') Family Names *
         .uk-form-controls.uk-form-controls-text
-          input#id_familyName.uk-input(maxlength='255' name='familyName' v-model='lastNames' required='' type='text' @input='updateFullName' ref='familynames')
+          input#id_familyNames.uk-input(maxlength='255' name='familyNames' v-model='familyNames' required='' type='text' @input='handlePartNameChange' ref='familynames')
+          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.familyNames")
+            p {{ error.message }}
     .uk-form-row
       #div_id_email
         label.uk-form-label(for='id_email') Email *
         .uk-form-controls.uk-form-controls-text
-          input#id_email.uk-input(maxlength='254' name='email' required='' type='email' autocomplete='email' list='email-suggestions' placeholder='j.smith@example.com' v-model='email' @focus='showEmailSuggestions = true' @blur='showEmailSuggestions = false')
+          input#id_email.uk-input(maxlength='254' name='email' required='' type='email' autocomplete='email' list='email-suggestions' placeholder='j.smith@example.com' v-model='email' @change='validateFormDebounced' @focus='showEmailSuggestions = true' @blur='showEmailSuggestions = false')
           datalist#email-suggestions(style='display: block;' v-show='showEmailSuggestions')
             option(v-for='suggestion in emailSuggestions' v-bind:key='suggestion' v-bind:value='suggestion')
         .uk-form-label(class='uk-hidden@m')
           br
+        .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.email")
+          p {{ error.message }}
       #div_id_birthday
         label.uk-form-label(for='id_birthday') Birthday *
         .uk-form-controls-text(class='uk-hidden@m')
           p
         .uk-form-controls.uk-form-controls-text
-          input#id_birthday.uk-input(name='birthday' required='' type='date' v-model='birthDate')
+          input#id_birthday.uk-input(name='birthday' required='' type='date' v-model='birthday' @input='validateFormDebounced')
         .uk-form-controls.uk-form-controls-text(class='uk-visible@m')
           p
         .uk-form-label(class='uk-hidden@m')
           br
+        .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.birthday")
+          p {{ error.message }}
       //
         <div class="uk-margin">
         <label class="uk-form-label" for="id_existing"></label>
@@ -201,7 +229,7 @@ div
             em @jacobs-alumni.de
             |  email address (if you have one)
         .uk-form-controls.uk-form-controls-text
-          input#id_existingEmail.uk-input(maxlength='254' name='existingEmail' type='email' list='alumnimails' v-model='alumniemail')
+          input#id_existingEmail.uk-input(maxlength='254' name='existingEmail' type='email' list='alumnimails' v-model='alumniemail' )
           datalist#alumnimails(style='display: block;')
             option(v-for='suggestion in alumniEmailSuggestions' :key='suggestion' :value='suggestion')
       #div_id_resetExistingEmailPassword(v-show='accountExists')
@@ -241,7 +269,7 @@ div
           | .
     
     input#input_id_other_type.uk-button.uk-width-1-1.uk-button-default(class='uk-width-1-2@m' value='I Am Not Alumnus' @click='showMembership' v-show='!showMembershipType')
-    input#input_id_submit.uk-button.uk-button-primary(@click.prevent="submitRegistration" :class="{'uk-width-1-1': showMembershipType, 'uk-width-1-1 uk-width-1-2@m': !showMembershipType}" type='submit' :value="'Sign Up As ' + signUpText")
+    input#input_id_submit.uk-button.uk-button-primary(@click.prevent="submitForm" :class="{'uk-width-1-1': showMembershipType, 'uk-width-1-1 uk-width-1-2@m': !showMembershipType}" type='submit' :value="'Sign Up As ' + signUpText")
 
     input(type='hidden' name='csrfmiddlewaretoken' :value='csrf_token')
 </template>

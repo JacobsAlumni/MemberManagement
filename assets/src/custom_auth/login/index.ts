@@ -30,14 +30,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const csrftoken = getCookie('csrftoken');
         if (!csrftoken) throw new Error('no csrftoken cookie');
 
-        const headers = new Headers();
-        headers.append('X-CSRFToken', csrftoken);
-        headers.append("Content-Type", "application/x-www-form-urlencoded");
-
         fetch(window.login_script_settings.token_endpoint, {
             method: 'POST',
             body: 'token=' + token,
-            headers: headers
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
         }).then(function (response) {
             const next = window.login_script_settings.next;
 
