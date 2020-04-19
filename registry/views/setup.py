@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -10,6 +12,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from alumni.models import Approval
 from MemberManagement.mixins import RedirectResponseMixin
 from registry.decorators import require_alumni
+
+from .api import FormValidationView
 
 from ..forms import (AddressForm, AtlasSettingsForm, JacobsForm,
                      JobInformationForm, RegistrationForm, SetupCompletedForm,
@@ -129,6 +133,13 @@ class RegisterView(SetupViewBase):
 
     def has_setup_component(self) -> bool:
         return self.request.user.is_authenticated
+    
+    def get_context(self, form: RegistrationForm) -> Dict[str, Any]:
+        context = super().get_context(form)
+        context.update({
+            'form_valid': json.dumps(FormValidationView.validate_form_tojson(form)),
+        })
+        return context
 
     def should_setup_component(self) -> bool:
         return True
@@ -138,6 +149,8 @@ class RegisterView(SetupViewBase):
 
     def form_valid(self, form: RegistrationForm) -> HttpResponse:
         """ Called when the form is valid and an instance is to be created """
+
+        # register a username
 
         # TODO: Generate username here
         username = form.cleaned_data['username']

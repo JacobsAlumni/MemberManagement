@@ -44,9 +44,7 @@ class RegistrationForm(RegistrationMixin, forms.Form):
     familyNames = forms.CharField(required=True)
 
     email = forms.EmailField(required=True)
-
     birthday = forms.DateField()
-    email = forms.EmailField()
 
     memberType = forms.ChoiceField(choices=AlumniCategoryField.CHOICES)
     memberTier = forms.ChoiceField(choices=TierField.CHOICES)

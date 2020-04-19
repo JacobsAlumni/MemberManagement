@@ -20,5 +20,8 @@
 {% endblock %}
 
 {% block extrascripts %}
+<script type="text/javascript">
+    window.form_valid = {{ form_valid | safe }};
+</script>
 {% render_entrypoint 'registry__signup' 'js' %}
 {% endblock %}
