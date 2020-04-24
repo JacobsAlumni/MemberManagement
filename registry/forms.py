@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import datetime
+
 from django import forms
 from django.contrib.auth.models import User
 
@@ -25,23 +27,54 @@ class RegistrationMixin():
     def raise_validation_error(self) -> None:
         raise forms.ValidationError("Please correct the error below.")
 
-    def clean_profile_fields(self, cleaned_data: Dict[str, Any]) -> None:
-        if not 'email' in cleaned_data:
-            return
-        email = cleaned_data['email'].lower().strip()
+    def clean(self) -> None:
+        cleaned_data = self.cleaned_data
+
+        # check that email is valid
+        if 'email' in cleaned_data:
+            self._validate_email(cleaned_data['email'])
+
+        # check that the birthday is valid
+        if 'birthday' in cleaned_data:
+            self._validate_birthday(cleaned_data['birthday'])
+        
+        # check that tos are accepted
+        if 'tos' in cleaned_data:
+            self._validate_tos(cleaned_data['tos'])
+
+    def _validate_email(self, email: str) -> None:
+        # validate that the email isn't blacklisted
+        email = email.lower().strip()
         for domain in EMAIL_BLACKLIST:
             if email.endswith('@' + domain):
                 self.add_error('email', forms.ValidationError(
                     "Your private email address may not end with '@{}'. ".format(domain)))
                 return
 
+    def _validate_birthday(self, birthday: datetime.date) -> None:
+        # compute 18 years ago
+        today = datetime.date.today()
+        try:
+            eighteen_years_ago = today.replace(year=today.year - 18)
+        except ValueError:
+            eighteen_years_ago = today.replace(year=today.year - 18, day=today.day - 1)
+        
+        # user must have been born 18 years
+        if  birthday > eighteen_years_ago:
+            self.add_error('birthday', forms.ValidationError(
+                "You must be at least 18 years old to become an Alumni member"))
+    
+    def _validate_tos(self, tos: bool) -> None:
+        if not tos:
+            self.add_error('tos', forms.ValidationError("You mus accept the terms and conditions to continue"))
+
 
 class RegistrationForm(RegistrationMixin, forms.Form):
     """ A form for registering users """
 
-    givenNames = forms.CharField(required=True)
-    middleNames = forms.CharField(required=False)
-    familyNames = forms.CharField(required=True)
+    givenName = forms.CharField(required=True)
+    middleName = forms.CharField(required=False)
+    familyName = forms.CharField(required=True)
 
     email = forms.EmailField(required=True)
     birthday = forms.DateField()
@@ -50,28 +83,6 @@ class RegistrationForm(RegistrationMixin, forms.Form):
     memberTier = forms.ChoiceField(choices=TierField.CHOICES)
 
     tos = forms.BooleanField(required=True)
-
-    def clean(self) -> None:
-        # individual field's clean methods have already been called
-        cleaned_data = self.cleaned_data
-
-        # check that the username doesn't already exist
-        username = cleaned_data.get("username")
-
-        if User.objects.filter(username=username).exists():
-            self.add_error('username', forms.ValidationError(
-                "This username is already taken, please pick another. "))
-            return self.raise_validation_error()
-
-        # check that we have accepted the terms and conditions
-        if 'tos' not in self.cleaned_data or not self.cleaned_data['tos']:
-            self.add_error('tos', forms.ValidationError(
-                "You need to accept the terms and conditions to continue. "))
-            return self.raise_validation_error()
-
-        self.clean_profile_fields(cleaned_data)
-
-        return super().clean()
 
 
 class AlumniForm(RegistrationMixin, forms.ModelForm):
@@ -85,10 +96,6 @@ class AlumniForm(RegistrationMixin, forms.ModelForm):
         help_texts = {
             "birthday": "",
         }
-
-    def clean(self) -> None:
-        self.clean_profile_fields(self.cleaned_data)
-        return super().clean()
 
 
 class AddressForm(forms.ModelForm):

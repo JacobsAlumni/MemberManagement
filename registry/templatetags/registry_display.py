@@ -11,12 +11,15 @@ if TYPE_CHECKING:
 
 @register.filter('get_choice_field')
 def get_choice_field(instance: Any, name: str) -> Any:
-    choices = dict(type(instance)._meta.get_field(name).choices)
-    value = getattr(instance, name)
-    if isinstance(value, list):
-        return [choices[v] for v in value]
-    else:
-        return choices[value]
+    try:
+        choices = dict(type(instance)._meta.get_field(name).choices)
+        value = getattr(instance, name)
+        if isinstance(value, list):
+            return [choices[v] for v in value]
+        else:
+            return choices[value]
+    except:
+        return ""
 
 
 @register.filter('print_boolean')

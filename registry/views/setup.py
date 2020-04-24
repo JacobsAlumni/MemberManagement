@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from django.db import transaction, IntegrityError
+
 import json
+
+from payments import stripewrapper
+from payments.models import MembershipInformation
 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -9,11 +14,15 @@ from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from alumni.models import Approval
+from alumni.models import Approval, Alumni, Address, SocialMedia, JacobsData, JobInformation, Skills
+from atlas.models import AtlasSettings
+from alumni.fields import GenderField
 from MemberManagement.mixins import RedirectResponseMixin
 from registry.decorators import require_alumni
 
 from .api import FormValidationView
+from ..utils import generate_username
+
 
 from ..forms import (AddressForm, AtlasSettingsForm, JacobsForm,
                      JobInformationForm, RegistrationForm, SetupCompletedForm,
@@ -25,6 +34,7 @@ if TYPE_CHECKING:
     from django.http import HttpResponse
     from django.forms import Form
     from django.db.models import Model
+
 
 @method_decorator(login_required, name='dispatch')
 class SetupView(RedirectResponseMixin, View):
@@ -123,6 +133,7 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         # else render the form
         return self.dispatch_form(form)
 
+
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class RegisterView(SetupViewBase):
     setup_name = 'Register'
@@ -133,7 +144,7 @@ class RegisterView(SetupViewBase):
 
     def has_setup_component(self) -> bool:
         return self.request.user.is_authenticated
-    
+
     def get_context(self, form: RegistrationForm) -> Dict[str, Any]:
         context = super().get_context(form)
         context.update({
@@ -147,30 +158,86 @@ class RegisterView(SetupViewBase):
     def dispatch_already_set(self) -> HttpResponse:
         return self.redirect_response('root', reverse=True)
 
-    def form_valid(self, form: RegistrationForm) -> HttpResponse:
+    def form_valid(self, form: RegistrationForm) -> Optional[True]:
         """ Called when the form is valid and an instance is to be created """
 
-        # register a username
+        # extract out the cleaned data
+        cleaned_data = form.cleaned_data
 
-        # TODO: Generate username here
-        username = form.cleaned_data['username']
-        user = User.objects.create_user(username, None, password=None)
-        user.save()
+        given_name = cleaned_data['givenName']
+        middle_name = cleaned_data['middleName']
+        family_name = cleaned_data['familyName']
+        email = cleaned_data['email']
+        birthday = cleaned_data['birthday']
+        member_type = cleaned_data['memberType']
+        member_tier = cleaned_data['memberTier']
 
-        # Create the instance
-        instance = form.save(commit=False)
-        instance.profile = user
-        instance.save()
+        # generate a username
+        username = generate_username(
+            given_name, middle_name, family_name,
+        )
 
-        # Create an empty approval object
-        approval = Approval(member=instance, approval=False, gsuite=None)
-        approval.save()
+        # create a
+        user = None
 
-        # authenticate the user
+        try:
+            with transaction.atomic():
+                # create a user, may fail because of race conditions
+                # but that failure isn't important
+                user = User.objects.create_user(username=username)
+
+                # create an alumni
+                # may fail, as the email is duplicate-free
+                alumni = Alumni.objects.create(
+                    profile=user,
+                    givenName=given_name,
+                    middleName=middle_name,
+                    familyName=family_name,
+                    email=email,
+                    sex=GenderField.UNSPECIFIED,
+                    birthday=birthday,
+                    nationality='DE',  # TODO: Need to add this field
+                    category=member_type,
+                )
+
+                # create all the objects related to the alumni
+                # assumed to never fail
+                approval = Approval.objects.create(
+                    member=alumni, approval=False, gsuite=None)
+                address = Address.objects.create(member=alumni)
+                socials = SocialMedia.objects.create(member=alumni)
+                jacobs = JacobsData.objects.create(member=alumni)
+                job = JobInformation.objects.create(member=alumni)
+                skills = Skills.objects.create(member=alumni)
+                atlas = AtlasSettings.objects.create(member=alumni)
+
+                # create a stripe customer
+                # which may fail, and if it does should add an error
+                stripe_customer, err = stripewrapper.create_customer(alumni)
+                if err is not None:
+                    raise CustomerCreationFailed()
+                membership = MembershipInformation.objects.create(
+                    member=alumni, tier=member_tier, customer=stripe_customer)
+        
+        # FIXME: This integrity error is currently assumed to be an already existing email
+        except IntegrityError as ie:
+            form.add_error(
+                'email', 'An Alumni with that email address already exists. Did you mean to login instead? ')
+            return None
+        except CustomerCreationFailed:
+            form.add_error(
+                None, 'Error when talking to our payment provider. Please try again later or contact support. ')
+            return None
+
+        # if all that worked, login the user
         login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
 
-        # and return the created user
-        return instance
+        # and finally return
+        return True
+
+
+class CustomerCreationFailed(Exception):
+    pass
 
 
 @method_decorator(require_alumni, name='dispatch')

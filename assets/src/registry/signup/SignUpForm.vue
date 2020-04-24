@@ -39,7 +39,7 @@ export default class SignupForm extends VueValidatable {
   get formInstance() {
     return this.$refs.registerForm;
   }
-  readonly formKeys = ['givenNames', 'middleNames', 'familyNames', 'birthday', 'email', 'memberType', 'memberTier', 'tos'];
+  readonly formKeys = ['givenName', 'middleName', 'familyName', 'birthday', 'email', 'memberType', 'memberTier', 'tos'];
   readonly validateEndpoint = "/portal/register/validate/";
   readonly submitEndpoint = null;
 
@@ -48,8 +48,8 @@ export default class SignupForm extends VueValidatable {
   /**
    * given a partial list of names, returns the fullName
    */
-  private static joinFullName(givenNames: string, middleNames: string, familyNames: string): string {
-    return [givenNames, middleNames, familyNames]
+  private static joinFullName(givenName: string, middleName: string, familyName: string): string {
+    return [givenName, middleName, familyName]
       .filter(a => a !== "")
       .join(" ");
   }
@@ -68,23 +68,23 @@ export default class SignupForm extends VueValidatable {
     ];
   }
 
-  givenNames = this.initialValidationResult.values['givenNames'] || "";
-  middleNames = this.initialValidationResult.values['middleNames'] || "";
-  familyNames = this.initialValidationResult.values['familyNames'] || "";
-  fullName = SignupForm.joinFullName(this.givenNames, this.middleNames, this.familyNames);
-  showDetailedName = this.middleNames !== "";
+  givenName = this.initialValidationResult.values['givenName'] || "";
+  middleName = this.initialValidationResult.values['middleName'] || "";
+  familyName = this.initialValidationResult.values['familyName'] || "";
+  fullName = SignupForm.joinFullName(this.givenName, this.middleName, this.familyName);
+  showDetailedName = this.middleName !== "";
 
   handleFullNameChange(event: KeyboardEvent & {target: HTMLInputElement}) {
-      [this.givenNames, this.middleNames, this.familyNames] = SignupForm.splitFullName(event.target.value || "");
-      this.showDetailedName = this.middleNames !== "";
+      [this.givenName, this.middleName, this.familyName] = SignupForm.splitFullName(event.target.value || "");
+      this.showDetailedName = this.middleName !== "";
 
       // and also validate
       this.validateFormDebounced()
   }
 
   handlePartNameChange() {
-    this.fullName = SignupForm.joinFullName(this.givenNames, this.middleNames, this.familyNames);
-    this.showDetailedName = this.middleNames !== "";
+    this.fullName = SignupForm.joinFullName(this.givenName, this.middleName, this.familyName);
+    this.showDetailedName = this.middleName !== "";
 
     if (!this.showDetailedName) {
       this.$refs.memberType.focus();
@@ -180,32 +180,32 @@ div
         .uk-form-controls
           input.uk-input.uk-margin-bottom(ref='name' maxlength='255' name='fullname' required='' type='text' @input='handleFullNameChange' autocomplete='name' autofocus='' v-model='fullName' placeholder='Jonathan Smith')
           .div(v-show='!showDetailedName')
-            .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.givenNames")
+            .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.givenName")
                 p Given Names: {{ error.message }}
-            .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.middleNames")
+            .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.middleName")
                 p Middle Names: {{ error.message }}
-            .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.familyNames")
+            .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.familyName")
                 p Family Names: {{ error.message }}
 
-      #div_id_givenNames.uk-margin-large-left.uk-margin-top(v-show='showDetailedName')
-        label.uk-form-label(for='id_givenNames') Given Names *
+      #div_id_givenName.uk-margin-large-left.uk-margin-top(v-show='showDetailedName')
+        label.uk-form-label(for='id_givenName') Given Names *
         .uk-form-controls.uk-form-controls-text
-          input#id_givenNames.uk-input(maxlength='255' name='givenNames' v-model='givenNames' required='' type='text' @input='handlePartNameChange')
-          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.givenNames")
+          input#id_givenName.uk-input(maxlength='255' name='givenName' v-model='givenName' required='' type='text' @input='handlePartNameChange')
+          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.givenName")
             p {{ error.message }}
       
-      #div_id_middleNames.uk-margin-large-left(v-show='showDetailedName')
-        label.uk-form-label(for='id_middleNames') Middle Names
+      #div_id_middleName.uk-margin-large-left(v-show='showDetailedName')
+        label.uk-form-label(for='id_middleName') Middle Names
         .uk-form-controls.uk-form-controls-text
-          input#id_middleNames.uk-input(maxlength='255' name='middleNames' type='text' v-model='middleNames' @input='handlePartNameChange')
-          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.middleNames")
+          input#id_middleName.uk-input(maxlength='255' name='middleName' type='text' v-model='middleName' @input='handlePartNameChange')
+          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.middleName")
             p {{ error.message }}
       
-      #div_id_familyNames.uk-margin-large-left(v-show='showDetailedName')
-        label.uk-form-label(for='id_familyNames') Family Names *
+      #div_id_familyName.uk-margin-large-left(v-show='showDetailedName')
+        label.uk-form-label(for='id_familyName') Family Names *
         .uk-form-controls.uk-form-controls-text
-          input#id_familyNames.uk-input(maxlength='255' name='familyNames' v-model='familyNames' required='' type='text' @input='handlePartNameChange' ref='familynames')
-          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.familyNames")
+          input#id_familyName.uk-input(maxlength='255' name='familyName' v-model='familyName' required='' type='text' @input='handlePartNameChange' ref='familyName')
+          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.familyName")
             p {{ error.message }}
     
     // email
