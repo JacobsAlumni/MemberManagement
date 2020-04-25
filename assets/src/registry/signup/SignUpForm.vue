@@ -179,9 +179,9 @@ div
     // name
     .uk-form-row
       #div_id_fullName
-        label.uk-form-label(for='id_givenName') Full Name *
+        label.uk-form-label(for='id_fullName') Full Name *
         .uk-form-controls
-          input.uk-input.uk-margin-bottom(ref='name' maxlength='255' name='fullname' required='' type='text' @input='handleFullNameChange' autocomplete='name' autofocus='' v-model='fullName' placeholder='Jonathan Smith')
+          input#id_fullname.uk-input.uk-margin-bottom(ref='name' maxlength='255' name='fullname' required='' type='text' @input='handleFullNameChange' autocomplete='name' autofocus='' v-model='fullName' placeholder='Jonathan Smith')
           .div(v-show='!showDetailedName')
             .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.givenName")
                 p Given Names: {{ error.message }}
@@ -236,7 +236,7 @@ div
       #div_id_nationality
         label.uk-form-label(for='id_nationality') Nationality *
         .uk-form-controls.uk-form-controls-text
-          select#id_type.uk-select(name='nationality' ref='nationality' v-model='nationality' multiple)
+          select#id_nationality.uk-select(name='nationality' ref='nationality' v-model='nationality' multiple)
             option(v-for="choice in initialValidationResult.choices.nationality" v-bind:value="choice[0]") {{choice[1]}}
           .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
             p {{ error.message }}
@@ -244,15 +244,15 @@ div
     // membership type
     .uk-form-row(v-if='showMembershipType')
       #div_id_type
-        label.uk-form-label(for='id_type') I am *
+        label.uk-form-label(for='id_membertype') I am *
         .uk-form-controls.uk-form-controls-text
-          select#id_type.uk-select(name='memberType' ref='memberType' v-model='memberType')
+          select#id_membertype.uk-select(name='memberType' ref='memberType' v-model='memberType')
             option(value='re') Alum / Alumna
             option(value='fa') Faculty or Staff
             option(value='fr') Friend of the association
         .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberType")
           p {{ error.message }}
-    input(v-else type='hidden' name='memberType' :value='memberType')
+    input#id_membertype(v-else type='hidden' name='memberType' :value='memberType')
     
     // membership tier
     .uk-form-row

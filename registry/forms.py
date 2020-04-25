@@ -39,7 +39,7 @@ class RegistrationMixin():
         # check that the birthday is valid
         if 'birthday' in cleaned_data:
             self._validate_birthday(cleaned_data['birthday'])
-        
+
         # check that tos are accepted
         if 'tos' in cleaned_data:
             self._validate_tos(cleaned_data['tos'])
@@ -59,16 +59,18 @@ class RegistrationMixin():
         try:
             eighteen_years_ago = today.replace(year=today.year - 18)
         except ValueError:
-            eighteen_years_ago = today.replace(year=today.year - 18, day=today.day - 1)
-        
+            eighteen_years_ago = today.replace(
+                year=today.year - 18, day=today.day - 1)
+
         # user must have been born 18 years
-        if  birthday > eighteen_years_ago:
+        if birthday > eighteen_years_ago:
             self.add_error('birthday', forms.ValidationError(
                 "You must be at least 18 years old to become an Alumni member"))
-    
+
     def _validate_tos(self, tos: bool) -> None:
         if not tos:
-            self.add_error('tos', forms.ValidationError("You mus accept the terms and conditions to continue"))
+            self.add_error('tos', forms.ValidationError(
+                "You mus accept the terms and conditions to continue"))
 
 
 class RegistrationForm(RegistrationMixin, forms.Form):

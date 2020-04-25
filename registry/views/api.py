@@ -1,4 +1,5 @@
 from __future__ import annotations
+from ..forms import RegistrationForm
 from django.utils.decorators import method_decorator
 import json
 
@@ -12,8 +13,6 @@ if TYPE_CHECKING:
     from django.forms import Form
     from django.http import HttpRequest, HttpResponse
 
-from ..forms import RegistrationForm
-
 
 @method_decorator(csrf_protect, name='dispatch')
 class FormValidationView(View):
@@ -26,7 +25,7 @@ class FormValidationView(View):
     def instantiate_form(cls, request: HttpRequest) -> Form:
         """ Used to instantiate the form given a request"""
         return cls.form(request.POST)
-    
+
     @classmethod
     def validate_form_tojson(cls, form: Form) -> Dict[str, Any]:
         """ Turns a form instance into json representing validated json """
@@ -37,9 +36,10 @@ class FormValidationView(View):
 
         # form errors
         errors = json.loads(form.errors.as_json())
-        
+
         # form choices
-        choices = {field.name:  field.field.choices if hasattr(field.field, 'choices') else None for field in form}
+        choices = {field.name:  field.field.choices if hasattr(
+            field.field, 'choices') else None for field in form}
 
         return {'valid': valid, 'values': values, 'choices': choices, 'errors': errors}
 

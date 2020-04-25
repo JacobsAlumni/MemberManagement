@@ -1,34 +1,31 @@
 from __future__ import annotations
 
-from django.db import transaction, IntegrityError
-
 import json
-
-from payments import stripewrapper
-from payments.models import MembershipInformation, SubscriptionInformation
+from typing import TYPE_CHECKING
 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db import IntegrityError, transaction
 from django.utils.decorators import method_decorator
-from django.views.generic.base import TemplateResponseMixin, View
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.generic.base import TemplateResponseMixin, View
 
-from alumni.models import Approval, Alumni, Address, SocialMedia, JacobsData, JobInformation, Skills
-from atlas.models import AtlasSettings
 from alumni.fields import GenderField, TierField
+from alumni.models import (Address, Alumni, Approval, JacobsData,
+                           JobInformation, Skills, SocialMedia)
+from atlas.models import AtlasSettings
 from MemberManagement.mixins import RedirectResponseMixin
+from payments import stripewrapper
+from payments.models import MembershipInformation, SubscriptionInformation
 from registry.decorators import require_alumni
-
-from .api import FormValidationView
-from ..utils import generate_username
-
 
 from ..forms import (AddressForm, AtlasSettingsForm, JacobsForm,
                      JobInformationForm, RegistrationForm, SetupCompletedForm,
                      SkillsForm, SocialMediaForm)
+from ..utils import generate_username
+from .api import FormValidationView
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Any, Optional, Dict
     from django.http import HttpResponse
@@ -222,7 +219,7 @@ class RegisterView(SetupViewBase):
                     raise CustomerCreationFailed()
                 membership = MembershipInformation.objects.create(
                     member=alumni, tier=member_tier, customer=stripe_customer)
-        
+
         # FIXME: This integrity error is currently assumed to be an already existing email
         except IntegrityError as ie:
             form.add_error(
