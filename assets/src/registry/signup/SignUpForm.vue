@@ -39,7 +39,7 @@ export default class SignupForm extends VueValidatable {
   get formInstance() {
     return this.$refs.registerForm;
   }
-  readonly formKeys = ['givenName', 'middleName', 'familyName', 'birthday', 'email', 'memberType', 'memberTier', 'tos'];
+  readonly formKeys = ['givenName', 'middleName', 'familyName', 'birthday', 'email', 'memberType', 'memberTier', 'nationality', 'tos'];
   readonly validateEndpoint = "/portal/register/validate/";
   readonly submitEndpoint = null;
 
@@ -68,9 +68,9 @@ export default class SignupForm extends VueValidatable {
     ];
   }
 
-  givenName = this.initialValidationResult.values['givenName'] || "";
-  middleName = this.initialValidationResult.values['middleName'] || "";
-  familyName = this.initialValidationResult.values['familyName'] || "";
+  givenName = this.initialValidationResult.values['givenName'] as string || "";
+  middleName = this.initialValidationResult.values['middleName'] as string || "";
+  familyName = this.initialValidationResult.values['familyName'] as string || "";
   fullName = SignupForm.joinFullName(this.givenName, this.middleName, this.familyName);
   showDetailedName = this.middleName !== "";
 
@@ -93,9 +93,12 @@ export default class SignupForm extends VueValidatable {
     // and run validation
     this.validateFormDebounced();
   }
+
+  // nationality
+  nationality = this.initialValidationResult.values['nationality'] as string[] || [];
   
   // email
-  email = this.initialValidationResult.values["email"] || "";
+  email = this.initialValidationResult.values["email"] as string|| "";
   showEmailSuggestions = false;
 
   get emailSuggestions(): string[] {
@@ -110,7 +113,7 @@ export default class SignupForm extends VueValidatable {
   }
 
   // birthday
-  birthday = this.initialValidationResult.values["birthday"] || birthDayDefaultString;
+  birthday = this.initialValidationResult.values["birthday"] as string|| birthDayDefaultString;
 
   // membertype
   memberType: MemberType = this.initialValidationResult.values["memberType"] as MemberType || MemberType.Alumnus;
@@ -228,8 +231,18 @@ div
         .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.birthday")
           p {{ error.message }}
     
+    // nationality
+    .uk-form-row
+      #div_id_nationality
+        label.uk-form-label(for='id_nationality') Nationality *
+        .uk-form-controls.uk-form-controls-text
+          select#id_type.uk-select(name='nationality' ref='nationality' v-model='nationality' multiple)
+            option(v-for="choice in initialValidationResult.choices.nationality" v-bind:value="choice[0]") {{choice[1]}}
+          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
+            p {{ error.message }}
+    
     // membership type
-    .uk-form-row(v-show='showMembershipType')
+    .uk-form-row(v-if='showMembershipType')
       #div_id_type
         label.uk-form-label(for='id_type') I am *
         .uk-form-controls.uk-form-controls-text
@@ -239,7 +252,7 @@ div
             option(value='fr') Friend of the association
         .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberType")
           p {{ error.message }}
-    input(v-show='!showMembershipType' type='hidden' name='memberType' :value='memberType')
+    input(v-else type='hidden' name='memberType' :value='memberType')
     
     // membership tier
     .uk-form-row

@@ -2,6 +2,7 @@ from __future__ import annotations
 from django.utils.decorators import method_decorator
 import json
 
+from django.forms import ChoiceField
 from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_protect
@@ -29,11 +30,18 @@ class FormValidationView(View):
     @classmethod
     def validate_form_tojson(cls, form: Form) -> Dict[str, Any]:
         """ Turns a form instance into json representing validated json """
-        valid = form.is_valid()
-        values = {field.name: form.data.get(field.name, None) for field in form}
-        errors = json.loads(form.errors.as_json())
 
-        return {'valid': valid, 'values': values, 'errors': errors}
+        valid = form.is_valid()
+        # form values
+        values = {field.name: field.data for field in form}
+
+        # form errors
+        errors = json.loads(form.errors.as_json())
+        
+        # form choices
+        choices = {field.name:  field.field.choices if hasattr(field.field, 'choices') else None for field in form}
+
+        return {'valid': valid, 'values': values, 'choices': choices, 'errors': errors}
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """ Validates form data via POST """

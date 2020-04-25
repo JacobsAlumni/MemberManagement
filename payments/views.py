@@ -56,7 +56,7 @@ class SignupView(SetupComponentView):
         instance.save()
 
         # if we selected the starter tier, create subscription information now
-        if instance.tier == 'st':
+        if instance.tier == TierField.STARTER:
             SubscriptionInformation.create_starter_subscription(
                 self.request.user.alumni)
 

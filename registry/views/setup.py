@@ -5,7 +5,7 @@ from django.db import transaction, IntegrityError
 import json
 
 from payments import stripewrapper
-from payments.models import MembershipInformation
+from payments.models import MembershipInformation, SubscriptionInformation
 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -16,7 +16,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 from alumni.models import Approval, Alumni, Address, SocialMedia, JacobsData, JobInformation, Skills
 from atlas.models import AtlasSettings
-from alumni.fields import GenderField
+from alumni.fields import GenderField, TierField
 from MemberManagement.mixins import RedirectResponseMixin
 from registry.decorators import require_alumni
 
@@ -168,6 +168,7 @@ class RegisterView(SetupViewBase):
         middle_name = cleaned_data['middleName']
         family_name = cleaned_data['familyName']
         email = cleaned_data['email']
+        nationality = cleaned_data['nationality']
         birthday = cleaned_data['birthday']
         member_type = cleaned_data['memberType']
         member_tier = cleaned_data['memberTier']
@@ -196,7 +197,7 @@ class RegisterView(SetupViewBase):
                     email=email,
                     sex=GenderField.UNSPECIFIED,
                     birthday=birthday,
-                    nationality='DE',  # TODO: Need to add this field
+                    nationality=nationality,  # TODO: Need to add this field
                     category=member_type,
                 )
 
@@ -211,7 +212,10 @@ class RegisterView(SetupViewBase):
                 skills = Skills.objects.create(member=alumni)
                 atlas = AtlasSettings.objects.create(member=alumni)
 
-                # create a stripe customer
+                # if needed, create a starter subscription
+                if member_tier == TierField.STARTER:
+                    SubscriptionInformation.create_starter_subscription(alumni)
+
                 # which may fail, and if it does should add an error
                 stripe_customer, err = stripewrapper.create_customer(alumni)
                 if err is not None:

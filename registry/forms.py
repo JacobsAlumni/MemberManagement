@@ -5,6 +5,8 @@ import datetime
 from django import forms
 from django.contrib.auth.models import User
 
+from alumni.fields import CountryField
+
 from alumni.models import (Address, Alumni, JacobsData, JobInformation,
                            SetupCompleted, Skills, SocialMedia)
 from alumni.fields import AlumniCategoryField, TierField
@@ -81,6 +83,8 @@ class RegistrationForm(RegistrationMixin, forms.Form):
 
     memberType = forms.ChoiceField(choices=AlumniCategoryField.CHOICES)
     memberTier = forms.ChoiceField(choices=TierField.CHOICES)
+
+    nationality = CountryField(multiple=True).formfield()
 
     tos = forms.BooleanField(required=True)
 

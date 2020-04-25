@@ -22,7 +22,6 @@ def generate_username(first_names: str, middle_names: Optional[str], family_name
     # use only characters
     chars = []
     for character in name.decode('utf8'):
-        print(name)
         if character.isalpha() or character == ' ':
             chars.append(character)
     name = ''.join(chars).split()
