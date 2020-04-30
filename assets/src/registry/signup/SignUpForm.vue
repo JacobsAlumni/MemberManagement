@@ -1,6 +1,8 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 
+import Multiselect from 'vue-multiselect'
+
 import getCookie from "../../base/utils/cookie";
 import VueValidatable from "../../base/utils/validate";
 import {MemberType, MemberTypeDescriptions, MemberTier, getAllowedTiers, MemberTierShortTitles, MemberTierDescriptions} from "../../base/utils/membership";
@@ -28,7 +30,11 @@ const birthDayDefaultString = `${birthDayDefault.getFullYear()}-${(birthDayDefau
         .toString()
         .padStart(2, "0")}`;
 
-@Component
+@Component({
+  components: {
+    Multiselect
+  }
+})
 export default class SignupForm extends VueValidatable {
   declare $refs: {
     memberType: HTMLInputElement;
@@ -232,7 +238,7 @@ div
           p {{ error.message }}
     
     // nationality
-    .uk-form-row
+    //.uk-form-row
       #div_id_nationality
         label.uk-form-label(for='id_nationality') Nationality *
         .uk-form-controls.uk-form-controls-text
@@ -241,6 +247,14 @@ div
           .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
             p {{ error.message }}
     
+    .uk-form-row
+          #div_id_nationality
+            label.uk-form-label(for='id_nationality') Nationality *
+            .uk-form-controls.uk-form-controls-text
+              Multiselect(v-model='nationality' :multiple="true" label="label" track-by="id" :options="initialValidationResult.choices.nationality.map(r => ({label: r[1], id: r[0]}))")
+              .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
+                p {{ error.message }}
+
     // membership type
     .uk-form-row(v-if='showMembershipType')
       #div_id_type
@@ -255,7 +269,8 @@ div
     input#id_membertype(v-else type='hidden' name='memberType' :value='memberType')
     
     // membership tier
-    .uk-form-row
+    
+    //.uk-form-row
       #div_id_tier
         label.uk-form-label(for='id_tier') Yearly Contribution *
         .uk-form-controls.uk-form-controls-text
@@ -264,6 +279,25 @@ div
         .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberTier")
           p {{ error.message }}
     
+    .uk-form-row
+      #div_id_tier
+        label.uk-form-label(for='id_tier') Yearly Contribution *
+        .uk-form-controls.uk-form-controls-text.uk-grid
+          .uk-card.uk-card-default.uk-card-body.uk-width-1-3
+            h3.uk-card-title Starter
+              small  0€ yearly
+            p The tier for all those who are not yet ready to financially contribute.
+
+          .uk-card.uk-card-primary.uk-card-body.uk-width-1-3
+            h3.uk-card-title Regular
+              small  39€ yearly
+            p The regular membership tier
+
+          .uk-card.uk-card-default.uk-card-body.uk-width-1-3
+            h3.uk-card-title Parton
+              small  249€ yearly
+            p The exclusive club
+
     // terms an conditions
     .uk-form-row
       #div_id_tos.uk-margin-bottom.uk-margin-top
@@ -324,3 +358,5 @@ div
           br
 
 </template>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
