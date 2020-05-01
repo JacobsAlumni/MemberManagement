@@ -5,7 +5,7 @@ import Multiselect from 'vue-multiselect'
 
 import getCookie from "../../base/utils/cookie";
 import VueValidatable from "../../base/utils/validate";
-import {MemberType, MemberTypeDescriptions, MemberTier, getAllowedTiers, MemberTierShortTitles, MemberTierDescriptions} from "../../base/utils/membership";
+import {MemberType, MemberTypeDescriptions, MemberTier, MemberTierPrices, getAllowedTiers, MemberTierShortTitles, MemberTierDescriptions} from "../../base/utils/membership";
 
 // autocomplete on the most common providers
 const emailProviders = [
@@ -149,6 +149,22 @@ export default class SignupForm extends VueValidatable {
     }, {});
   };
 
+  tierClass(value: string): string {
+    return value == this.memberTier ? "uk-card-primary" : "uk-card-default";
+  }
+
+  tierPrice(value: MemberTier): string {
+    return MemberTierPrices[value];
+  }
+
+  tierDescription(value: MemberTier): string {
+    return MemberTierDescriptions[value];
+  }
+
+  tierShortTitle(value: MemberTier): string {
+    return MemberTierShortTitles[value];
+  }
+
   // tos, these always need to be re-checked
   tos = false;
   get signUpText(): string {
@@ -281,22 +297,18 @@ div
     
     .uk-form-row
       #div_id_tier
-        label.uk-form-label(for='id_tier') Yearly Contribution *
-        .uk-form-controls.uk-form-controls-text.uk-grid
-          .uk-card.uk-card-default.uk-card-body.uk-width-1-3
-            h3.uk-card-title Starter
-              small  0€ yearly
-            p The tier for all those who are not yet ready to financially contribute.
+        label.uk-form-label(for='id_tier') Your Contribution *
+        .uk-form-controls.uk-form-controls-text.uk-grid.uk-grid-small(class="uk-child-width-expand@s")
+          .tier-option(v-for='(description, value) in tierChoices' :key='value')
+            .uk-card.uk-card-default.uk-card-hover.uk-card-body(:class="tierClass(value)" @click="memberTier = value")
+              h3.uk-card-title {{ tierShortTitle(value) }}
+                small {{ tierPrice(value) }}
+              p(v-html="tierDescription(value)")
 
-          .uk-card.uk-card-primary.uk-card-body.uk-width-1-3
-            h3.uk-card-title Regular
-              small  39€ yearly
-            p The regular membership tier
+        .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberTier")
+          p {{ error.message }}
 
-          .uk-card.uk-card-default.uk-card-body.uk-width-1-3
-            h3.uk-card-title Parton
-              small  249€ yearly
-            p The exclusive club
+    input#id_membertier(type='hidden' name='memberTier' :value='memberTier')
 
     // terms an conditions
     .uk-form-row
@@ -360,3 +372,35 @@ div
 </template>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
+<style>
+.tier-option:hover > .uk-card {
+  cursor: pointer;
+}
+
+.multiselect__tags {
+  border-radius: 0;
+  font-size: initial;
+}
+
+.multiselect__option--highlight {
+  background: #084983;
+}
+
+.multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
+  background: #084983;
+}
+
+.multiselect__tag {
+  background: #084983;
+}
+
+.tier-option ul {
+  padding-left: 0;
+  list-style-type: "✓";
+}
+
+.tier-option ul > li {
+  margin-bottom: 1em;
+}
+</style>

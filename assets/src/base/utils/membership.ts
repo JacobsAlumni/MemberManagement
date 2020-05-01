@@ -25,14 +25,20 @@ export enum MemberTier {
 }
 
 export const MemberTierShortTitles: Record<MemberTier, string> = {
-    st: 'Starter – Free Membership for 0€ p.a.',
-    co: 'Contributor – Standard membership for 39€ p.a.',
-    pa: 'Patron – Premium membership for 249€ p.a.',
+    st: 'Starter',
+    co: 'Contributor',
+    pa: 'Patron',
 }
 export const MemberTierTitles: Record<MemberTier, string> = {
     st: '<b>Starter</b> - The free membership for those not ready or willing to financially contribute to the Association at this point. ',
     co: '<b>Contributor</b> - Our standard membership for Alumni and associate members who are part of the Jacobs community.',
     pa: '<b>Patron</b> - Our membership for senior alumni and friends who want to give back even more and love to see the Jacobs spirit grow!',
+}
+
+export const MemberTierPrices: Record<MemberTier, string> = {
+    st: '0€ / year',
+    co: '39€ / year',
+    pa: '249€ / year'
 }
 
 export const MemberTierDescriptions: Record<MemberTier, string> = {
@@ -55,8 +61,8 @@ export const MemberTierDescriptions: Record<MemberTier, string> = {
     </ul>
     `,
     pa: `
-        Includes all benefits of the Contributor membership PLUS:
         <ul>
+            <li>All Contributor benefits PLUS</li>
             <li>After three years of patron membership, engraved alumni brick (on the path in front of the IRC)</li>
             <li>Special mention in the Association’s newsletter after joining</li>
             <li>Special mention in yearly newsletter every year of membership</li>
