@@ -302,7 +302,7 @@ div
           .tier-option(v-for='(description, value) in tierChoices' :key='value')
             .uk-card.uk-card-default.uk-card-hover.uk-card-body(:class="tierClass(value)" @click="memberTier = value")
               h3.uk-card-title {{ tierShortTitle(value) }}
-                small {{ tierPrice(value) }}
+                small  {{ tierPrice(value) }}
               p(v-html="tierDescription(value)")
 
         .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberTier")
