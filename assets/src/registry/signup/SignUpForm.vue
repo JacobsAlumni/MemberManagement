@@ -100,8 +100,17 @@ export default class SignupForm extends VueValidatable {
     this.validateFormDebounced();
   }
 
+  mapNationalities(values: string[]) {
+    return values.map(v => {
+      const dict = this.initialValidationResult.choices.nationality as Array<[string, string]>
+      const candidate = dict.find(kv => kv[0] == v);
+      if(!candidate) return undefined;
+      return {"id": candidate[0], "label": candidate[1]};
+    }).filter(x => x !== undefined) as  Array<{id: string, label: string}>;
+  }
+
   // nationality
-  nationality = this.initialValidationResult.values['nationality'] as string[] || [];
+  nationality = this.mapNationalities(this.initialValidationResult.values['nationality'] as string[] || []);
   
   // email
   email = this.initialValidationResult.values["email"] as string|| "";
@@ -141,7 +150,7 @@ export default class SignupForm extends VueValidatable {
   }
 
   // member tier
-  memberTier: MemberTier = this.initialValidationResult.values["memberTier"] as MemberTier || MemberTier.Contributor;
+  memberTier: MemberTier = this.initialValidationResult.values["memberTier"] as MemberTier || "";
     get tierChoices(): Record<string, string> {
     return getAllowedTiers(this.memberType).reduce<Record<string, string>>((acc, v) => {
       acc[v] = MemberTierShortTitles[v];
@@ -262,12 +271,15 @@ div
             option(v-for="choice in initialValidationResult.choices.nationality" v-bind:value="choice[0]") {{choice[1]}}
           .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
             p {{ error.message }}
+
+
+    input(type='hidden' name='nationality' v-for="val in nationality" v-key="val.id" :value="val.id")
     
     .uk-form-row
           #div_id_nationality
             label.uk-form-label(for='id_nationality') Nationality *
             .uk-form-controls.uk-form-controls-text
-              Multiselect(v-model='nationality' :multiple="true" label="label" track-by="id" :options="initialValidationResult.choices.nationality.map(r => ({label: r[1], id: r[0]}))")
+              Multiselect(v-model='nationality' :multiple="true" label="label" track-by="id" :options="mapNationalities(initialValidationResult.choices.nationality.map(r => r[0]))")
               .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
                 p {{ error.message }}
 
@@ -397,7 +409,7 @@ div
 
 .tier-option ul {
   padding-left: 0;
-  list-style-type: "✓";
+  list-style-type: "✓  ";
 }
 
 .tier-option ul > li {
