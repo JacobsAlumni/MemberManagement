@@ -14,6 +14,8 @@ from alumni.fields import (AlumniCategoryField, CollegeField, GenderField,
 from alumni.models import Alumni
 from MemberManagement.tests.integration import IntegrationTest, IntegrationTestBase
 
+from selenium.webdriver.common.keys import Keys
+
 MOCKED_TIME = timezone.datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 MOCKED_END = MOCKED_TIME + timedelta(days=2 * 365)
@@ -25,6 +27,21 @@ MOCKED_CUSTOMER = 'cus_Fq8yG7rLrc6sKZ'
 class SignupTestBase(IntegrationTestBase):
     tier: str
     expect_subscription_created: bool
+
+    def fill_out_nationality(self, *nations):
+        """ Fills out the nationality multiselect with the given nations """
+
+        # find the element and scroll it into view
+        element = self.find_element("#id_nationality > div")
+        self.selenium.execute_script(
+            'arguments[0].scrollIntoView(true)', element)
+
+        # select each nation
+        for nation in nations:
+            element.click()
+            element.send_keys(nation)
+            element.find_element_by_xpath(
+                ".//span[text()=\"" + nation + "\"]").click()
 
     def assert_related_created(self, alumni: Alumni):
         """ Checks that all related objects were created """
@@ -111,17 +128,22 @@ class SignupTestBase(IntegrationTestBase):
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
     def test_signup_ok_anna(self, mocked: mock.Mock) -> None:
         # fill out the signup form ok
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        btn = self.fill_out_form('register', 'input_id_submit', send_form_keys={
             'id_fullname': 'Anna Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
-        }, select_dropdowns={
-            'id_nationality': ('DE',),
-            'id_tier': (self.__class__.tier,),
         }, script_value={
             'id_birthday': '1948-11-07',  # TODO: not sure how this should work
         }, select_checkboxes={
             'id_tos': True
         })
+
+        # select tier and nationality
+        self.find_element("#id_tier_" + self.__class__.tier).click()
+        self.fill_out_nationality('Germany')
+
+        # click and wait for page load
+        btn.click()
+        self.find_element(None)
 
         # check that we went to the subscription page
         if self.__class__.expect_subscription_created:
@@ -157,17 +179,22 @@ class SignupTestBase(IntegrationTestBase):
         User.objects.create_user('afreytag')
 
         # fill out the signup form ok
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        btn = self.fill_out_form('register', 'input_id_submit', send_form_keys={
             'id_fullname': 'Anna Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
-        }, select_dropdowns={
-            'id_nationality': ('DE',),
-            'id_tier': (self.__class__.tier,),
         }, script_value={
             'id_birthday': '1948-11-07',  # TODO: not sure how this should work
         }, select_checkboxes={
             'id_tos': True
         })
+
+        # select tier and nationality
+        self.find_element("#id_tier_" + self.__class__.tier).click()
+        self.fill_out_nationality('Germany')
+
+        # click and wait for page load
+        btn.click()
+        self.find_element(None)
 
         # check that we went to the subscription page
         if self.__class__.expect_subscription_created:
@@ -204,17 +231,21 @@ class SignupTestBase(IntegrationTestBase):
         User.objects.create_user('afreytag1')
 
         # fill out the signup form ok
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        btn = self.fill_out_form('register', 'input_id_submit', send_form_keys={
             'id_fullname': 'Anna Charlotte Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
-        }, select_dropdowns={
-            'id_nationality': ('DE',),
-            'id_tier': (self.__class__.tier,),
         }, script_value={
             'id_birthday': '1948-11-07',
         }, select_checkboxes={
             'id_tos': True
         })
+        # select tier and nationality
+        self.find_element("#id_tier_" + self.__class__.tier).click()
+        self.fill_out_nationality('Germany')
+
+        # click and wait for page load
+        btn.click()
+        self.find_element(None)
 
         # check that we went to the subscription page
         if self.__class__.expect_subscription_created:
@@ -247,17 +278,22 @@ class SignupTestBase(IntegrationTestBase):
     @mock.patch('payments.stripewrapper.create_customer', return_value=(None, "Debug failure"))
     def test_signup_fail_stripe(self, mocked: mock.Mock) -> None:
         # fill out the signup form ok
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        btn = self.fill_out_form('register', 'input_id_submit', send_form_keys={
             'id_fullname': 'Anna Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
-        }, select_dropdowns={
-            'id_nationality': ('DE',),
-            'id_tier': (self.__class__.tier,),
         }, script_value={
             'id_birthday': '1948-11-07',
         }, select_checkboxes={
             'id_tos': True
         })
+
+        # select tier and nationality
+        self.find_element("#id_tier_" + self.__class__.tier).click()
+        self.fill_out_nationality('Germany')
+
+        # click and wait for page load
+        btn.click()
+        self.find_element(None)
 
         self.assert_url_equal('register')
         mocked.assert_called()
@@ -267,17 +303,22 @@ class SignupTestBase(IntegrationTestBase):
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
     def test_signup_fail_notos(self, mocked: mock.Mock) -> None:
         # fill out the signup form ok
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        btn = self.fill_out_form('register', 'input_id_submit', send_form_keys={
             'id_fullname': 'Anna Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
-        }, select_dropdowns={
-            'id_nationality': ('DE',),
-            'id_tier': (self.__class__.tier,),
         }, script_value={
             'id_birthday': '1948-11-07',
         }, select_checkboxes={
             'id_tos': False
         })
+
+        # select tier and nationality
+        self.find_element("#id_tier_" + self.__class__.tier).click()
+        self.fill_out_nationality('Germany')
+
+        # click and wait for page load
+        btn.click()
+        self.find_element(None)
 
         self.assert_url_equal('register')
         mocked.assert_not_called()
@@ -288,17 +329,22 @@ class SignupTestBase(IntegrationTestBase):
     def test_signup_fail_restricedemail(self, mocked: mock.Mock) -> None:
         for domain in ['jacobs-alumni.de', 'jacobs-university.de']:
             # fill out the signup form ok
-            self.submit_form('register', 'input_id_submit', send_form_keys={
+            btn = self.fill_out_form('register', 'input_id_submit', send_form_keys={
                 'id_fullname': 'Anna Freytag',
                 'id_email': 'AnnaFreytag@' + domain,
-            }, select_dropdowns={
-                'id_nationality': ('DE',),
-                'id_tier': (self.__class__.tier,),
             }, script_value={
                 'id_birthday': '1948-11-07',
             }, select_checkboxes={
                 'id_tos': True
             })
+
+            # select tier and nationality
+            self.find_element("#id_tier_" + self.__class__.tier).click()
+            self.fill_out_nationality('Germany')
+
+            # click and wait for page load
+            btn.click()
+            self.find_element(None)
 
             self.assert_url_equal('register')
             mocked.assert_not_called()
@@ -308,12 +354,9 @@ class SignupTestBase(IntegrationTestBase):
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
     def test_signup_fail_tooyoung(self, mocked: mock.Mock) -> None:
         # fill out the signup form ok
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        btn = self.submit_form('register', 'input_id_submit', send_form_keys={
             'id_fullname': 'Anna Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
-        }, select_dropdowns={
-            'id_nationality': ('DE',),
-            'id_tier': (self.__class__.tier,),
         }, script_value={
             'id_birthday': '2012-01-01',
         }, select_checkboxes={
@@ -339,17 +382,22 @@ class SignupTestBase(IntegrationTestBase):
         )
 
         # fill signup form
-        self.submit_form('register', 'input_id_submit', send_form_keys={
+        btn = self.fill_out_form('register', 'input_id_submit', send_form_keys={
             'id_fullname': 'Anna Freytag',
             'id_email': 'AnnaFreytag@dayrep.com',
-        }, select_dropdowns={
-            'id_nationality': ('DE',),
-            'id_tier': (self.__class__.tier,),
         }, script_value={
             'id_birthday': '2012-01-01',
         }, select_checkboxes={
             'id_tos': True
         })
+
+        # select tier and nationality
+        self.find_element("#id_tier_" + self.__class__.tier).click()
+        self.fill_out_nationality('Germany')
+
+        # click and wait for page load
+        btn.click()
+        self.find_element(None)
 
         # remove the dummy objects
         alumni.delete()

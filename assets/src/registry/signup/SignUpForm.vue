@@ -161,6 +161,10 @@ export default class SignupForm extends VueValidatable {
     return value == this.memberTier ? "uk-card-primary" : "uk-card-default";
   }
 
+  tierId(value: string): string {
+    return 'id_tier_' + value;
+  }
+
   tierPrice(value: MemberTier): string {
     return MemberTierPrices[value];
   }
@@ -177,18 +181,6 @@ export default class SignupForm extends VueValidatable {
   tos = false;
   get signUpText(): string {
     return memberCategoryDescriptions[this.memberCategory];
-  }
-
-  // TODO: This is currently not supported
-  accountExists = false;
-  alumniemail = "";
-  get alumniEmailSuggestions(): string[] {
-    const emailParts = this.$data.alumniemail.split("@");
-    if (!this.alumniemail || !emailParts) {
-      return [];
-    }
-
-    return [emailParts[0] + "@jacobs-alumni.de"];
   }
 
   // csrf token
@@ -261,26 +253,15 @@ div
         .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.birthday")
           p {{ error.message }}
     
-    // nationality
-    //.uk-form-row
-      #div_id_nationality
-        label.uk-form-label(for='id_nationality') Nationality *
-        .uk-form-controls.uk-form-controls-text
-          select#id_nationality.uk-select(name='nationality' ref='nationality' v-model='nationality' multiple)
-            option(v-for="choice in initialValidationResult.choices.nationality" v-bind:value="choice[0]") {{choice[1]}}
-          .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
-            p {{ error.message }}
-
-
-    input(type='hidden' name='nationality' v-for="val in nationality" v-key="val.id" :value="val.id")
-    
+    // nationality    
     .uk-form-row
           #div_id_nationality
             label.uk-form-label(for='id_nationality') Nationality *
-            .uk-form-controls.uk-form-controls-text
+            .uk-form-controls.uk-form-controls-text(id="id_nationality")
               Multiselect(v-model='nationality' :multiple="true" label="label" track-by="id" :options="mapNationalities(initialValidationResult.choices.nationality.map(r => r[0]))")
               .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
                 p {{ error.message }}
+    input(type='hidden' name='nationality' v-for="val in nationality" v-key="val.id" :value="val.id")
 
     // membership type
     .uk-form-row(v-if='showMembershipType')
@@ -296,22 +277,12 @@ div
     input#id_memberCategory(v-else type='hidden' name='memberCategory' :value='memberCategory')
     
     // membership tier
-    
-    //.uk-form-row
-      #div_id_tier
-        label.uk-form-label(for='id_tier') Yearly Contribution *
-        .uk-form-controls.uk-form-controls-text
-          select#id_tier.uk-select(name='memberTier' v-model="memberTier")
-            option(v-for='(description, value) in tierChoices' :key='value' :value='value') {{ description }}
-        .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberTier")
-          p {{ error.message }}
-    
     .uk-form-row
       #div_id_tier
         label.uk-form-label(for='id_tier') Your Contribution *
         .uk-form-controls.uk-form-controls-text.uk-grid.uk-grid-small(class="uk-child-width-expand@s")
           .tier-option(v-for='(description, value) in tierChoices' :key='value')
-            .uk-card.uk-card-default.uk-card-hover.uk-card-body(:class="tierClass(value)" @click="memberTier = value")
+            .uk-card.uk-card-default.uk-card-hover.uk-card-body(:class="tierClass(value)" :id='tierId(value)' @click="memberTier = value")
               h3.uk-card-title {{ tierShortTitle(value) }}
                 small  {{ tierPrice(value) }}
               p(v-html="tierDescription(value)")
@@ -340,45 +311,6 @@ div
     // submit buttons
     input#input_id_other_type.uk-button.uk-width-1-1.uk-button-default(class='uk-width-1-2@m' value='I Am Not Alumnus' @click='showMembership' v-show='!showMembershipType')
     input#input_id_submit.uk-button.uk-button-primary(@click.prevent="submitForm" :class="{'uk-width-1-1': showMembershipType, 'uk-width-1-1 uk-width-1-2@m': !showMembershipType}" type='submit' :value="'Sign Up As ' + signUpText")
-
-    // TODO: Existing email
-      
-      //
-        <div class="uk-margin">
-        <label class="uk-form-label" for="id_existing"></label>
-        <div class="uk-form-controls uk-form-controls-text">
-        <input
-        class="uk-checkbox"
-        id="id_existing"
-        name="accountExists"
-        required
-        type="checkbox"
-        v-model="accountExists"
-        />
-        I have an existing alumni e-mail
-        </div>
-        </div>
-      #div_id_existingEmail(v-show='accountExists')
-        label.uk-form-label(for='id_email') Existing e-mail
-        .uk-form-controls-text(class='uk-hidden@m')
-          p
-            | Existing
-            em @jacobs-alumni.de
-            |  email address (if you have one)
-        .uk-form-controls.uk-form-controls-text
-          input#id_existingEmail.uk-input(maxlength='254' name='existingEmail' type='email' list='alumnimails' v-model='alumniemail' )
-          datalist#alumnimails(style='display: block;')
-            option(v-for='suggestion in alumniEmailSuggestions' :key='suggestion' :value='suggestion')
-      #div_id_resetExistingEmailPassword(v-show='accountExists')
-        .uk-form-controls-text(class='uk-hidden@m')
-          p
-        .uk-form-controls.uk-form-controls-text
-          input#id_resetExistingEmailPassword.uk-checkbox(name='resetExistingEmailPassword' type='checkbox')
-          | Reset password to existing email address
-        .uk-form-controls.uk-form-controls-text(class='uk-visible@m')
-          p
-        .uk-form-label(class='uk-hidden@m')
-          br
 
 </template>
 
