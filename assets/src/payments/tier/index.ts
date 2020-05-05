@@ -1,5 +1,5 @@
 // TOOD: We should migrate this to vue and do local inference
-import {MemberType, MemberTier, getAllowedTiers, MemberTierTitles, MemberTierDescriptions} from "../../base/utils/membership";
+import {memberCategory, MemberTier, getAllowedTiers, MemberTierTitles, MemberTierDescriptions} from "../../base/utils/membership";
 
 // load a lot of html elements
 const TierField = document.getElementById('id_tier') as HTMLSelectElement;

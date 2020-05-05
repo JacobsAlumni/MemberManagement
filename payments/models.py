@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 from alumni.models import Alumni
-from alumni.fields import TierField
+from alumni.fields import TierField, AlumniCategoryField
 
 from registry.alumni import AlumniComponentMixin
 
@@ -202,6 +202,17 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         instance = SubscriptionInformation.start_new_subscription(
             self.member, subscription, tier=desired_tier)
         return instance, None
+
+    @classmethod
+    def allow_tier_and_category(cls, tier: str, category: str) -> bool:
+        """ Checks if a given category and tier of alumni is allowed """
+
+        # regular alumni are allowed to pick any category
+        if category == AlumniCategoryField.REGULAR:
+            return True
+
+        # other types only can't be starter
+        return typ != TierField.STARTER
 
 
 @Alumni.register_component(7)

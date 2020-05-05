@@ -1,18 +1,18 @@
-export enum MemberType {
+export enum memberCategory {
     Alumnus = 're',
     Friend_Of_The_Association = 'fr',
     Faculty_Or_Staff = 'fs',
 }
 
-export function getAllowedTiers(type?: MemberType): MemberTier[] {
-    if (type !== undefined && type !== MemberType.Alumnus) {
+export function getAllowedTiers(type?: memberCategory): MemberTier[] {
+    if (type !== undefined && type !== memberCategory.Alumnus) {
         return [MemberTier.Contributor, MemberTier.Parton];
     }
 
     return [MemberTier.Starter, MemberTier.Contributor, MemberTier.Parton];
 }
 
-export const MemberTypeDescriptions: Record<MemberType, string> = {
+export const memberCategoryDescriptions: Record<memberCategory, string> = {
     re: 'Alumnus',
     fr: 'Friend Of The Association',
     fs: 'Faculty Or Staff',

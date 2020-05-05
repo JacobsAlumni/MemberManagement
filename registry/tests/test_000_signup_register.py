@@ -99,7 +99,7 @@ class SignupTestBase(IntegrationTestBase):
         self.assertEqual(obj.external, False)
         self.assertEqual(obj.tier, self.__class__.tier)
 
-    def assert_not_created(self):
+    def assert_related_not_created(self):
         """ Asserts that the alumni and related objects have not been created """
 
         self.assertEqual(Alumni.objects.first(), None,
@@ -261,7 +261,7 @@ class SignupTestBase(IntegrationTestBase):
 
         self.assert_url_equal('register')
         mocked.assert_called()
-        self.assert_not_created()
+        self.assert_related_not_created()
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
@@ -281,7 +281,7 @@ class SignupTestBase(IntegrationTestBase):
 
         self.assert_url_equal('register')
         mocked.assert_not_called()
-        self.assert_not_created()
+        self.assert_related_not_created()
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
@@ -302,7 +302,7 @@ class SignupTestBase(IntegrationTestBase):
 
             self.assert_url_equal('register')
             mocked.assert_not_called()
-            self.assert_not_created()
+            self.assert_related_not_created()
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
@@ -322,7 +322,7 @@ class SignupTestBase(IntegrationTestBase):
 
         self.assert_url_equal('register')
         mocked.assert_not_called()
-        self.assert_not_created()
+        self.assert_related_not_created()
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
@@ -357,7 +357,7 @@ class SignupTestBase(IntegrationTestBase):
 
         self.assert_url_equal('register')
         mocked.assert_not_called()
-        self.assert_not_created()
+        self.assert_related_not_created()
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
@@ -367,7 +367,7 @@ class SignupTestBase(IntegrationTestBase):
 
         self.assert_url_equal('register')
         mocked.assert_not_called()
-        self.assert_not_created()
+        self.assert_related_not_created()
 
 
 class StarterSignupTest(SignupTestBase, IntegrationTest, StaticLiveServerTestCase):

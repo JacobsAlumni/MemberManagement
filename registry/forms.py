@@ -9,6 +9,7 @@ from alumni.fields import CountryField
 
 from alumni.models import (Address, Alumni, JacobsData, JobInformation,
                            SetupCompleted, Skills, SocialMedia)
+from payments.models import MembershipInformation
 from alumni.fields import AlumniCategoryField, TierField
 from atlas.models import AtlasSettings
 from django_forms_uikit.widgets import DatePickerInput
@@ -44,6 +45,11 @@ class RegistrationMixin():
         if 'tos' in cleaned_data:
             self._validate_tos(cleaned_data['tos'])
 
+        # check that we have an allowed tier and type
+        if 'memberTier' in cleaned_data and 'memberCategory' in cleaned_data:
+            self._validate_category(
+                cleaned_data['memberTier'], cleaned_data['memberCategory'])
+
     def _validate_email(self, email: str) -> None:
         # validate that the email isn't blacklisted
         email = email.lower().strip()
@@ -72,6 +78,11 @@ class RegistrationMixin():
             self.add_error('tos', forms.ValidationError(
                 "You mus accept the terms and conditions to continue"))
 
+    def _validate_category(self, tier: str, category: str):
+        if not MembershipInformation.allow_tier_and_category(tier, category):
+            self.add_error('memberCategory', forms.ValidationError(
+                "You have selected an invalid membership / tier combination"))
+
 
 class RegistrationForm(RegistrationMixin, forms.Form):
     """ A form for registering users """
@@ -83,7 +94,7 @@ class RegistrationForm(RegistrationMixin, forms.Form):
     email = forms.EmailField(required=True)
     birthday = forms.DateField()
 
-    memberType = forms.ChoiceField(choices=AlumniCategoryField.CHOICES)
+    memberCategory = forms.ChoiceField(choices=AlumniCategoryField.CHOICES)
     memberTier = forms.ChoiceField(choices=TierField.CHOICES)
 
     nationality = CountryField(multiple=True).formfield()

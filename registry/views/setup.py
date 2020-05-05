@@ -167,7 +167,7 @@ class RegisterView(SetupViewBase):
         email = cleaned_data['email']
         nationality = cleaned_data['nationality']
         birthday = cleaned_data['birthday']
-        member_type = cleaned_data['memberType']
+        member_type = cleaned_data['memberCategory']
         member_tier = cleaned_data['memberTier']
 
         # generate a username

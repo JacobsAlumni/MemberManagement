@@ -1,11 +1,10 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-
-import Multiselect from 'vue-multiselect'
+import Multiselect from 'vue-multiselect';
 
 import getCookie from "../../base/utils/cookie";
 import VueValidatable from "../../base/utils/validate";
-import {MemberType, MemberTypeDescriptions, MemberTier, MemberTierPrices, getAllowedTiers, MemberTierShortTitles, MemberTierDescriptions} from "../../base/utils/membership";
+import {memberCategory, memberCategoryDescriptions, MemberTier, getAllowedTiers, MemberTierShortTitles, MemberTierDescriptions, MemberTierPrices} from "../../base/utils/membership";
 
 // autocomplete on the most common providers
 const emailProviders = [
@@ -37,7 +36,7 @@ const birthDayDefaultString = `${birthDayDefault.getFullYear()}-${(birthDayDefau
 })
 export default class SignupForm extends VueValidatable {
   declare $refs: {
-    memberType: HTMLInputElement;
+    memberCategory: HTMLInputElement;
     registerForm: HTMLFormElement;
   };
 
@@ -45,7 +44,7 @@ export default class SignupForm extends VueValidatable {
   get formInstance() {
     return this.$refs.registerForm;
   }
-  readonly formKeys = ['givenName', 'middleName', 'familyName', 'birthday', 'email', 'memberType', 'memberTier', 'nationality', 'tos'];
+  readonly formKeys = ['givenName', 'middleName', 'familyName', 'birthday', 'email', 'memberCategory', 'memberTier', 'nationality', 'tos'];
   readonly validateEndpoint = "/portal/register/validate/";
   readonly submitEndpoint = null;
 
@@ -93,7 +92,7 @@ export default class SignupForm extends VueValidatable {
     this.showDetailedName = this.middleName !== "";
 
     if (!this.showDetailedName) {
-      this.$refs.memberType.focus();
+      this.$refs.memberCategory.focus();
     }
 
     // and run validation
@@ -130,21 +129,21 @@ export default class SignupForm extends VueValidatable {
   // birthday
   birthday = this.initialValidationResult.values["birthday"] as string|| birthDayDefaultString;
 
-  // membertype
-  memberType: MemberType = this.initialValidationResult.values["memberType"] as MemberType || MemberType.Alumnus;
-  showMembershipType = this.memberType !== MemberType.Alumnus;
+  // memberCategory
+  memberCategory: memberCategory = this.initialValidationResult.values["memberCategory"] as memberCategory || memberCategory.Alumnus;
+  showMembershipType = this.memberCategory !== memberCategory.Alumnus;
   showMembership() {
     this.showMembershipType = true;
 
-      const memberType = this.$refs.memberType;
+      const memberCategory = this.$refs.memberCategory;
 
-      setTimeout(() => memberType.focus(), 200);
+      setTimeout(() => memberCategory.focus(), 200);
       setTimeout(
-        () => memberType.classList.add("uk-form-danger"),
+        () => memberCategory.classList.add("uk-form-danger"),
         200
       );
       setTimeout(
-        () => memberType.classList.remove("uk-form-danger"),
+        () => memberCategory.classList.remove("uk-form-danger"),
         2000
       );
   }
@@ -152,7 +151,7 @@ export default class SignupForm extends VueValidatable {
   // member tier
   memberTier: MemberTier = this.initialValidationResult.values["memberTier"] as MemberTier || "";
     get tierChoices(): Record<string, string> {
-    return getAllowedTiers(this.memberType).reduce<Record<string, string>>((acc, v) => {
+    return getAllowedTiers(this.memberCategory).reduce<Record<string, string>>((acc, v) => {
       acc[v] = MemberTierShortTitles[v];
       return acc;
     }, {});
@@ -177,7 +176,7 @@ export default class SignupForm extends VueValidatable {
   // tos, these always need to be re-checked
   tos = false;
   get signUpText(): string {
-    return MemberTypeDescriptions[this.memberType];
+    return memberCategoryDescriptions[this.memberCategory];
   }
 
   // TODO: This is currently not supported
@@ -286,15 +285,15 @@ div
     // membership type
     .uk-form-row(v-if='showMembershipType')
       #div_id_type
-        label.uk-form-label(for='id_membertype') I am *
+        label.uk-form-label(for='id_memberCategory') I am *
         .uk-form-controls.uk-form-controls-text
-          select#id_membertype.uk-select(name='memberType' ref='memberType' v-model='memberType')
+          select#id_memberCategory.uk-select(name='memberCategory' ref='memberCategory' v-model='memberCategory')
             option(value='re') Alum / Alumna
             option(value='fa') Faculty or Staff
             option(value='fr') Friend of the association
-        .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberType")
+        .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberCategory")
           p {{ error.message }}
-    input#id_membertype(v-else type='hidden' name='memberType' :value='memberType')
+    input#id_memberCategory(v-else type='hidden' name='memberCategory' :value='memberCategory')
     
     // membership tier
     
