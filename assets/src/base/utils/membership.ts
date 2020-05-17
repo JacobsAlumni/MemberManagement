@@ -1,11 +1,11 @@
 export enum memberCategory {
-    Alumnus = 're',
+    Alumn = 're',
     Friend_Of_The_Association = 'fr',
     Faculty_Or_Staff = 'fs',
 }
 
 export function getAllowedTiers(type?: memberCategory): MemberTier[] {
-    if (type !== undefined && type !== memberCategory.Alumnus) {
+    if (type !== undefined && type !== memberCategory.Alumn) {
         return [MemberTier.Contributor, MemberTier.Parton];
     }
 
@@ -13,7 +13,7 @@ export function getAllowedTiers(type?: memberCategory): MemberTier[] {
 }
 
 export const memberCategoryDescriptions: Record<memberCategory, string> = {
-    re: 'Alumnus',
+    re: 'Alumn',
     fr: 'Friend Of The Association',
     fs: 'Faculty Or Staff',
 };
