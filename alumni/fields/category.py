@@ -11,8 +11,8 @@ class AlumniCategoryField(CustomTextChoiceField):
     FRIEND = 'fr'
 
     CHOICES = (
-        (REGULAR, 'Alumni (Former Student)'),
-        (FACULTY, 'Faculty or Staff'),
+        (REGULAR, 'Alum (Former Student)'),
+        (FACULTY, 'Faculty Or Staff'),
         (FRIEND, 'Friend Of The Association')
     )
 

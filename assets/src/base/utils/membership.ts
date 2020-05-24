@@ -1,7 +1,7 @@
 export enum memberCategory {
     Alumn = 're',
+    Faculty_Or_Staff = 'fa',
     Friend_Of_The_Association = 'fr',
-    Faculty_Or_Staff = 'fs',
 }
 
 export function getAllowedTiers(type?: memberCategory): MemberTier[] {
@@ -14,8 +14,8 @@ export function getAllowedTiers(type?: memberCategory): MemberTier[] {
 
 export const memberCategoryDescriptions: Record<memberCategory, string> = {
     re: 'Alumn',
+    fa: 'Faculty Or Staff',
     fr: 'Friend Of The Association',
-    fs: 'Faculty Or Staff',
 };
 
 export enum MemberTier {

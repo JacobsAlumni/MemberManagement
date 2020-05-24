@@ -8,7 +8,7 @@ from django.utils import formats
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, TemplateView
 
-from alumni.fields import TierField
+from alumni.fields import TierField, AlumniCategoryField
 from payments import stripewrapper
 from registry.decorators import require_setup_completed
 from registry.views.setup import SetupComponentView
@@ -147,8 +147,15 @@ class SubscribeView(SetupComponentView):
     def form_valid(self, form: CancellablePaymentMethodForm) -> Optional[SubscriptionInformation]:
         """ Form has been validated """
 
-        # Attach the payment source to the customer
+        # if the membership is the starter
         membership = self.request.user.alumni.membership
+        if membership.member.category != AlumniCategoryField.REGULAR and form.user_go_to_starter:
+            form.add_error(
+                None, 'Non-regular Alumni are not allowed to use the free starter tier. ')
+            return None
+
+
+        # Attach the payment source to the customer
         _, err = form.attach_to_customer(membership.customer)
 
         # if the error is not, return

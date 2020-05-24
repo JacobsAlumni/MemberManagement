@@ -145,6 +145,9 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         return self._switch_paid_tier(desired_tier)
 
     def _downgrade_to_starter(self) -> (Optional[SubscriptionInformation], Optional[str]):
+        if self.member.category != AlumniCategoryField.REGULAR:
+            return None, 'Non-regular Alumni are not allowed to downgrade to the free tier. '
+
         # cancel the active subscription
         sub = self.member.subscription
         if sub is not None:
@@ -212,7 +215,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
             return True
 
         # other types only can't be starter
-        return typ != TierField.STARTER
+        return tier != TierField.STARTER
 
 
 @Alumni.register_component(7)

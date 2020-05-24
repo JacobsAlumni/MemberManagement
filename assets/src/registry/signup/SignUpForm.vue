@@ -261,20 +261,20 @@ div
               Multiselect(v-model='nationality' :multiple="true" label="label" track-by="id" :options="mapNationalities(initialValidationResult.choices.nationality.map(r => r[0]))")
               .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.nationality")
                 p {{ error.message }}
-    input(type='hidden' name='nationality' v-for="val in nationality" v-key="val.id" :value="val.id")
+    input(type='hidden' name='nationality' v-for="val in nationality" :value="val.id")
 
     // membership type
-    .uk-form-row(v-if='showMembershipType')
+    .uk-form-row(v-show='showMembershipType')
       #div_id_type
         label.uk-form-label(for='id_memberCategory') I am *
         .uk-form-controls.uk-form-controls-text
           select#id_memberCategory.uk-select(name='memberCategory' ref='memberCategory' v-model='memberCategory')
-            option(value='re') Alum / Alumna
-            option(value='fa') Faculty or Staff
-            option(value='fr') Friend of the association
-        .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberCategory")
+            option(value='re') Alum
+            option(value='fa') Faculty Or Staff
+            option(value='fr') Friend Of The Association
+        
+        .uk-alert-danger.uk-alert(v-for="error in validateResult.errors.memberCategory" )
           p {{ error.message }}
-    input#id_memberCategory(v-else type='hidden' name='memberCategory' :value='memberCategory')
     
     // membership tier
     .uk-form-row
