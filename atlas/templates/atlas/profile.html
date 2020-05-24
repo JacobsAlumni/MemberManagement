@@ -35,7 +35,7 @@
         </span>
     {% endif %}
 
-    <span class="uk-label">{{ alumni |get_choice_field:"category"|safe }}
+    <span class="uk-label">{{ alumni |get_choice_field:"category" }}
 {% endblock %}
 
 {% block content %}
@@ -53,10 +53,10 @@
             {% endif %}
 
             {% if alumni.jacobs.degree %}
-                {{ alumni.jacobs|get_choice_field:"degree"|safe }}, 
+                {{ alumni.jacobs|get_choice_field:"degree" }}, 
             {% endif %}
 
-            {{ alumni.jacobs|get_choice_field:"graduation"|safe }}
+            {{ alumni.jacobs|get_choice_field:"graduation" }}
 
             {% if alumni.atlas.birthdayVisible %}
                 <br />Birthday: {{ alumni.birthday|date:"dS F" }}
@@ -130,7 +130,7 @@
                     {% if alumni.skills.areasOfInterest %}
                         <tr>
                             <td>Areas of Interest</td>
-                            <td>{{ alumni.skills.areasOfInterest|safe }}</td>
+                            <td>{{ alumni.skills.areasOfInterest }}</td>
                         </tr>
                     {% endif %}
                 </tbody>
@@ -145,7 +145,7 @@
             lives in <i>{{alumni.address.city}}, {{alumni.address.country.name}}</i>
             {% if alumni.jacobs.college %}
                 <br />
-                lived in <span class="uk-label" id='college' data-college="{{ alumni.jacobs.college }}">{{ alumni.jacobs|get_choice_field:"college"|safe }}</span>
+                lived in <span class="uk-label" id='college' data-college="{{ alumni.jacobs.college }}">{{ alumni.jacobs|get_choice_field:"college" }}</span>
             {% endif %}
         </p>
     </div>
