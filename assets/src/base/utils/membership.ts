@@ -44,6 +44,7 @@ export const MemberTierPrices: Record<MemberTier, string> = {
 export const MemberTierDescriptions: Record<MemberTier, string> = {
     st: `
         We want all Alumni to be able to connect via the Association and won't exclude anyone based on their financial situation or willingness to contribute.
+        For this reason we are offering the free starter tier with the same benefits as the Contributor tier.  
         After the first 2 years (and then once a year after that), we'll check with you if you want to stay in the Starter tier or if you feel comfortable upgrading to one of our paid tiers.
         If you don't, no problem, you can decide to stay in the Starter tier with no disadvantages.
     `,
