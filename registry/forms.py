@@ -106,7 +106,7 @@ class AlumniForm(RegistrationMixin, forms.ModelForm):
     class Meta:
         model = Alumni
         fields = ['givenName', 'middleName', 'familyName', 'email', 'sex',
-                  'birthday', 'nationality', 'category']
+                  'birthday', 'nationality']
         widgets = {
             'birthday': DatePickerInput()
         }

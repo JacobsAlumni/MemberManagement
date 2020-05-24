@@ -48,7 +48,6 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
         }, select_dropdowns={
             'id_sex': 'Male',
             'id_nationality': ('GM',),
-            'id_category': (AlumniCategoryField.REGULAR,)
         }, script_value={
             'id_birthday': '1949-10-08',
         })
