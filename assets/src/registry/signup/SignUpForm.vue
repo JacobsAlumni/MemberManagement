@@ -130,8 +130,8 @@ export default class SignupForm extends VueValidatable {
   birthday = this.initialValidationResult.values["birthday"] as string|| birthDayDefaultString;
 
   // memberCategory
-  memberCategory: memberCategory = this.initialValidationResult.values["memberCategory"] as memberCategory || memberCategory.Alumn;
-  showMembershipType = this.memberCategory !== memberCategory.Alumn;
+  memberCategory: memberCategory = this.initialValidationResult.values["memberCategory"] as memberCategory || memberCategory.Alum;
+  showMembershipType = this.memberCategory !== memberCategory.Alum;
   showMembership() {
     this.showMembershipType = true;
 
@@ -309,7 +309,7 @@ div
             p {{ error.message }}
 
     // submit buttons
-    input#input_id_other_type.uk-button.uk-width-1-1.uk-button-default(class='uk-width-1-2@m' value='I Am Not Alumn' @click='showMembership' v-show='!showMembershipType')
+    input#input_id_other_type.uk-button.uk-width-1-1.uk-button-default(class='uk-width-1-2@m' value='I Am Not Alum' @click='showMembership' v-show='!showMembershipType')
     input#input_id_submit.uk-button.uk-button-primary(@click.prevent="submitForm" :class="{'uk-width-1-1': showMembershipType, 'uk-width-1-1 uk-width-1-2@m': !showMembershipType}" type='submit' :value="'Sign Up As ' + signUpText")
 
 </template>
