@@ -42,7 +42,7 @@
 
                 <tr>
                     <td>Nationality</td>
-                    <td>{{ user.alumni |get_choice_field:"nationality"|join:"\n"|safe }}</td>
+                    <td>{{ user.alumni |get_choice_field:"nationality"|join:"<br />" }}</td>
                 </tr>
 
                 <tr>
