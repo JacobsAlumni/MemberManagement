@@ -64,7 +64,8 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         self.find_element('*[name=cardnumber]').send_keys(cardnumber)
         self.find_element('*[name=exp-date]').send_keys(exp_date)
         self.find_element('*[name=cvc]').send_keys(cvc)
-        self.find_element('*[name=postal]').send_keys(postal)
+        if self._element_exists('*[name=postal]'):
+            self.find_element('*[name=postal]').send_keys(postal)
         self.selenium.switch_to.default_content()
 
         # submit the form and wait for the next page to load

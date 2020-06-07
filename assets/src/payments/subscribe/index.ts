@@ -4,6 +4,8 @@ import "./index.css";
 let stripe: stripe.Stripe;
 let cardReady = false;
 let ibanReady = false;
+let scriptReady = false;
+let readyStateCalled = false;
 let card: stripe.elements.Element;
 let iban: stripe.elements.Element;
 
@@ -24,27 +26,31 @@ const goToStarterElement = document.getElementById('id_go_to_starter') as HTMLIn
  * Creates a token from a stripe element
  * @param data 
  */
-function create_token(element: stripe.elements.Element): Promise<{token?: {id: string}, error?: undefined} | {token?: undefined, error: stripe.Error}> {
+async function create_token(element: stripe.elements.Element): Promise<{token?: {id: string}, error?: undefined} | {token?: undefined, error: stripe.Error}> {
     if (!window.stripe_publishable_key)
-        return Promise.resolve({ token: { id: 'fake-token-id' } });
+        return { token: { id: 'fake-token-id' } };
     
-    return stripe.createToken(element).then(x => {
-        if (x.error) return {'error': x.error};
-        return {token: {id: x.token!.id}};
-    });
+    // wait for stripe to create a token
+    const {error, token} = await stripe.createToken(element);
+    if(error) return {error};
+
+    // and return a token
+    return {token: {id: token!.id}};
 }
 
 /**
  * Creates a source from a stripe element
  */
-function create_source(element: stripe.elements.Element, data: any): Promise<{source: {id: string}, error?: undefined} | {source?: undefined,error: stripe.Error}> {
+async function create_source(element: stripe.elements.Element, data: any): Promise<{source: {id: string}, error?: undefined} | {source?: undefined,error: stripe.Error}> {
     if (!window.stripe_publishable_key)
-        return Promise.resolve({ source: { id: 'fake-source-id' }});
+        return { source: { id: 'fake-source-id' }};
     
-    return stripe.createSource(element, data).then(x => {
-        if (x.error) return {'error': x.error};
-        return {source: {id: x.source!.id}};
-    });
+    // wait for stripe to create a source
+    const {error, source} = await stripe.createSource(element, data);
+    if(error) return {error};
+
+    // and return the source
+    return {source: {id: source!.id}};
 }
 
 // create an error elemenet
@@ -61,14 +67,22 @@ function set_error(message?: string){
 }
 
 
-function updateReadyState(mode: 'card' | 'iban') {
+function updateReadyState(mode: 'card' | 'iban' | 'script') {
     if (mode === 'card') cardReady = true;
     if (mode === 'iban') ibanReady = true;
-    if (cardReady && ibanReady) {
-        presubmitButton.removeAttribute('disabled');
-        if (window.allow_go_to_starter && starterButton) {
-            starterButton.removeAttribute('disabled');
-        }
+    if (mode === 'script') scriptReady = true;
+
+    // if something isn't ready, return
+    if (!(cardReady && ibanReady && scriptReady)) return;
+
+    // ensure that this function is only called once
+    if (readyStateCalled) return;
+    readyStateCalled = true;
+
+    // setup handlers
+    presubmitButton.removeAttribute('disabled');
+    if (window.allow_go_to_starter && starterButton) {
+        starterButton.removeAttribute('disabled');
     }
 }
 
@@ -104,34 +118,26 @@ function handleFormSubmit(event: Event) {
 }
 
 // handle submitting a card
-function submitCard() {
-    create_token(card).then(function(result) {
-        if (result.error) {
-            set_error(result.error.message);
-            return;
-        }
-        
-        submitForm(result.token!.id, undefined, false);
-    });
+async function submitCard() {
+    const {error, token} = await create_token(card);
+    if (error) return set_error(error.message);
+    
+    submitForm(token!.id, undefined, false);
 };
     
 // handle submitting a sepa token
-function submitSepa() {
-    create_source(iban, {
+async function submitSepa() {
+    const {error, source} = await create_source(iban, {
         type: 'sepa_debit',
         currency: 'eur',
         owner: {
             name: nameElement.value,
         },
         mandate: {},
-    }).then(function(result) {
-        if (result.error) {
-            set_error(result.error.message);
-            return;
-        }
+    });
 
-        submitForm(undefined, result.source.id, false);
-    })
+    if (error) return set_error(error.message);
+    submitForm(undefined, source!.id, false);
 };
 
 function submitForm(card_token?: string, source_id?: string, go_to_starter?: boolean) {
@@ -211,4 +217,6 @@ function submitForm(card_token?: string, source_id?: string, go_to_starter?: boo
             submitForm(undefined, undefined, true);
         });
     }
+
+    updateReadyState('script');
 })();
