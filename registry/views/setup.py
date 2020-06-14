@@ -27,10 +27,11 @@ from ..utils import generate_username
 from .api import FormValidationView
 
 if TYPE_CHECKING:
-    from typing import Any, Optional, Dict
+    from typing import Any, Optional, Dict, Union
     from django.http import HttpResponse
     from django.forms import Form
     from django.db.models import Model
+    from datetime import datetime
 
 
 @method_decorator(login_required, name='dispatch')
@@ -131,6 +132,58 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         return self.dispatch_form(form)
 
 
+def make_user(given_name: str, middle_name: str, family_name: str, email: str, nationality: Union[str, List[str]], birthday: datetime, member_type: str, member_tier: str) -> User:
+    """ This function creates an returns a new alumni user. All exceptions should be caught by the parent """
+
+    # first generate a new username
+    username = generate_username(
+        given_name, middle_name, family_name,
+    )
+
+    with transaction.atomic():
+        # create a user, may fail because of race conditions
+        # but that failure should be caught by the caller
+        user = User.objects.create_user(username=username)
+
+        # create an alumni
+        # may fail, as the email is duplicate-free
+        alumni = Alumni.objects.create(
+            profile=user,
+            givenName=given_name,
+            middleName=middle_name,
+            familyName=family_name,
+            email=email,
+            sex=GenderField.UNSPECIFIED,
+            birthday=birthday,
+            nationality=nationality,  # TODO: Need to add this field
+            category=member_type,
+        )
+
+        # create all the objects related to the alumni
+        # assumed to never fail
+        approval = Approval.objects.create(
+            member=alumni, approval=False, gsuite=None)
+        address = Address.objects.create(member=alumni)
+        socials = SocialMedia.objects.create(member=alumni)
+        jacobs = JacobsData.objects.create(member=alumni)
+        job = JobInformation.objects.create(member=alumni)
+        skills = Skills.objects.create(member=alumni)
+        atlas = AtlasSettings.objects.create(member=alumni)
+
+        # if needed, create a starter subscription
+        if member_tier == TierField.STARTER:
+            SubscriptionInformation.create_starter_subscription(alumni)
+
+        # which may fail, and if it does should add an error
+        stripe_customer, err = stripewrapper.create_customer(alumni)
+        if err is not None:
+            raise CustomerCreationFailed()
+        membership = MembershipInformation.objects.create(
+            member=alumni, tier=member_tier, customer=stripe_customer)
+
+    return user
+
+
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class RegisterView(SetupViewBase):
     setup_name = 'Register'
@@ -170,55 +223,12 @@ class RegisterView(SetupViewBase):
         member_type = cleaned_data['memberCategory']
         member_tier = cleaned_data['memberTier']
 
-        # generate a username
-        username = generate_username(
-            given_name, middle_name, family_name,
-        )
-
-        # create a
+        # create a user
         user = None
 
         try:
-            with transaction.atomic():
-                # create a user, may fail because of race conditions
-                # but that failure isn't important
-                user = User.objects.create_user(username=username)
-
-                # create an alumni
-                # may fail, as the email is duplicate-free
-                alumni = Alumni.objects.create(
-                    profile=user,
-                    givenName=given_name,
-                    middleName=middle_name,
-                    familyName=family_name,
-                    email=email,
-                    sex=GenderField.UNSPECIFIED,
-                    birthday=birthday,
-                    nationality=nationality,  # TODO: Need to add this field
-                    category=member_type,
-                )
-
-                # create all the objects related to the alumni
-                # assumed to never fail
-                approval = Approval.objects.create(
-                    member=alumni, approval=False, gsuite=None)
-                address = Address.objects.create(member=alumni)
-                socials = SocialMedia.objects.create(member=alumni)
-                jacobs = JacobsData.objects.create(member=alumni)
-                job = JobInformation.objects.create(member=alumni)
-                skills = Skills.objects.create(member=alumni)
-                atlas = AtlasSettings.objects.create(member=alumni)
-
-                # if needed, create a starter subscription
-                if member_tier == TierField.STARTER:
-                    SubscriptionInformation.create_starter_subscription(alumni)
-
-                # which may fail, and if it does should add an error
-                stripe_customer, err = stripewrapper.create_customer(alumni)
-                if err is not None:
-                    raise CustomerCreationFailed()
-                membership = MembershipInformation.objects.create(
-                    member=alumni, tier=member_tier, customer=stripe_customer)
+            user = make_user(given_name, middle_name, family_name,
+                             email, nationality, birthday, member_type, member_tier)
 
         # FIXME: This integrity error is currently assumed to be an already existing email
         except IntegrityError as ie:
