@@ -2,7 +2,7 @@ language: python
 os: linux
 
 jobs:
-  include:
+  allow_failures:
     # chrome
     - env:
       - SELENIUM_WEBDRIVER=default
@@ -16,7 +16,7 @@ jobs:
         - unzip chromedriver_linux64.zip -d chromedriver
         - chmod +x chromedriver/chromedriver
         - export PATH=$PATH:$PWD/chromedriver
-
+  include:
     # firefox
     - env:
         - SELENIUM_WEBDRIVER=firefox
