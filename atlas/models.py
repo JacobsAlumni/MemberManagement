@@ -47,17 +47,17 @@ class GeoLocation(models.Model):
         unique_together = (('country', 'zip'))
 
     @classmethod
-    def getLocInstance(cls, country: str, zip: str) -> Optional[GeoLocation]:
+    def getLocInstance(cls, country: Optional[str], zip: Optional[str]) -> Optional[GeoLocation]:
         try:
             return cls.objects.get(
                 country=country, zip=cls.normalize_zip(zip, country.code))
         except cls.DoesNotExist:
-            #warnings.warn('No location for combination: {} {}'.format(
+            # warnings.warn('No location for combination: {} {}'.format(
             #    country.code, cls.normalize_zip(zip, country.code)))
             return None
 
     @classmethod
-    def getLoc(cls, country: str, zip: str) -> Union[Tuple[float, float], Tuple[None, None]]:
+    def getLoc(cls, country: Optional[str], zip: Optional[str]) -> Union[Tuple[float, float], Tuple[None, None]]:
         instance = cls.getLocInstance(country, zip)
         if instance is None:
             return None, None
@@ -70,7 +70,12 @@ class GeoLocation(models.Model):
             cls.objects.bulk_create(data)
 
     @classmethod
-    def normalize_zip(self, zip: str, country: str) -> str:
+    def normalize_zip(self, zip: Optional[str], country: Optional[str]) -> Optional[str]:
+
+        # when no zip is given we can't normalize anything
+        if zip is None:
+            return None
+
         lowerzip = zip.lower()
         norm = re.sub(r'[^0-9a-z]', '', lowerzip)
 
