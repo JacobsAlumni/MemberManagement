@@ -67,6 +67,7 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_upgrade_card_ok(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
 
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
@@ -101,6 +102,8 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_upgrade_card_error_update_method(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_card_details()
@@ -122,6 +125,8 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, Exception('Debug Error')))
     def test_upgrade_card_error_create_subscription(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_card_details()
@@ -144,6 +149,8 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_upgrade_sepa(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_sepa_details()
@@ -177,6 +184,8 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_upgrade_sepa_error_update_method(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_sepa_details()
@@ -198,6 +207,8 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, Exception('Debug Error')))
     def test_upgrade_sepa_error_create_subscription(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # start the upgrade process and submit card details
         self._assert_select_redirect_payment()
         self.submit_sepa_details()
@@ -220,6 +231,8 @@ class UpgradeTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, None))
     def test_cancel(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         self._assert_select_redirect_payment()
         self.submit_cancel()
 

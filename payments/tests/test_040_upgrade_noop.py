@@ -40,6 +40,8 @@ class UpgradeNoopTestBase(StripeFrontendTestMixin):
 
     @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
     def test_noop_ok(self) -> None:
+        self.mark_skippable()
+
         self.submit_form('update_membership', 'input_id_submit', select_dropdowns={
             "id_tier": TierField.get_description(self.start_tier)
         })

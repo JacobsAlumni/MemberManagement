@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+from unittest import SkipTest
+
 from selenium.webdriver.support.ui import Select
 from MemberManagement.tests.integration import IntegrationTestBase
 
@@ -8,10 +11,18 @@ if TYPE_CHECKING:
     from typing import Optional
 
 
+
+
 class StripeFrontendTestMixin(IntegrationTestBase):
     _payment_type_element = '#id_payment_type'
     _submit_button_element = '#button_id_presubmit'
     _starter_button_element = '#button_id_starter'
+
+    def mark_skippable(self) -> None:
+        """ Marks this test as to be skipped when stripe is not available """
+
+        if os.environ.get("SKIP_STRIPE_TESTS") == "1":
+            raise SkipTest("SKIP_STRIPE_TESTS")
 
     def assert_card_selectable(self) -> None:
         element = self.find_element(self.__class__._payment_type_element)

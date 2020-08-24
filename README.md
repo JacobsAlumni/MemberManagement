@@ -128,6 +128,14 @@ yarn build # ensure that static assets have been built
 SELENIUM_HEADLESS=0 pytest # to run headless
 ```
 
+When offline Stripe frontend tests might fail because they require a connection to Stripe Servers. 
+To work around this, you can set the `SKIP_STRIPE_TESTS` variable as follows:
+
+```bash
+yarn build
+SKIP_STRIPE_TESTS=1 pytest
+```
+
 Travis CI runs Chrome and Firefox tests in headless mode after every commit.  
 
 ## License

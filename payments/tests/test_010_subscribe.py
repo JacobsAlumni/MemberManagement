@@ -20,14 +20,17 @@ MOCKED_END = MOCKED_TIME + timedelta(days=2 * 365)
 
 class SignupPaymentsTestBase(StripeFrontendTestMixin):
     def test_card_ok(self) -> None:
+        self.mark_skippable()
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.assert_card_selectable()
 
     def test_iban_ok(self) -> None:
+        self.mark_skippable()
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.assert_iban_selectable()
 
     def test_cancel(self) -> None:
+        self.mark_skippable()
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.assert_cancel_selectable()
 
@@ -35,6 +38,8 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_signup_card_ok(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # fill out and submit card details
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.submit_card_details()
@@ -61,6 +66,8 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_signup_card_error_update_method(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # fill out and submit card details
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.submit_card_details()
@@ -83,6 +90,8 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, Exception('Debug Error')))
     def test_signup_card_error_create_subscription(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # fill out and submit card details
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.submit_card_details()
@@ -106,6 +115,8 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_signup_sepa(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.submit_sepa_details()
 
@@ -132,6 +143,8 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, Exception('Debug failure')))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=('sub_fake', None))
     def test_signup_sepa_error_update_method(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # fill out and submit sepa details
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.submit_sepa_details()
@@ -154,6 +167,8 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, Exception('Debug Error')))
     def test_signup_sepa_error_create_subscription(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         # fill out and submit card details
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.submit_sepa_details()
@@ -177,6 +192,8 @@ class SignupPaymentsTestBase(StripeFrontendTestMixin):
     @mock.patch('payments.stripewrapper.update_payment_method', return_value=(None, None))
     @mock.patch('payments.stripewrapper.create_subscription', return_value=(None, None))
     def test_signup_cancel(self, cmock: mock.Mock, umock: mock.Mock) -> None:
+        self.mark_skippable()
+
         self.load_live_url('setup_subscription', '#id_payment_type')
         self.submit_cancel()
 
