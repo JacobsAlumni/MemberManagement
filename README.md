@@ -1,6 +1,6 @@
 # Member Management Portal
 
-[![Build Status](https://travis-ci.com/JacobsAlumni/MemberManagement.svg?branch=master)](https://travis-ci.com/JacobsAlumni/MemberManagement)
+![Build Status](https://github.com/JacobsAlumni/MemberManagement/workflows/CI/badge.svg)
 
 The Django Application for managing Jacobs University Bremen Alumni Members. 
 

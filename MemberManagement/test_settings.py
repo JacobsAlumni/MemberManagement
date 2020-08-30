@@ -26,6 +26,7 @@ headless = os.environ.get("SELENIUM_HEADLESS", "1") == "1"
 
 SELENIUM_WEBDRIVERS = {
     'default': make_chrome_driver([], {}, headless=headless),
+    'chrome': make_chrome_driver([], {}, headless=headless),
     'firefox': make_firefox_driver([], {}, headless=headless),
     'safari': {
         'callable': webdriver.Safari,

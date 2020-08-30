@@ -1,0 +1,74 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+    integration:
+        name: Integration Tests (${{ matrix.browser }}, Python ${{ matrix.python }}, Node ${{ matrix.node }})
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                python: ["3.8"]
+                node: ["12"]
+                browser: ["chrome", "firefox"]
+
+        steps:
+        - uses: actions/checkout@v2
+
+        - name: Install Python ${{ matrix.python }}
+          uses: actions/setup-python@v1
+          with:
+            python-version: ${{ matrix.python }}
+        - name: Install Chrome Webdriver
+          if: ${{ matrix.browser == 'chrome' }}
+          run: |
+            pip install seleniumbase
+            sudo apt-get install -y google-chrome-stable
+            seleniumbase install chromedriver
+            pip uninstall -y seleniumbase
+        - name: Install Firefox Webdriver
+          if: ${{ matrix.browser == 'firefox' }}
+          run: |
+            pip install seleniumbase
+            sudo apt-get install -y firefox
+            seleniumbase install geckodriver
+            pip uninstall -y seleniumbase
+        - name: Run 'pip install'
+          run: |
+            pip install -r requirements.txt
+            pip install -r requirements-dev.txt
+
+        - name: Install Node ${{ matrix.node }}
+          uses: actions/setup-node@v1
+          with:
+            node-version: "12"
+        - name: Run 'yarn install'
+          run: yarn install
+
+        - name: Run 'yarn build'
+          run: yarn build
+        - name: Run 'pytest'
+          env:
+            SELENIUM_WEBDRIVER: ${{ matrix.browser }}
+            ENABLE_GEOCACHE_TEST: '1'
+          run: pytest
+    
+    smoke:
+        name: Docker Smoke Test
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v2
+        
+        - name: 'Build Docker Container'
+          run: docker build -t jacobsalumni/membermanagement .
+        
+        - name: 'Run Docker Container'
+          run: |
+            docker run --rm -d --name=smoke -e DJANGO_SECRET_KEY=smoke -p 8080:80 jacobsalumni/membermanagement
+            sleep 10
+        
+        - name: 'Check that the healthcheck API responds'
+          run: |
+            curl http://localhost:8080/healthcheck/
+            curl -L http://localhost:8080/healthcheck/static
+            docker stop smoke
