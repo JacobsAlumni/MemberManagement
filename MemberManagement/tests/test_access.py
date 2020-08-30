@@ -28,6 +28,7 @@ PORTAL_SETUP_URLS = [
     'setup_setup',
 ]
 SETUP_PROTECTED_URLS = PORTAL_SETUP_URLS + PORTAL_FIXED + [
+    'registry_vote',
     'setup_membership',
     'setup_subscription',
     'update_subscription',
@@ -42,6 +43,7 @@ class AccessTest(IntegrationTest, StaticLiveServerTestCase):
         self.assert_url_follow('root', 'root', 'Root is not redirected when logged out')
         self.assert_url_follow('root_register', 'register', 'root_register is redirected to register when logged out')
         self.assert_url_follow('register', 'register', 'register url is not redirected when logged out')
+        self.assert_url_follow('root_vote', 'login', 'vote url is redirected when not logged in', new_url_reverse_get_params={'next': 'registry_vote'})
 
         for url in SETUP_PROTECTED_URLS:
             if url in ['root', 'register', 'root_register']:

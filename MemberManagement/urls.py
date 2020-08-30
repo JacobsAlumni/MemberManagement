@@ -27,11 +27,13 @@ urlpatterns = [
     url(r'^healthcheck/static/$', HealthCheckStatic.as_view(), name='healthcheck'),
     url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
 
-    # Legacy urls
+    # Root redirects
     url(r'^register/$', RedirectView.as_view(pattern_name='register',
                                              permanent=False), name='root_register'),
     url(r'^privacy/$', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/',
                                             permanent=False), name='privacy'),
+    url(r'^vote/$', RedirectView.as_view(pattern_name='registry_vote',
+                                             permanent=False), name='root_vote'),
 
     # And recursively go into all the apps
     url(r'^portal/', include('registry.urls')),

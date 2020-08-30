@@ -1,0 +1,62 @@
+{% extends "base/base.html" %}
+
+{% block title %}Voting{% endblock %}
+{% block pagetitle %}Voting Page{% endblock %} 
+
+{% block content %}
+<p class="uk-article-lead">
+    Welcome to the Voting Page of the Portal. 
+    Here you can find a list of open votes. 
+    <br />
+    To vote, click on the appropriate link and fill out the form. 
+    We use tokens to ensure that the vote remains anonymous. 
+    You might be asked to enter your voting token to validate that you are eligible to vote. 
+    If you attempt to vote multiple times, only your last vote will be counted. 
+</p>
+
+{% include "portal/approval_warning.html" %}
+{% include "portal/announcements.html" %}
+
+<div class="uk-grid uk-child-width-1-2@m">
+    {% for obj in links %}
+    <div class="uk-card uk-card-default">
+        <div class="uk-card-header">
+            <h3 class="uk-card-title uk-margin-remove-bottom">{{obj.link.title}}</h3>
+        </div>
+        <div class="uk-card-body">
+            <p>
+                {{obj.link.description}}
+            </p>
+            <table class="uk-table uk-table-small">
+                <tbody>
+                    <tr>
+                        <td>Link</td>
+                        <td>
+                            <a href="{{obj.url}}" target="_blank" id="id_vote_link_{{forloop.counter}}">{{obj.url}}</a>
+                            {% if obj.is_personalized %}
+                            <div class="uk-alert-primary" uk-alert id="id_vote_link_{{forloop.counter}}_personalized">
+                                This link is personalized. 
+                                Do not share it with anyone unless you want them to vote in your name. 
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+    
+                    <tr>
+                        <td>Token</td>
+                        <td>
+                            <input class="uk-input" type="text" readonly value="{{obj.token}}" id="id_vote_token_{{forloop.counter}}" />
+                            <div class="uk-alert-primary" uk-alert>
+                                This token is personalized. 
+                                Do not share it with anyone unless you want them to vote in your name. 
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}

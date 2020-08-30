@@ -20,6 +20,7 @@ from django.views.generic import TemplateView
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .views.registry import PortalView
+from .views.vote import VoteLinkView, TokenExportView
 from .views import setup as setup_views
 from .views import edit as edit_views
 from .views import api as api_views
@@ -28,6 +29,8 @@ urlpatterns = [
 
     # the portal for the user
     url(r'^$', PortalView.as_view(), name='portal'),
+    url(r'^vote/$', VoteLinkView.as_view(), name='registry_vote'),
+    url(r'^vote/export/(?P<id>\d+)/$', TokenExportView.as_view(), name='registry_tokens'),
 
     # Registration
     url(r'^register/$', setup_views.RegisterView.as_view(), name='register'),
