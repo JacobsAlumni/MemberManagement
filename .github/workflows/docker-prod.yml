@@ -1,0 +1,18 @@
+name: Publish 'prod' Docker Image
+
+on:
+  push:
+    branches: [prod]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: jacobsalumni/membermanagement/portal
+          tags: prod
