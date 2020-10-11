@@ -70,7 +70,7 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         Select(element).select_by_visible_text('Credit or Debit Card')
 
         # select the card frame and fill out the fake data
-        frame = self.find_element('iframe[name=__privateStripeFrame5]')
+        frame = self.find_element('#card-element iframe')
         self.selenium.switch_to.frame(frame_reference=frame)
         self.find_element('*[name=cardnumber]').send_keys(cardnumber)
         self.find_element('*[name=exp-date]').send_keys(exp_date)
@@ -97,7 +97,7 @@ class StripeFrontendTestMixin(IntegrationTestBase):
             'Automatic Bank Transfer (SEPA)')
 
         # select the iban frame and fill out the fake data
-        frame = self.find_element('iframe[name=__privateStripeFrame6]')
+        frame = self.find_element('#iban-element iframe')
         self.selenium.switch_to.frame(frame_reference=frame)
         self.find_element('*[name=iban]').send_keys(iban)
         self.selenium.switch_to.default_content()
