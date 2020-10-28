@@ -25,7 +25,8 @@ urlpatterns = [
     url(r'^$', HomeView.as_view(), name='root'),
     url(r'^healthcheck/$', HealthCheckDynamic.as_view(), name='healthcheck'),
     url(r'^healthcheck/static/$', HealthCheckStatic.as_view(), name='healthcheck'),
-    url(r'^imprint/$', TemplateView.as_view(template_name="static/imprint.html"), name='imprint'),
+    url(r'^imprint/$', RedirectView.as_view(url='https://jacobs-alumni.de/imprint/',
+                                            permanent=False), name='imprint'),
 
     # Root redirects
     url(r'^register/$', RedirectView.as_view(pattern_name='register',
