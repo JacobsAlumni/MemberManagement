@@ -20,3 +20,5 @@ tqdm==4.43.0
 django-webpack4-loader==0.0.5
 django-extensions==2.2.9
 djangorestframework==3.11.0
+django-money==1.1
+django-pdf-render==0.1.2

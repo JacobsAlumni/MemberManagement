@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'custom_auth',
     'atlas',
     'payments',
+    'donation_receipts',
     'impersonate',
     'django_forms_uikit',
     'django_countries',
@@ -54,7 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'webpack_loader',
     'django_extensions',
-    'rest_framework'
+    'rest_framework',
+    'djmoney'
 ]
 
 MIDDLEWARE = [
@@ -206,3 +208,11 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_FROM = 'Alumni Association Portal Login <email_login@jacobs-alumni.de>'
+
+# djmoney settings
+CURRENCIES = ('EUR', )
+
+# Donation receipts settings
+PDF_RENDER_SERVER = 'http://localhost:3000'
+DONATION_RECEIPT_TEMPLATE = 'donation_receipts/receipt.html'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
