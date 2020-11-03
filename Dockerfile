@@ -51,6 +51,7 @@ ADD custom_auth/ /app/custom_auth
 ADD atlas/ /app/atlas
 ADD payments/ /app/payments
 ADD docker/ /app/docker
+ADD donation_receipts/ /app/donation_receipts
 
 # copy over the frontend assets
 COPY --from=frontend /app/webpack-stats.json /app/webpack-stats.json
