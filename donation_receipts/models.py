@@ -61,7 +61,6 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
 
         self.receipt_pdf.save('receipt-{}.pdf'.format(self.external_id), f)
 
-
     def save(self, *args, **kwargs):
         if not self.receipt_pdf:
             self._generate_pdf()
@@ -70,4 +69,3 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
 
     def __str__(self):
         return str(self.external_id)
-    

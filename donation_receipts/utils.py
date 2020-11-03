@@ -12,10 +12,11 @@ _NUMERAL_MAP = {
     '8': 'acht',
     '9': 'neun',
     ',': 'komma',
-    '.': 'komma' # This is the German way of writing out the number
+    '.': 'komma'  # This is the German way of writing out the number
 }
 
 _DELIMITER = ' - '
+
 
 def _convert_to_written(number):
     out = []
@@ -25,6 +26,5 @@ def _convert_to_written(number):
             out.append(_NUMERAL_MAP[char])
         except KeyError:
             pass
-
 
     return "X{}X".format(" - ".join(out))
