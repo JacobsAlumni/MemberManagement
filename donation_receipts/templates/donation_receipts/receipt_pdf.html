@@ -1,4 +1,4 @@
-{% load static %}
+{% load static receipt_extras %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -151,16 +151,16 @@
 
     <section class="border condensed">
         <p>Name und Anschrift des Zuwendenden:</p>
-        <p class="bold">{{ address|linebreaksbr }}</p>
+        <p class="bold">{{ receipt.sender_info|linebreaksbr }}</p>
     </section>
 
     <section class="three">
         <span class="xs">Betrag der Zuwendung - in Ziffern -</span>
         <span class="xs">- in Buchstaben -</span>
         <span class="xs">Tag der Zuwendung:</span>
-        <span class="border">{{ amount_numeric }}</span>
-        <span class="border">{{ amount_written }}</span>
-        <span class="border">{{ donation_date }}</span>
+        <span class="border">{{ receipt.amount.amount|numeral }} €</span>
+        <span class="border">{{ receipt.amount.amount|written }}</span>
+        <span class="border">{{ receipt.received_on|date:"d.m.Y" }}</span>
     </section>
 
     <section class="flex">
@@ -186,7 +186,7 @@
     </section>
 
     <section class="xl">
-        <p class="underline sig">Bremen, den {{ receipt_date }}<img src="{% static 'img/sig.png' %}"/></p>
+        <p class="underline sig">Bremen, den {{ receipt.issued_on|date:"d.m.Y" }}<img src="{% static 'img/sig.png' %}"/></p>
         <p class="xs">(Ort, Datum und Unterschrift des Zuwendungsempfängers)</p>
     </section>
 
@@ -205,7 +205,7 @@
     </section>
 
     <section class="s grey">
-        Belegnummer {{ receipt_id }}
+        {{ receipt.external_id }}
     </section>
 </body>
 </html>

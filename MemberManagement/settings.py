@@ -214,5 +214,5 @@ CURRENCIES = ('EUR', )
 
 # Donation receipts settings
 PDF_RENDER_SERVER = 'http://localhost:3000'
-DONATION_RECEIPT_TEMPLATE = 'donation_receipts/receipt.html'
+DONATION_RECEIPT_TEMPLATE = 'donation_receipts/receipt_pdf.html'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -43,6 +43,7 @@ urlpatterns = [
     url(r'^auth/', include('custom_auth.urls')),
     url(r'^atlas/', include('atlas.urls')),
     url(r'^payments/', include('payments.urls')),
+    url(r'^receipts/', include('donation_receipts.urls'))
 ]
 
 # make an http 500 handler in case things go wrong

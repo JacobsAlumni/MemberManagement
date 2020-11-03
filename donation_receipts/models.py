@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
 from django.core.files.base import ContentFile
+from django.contrib.auth import get_user_model
 
 from djmoney.models import fields
 from django.conf import settings
@@ -33,24 +34,20 @@ class DonationReceipt(models.Model):
 For bank accounts, use the SEPA transfer ID. For other payment sources, leave a short note.'))
 
     received_on = models.DateField(help_text=_('The day this donation was received.'))
+    received_from = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, blank=True, null=True)
     issued_on = models.DateField(help_text=_('The day this receipt was issued.'))
 
     # Decimal(14, 4) is GAAP standard
     amount = fields.MoneyField(max_digits=14, decimal_places=4, default_currency='EUR')
 
-    recipient_info = models.TextField(help_text=_('The full name and postal address of the donation recipient, on multiple lines of text.'))
+    sender_info = models.TextField(help_text=_('The full name and postal address of the donation sender, on multiple lines of text.'))
 
     receipt_pdf = models.FileField(editable=False)
 
     def _get_template_context(self):
         return {
             'giant_floating_text': 'MUSTER',
-            'address': self.recipient_info,
-            'amount_numeric': self.amount,
-            'amount_written': _convert_to_written(self.amount),
-            'donation_date': self.received_on,
-            'receipt_date': self.issued_on,
-            'receipt_id': self.external_id
+            'receipt': self,
         }
 
     def _generate_pdf(self):
