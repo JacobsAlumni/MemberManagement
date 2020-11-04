@@ -46,13 +46,14 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
 
     def _get_template_context(self):
         return {
-            'giant_floating_text': 'MUSTER',
             'receipt': self,
         }
 
     def _generate_pdf(self):
         context = self._get_template_context()
-        context.update({'giant_floating_text': 'MUSTER'})
+
+        if settings.DEBUG:
+            context.update({'giant_floating_text': 'MUSTER'})
 
         f = ContentFile(pdfrender.render_to_bytes(settings.DONATION_RECEIPT_TEMPLATE, context=context))
 
