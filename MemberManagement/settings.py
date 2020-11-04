@@ -82,6 +82,7 @@ TEMPLATES = [
             'context_processors': [
                 'MemberManagement.context_processors.google_analytics_id',
                 'MemberManagement.context_processors.js_testmode_flag',
+                'MemberManagement.context_processors.portal_version',
                 'registry.context_processors.devel_warning',
                 'payments.context_processors.stripe',
                 'atlas.context_processors.atlas_allowed',
@@ -206,3 +207,9 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_FROM = 'Alumni Association Portal Login <email_login@jacobs-alumni.de>'
+
+try:
+    with open(os.path.join(BASE_DIR, 'PORTAL_VERSION')) as f:
+        PORTAL_VERSION = f.read()
+except:
+    PORTAL_VERSION = ''

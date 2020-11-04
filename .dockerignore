@@ -13,3 +13,6 @@ assets/bundles/
 # Countries data
 allCountries.txt
 allCountries.zip
+
+# This file's generated during the build process
+PORTAL_VERSION
