@@ -84,6 +84,7 @@ TEMPLATES = [
             'context_processors': [
                 'MemberManagement.context_processors.google_analytics_id',
                 'MemberManagement.context_processors.js_testmode_flag',
+                'MemberManagement.context_processors.portal_version',
                 'registry.context_processors.devel_warning',
                 'payments.context_processors.stripe',
                 'atlas.context_processors.atlas_allowed',
@@ -216,3 +217,10 @@ CURRENCIES = ('EUR', )
 PDF_RENDER_SERVER = 'http://localhost:3000'
 DONATION_RECEIPT_TEMPLATE = 'donation_receipts/receipt_pdf.html'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Portal Version from file added during Docker build. Also present in dev env
+try:
+    with open(os.path.join(BASE_DIR, 'PORTAL_VERSION')) as f:
+        PORTAL_VERSION = f.read()
+except:
+    PORTAL_VERSION = ''
