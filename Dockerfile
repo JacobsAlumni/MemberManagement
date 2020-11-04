@@ -1,3 +1,9 @@
+FROM alpine/git:v2.26.2-amd64 as version
+
+ADD .git .git
+RUN git describe --always > /PORTAL_VERSION
+RUN echo "Saved version file containing '$(cat /PORTAL_VERSION)'"
+
 # image for building node dependencies
 FROM node:12-alpine as frontend
 
@@ -99,3 +105,5 @@ EXPOSE 80
 
 ENTRYPOINT ["/app/docker/entrypoint.sh"]
 CMD ["uwsgi", "--ini", "/app/docker/uwsgi.ini"]
+
+COPY --from=version /PORTAL_VERSION /app/PORTAL_VERSION
