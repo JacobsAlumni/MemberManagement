@@ -23,7 +23,7 @@ class ReceiptList(generic.ListView, mixins.LoginRequiredMixin):
     template_name = 'donation_receipts/list.html'
 
     def get_queryset(self):
-        return super().get_queryset().filter(received_from=self.request.user)
+        return super().get_queryset().filter(received_from=self.request.user, finalized=True)
 
 
 class ReceiptView(generic.DetailView, mixins.LoginRequiredMixin, mixins.UserPassesTestMixin):
@@ -34,4 +34,6 @@ class ReceiptView(generic.DetailView, mixins.LoginRequiredMixin, mixins.UserPass
     slug_url_kwarg = 'receipt_id'
 
     def test_func(self):
-        return self.get_object().received_from == self.request.user
+        obj = self.get_object()
+
+        return obj.finalized and obj.received_from == self.request.user

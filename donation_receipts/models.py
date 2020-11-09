@@ -37,6 +37,12 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
     received_from = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, blank=True, null=True)
     issued_on = models.DateField(help_text=_('The day this receipt was issued.'))
 
+    # Once finalized = True, all changes via Django admin will be blocked
+    finalized = models.BooleanField(default=False)
+
+    # Internal memo field - can stay empty
+    internal_notes = models.TextField(blank=True)
+
     # Decimal(14, 4) is GAAP standard
     amount = fields.MoneyField(max_digits=14, decimal_places=4, default_currency='EUR')
 
@@ -44,13 +50,8 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
 
     receipt_pdf = models.FileField(editable=False)
 
-    def _get_template_context(self):
-        return {
-            'receipt': self,
-        }
-
     def _generate_pdf(self):
-        context = self._get_template_context()
+        context = {'receipt': self}
 
         if settings.DEBUG:
             context.update({'giant_floating_text': 'MUSTER'})
@@ -60,7 +61,7 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
         self.receipt_pdf.save('receipt-{}.pdf'.format(self.external_id), f)
 
     def save(self, *args, **kwargs):
-        if not self.receipt_pdf:
+        if self.finalized and not self.receipt_pdf:
             self._generate_pdf()
 
         super().save(*args, **kwargs)
