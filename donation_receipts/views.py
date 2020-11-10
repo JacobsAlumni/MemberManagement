@@ -21,6 +21,7 @@ def download_receipt(request, receipt_id):
 class ReceiptList(generic.ListView, mixins.LoginRequiredMixin):
     model = DonationReceipt
     template_name = 'donation_receipts/list.html'
+    ordering = '-received_on'
 
     def get_queryset(self):
         return super().get_queryset().filter(received_from=self.request.user, finalized=True)

@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import signals
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
+from django.template import Context
 
 from djmoney.models import fields
 from django.conf import settings
@@ -34,11 +35,11 @@ class DonationReceipt(models.Model):
 For bank accounts, use the SEPA transfer ID. For other payment sources, leave a short note.'))
 
     received_on = models.DateField(help_text=_('The day this donation was received.'))
-    received_from = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, blank=True, null=True)
-    issued_on = models.DateField(help_text=_('The day this receipt was issued.'))
+    received_from = models.ForeignKey(get_user_model(), help_text=_('The user that this donation receipt should be sent to.'), on_delete=models.SET_NULL, blank=True, null=True)
+    issued_on = models.DateField(help_text=_('The day this receipt was issued.'), auto_now=True)
 
     # Once finalized = True, all changes via Django admin will be blocked
-    finalized = models.BooleanField(default=False)
+    finalized = models.BooleanField(help_text=_('Once finalized, the receipt details will no longer be editable.'), default=False)
 
     # Internal memo field - can stay empty
     internal_notes = models.TextField(blank=True)
@@ -51,7 +52,7 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
     receipt_pdf = models.FileField(editable=False)
 
     def _generate_pdf(self):
-        context = {'receipt': self}
+        context = {'receipt': self, 'portal_version': settings.PORTAL_VERSION}
 
         if settings.DEBUG:
             context.update({'giant_floating_text': 'MUSTER'})
@@ -61,10 +62,10 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
         self.receipt_pdf.save('receipt-{}.pdf'.format(self.external_id), f)
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
         if self.finalized and not self.receipt_pdf:
             self._generate_pdf()
-
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return str(self.external_id)
