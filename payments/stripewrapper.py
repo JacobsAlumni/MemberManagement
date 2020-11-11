@@ -4,7 +4,7 @@ from typing import TypeVar, Optional, Callable, List, Any, Dict
 
 import stripe as stripeapi
 from raven.contrib.django.raven_compat.models import client
-from datetime import datetime
+from datetime import datetime, time
 import time
 import pytz
 
@@ -244,3 +244,34 @@ def _get_stripe_customer_props(alumni_instance: Alumni) -> Dict[str, str]:
         'description': 'Alumni Customer for {0!r} ({1!r})'.format(alumni_instance.fullName, alumni_instance.profile.username),
         'email': alumni_instance.email,
     }
+
+def _pi_to_dict(pi_instance: stripeapi.PaymentIntent) -> Dict[str, str]:
+    """ Turns a stripe PaymentIntent instance into a dict for downstream consumption """
+    return {
+        'id': pi_instance.id,
+        'created': pi_instance.created,
+        'customer': pi_instance.customer,
+        'amount': pi_instance.amount,
+        'amount_capturable': pi_instance.amount_capturable,
+        'amount_received': pi_instance.amount_received,
+        'status': pi_instance.status,
+        'currency': pi_instance.currency
+    }
+
+
+# todo: make api upgrade safe
+@_as_safe_operation
+def map_payment_intents(stripe: stripeapi, fn: Callable[[Dict[str, str]], None], since: Optional[date] = None) -> int:
+    """ Calls a function on every PaymentIntent"""
+
+    created=None
+    if since:
+        created = {'gte': int(time.mktime(since.timetuple()))}
+
+    # iterate over all the paymentintents
+    pis = stripe.PaymentIntent.list(limit=100, created=created)
+    count = 0
+    for pi_instance in pis.auto_paging_iter():
+        fn(_pi_to_dict(pi_instance))
+        count += 1
+    return count
