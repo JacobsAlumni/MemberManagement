@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.views.generic.base import TemplateResponseMixin, View

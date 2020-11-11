@@ -10,7 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from bs4 import BeautifulSoup
-from base64 import decodestring
+from base64 import decodebytes
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -85,7 +85,7 @@ def _extract_images(html: str) -> (str, List[MIMEImage]):
 
 def _make_base64_image(image: str, cid: str) -> MIMEImage:
     """ Generates a single new image from a base64 string """
-    img = MIMEImage(decodestring(bytes(image, 'ascii')), 'png')
+    img = MIMEImage(decodebytes(bytes(image, 'ascii')), 'png')
     img.add_header('Content-Id', '<{}>'.format(cid))
     # David Hess recommended this edit
     img.add_header('Content-Disposition', 'inline',
