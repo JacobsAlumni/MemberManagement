@@ -275,3 +275,7 @@ def map_payment_intents(stripe: stripeapi, fn: Callable[[Dict[str, str]], None],
         fn(_pi_to_dict(pi_instance))
         count += 1
     return count
+
+@_as_safe_operation
+def make_stripe_event(stripe: stripeapi, payload: str, sig_header: str, endpoint_secret: str):
+    return stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
