@@ -167,6 +167,11 @@ class SearchView(ListView, LoginRequiredMixin):
 
     ordering = 'familyName'
 
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            approval__approval=True, atlas__included=True)
+    
+
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
 
         # Get the context from the parent
@@ -182,8 +187,7 @@ class SearchView(ListView, LoginRequiredMixin):
 
         # build a query
         # and also build a search
-        queryset = Alumni.objects.filter(
-            approval__approval=True, atlas__included=True)
+        queryset = self.get_queryset()
         q, err = search(queryset, query)
 
         # If we had an error, raise it
