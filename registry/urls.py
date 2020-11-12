@@ -15,7 +15,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.urls import path
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -28,30 +28,30 @@ from .views import api as api_views
 urlpatterns = [
 
     # the portal for the user
-    url(r'^$', PortalView.as_view(), name='portal'),
-    url(r'^vote/$', VoteLinkView.as_view(), name='registry_vote'),
-    url(r'^vote/export/(?P<id>\d+)/$', TokenExportView.as_view(), name='registry_tokens'),
+    path('', PortalView.as_view(), name='portal'),
+    path('vote/', VoteLinkView.as_view(), name='registry_vote'),
+    path('vote/export/<int:id>/', TokenExportView.as_view(), name='registry_tokens'),
 
     # Registration
-    url(r'^register/$', setup_views.RegisterView.as_view(), name='register'),
-    url(r'^register/validate/$', api_views.RegistrationValidationView.as_view(), name='register_validate'),
+    path('register/', setup_views.RegisterView.as_view(), name='register'),
+    path('register/validate/', api_views.RegistrationValidationView.as_view(), name='register_validate'),
 
     # Initial data Setup
-    url(r'^setup/$', setup_views.SetupView.as_view(), name='setup'),
-    url(r'^setup/address/$', setup_views.AddressSetup.as_view(), name='setup_address'),
-    url(r'^setup/social/$', setup_views.SocialSetup.as_view(), name='setup_social'),
-    url(r'^setup/jacobs/$', setup_views.JacobsSetup.as_view(), name='setup_jacobs'),
-    url(r'^setup/job/$', setup_views.JobSetup.as_view(), name='setup_job'),
-    url(r'^setup/skills/$', setup_views.SkillsSetup.as_view(), name='setup_skills'),
-    url(r'^setup/atlas/$', setup_views.AtlasSetup.as_view(), name='setup_atlas'),
-    url(r'^setup/completed/$', setup_views.CompletedSetup.as_view(), name='setup_setup'),
+    path('setup/', setup_views.SetupView.as_view(), name='setup'),
+    path('setup/address/', setup_views.AddressSetup.as_view(), name='setup_address'),
+    path('setup/social/', setup_views.SocialSetup.as_view(), name='setup_social'),
+    path('setup/jacobs/', setup_views.JacobsSetup.as_view(), name='setup_jacobs'),
+    path('setup/job/', setup_views.JobSetup.as_view(), name='setup_job'),
+    path('setup/skills/', setup_views.SkillsSetup.as_view(), name='setup_skills'),
+    path('setup/atlas/', setup_views.AtlasSetup.as_view(), name='setup_atlas'),
+    path('setup/completed/', setup_views.CompletedSetup.as_view(), name='setup_setup'),
 
     # Edit views
-    url(r'^edit/$', edit_views.edit, name='edit'),
-    url(r'^edit/address/$', edit_views.address, name='edit_address'),
-    url(r'^edit/social/$', edit_views.social, name='edit_social'),
-    url(r'^edit/jacobs/$', edit_views.jacobs, name='edit_jacobs'),
-    url(r'^edit/job/$', edit_views.job, name='edit_job'),
-    url(r'^edit/skills/$', edit_views.skills, name='edit_skills'),
-    url(r'^edit/atlas/$', edit_views.atlas, name='edit_atlas'),
+    path('edit/', edit_views.edit, name='edit'),
+    path('edit/address/', edit_views.address, name='edit_address'),
+    path('edit/social/', edit_views.social, name='edit_social'),
+    path('edit/jacobs/', edit_views.jacobs, name='edit_jacobs'),
+    path('edit/job/', edit_views.job, name='edit_job'),
+    path('edit/skills/', edit_views.skills, name='edit_skills'),
+    path('edit/atlas/', edit_views.atlas, name='edit_atlas'),
 ]
