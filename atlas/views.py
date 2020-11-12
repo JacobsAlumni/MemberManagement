@@ -170,7 +170,7 @@ class SearchView(ListView, LoginRequiredMixin):
     def get_queryset(self):
         return super().get_queryset().filter(
             approval__approval=True, atlas__included=True)
-    
+
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
 
