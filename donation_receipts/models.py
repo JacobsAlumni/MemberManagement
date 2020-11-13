@@ -7,11 +7,16 @@ from django.db.models import signals
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.template import Context
+from django.utils import timezone
 
 from djmoney.models import fields
 from django.conf import settings
 
+from djmoney.money import Money
+
 import pdfrender
+
+from registry.models import Alumni
 
 from .utils import _convert_to_written
 
@@ -69,3 +74,42 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
 
     def __str__(self):
         return str(self.external_id)
+
+def _get_donating_alum(stripe_customer_id):
+    return Alumni.objects.get(membership__customer=stripe_customer_id)
+
+@receiver(signals.post_save, sender='payments.PaymentIntent')
+def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
+    data = instance.data
+
+    if data['status'] != 'succeeded' or data['currency'] != 'eur':
+        return
+
+    try:
+        donation_sender = _get_donating_alum(data['customer'])
+    except Alumni.DoesNotExist:
+        return
+
+    if not donation_sender.address:
+        return
+
+    if not donation_sender.address.is_filled:
+        return
+
+    create_date = timezone.datetime.fromtimestamp(data['created'])
+    if not create_date:
+        return
+
+    amount = Money(amount=data['amount_received'] / 100, currency=data['currency'].upper())
+
+    sender_info = donation_sender.fullName + "\n" + donation_sender.address.envelope_format
+
+    receipt, created = DonationReceipt.objects.get_or_create(payment_stream=STRIPE, payment_reference=data['id'], \
+        defaults={'received_on': create_date, 'received_from': donation_sender.profile, 'sender_info': sender_info, \
+            'amount': amount})
+
+    if receipt.finalized:
+        return
+
+
+    receipt.save()

@@ -14,15 +14,13 @@ if TYPE_CHECKING:
 class Command(BaseCommand):
     help = 'Pulls all PaymentIntents from the Stripe API'
 
-    
+
     def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument('since', nargs='?', default=None, help='If specified, only pulls PaymentIntents created after that date.')
 
     @staticmethod
     def _sync_payment_intent(pi_instance):
         pi_db, created = PaymentIntent.objects.update_or_create(stripe_id=pi_instance['id'], defaults={'data': pi_instance})
-
-        print(pi_db, created)
 
     def handle(self, *args: Any, **kwargs: Any) -> None:
         since = dateparse.parse_date(kwargs['since'])
