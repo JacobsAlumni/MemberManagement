@@ -1,0 +1,20 @@
+{% extends "base/base.html" %}
+
+{% block title %}Non-Member{% endblock %}
+{% block pagetitle %}Thank you for your contributions!{% endblock %}
+
+{% block content %}
+<div class="uk-clearfix">
+    <p class="uk-text-lead">
+        We allow you to log in to this portal to retrieve your donation receipts.
+        However, you are not registered as a member of the association.
+        If you would like to make your contribution recurring, consider signing up!
+    </p>
+
+    <div class="uk-margin uk-button-group">
+        <a href="{% url 'register' %}" class="uk-button uk-button-primary">
+            Become a member
+        </a>
+    </div>
+</div>
+{% endblock %}

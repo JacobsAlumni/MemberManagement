@@ -24,7 +24,7 @@ class HomeView(UnauthorizedResponseMixin, RedirectResponseMixin, TemplateRespons
             if self.request.user.is_authenticated and self.request.user.alumni:
                 return self.redirect_response('portal', reverse=True)
         except ObjectDoesNotExist:
-            return self.unauthorized_response('Unauthorized (no alumni for user)', code=401)
+            return self.redirect_response('nonmember')
 
         return self.render_to_response({})
 

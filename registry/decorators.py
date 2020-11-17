@@ -33,7 +33,7 @@ def require_alumni(view: Callable[..., HttpResponse]) -> Callable[..., HttpRespo
     @login_required
     def wrapper(request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         if not user_has_alumni(request.user):
-            return HttpResponseForbidden('User missing Alumni. Contact Support if this is unexpected. ')
+            return redirect(reverse('nonmember'))
 
         return view(request, *args, **kwargs)
 

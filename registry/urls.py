@@ -35,6 +35,7 @@ urlpatterns = [
     # Registration
     path('register/', setup_views.RegisterView.as_view(), name='register'),
     path('register/validate/', api_views.RegistrationValidationView.as_view(), name='register_validate'),
+    path('register/nonmember/', TemplateView.as_view(template_name='setup/non_member_user.html'), name='nonmember'),
 
     # Initial data Setup
     path('setup/', setup_views.SetupView.as_view(), name='setup'),
