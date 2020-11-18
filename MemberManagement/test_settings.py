@@ -14,6 +14,7 @@ JS_TEST_MODE_FLAG = True
 # Disable stripe keys in testing mode
 STRIPE_SECRET_KEY = None
 STRIPE_PUBLISHABLE_KEY = None
+STRIPE_WEBHOOK_SECRET = 'useless-secret'
 
 # enforce minimization for the tests
 # so that we can test the production code
