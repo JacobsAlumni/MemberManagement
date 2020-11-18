@@ -15,16 +15,15 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
 from django.urls import path
 
 from .views import SignupView, SubscribeView, PaymentsView, UpdatePaymentView, UpdateTierView, stripe_webhook
 
 urlpatterns = [
-    url(r'^membership/$', SignupView.as_view(), name='setup_membership'),
-    url(r'^change/$', UpdateTierView.as_view(), name='update_membership'),
-    url(r'^subscribe/$', SubscribeView.as_view(), name='setup_subscription'),
-    url(r'^update/$', UpdatePaymentView.as_view(), name='update_subscription'),
+    path('membership/', SignupView.as_view(), name='setup_membership'),
+    path('change/', UpdateTierView.as_view(), name='update_membership'),
+    path('subscribe/', SubscribeView.as_view(), name='setup_subscription'),
+    path('update/', UpdatePaymentView.as_view(), name='update_subscription'),
     path('webhook/', stripe_webhook, name='webhook'),
-    url(r'^$', PaymentsView.as_view(), name='view_payments'),
+    path('', PaymentsView.as_view(), name='view_payments'),
 ]

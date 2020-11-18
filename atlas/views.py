@@ -7,7 +7,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from alumni.fields import (ClassField, CollegeField, CountryField, DegreeField,
                            IndustryField, JobField, MajorField)
@@ -128,8 +129,7 @@ def make_pagination_ui_ctx(page: Paginator) -> Dict[str, Any]:
     return context
 
 
-@method_decorator(login_required, name='dispatch')
-class HomeView(TemplateView):
+class HomeView(TemplateView, LoginRequiredMixin):
     template_name = 'atlas/index.html'
 
     def get_template_names(self) -> str:
@@ -148,31 +148,29 @@ class HomeView(TemplateView):
         return context
 
 
-@method_decorator(login_required, name='dispatch')
-class ProfileView(TemplateView):
+class ProfileView(DetailView, UserPassesTestMixin):
+    model = Alumni
     template_name = 'atlas/profile.html'
+    pk_url_kwarg = 'id'
 
-    def get_context_data(self, **kwargs) -> Dict[str, Any]:
-        context = super(ProfileView, self).get_context_data(**kwargs)
-        # Find the user with the given id and approved approval
-        context['alumni'] = get_object_or_404(
-            Alumni, profile__id=kwargs['id'], approval__approval=True, atlas__included=True)
-        coords = context['alumni'].address.coords
-        context['alumni_coords'] = '[{}, {}]'.format(coords[0], coords[1])
+    def get_queryset(self):
+        return super().get_queryset().filter(approval__approval=True, atlas__included=True)
 
-        return context
-
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        if not can_view_atlas(request.user):
-            raise Http404
-        return super(ProfileView, self).get(request, *args, **kwargs)
+    def test_func(self):
+        return can_view_atlas(self.request.user)
 
 
-@method_decorator(login_required, name='dispatch')
-class SearchView(ListView):
+class SearchView(ListView, LoginRequiredMixin):
     model = Alumni
     template_name = "atlas/search.html"
     paginate_by = 10
+
+    ordering = 'familyName'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            approval__approval=True, atlas__included=True)
+
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
 
@@ -189,8 +187,7 @@ class SearchView(ListView):
 
         # build a query
         # and also build a search
-        queryset = Alumni.objects.filter(
-            approval__approval=True, atlas__included=True)
+        queryset = self.get_queryset()
         q, err = search(queryset, query)
 
         # If we had an error, raise it
@@ -202,7 +199,7 @@ class SearchView(ListView):
             raise err
 
         paginator = Paginator(queryset.filter(
-            q).order_by('familyName'), self.paginate_by)
+            q), self.paginate_by)
 
         try:
             page = paginator.page(page)

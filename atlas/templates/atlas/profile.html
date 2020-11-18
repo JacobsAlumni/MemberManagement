@@ -156,7 +156,7 @@
 
 {% block extrascripts %}
     <script type="text/javascript">
-        window.alumni_profile_point = {{ alumni_coords }};
+        window.alumni_profile_point = [{{ alumni.address.coords.0 }}, {{ alumni.address.coords.1 }}];
     </script>
     {% render_entrypoint "atlas__profile" "js" %}
 {% endblock %}
