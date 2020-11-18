@@ -116,7 +116,7 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
 
     receipt, created = DonationReceipt.objects.get_or_create(payment_stream=STRIPE, payment_reference=data['id'], \
         defaults={'received_on': create_date, 'received_from': donation_sender.profile, 'sender_info': sender_info, \
-            'amount': amount})
+            'amount': amount, 'email_to': donation_sender.email, 'email_name': donation_sender.givenName})
 
     if receipt.finalized:
         return
