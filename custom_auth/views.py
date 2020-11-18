@@ -15,7 +15,8 @@ from .utils.auth import generate_login_token
 
 from alumni.models import Alumni as UserModel
 
-from . import forms, mailutils
+from MemberManagement import mailutils
+from . import forms
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

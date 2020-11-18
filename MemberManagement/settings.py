@@ -190,13 +190,6 @@ WEBPACK_LOADER = {
     }
 }
 
-# Import Local settings if available
-try:
-    from .local_settings import *
-except ImportError:
-    pass
-
-
 # Email settings
 # https://docs.djangoproject.com/en/1.11/topics/email/
 
@@ -224,3 +217,9 @@ try:
         PORTAL_VERSION = f.read()
 except:
     PORTAL_VERSION = ''
+
+# Import Local settings if available
+try:
+    from .local_settings import *
+except ImportError:
+    pass

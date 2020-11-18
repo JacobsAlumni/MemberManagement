@@ -237,3 +237,6 @@ dist
 
 # media files for dev
 media
+
+# emails for dev
+/emails**

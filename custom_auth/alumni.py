@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 from alumni import fields
 
-from .mailutils import send_email
+from MemberManagement.mailutils import send_email
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
