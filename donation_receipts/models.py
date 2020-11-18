@@ -1,4 +1,5 @@
 import uuid
+from os import path
 
 from django.db import models
 from django.dispatch import receiver
@@ -16,6 +17,7 @@ from djmoney.money import Money
 
 import pdfrender
 
+from MemberManagement import mailutils
 from registry.models import Alumni
 
 from .utils import _convert_to_written
@@ -40,11 +42,15 @@ class DonationReceipt(models.Model):
 For bank accounts, use the SEPA transfer ID. For other payment sources, leave a short note.'))
 
     received_on = models.DateField(help_text=_('The day this donation was received.'))
-    received_from = models.ForeignKey(get_user_model(), help_text=_('The user that this donation receipt should be sent to.'), on_delete=models.SET_NULL, blank=True, null=True)
+    received_from = models.ForeignKey(get_user_model(), help_text=_('The user that this donation receipt should be shown to in the portal.'), on_delete=models.SET_NULL, blank=True, null=True)
     issued_on = models.DateField(help_text=_('The day this receipt was issued.'), auto_now=True)
 
     # Once finalized = True, all changes via Django admin will be blocked
     finalized = models.BooleanField(help_text=_('Once finalized, the receipt details will no longer be editable.'), default=False)
+
+    email_name = models.CharField(help_text=_('How to adress the person donating, as in "Dear email name"'), max_length=64, default='')
+    email_to = models.EmailField(help_text=_('The email address to send the receipt to.'), default='')
+    email_sent = models.BooleanField(help_text=_('If this is ticked, an email has been sent.'), default=False)
 
     # Internal memo field - can stay empty
     internal_notes = models.TextField(blank=True)
@@ -74,6 +80,10 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
 
     def __str__(self):
         return str(self.external_id)
+
+    @property
+    def download_filename(self):
+        return 'JAA Donation Receipt {date}.pdf'.format(date=self.received_on)
 
 def _get_donating_alum(stripe_customer_id):
     return Alumni.objects.get(membership__customer=stripe_customer_id)
@@ -113,3 +123,20 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
 
 
     receipt.save()
+
+@receiver(signals.post_save, sender=DonationReceipt)
+def _maybe_email_donation_receipt(sender, instance, created, **kwargs):
+    receipt = instance
+    if receipt.receipt_pdf and not receipt.email_sent:
+        mail = mailutils.prepare_email(receipt.email_to, 'Jacobs Alumni Association - Donation Receipt',
+                                    'emails/new_receipt.html', receipt=receipt)
+
+        pdf = receipt.receipt_pdf
+        pdf.open()
+
+        mail.attach(receipt.download_filename, pdf.read(), 'application/pdf')
+
+        mail.send()
+
+        receipt.email_sent = True
+        receipt.save()

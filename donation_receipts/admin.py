@@ -18,15 +18,15 @@ class DonationReceiptAdmin(admin.ModelAdmin):
             'fields': ('finalized', )
         }),
         (_('Donation Info'), {
-            'fields': ('received_on', 'received_from', 'amount', 'sender_info')
+            'fields': ('received_on', 'amount', 'sender_info')
+        }),
+        (_('Email Info'), {
+            'fields': ('email_name', 'email_to', 'email_sent')
         }),
         (_('Internal Tracking'), {
-            'fields': ('payment_stream', 'payment_reference', 'internal_notes')
+            'fields': ('received_from', 'payment_stream', 'payment_reference', 'internal_notes')
         })
     )
-
-    def has_change_permission(self, request, obj=None):
-        return super().has_change_permission(request, obj) and (obj and not obj.finalized)
 
     def has_delete_permission(self, request, obj=None):
         return super().has_delete_permission(request, obj) and (obj and not obj.finalized)
@@ -39,5 +39,11 @@ class DonationReceiptAdmin(admin.ModelAdmin):
                 return obj.received_from.get_full_name()
             except:
                 return None
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj.finalized:
+            return ['received_on', 'issued_on', 'amount', 'sender_info', 'finalized']
+
+        return super().get_readonly_fields(request, obj=obj)
 
     get_user_name.short_description = 'Received From'
