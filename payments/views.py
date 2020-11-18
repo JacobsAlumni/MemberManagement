@@ -356,7 +356,7 @@ class PaymentsView(PaymentsTableMixin, TemplateView):
 @csrf_exempt
 def stripe_webhook(request):
     payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event, error = stripewrapper.make_stripe_event(payload, sig_header, settings.STRIPE_WEBHOOK_SECRET)
 
 
@@ -369,6 +369,6 @@ def stripe_webhook(request):
         payment_intent = event.data.object # contains a stripe.PaymentIntent
 
         # Update the local database
-        PaymentIntent.objects.update_or_create(stripe_id=payment_intent['id'], defaults={'data': stripewrapper._pi_to_dict(payment_intent)})
+        PaymentIntent.objects.update_or_create(stripe_id=payment_intent.id, defaults={'data': stripewrapper._pi_to_dict(payment_intent)})
 
     return HttpResponse()

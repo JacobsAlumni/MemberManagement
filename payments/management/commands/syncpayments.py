@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class Command(BaseCommand):
     help = 'Pulls all PaymentIntents from the Stripe API'
 
-    
+
     def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument('since', nargs='?', default=None, help='If specified, only pulls PaymentIntents created after that date.')
 
