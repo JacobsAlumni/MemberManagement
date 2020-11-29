@@ -1,7 +1,7 @@
 Django==3.1
 django-countries==6.0
 django-cookie-law==2.0.3
-django-impersonate==1.5
+django-impersonate==1.7
 jsonfield==3.1.0
 lxml==4.6.1
 openpyxl==3.0.3
