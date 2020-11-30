@@ -7,6 +7,9 @@ from django.contrib.auth.decorators import user_passes_test
 from django.utils import formats
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, TemplateView
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.conf import settings
 
 from alumni.fields import TierField, AlumniCategoryField
 from payments import stripewrapper
@@ -16,7 +19,7 @@ from registry.views.setup import SetupComponentView
 from MemberManagement.mixins import RedirectResponseMixin
 
 from .forms import MembershipInformationForm, PaymentMethodForm, CancellablePaymentMethodForm
-from .models import SubscriptionInformation
+from .models import SubscriptionInformation, PaymentIntent
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -348,3 +351,24 @@ class PaymentsView(PaymentsTableMixin, TemplateView):
         context['error'] = error
 
         return context
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    event, error = stripewrapper.make_stripe_event(payload, sig_header, settings.STRIPE_WEBHOOK_SECRET)
+
+
+    if error:
+        print(error)
+        return HttpResponseBadRequest()
+
+    # Handle the event
+    if event.type.startswith('payment_intent.'):
+        payment_intent = event.data.object # contains a stripe.PaymentIntent
+
+        # Update the local database
+        PaymentIntent.objects.update_or_create(stripe_id=payment_intent.id, defaults={'data': stripewrapper._pi_to_dict(payment_intent)})
+
+    return HttpResponse()

@@ -326,3 +326,11 @@ class SubscriptionInformation(AlumniComponentMixin, models.Model):
 
         # and create the new subscription
         return cls.objects.create(member=alumni, start=start, end=end, subscription=subscription, tier=tier)
+
+
+class PaymentIntent(models.Model):
+    stripe_id = models.CharField(max_length=256)
+    data = models.JSONField()
+
+    def __str__(self):
+        return self.stripe_id
