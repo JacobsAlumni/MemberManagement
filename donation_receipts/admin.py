@@ -41,7 +41,7 @@ class DonationReceiptAdmin(admin.ModelAdmin):
                 return None
 
     def get_readonly_fields(self, request, obj=None):
-        if obj.finalized:
+        if obj and obj.finalized:
             return ['received_on', 'issued_on', 'amount', 'sender_info', 'finalized']
 
         return super().get_readonly_fields(request, obj=obj)
