@@ -45,7 +45,7 @@ class ReceiptView(generic.DetailView, mixins.LoginRequiredMixin, mixins.UserPass
             context["sig_image_b64"] = 'data:image/png;base64,' + encoded.decode('ascii')
 
         return context
-    
+
 
     def test_func(self):
         obj = self.get_object()
