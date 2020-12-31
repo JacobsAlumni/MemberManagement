@@ -70,4 +70,4 @@ if os.environ.get('DJANGO_RAVEN_DSN'):
 
 # Donation receipts
 PDF_RENDER_SERVER = os.environ.get("PDF_RENDER_SERVER")
-SIGNATURE_IMAGE = os.path.join(BASE_DIR, os.environ.get("SIGNATURE_IMAGE"))
+SIGNATURE_IMAGE = os.path.join(BASE_DIR, os.environ.setdefault("SIGNATURE_IMAGE", ""))
