@@ -1,3 +1,4 @@
+import base64
 import uuid
 from os import path
 
@@ -67,6 +68,10 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
 
         if settings.DEBUG:
             context.update({'giant_floating_text': 'MUSTER'})
+
+        with open(settings.SIGNATURE_IMAGE, "rb") as sig_image:
+            encoded = base64.b64encode(sig_image.read())
+            context["sig_image_b64"] = 'data:image/png;base64,' + encoded.decode('ascii')
 
         f = ContentFile(pdfrender.render_to_bytes(settings.DONATION_RECEIPT_TEMPLATE, context=context))
 
