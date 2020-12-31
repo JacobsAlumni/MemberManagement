@@ -186,7 +186,7 @@
     </section>
 
     <section class="xl">
-        <p class="underline sig">Bremen, den {{ receipt.issued_on|date:"d.m.Y" }}<img src="{% static 'img/sig.png' %}"/></p>
+        <p class="underline sig">Bremen, den {{ receipt.issued_on|date:"d.m.Y" }}<img src="{{ sig_image_b64 }}"/></p>
         <p class="xs">(Ort, Datum und Unterschrift des Zuwendungsempfängers)</p>
     </section>
 

@@ -210,6 +210,7 @@ CURRENCIES = ('EUR', )
 PDF_RENDER_SERVER = 'http://localhost:3000'
 DONATION_RECEIPT_TEMPLATE = 'donation_receipts/receipt_pdf.html'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+SIGNATURE_IMAGE = os.path.join(BASE_DIR, 'donation_receipts/sig.png')
 
 # Portal Version from file added during Docker build. Also present in dev env
 try:

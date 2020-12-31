@@ -1,9 +1,12 @@
+import base64
+
 from django.shortcuts import render, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.contrib.auth import decorators
 from django.contrib.auth import mixins
 from django.http import FileResponse
 from django.views import generic
+from django.conf import settings
 
 from .models import DonationReceipt
 
@@ -33,6 +36,16 @@ class ReceiptView(generic.DetailView, mixins.LoginRequiredMixin, mixins.UserPass
     slug_field = 'external_id'
     context_object_name = 'receipt'
     slug_url_kwarg = 'receipt_id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        with open(settings.SIGNATURE_IMAGE, "rb") as sig_image:
+            encoded = base64.b64encode(sig_image.read())
+            context["sig_image_b64"] = 'data:image/png;base64,' + encoded.decode('ascii')
+
+        return context
+    
 
     def test_func(self):
         obj = self.get_object()
