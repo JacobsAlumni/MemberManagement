@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'custom_auth',
     'atlas',
     'payments',
+    'donation_receipts',
     'impersonate',
     'django_forms_uikit',
     'django_countries',
@@ -54,7 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'webpack_loader',
     'django_extensions',
-    'rest_framework'
+    'rest_framework',
+    'djmoney'
 ]
 
 MIDDLEWARE = [
@@ -188,13 +190,6 @@ WEBPACK_LOADER = {
     }
 }
 
-# Import Local settings if available
-try:
-    from .local_settings import *
-except ImportError:
-    pass
-
-
 # Email settings
 # https://docs.djangoproject.com/en/1.11/topics/email/
 
@@ -208,8 +203,23 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_FROM = 'Alumni Association Portal Login <email_login@jacobs-alumni.de>'
 
+# djmoney settings
+CURRENCIES = ('EUR', )
+
+# Donation receipts settings
+PDF_RENDER_SERVER = 'http://localhost:3000'
+DONATION_RECEIPT_TEMPLATE = 'donation_receipts/receipt_pdf.html'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Portal Version from file added during Docker build. Also present in dev env
 try:
     with open(os.path.join(BASE_DIR, 'PORTAL_VERSION')) as f:
         PORTAL_VERSION = f.read()
 except:
     PORTAL_VERSION = ''
+
+# Import Local settings if available
+try:
+    from .local_settings import *
+except ImportError:
+    pass

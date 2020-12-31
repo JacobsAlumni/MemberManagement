@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+{% load uikit_tags static %}
+
+
+{% block title %}Membership Portal - Jacobs University Bremen Alumni {% endblock %}
+
+{% block pagetitle %}
+Your Donation Receipts
+{% endblock %}
+
+{% block content %}
+<div>
+    {% if not object_list %}
+    <p>There are no receipts available for you right now. If you just made a donation, please wait a few days.</p>
+    {% else %}
+    <p>The receipts listed below includes all contributions we've been able to attribute to you. This also includes 
+        your yearly membership payment.</p>
+    <table class="uk-table uk-table-small">
+        <thead>
+            <tr>
+                <th>Donation From</th>
+                <th>Amount</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for receipt in object_list %}
+            <tr>
+                <td>{{ receipt.received_on }}</td>
+                <td>{{ receipt.amount }}</td>
+                <td><a href="{% url 'download' receipt.external_id %}">Download</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <p>If one of your donations is not listed, please contact <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a>.</p>
+</div>
+
+{% endblock %}

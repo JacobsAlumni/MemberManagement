@@ -117,6 +117,20 @@ class Address(AlumniComponentMixin, models.Model):
             member__atlas__included=True, member__approval__approval=True))
         return filter(lambda c: c[0] is not None and c[1] is not None, coords)
 
+    @property
+    def envelope_format(self):
+        if not self.is_filled:
+            return None
+
+        lines = [self.address_line_1]
+
+        if self.address_line_2:
+            lines.append(self.address_line_2)
+
+        lines.append(f"{self.zip} {self.city}")
+        lines.append(f"{self.country.name}")
+
+        return "\n".join(lines)
 
 @Alumni.register_component(1)
 class SocialMedia(AlumniComponentMixin, models.Model):

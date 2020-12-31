@@ -1,0 +1,19 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+<p>
+    Dear {{ receipt.email_name }}, <br /><br />
+    thank you for your contribution to the Alumni Association.
+</p>
+<p>
+    Your donation is fully tax-deductible in Germany!
+    Please keep the attached donation receipt in your documents.
+    After filing your income tax declaration for {{ receipt.received_on|date:'Y' }}, 
+    it may be requested by your local financial authorities.
+</p>
+<p>
+    Best regards,<br/>
+
+    Jacobs Alumni Association
+</p>
+{% endblock %}

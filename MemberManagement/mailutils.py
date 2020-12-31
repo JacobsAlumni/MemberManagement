@@ -19,7 +19,11 @@ if TYPE_CHECKING:
 
 def send_email(destination: Union[str, List[str]], subject: str, template: str, **kwargs: Any) -> int:
     """ Sends an html email to the given receiver using the provided html template and name """
+    email = prepare_email(destination, subject, template, **kwargs)
 
+    return email.send()
+
+def prepare_email(destination: Union[str, List[str]], subject: str, template: str, **kwargs: Any) -> EmailMessage:
     # Make sure that destionation is a list
     if not isinstance(destination, list):
         destination = [destination]
@@ -30,10 +34,11 @@ def send_email(destination: Union[str, List[str]], subject: str, template: str, 
     # Create an email message
     email = _create_email_message(
         subject, html, settings.EMAIL_FROM, destination)
-    return email.send()
+
+    return email
 
 
-def _create_email_message(subject: str, html: str, from_email: str, recipient_list: Listr[str]) -> EmailMessage:
+def _create_email_message(subject: str, html: str, from_email: str, recipient_list: List[str]) -> EmailMessage:
     """ Creates a connection for the email to be sent """
 
     # Extract images out of the email

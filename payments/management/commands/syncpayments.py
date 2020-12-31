@@ -22,8 +22,6 @@ class Command(BaseCommand):
     def _sync_payment_intent(pi_instance):
         pi_db, created = PaymentIntent.objects.update_or_create(stripe_id=pi_instance['id'], defaults={'data': pi_instance})
 
-        print(pi_db, created)
-
     def handle(self, *args: Any, **kwargs: Any) -> None:
         since = dateparse.parse_date(kwargs['since'])
         print(stripewrapper.map_payment_intents(self._sync_payment_intent, since=since))

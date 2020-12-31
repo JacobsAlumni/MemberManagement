@@ -357,6 +357,7 @@ class PaymentsView(PaymentsTableMixin, TemplateView):
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+
     event, error = stripewrapper.make_stripe_event(payload, sig_header, settings.STRIPE_WEBHOOK_SECRET)
 
 
