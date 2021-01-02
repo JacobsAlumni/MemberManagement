@@ -21,7 +21,7 @@ def download_receipt(request, receipt_id):
     return response
 
 
-class ReceiptList(generic.ListView, mixins.LoginRequiredMixin):
+class ReceiptList(mixins.LoginRequiredMixin, generic.ListView):
     model = DonationReceipt
     template_name = 'donation_receipts/list.html'
     ordering = '-received_on'
