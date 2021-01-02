@@ -66,7 +66,7 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
     def _generate_pdf(self):
         context = {'receipt': self, 'portal_version': settings.PORTAL_VERSION}
 
-        if settings.DEBUG:
+        if settings.DEBUG or settings.ENABLE_DEVEL_WARNING:
             context.update({'giant_floating_text': 'MUSTER'})
 
         with open(settings.SIGNATURE_IMAGE, "rb") as sig_image:
@@ -108,7 +108,7 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
     if not donation_sender.address:
         return
 
-    if not donation_sender.address.is_filled:
+    if not donation_sender.address.is_filled():
         return
 
     create_date = timezone.datetime.fromtimestamp(data['created'])

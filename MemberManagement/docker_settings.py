@@ -53,6 +53,9 @@ GSUITE_OAUTH_CLIENT_ID = os.environ.setdefault("GSUITE_OAUTH_CLIENT_ID", "")
 # add the static file root
 STATIC_ROOT = "/var/www/static/"
 
+# set the media root
+MEDIA_ROOT = os.environ.setdefault("MEDIA_ROOT", "/data/media")
+
 # Sentry
 if os.environ.get('DJANGO_RAVEN_DSN'):
     # add sentry
