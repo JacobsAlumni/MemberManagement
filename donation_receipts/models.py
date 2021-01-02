@@ -108,7 +108,7 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
     if not donation_sender.address:
         return
 
-    if not donation_sender.address.is_filled:
+    if not donation_sender.address.is_filled():
         return
 
     create_date = timezone.datetime.fromtimestamp(data['created'])
