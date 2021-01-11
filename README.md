@@ -69,7 +69,9 @@ See the Configuration sections of the appropriate settings to configure.
 ### Deployment via Docker
 
 It is also possible to deploy this application via [Docker](https://www.docker.com/). 
-Concretely, this repository is available as the [automated build](https://docs.docker.com/v17.12/docker-cloud/builds/automated-build/) [`jacobsalumni/membermanagement`](https://hub.docker.com/r/jacobsalumni/membermanagement/). 
+This repository is automatically built as a [GitHub Package](https://github.com/users/jacobsalumni/packages/container/package/membermanagement) for every push on the main and prod branches.
+- for the `main` branch, use `ghcr.io/jacobsalumni/membermanagement:latest`
+- for the `prod` branch, use `ghcr.io/jacobsalumni/membermanagement:prod`
 
 For Docker purposes the configuration file `MemberManagement/docker_settings.py` is used.  
 By default, it also uses a local sqlite database. 
