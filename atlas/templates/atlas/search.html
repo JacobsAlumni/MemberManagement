@@ -26,11 +26,11 @@ Jacobs Alumni Search - {{query}}
                     <th>Degree</th>
                     <th>City</th>
                 </tr>
-            </thead>
+        </thead>
             <tbody>
             {% for alumni in page %}
                 <tr>
-                    <td><a href="{% url 'atlas_profile' id=alumni.profile.id %}" class='search_result_link'>{{ alumni.givenName }} {{ alumni.familyName }}</a></td>
+                    <td><a href="{% url 'atlas_profile' id=alumni.id %}" class='search_result_link'>{{ alumni.givenName }} {{ alumni.familyName }}</a></td>
                     <td>
                         {% if alumni.jacobs.degree %}
                             {{ alumni.jacobs|get_choice_field:"degree" }}, 
