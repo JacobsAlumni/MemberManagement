@@ -73,7 +73,7 @@ def create_customer(stripe: stripeapi, alumni_instance: Alumni) -> str:
 def clear_all_payment_sources(stripe: stripapi, customer_id: str) -> str:
     """ Removes all payment sources from an alumni """
 
-    for source in stripe.Customer.retrieve(customer_id).sources.list().data:
+    for source in stripe.Customer.retrieve(customer_id,expand=['sources']).sources.list().data:
         # cards can be deleted
         if source.object == 'card':
             source.delete()
@@ -110,7 +110,7 @@ def create_subscription(stripe: stripeapi, customer_id: str, plan_id: str) -> st
     """ Creates a subscription and returns its id """
 
     subscription = stripe.Customer.retrieve(
-        customer_id).subscriptions.create(plan=plan_id)
+        customer_id, expand=['subscriptions']).subscriptions.create(plan=plan_id)
     return subscription.id
 
 
@@ -152,13 +152,16 @@ def get_payment_table(stripe: stripeapi, customer_id: str) -> List[Dict[str, Any
 
 def _invoice_to_dict(invoice_instance: stripeapi.Invoice, upcoming: bool) -> Dict[str, Any]:
     """ Turns an invoice instance into a dict for downstream consumption """
+
+    closed = invoice_instance.status in ["paid", "uncollectible", "void"]
+
     return {
         'lines': [l for l in invoice_instance.lines],
-        'date': invoice_instance.date,
+        'date': invoice_instance.created,
         'total': [invoice_instance.total, invoice_instance.currency],
         'upcoming': upcoming,
         'paid': invoice_instance.paid,
-        'closed': invoice_instance.closed,
+        'closed': closed,
     }
 
 
@@ -166,7 +169,7 @@ def _invoice_to_dict(invoice_instance: stripeapi.Invoice, upcoming: bool) -> Dic
 def get_methods_table(stripe: stripeapi, customer_id: str) -> List[Dict[str, str]]:
     """ Gets a list of payment sources for a customer """
 
-    sources = stripe.Customer.retrieve(customer_id).sources.list().data
+    sources = stripe.Customer.retrieve(customer_id, expand=['sources']).sources.list().data
     return [_source_to_dict(source_instance) for source_instance in sources]
 
 
@@ -266,7 +269,7 @@ def map_payment_intents(stripe: stripeapi, fn: Callable[[Dict[str, str]], None],
 
     created=None
     if since:
-        created = {'gte': int(time.mktime(since.timetuple()))}
+        created = {'gte': int(time.mksubscriptionstime(since.timetuple()))}
 
     # iterate over all the paymentintents
     pis = stripe.PaymentIntent.list(limit=100, created=created)
