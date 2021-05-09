@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 const BundleTracker = require('webpack4-bundle-tracker');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -112,14 +111,14 @@ module.exports = {
   // output all the things
   output: {
     path: path.resolve('./assets/bundles/'),
-    filename: "[name]-[hash].js"
+    filename: "[name]-[fullhash].js"
   },
 
   // for django, we need to keep track of stats
   plugins: [
     new BundleTracker({ filename: './webpack-stats.json' }),
     new MiniCssExtractPlugin({
-      filename: '[name]-[hash].css'
+      filename: '[name]-[fullhash].css'
     }),
     new VueLoaderPlugin()
   ],
