@@ -111,7 +111,8 @@ module.exports = {
   // output all the things
   output: {
     path: path.resolve('./assets/bundles/'),
-    filename: "[name]-[fullhash].js"
+    filename: "[name]-[fullhash].js",
+    publicPath: "/static/bundles/",
   },
 
   // for django, we need to keep track of stats
