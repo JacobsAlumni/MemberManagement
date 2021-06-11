@@ -51,6 +51,7 @@ class SignupTestBase(IntegrationTestBase):
         self.assertEqual(obj.approval, False)
         self.assertEqual(obj.gsuite, None)
         self.assertEqual(obj.time, None)
+        self.assertEqual(obj.autocreated, False)
 
         # address object
         obj = alumni.address

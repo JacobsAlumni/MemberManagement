@@ -35,6 +35,7 @@ EXPECT_EXPORT = [
     ['jacobs__degree', 'bsc', 'msc', 'phd', 'ba', 'ba', 'bsc', 'ma', 'msc', 'bsc', 'bsc'],
     ['jacobs__major', 'CS', 'SCEAM', 'PSY', 'IR', 'H', 'BACB', 'IR', 'DE', 'P', 'P'],
     ['jacobs__comments', None, None, None, None, None, None, None, None, None, 'I am not real'],
+    ['approval__autocreated', True, True, True, True, True, False, False, False, False, False],
     ['approval__approval', True, True, True, True, True, True, True, True, True, True],
     ['approval__time', datetime.datetime(2020, 2, 4, 16, 0, 3, 999999), datetime.datetime(2020, 2, 4, 16, 0, 30), datetime.datetime(2020, 2, 4, 16, 0, 53, 1), datetime.datetime(2020, 2, 4, 16, 1, 11), datetime.datetime(2020, 2, 4, 16, 1, 30, 999999), datetime.datetime(2020, 2, 4, 16, 1, 55), datetime.datetime(2020, 2, 4, 16, 2, 4), datetime.datetime(2020, 2, 4, 16, 2, 28, 999999), datetime.datetime(2020, 2, 4, 16, 2, 44), datetime.datetime(2020, 2, 4, 16, 3, 0, 999999)],
     ['approval__gsuite', 'test-e.Ilie@jacobs-alumni.de', 'test-d.ramila@jacobs-alumni.de', 'test-n.malianga@jacobs-alumni.de', 'test-y.feng@jacobs-alumni.de', 'test-l.tsao@jacobs-alumni.de', 'test-m.carrasco@jacobs-alumni.de', 'test-k.hull@jacobs-alumni.de', 'test-k.daecher@jacobs-alumni.de', 'test-k.vogt@jacobs-alumni.de', 'test-a.freytag@jacobs-alumni.de'],

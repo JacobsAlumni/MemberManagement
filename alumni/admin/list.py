@@ -28,6 +28,12 @@ class AlumniListDisplay:
     setup_date.short_description = 'Setup Completed'
     setup_date.admin_order_field = 'setup__date'
 
+    def approval_autocreated(self, x: Alumni) -> str:
+        return x.approval.autocreated
+    approval_autocreated.short_description = 'Auto'
+    approval_autocreated.boolean = 'true'
+    approval_autocreated.admin_order_field = 'approval__autocreated'
+
     def profile_googleassociation(self, x: Alumni) -> bool:
         results = x.profile.googleassociation_set
         return results.exists()
@@ -76,7 +82,7 @@ class AlumniListDisplay:
         'alumni_fullName', 'email', 'sex',
 
         # member email
-        'approval_approval', 'setup_date', 'profile_googleassociation', 'approval_gsuite',
+        'approval_approval', 'setup_date', 'approval_autocreated', 'profile_googleassociation', 'approval_gsuite',
 
         # category + subscription
         'category', 'membership_tier',
@@ -123,6 +129,7 @@ class AlumniListFilter:
     list_filter = (
         ('approval__approval', custom_titled_filter('Application Approval')),
         SetupCompletedFilter,
+        ('approval__autocreated', custom_titled_filter('Automatically Imported')),
         ('category', custom_titled_filter('Alumni Category')),
         ('membership__tier', custom_titled_filter('Alumni Tier')),
         ('atlas__included', custom_titled_filter('Included in Alumni Atlas')),

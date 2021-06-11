@@ -177,6 +177,8 @@ class Approval(models.Model):
     member: Alumni = models.OneToOneField(
         Alumni, related_name='approval', on_delete=models.CASCADE)
 
+    autocreated: bool = models.BooleanField(default=False, blank=False, help_text="Has the user been automatically created?")
+
     approval: bool = models.BooleanField(default=False, blank=True,
                                          help_text="Has the user been approved by an admin?")
 

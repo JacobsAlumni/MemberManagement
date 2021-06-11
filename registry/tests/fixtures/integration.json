@@ -725,6 +725,7 @@
         "fields": {
             "member": 1,
             "approval": true,
+            "autocreated": false,
             "gsuite": "test-a.freytag@jacobs-alumni.de",
             "time": "2020-02-04T16:03:01Z"
         }
@@ -735,6 +736,7 @@
         "fields": {
             "member": 2,
             "approval": true,
+            "autocreated": false,
             "gsuite": "test-k.vogt@jacobs-alumni.de",
             "time": "2020-02-04T16:02:44Z"
         }
@@ -745,6 +747,7 @@
         "fields": {
             "member": 3,
             "approval": true,
+            "autocreated": false,
             "gsuite": "test-k.daecher@jacobs-alumni.de",
             "time": "2020-02-04T16:02:29Z"
         }
@@ -755,6 +758,7 @@
         "fields": {
             "member": 4,
             "approval": true,
+            "autocreated": false,
             "gsuite": "test-k.hull@jacobs-alumni.de",
             "time": "2020-02-04T16:02:04Z"
         }
@@ -765,6 +769,7 @@
         "fields": {
             "member": 5,
             "approval": true,
+            "autocreated": false,
             "gsuite": "test-m.carrasco@jacobs-alumni.de",
             "time": "2020-02-04T16:01:55Z"
         }
@@ -775,6 +780,7 @@
         "fields": {
             "member": 6,
             "approval": true,
+            "autocreated": true,
             "gsuite": "test-l.tsao@jacobs-alumni.de",
             "time": "2020-02-04T16:01:31Z"
         }
@@ -785,6 +791,7 @@
         "fields": {
             "member": 7,
             "approval": true,
+            "autocreated": true,
             "gsuite": "test-y.feng@jacobs-alumni.de",
             "time": "2020-02-04T16:01:11Z"
         }
@@ -795,6 +802,7 @@
         "fields": {
             "member": 8,
             "approval": true,
+            "autocreated": true,
             "gsuite": "test-n.malianga@jacobs-alumni.de",
             "time": "2020-02-04T16:00:53Z"
         }
@@ -805,6 +813,7 @@
         "fields": {
             "member": 9,
             "approval": true,
+            "autocreated": true,
             "gsuite": "test-d.ramila@jacobs-alumni.de",
             "time": "2020-02-04T16:00:30Z"
         }
@@ -815,6 +824,7 @@
         "fields": {
             "member": 10,
             "approval": true,
+            "autocreated": true,
             "gsuite": "test-e.Ilie@jacobs-alumni.de",
             "time": "2020-02-04T16:00:04Z"
         }
