@@ -1,178 +1,274 @@
 from __future__ import annotations
 
-from django.db import transaction
+import csv
+from datetime import datetime
 
+from alumni.fields import (AlumniCategoryField, ClassField, CountryField,
+                           DegreeField, GenderField, MajorField, TierField)
+from alumni.models import Alumni, SetupCompleted
 from django.core.management.base import BaseCommand
-
+from django.core.validators import validate_email
+from django.db import transaction
 from registry.views.setup import make_user
-import json
 
 from typing import TYPE_CHECKING
+from typing import Dict, List, Optional
 if TYPE_CHECKING:
-    from typing import Callable, List, Any, Dict, Set, Tuple, Optional
-    from django.contrib.auth.models import User
-    from django.db.models import QuerySet
     from argparse import ArgumentParser
 
-# TODO: Move CSVParser into a new function
-class CSVParser(object):
-    """ CSVParser can parse a list of lists into a parsed set of JSON values """
-    def __init__(self) -> None:
+from alumni.utils import CSVParser
+
+
+class AlumniParser(CSVParser):
+    """ A CSVParser for Alumni """
+
+    def __init__(self):
         super().__init__()
 
-        # internal id for groups
-        self._counter = 0
+        self.register(['birthday_de'], 'birthday', self._parse_birthday_de)
+        self.register(['title'], 'gender', self._parse_title)
 
-        # contains a list of mappings from group id to required field ids
-        self._groups: Dict[int, List[str]] = {}
+        self.register(['name_1'], 'given_name', self._parse_required)
+        self.register(['name_2'], 'family_name', self._parse_required)
+        self.register(['name_3'], 'middle_name', self._parse_optional)
 
-        # contains a list of mappings from field id -> group id
-        self._fieldmap: Dict[str, int] = {}
+        self.register(['nationality_1'], 'nationality_1', self._parse_country)
+        self.register(['nationality_2'], 'nationality_2', self._parse_country)
 
-        # names of the targeted fields
-        self._targets: Dict[int, str] = {}
-        
-        # contains a mapping from group id -> mapping function
-        self._mappers: Dict[int, Callable[[List[str]], Any]] = {}
+        self.register(['email'], 'email', self._parse_required)
+        self.register(['class'], 'year', self._parse_class)
+        self.register(['degree'], 'degree', self._parse_degree)
+        self.register(['major'], 'major', self._parse_major)
 
-    def register(self, fields: List[str], target: str, map: Callable[[List[str]], Any]):
-        """ Register a new field that can be loaded """
+    def _parse_birthday_de(self, birthday_de) -> datetime:
+        return datetime.strptime(birthday_de, '%d.%m.%Y')
 
-        # get a new group id
-        group_id: int = self._counter
-        self._counter += 1
+    def _parse_title(self, title: str) -> GenderField:
+        title = title.lower().strip()
+        if title == "mr.":
+            return GenderField.MALE
+        elif title == "ms.":
+            return GenderField.FEMALE
 
-        # check that none of the field ids are used
-        for field in fields:
-            if field in self._fieldmap:
-                raise Exception('Field {} already used by group'.format(field))
-        
-        # store the group ids for all the fields
-        for field in fields:
-            self._fieldmap[field] = group_id
-        
-        # store the required fields and map
-        self._groups[group_id] = [f for f in fields]
-        self._mappers[group_id] = map
-        self._targets[group_id] = target
+        return GenderField.UNSPECIFIED
 
-    def prepare(self, fields: List[str], required: Optional[List[str]] = None) -> Tuple[Dict[str, List[int]], Dict[str, Callable[[List[str]], Any]]]:
-        """ Parses a list of fields into a list of indexes """
+    def _parse_required(self, value: str) -> str:
+        if value == "":
+            raise Exception("Missing required value")
+        return value
 
-        # ignore empty fields!
-        fields = list(filter(lambda f: f != '', fields))
-        
-        # check that fields are unique!
-        if len(fields) != len(set(fields)):
-            raise Exception('fields contain duplicate field')
-        
-        # check that all the fields exist
-        # and keep track of referenced groups and targets!
-        groups: Set[int] = set()
-        targets: Set[str] = set()
-        for field in fields:
-            if field not in self._fieldmap:
-                raise Exception('Unknown field {}'.format(field))
-            
-            group = self._fieldmap[field]
-            groups.add(group)
-            targets.add(self._targets[group])
-        
-        if required is None:
-            required = list()
-        for target in required:
-            if target not in targets:
-                raise Exception('Target {} is required, but not provided by any field. '.format(target))
-        
-        # check that all the groups have all the requirements!
-        # also track which group has which index!
-        indexes: Dict[str, List[int]] = {}
-        mappers: Dict[str, Callable[[List[str]], Any]] = {}
-        for group in groups:
-            # check that all the fields are there
-            for field in self._groups[group]:
-                if field not in fields:
-                    raise Exception('Group {} requires field {}, but it is not provided'.format(group, field))
-            
-            # store all the indexes for the target
-            target = self._targets[group]
-            indexes[target] = [fields.index(field) for field in self._groups[group]]
-            mappers[target] = self._mappers[group]
-        
-        # and return
-        return indexes, mappers
-    
-    def parse(self, fields: List[str], values: List[List[Any]], required: Optional[List[str]] = None) -> List[Dict[str, Any]]:
-        """ Parses a list of fields and values """
+    def _parse_optional(self, value: str) -> Optional[str]:
+        if value == "":
+            return None
+        return value
 
-        # check that the values are of the correct length
-        count = len(fields)
-        for (i, v) in enumerate(values):
-            if len(v) != count:
-                raise Exception('Malformed values: Index {} is not of expected length'.format(i))
+    COUNTRY_ALTS: Dict[str, CountryField] = {
+        "USA": "United States of America",
+        "Swaziland": "Eswatini",
+        "Palestine": "Palestine, State of",
+    }
 
-        # figure out which indexes everything is at
-        indexes, mappers = self.prepare(fields, required=required)
+    def _parse_country(self, country: str) -> Optional[CountryField]:
+        if country == "":
+            return None
 
-        # prepare a list of results
-        results: List[Dict[str, Any]] = [{} for _ in values]
+        # map alternate countries
+        if country in self.__class__.COUNTRY_ALTS:
+            country = self.__class__.COUNTRY_ALTS[country]
 
-        for (target, idxs) in indexes.items():
-            mapper = mappers[target]
+        # lookup the country
+        for (key, desc) in CountryField.COUNTRY_CHOICES:
+            if country == desc:
+                return key
 
-            # apply the mapper to each target and save it!
-            for (index, value) in enumerate(values):
-                params: List[str] = list(map(lambda i: value[i], idxs))
-                results[index][target] = mapper(params)
+        # and throw for unknown countries
+        raise Exception("Unknown Country: {}".format(country))
 
-        # and done!
-        return results
+    def _parse_class(self, clz: str) -> ClassField:
+        # extract the year from the string
+        parts = clz.split(" ")
+        if len(parts) < 2:
+            raise Exception("Class must have at least two parts")
+
+        # parse the year into an integer
+        year = int(parts[1]) + 2000
+        for (value, _) in ClassField.CHOICES:
+            if value == year:
+                return year
+
+        return ClassField.OTHER
+
+    DEGREE_ALTS: Dict[str, DegreeField] = {
+        "Doctor of Philosophy": "PhD",
+    }
+
+    def _parse_degree(self, degree: str) -> DegreeField:
+        # map alternate degree names
+        if degree in self.__class__.DEGREE_ALTS:
+            degree = self.__class__.DEGREE_ALTS[degree]
+
+        # lookup the degree
+        org_degree = degree
+        degree = degree.lower()
+        for (key, description) in DegreeField.CHOICES:
+            if description.lower() == degree:
+                return key
+        raise Exception('Unknown degree: {}'.format(org_degree))
+
+    MAJOR_ALTS: Dict[str, MajorField] = {
+        "Global Economics and Management": "Global Economics and Management (GEM)",
+        "Biochemistry and Cell Biology": "Biochemistry and Cell Biology (BCCB)",
+        "Psychologie": "Psychology",
+        "International Relations: Politics and History": "International Politics and History (IPH)",
+        "Medicinal Chemistry and Chemical Biology": "Medical Chemistry and Chemical Biology",
+    }
+
+    def _parse_major(self, major: str) -> Optional[MajorField]:
+        if major == "":
+            return None
+
+        # map alternate major names
+        if major in self.__class__.MAJOR_ALTS:
+            major = self.__class__.MAJOR_ALTS[major]
+
+        org_major = major
+        major = major.lower()
+        for (key, description) in MajorField.CHOICES:
+            if description.lower() == major:
+                return key
+
+        raise Exception('Unknown major: {}'.format(org_major))
+
+
+class SimulateException(Exception):
+    pass
+
 
 class Command(BaseCommand):
     help = 'Import a CSV of generated users'
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
-            'files', nargs=1, help='Path to json of users to import ')
+            'files', nargs=1, help='Path to csv of users to import ')
+        parser.add_argument(
+            '--columns',
+            default=',birthday_de,title,name_2,name_1,name_3,nationality_1,nationality_2,email,class,degree,major',
+            help="Comma seperated list of fields to parse"
+        )
+        parser.add_argument(
+            '--simulate',
+            type=bool,
+            help="Don't actually created any users, just simulate creating them"
+        )
+        parser.add_argument(
+            '--no-stripe',
+            type=bool,
+            help="Skip creating stripe accounts. Use with care. "
+        )
 
     def handle(self, *args, **kwargs) -> None:
-        parser = CSVParser()
 
-        parser.register(['ab'], 'ab', lambda ab: ab[0])
-        parser.register(['a', 'b'], 'ab', lambda ab: ab[0] + ab[1])
-        parser.register(['c'], 'c', lambda c: c[0])
-
-        first = parser.parse(['a', 'b'], [
-            ['a1', 'b1'],
-            ['a2', 'b2']
-        ])
-        print(first)
-
-        second = parser.parse(['ab'], [
-            ['a1b1'],
-            ['a2b2'],
-        ])
-        print(second)
-
-        third = parser.parse(['b', 'a', 'c'], [
-            ['b1', 'a1', 'c1'],
-            ['b2', 'a2', 'c2']
-        ])
-        print(third)
-    
-    def handle_old(self, *args, **kwargs) -> None:
-
-        # get the filenames
+        # Find the file to parse
         files = kwargs['files']
         if len(files) != 1:
             raise Exception("expected exactly one file")
-        
-        # create the user
+
+        # read the csv lines!
+        lines: List[List[str]] = []
         with open(files[0], 'r') as f:
-            users = json.load(f)
-            for u in users:
-                user, err = make_auto_user(u)
-                if err is None:
-                    print("Created user {}".format(user.username))
-                else:
-                    print("Unable to create user: {}".format(err))
+            # open the csv file and skip the first line
+            reader = csv.reader(f)
+            reader.__next__()
+
+            # store the rest of the lines
+            lines = list(reader)
+
+        columns = kwargs['columns'].split(",")
+
+        # parse the actual fields!
+        parser = AlumniParser()
+        parsed, targets = parser.parse(
+            columns,
+            lines,
+            required=['given_name', 'family_name',
+                      'email', 'birthday', 'nationality_1']
+        )
+
+        simulate = kwargs['simulate']
+        no_stripe = kwargs['no_stripe']
+        try:
+            with transaction.atomic():
+                # iterate over the users and create them, if they already exists, skip them!
+                for person in parsed:
+                    try:
+
+                        # read names
+                        given_name = person['given_name']
+                        middle_name = person['middle_name'] if 'middle_name' in targets else None
+                        if middle_name is None:
+                            middle_name = ""
+                        family_name = person['family_name']
+
+                        # read email
+                        email = person['email']
+                        validate_email(email)
+
+                        # read nationality
+                        nationality = person['nationality_1']
+                        if 'nationality_2' in targets:
+                            nationality_2 = person['nationality_2']
+                            if nationality_2 is not None:
+                                nationality = [nationality, nationality_2]
+
+                        # read birthday
+                        birthday = person['birthday']
+
+                        # read member type and tier
+                        member_type = AlumniCategoryField.REGULAR
+                        member_tier = TierField.STARTER
+                        skip_stripe = simulate or no_stripe
+
+                        # make the user and basic attributes
+                        user = make_user(
+                            given_name=given_name,
+                            middle_name=middle_name,
+                            family_name=family_name,
+                            email=email,
+                            nationality=nationality,
+                            birthday=birthday,
+                            member_type=member_type,
+                            member_tier=member_tier,
+                            skip_stripe=skip_stripe
+                        )
+
+                        # Store that the user was autocreated
+                        alumni: Alumni = user.alumni
+                        alumni.approval.autocreated = True
+                        alumni.approval.save()
+
+                        # store the gender
+                        if 'gender' in targets:
+                            alumni.sex = person['gender']
+                        alumni.save()
+
+                        # store additional jacobs data
+                        if 'year' in targets:
+                            alumni.jacobs.graduation = person['year']
+                        if 'degree' in targets:
+                            alumni.jacobs.degree = person['degree']
+                        if 'major' in targets and person['major'] is not None:
+                            alumni.jacobs.major = person['major']
+                        alumni.jacobs.save()
+
+                        SetupCompleted.objects.create(member=alumni)
+
+                        print("Created user {}".format(user.username))
+                    except Exception as e:
+                        print("Could not create user {}: {}".format(person, e))
+                        continue
+
+                if simulate:
+                    raise SimulateException()
+        except SimulateException:
+            print("--simulate was provided, rolling back changes")
+            return
