@@ -48,6 +48,7 @@ class MajorField(CustomTextChoiceField):
     INTELLIGENT_MOBILE_SYSTEMS = "IMS"
     INTERCULTURAL_HUMANITIES = "IH"
     INTERCULTURAL_RELATIONS_AND_BEHAVIOUR = "IRAB"
+    INTERNATIONAL_RELATIONS_GLOBAL_GOVERNANCE_AND_SOCIAL_THEORY = "IRGGAST"
     INTERNATIONAL_BUSINESS_ADMINISTRATION = 'IBA'
     INTERNATIONAL_COMMUNICATION = "IC"
     INTERNATIONAL_HISTORY_AND_POLITICS = "IHAP"
@@ -132,6 +133,7 @@ class MajorField(CustomTextChoiceField):
         (INTERCULTURAL_HUMANITIES, "Intercultural Humanities"),
         (INTERCULTURAL_RELATIONS_AND_BEHAVIOUR,
          "Intercultural Relations and Behaviour (IRB)"),
+        (INTERNATIONAL_RELATIONS_GLOBAL_GOVERNANCE_AND_SOCIAL_THEORY, "International Relations: Global Governance and Social Theory"),
         (INTERNATIONAL_BUSINESS_ADMINISTRATION,
          "International Business Administration"),
         (INTERNATIONAL_COMMUNICATION, "International Communication"),
