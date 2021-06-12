@@ -53,7 +53,7 @@ class CSVParser(object):
         self._mappers[group_id] = map
         self._targets[group_id] = target
 
-    def prepare(self, fields: List[str], required: Optional[List[str]] = None) -> Tuple[Dict[str, List[int]], Dict[str, ParsingCallback]]:
+    def prepare(self, fields: List[str], required: Optional[List[str]] = None) -> Tuple[Dict[str, List[int]], Dict[str, ParsingCallback], List[str]]:
         """ Parses a list of fields into a list of indexes """
 
         # check that fields are unique!
@@ -101,10 +101,14 @@ class CSVParser(object):
                                for field in self._groups[group]]
             mappers[target] = self._mappers[group]
 
-        # and return
-        return indexes, mappers
+        # sort the targets
+        stargets = list(targets)
+        stargets.sort()
 
-    def parse(self, fields: List[str], values: List[List[Any]], required: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+        # and return
+        return indexes, mappers, stargets
+
+    def parse(self, fields: List[str], values: List[List[Any]], required: Optional[List[str]] = None) -> Tuple[List[Dict[str, Any]], List[str]]:
         """ Parses a list of fields and values """
 
         # check that the values are of the correct length
@@ -115,7 +119,7 @@ class CSVParser(object):
                     'Malformed values: Index {} is not of expected length'.format(i))
 
         # figure out which indexes everything is at
-        indexes, mappers = self.prepare(fields, required=required)
+        indexes, mappers, targets = self.prepare(fields, required=required)
 
         # prepare a list of results
         results: List[Dict[str, Any]] = [{} for _ in values]
@@ -129,4 +133,4 @@ class CSVParser(object):
                 results[index][target] = mapper(*params)
 
         # and done!
-        return results
+        return results, targets
