@@ -132,7 +132,7 @@ class SetupViewBase(RedirectResponseMixin, TemplateResponseMixin, View):
         return self.dispatch_form(form)
 
 
-def make_user(given_name: str, middle_name: str, family_name: str, email: str, nationality: Union[str, List[str]], birthday: datetime, member_type: str, member_tier: str) -> User:
+def make_user(given_name: str, middle_name: str, family_name: str, email: str, nationality: Union[str, List[str]], birthday: datetime, member_type: str, member_tier: str, skip_stripe: bool) -> User:
     """ This function creates an returns a new alumni user. All exceptions should be caught by the parent """
 
     # first generate a new username
@@ -175,9 +175,12 @@ def make_user(given_name: str, middle_name: str, family_name: str, email: str, n
             SubscriptionInformation.create_starter_subscription(alumni)
 
         # which may fail, and if it does should add an error
-        stripe_customer, err = stripewrapper.create_customer(alumni)
-        if err is not None:
-            raise CustomerCreationFailed()
+        stripe_customer = ""
+        if not skip_stripe:
+            stripe_customer, err = stripewrapper.create_customer(alumni)
+            if err is not None:
+                raise CustomerCreationFailed()
+
         membership = MembershipInformation.objects.create(
             member=alumni, tier=member_tier, customer=stripe_customer)
 
@@ -228,7 +231,7 @@ class RegisterView(SetupViewBase):
 
         try:
             user = make_user(given_name, middle_name, family_name,
-                             email, nationality, birthday, member_type, member_tier)
+                             email, nationality, birthday, member_type, member_tier, skip_stripe=False)
 
         # FIXME: This integrity error is currently assumed to be an already existing email
         except IntegrityError as ie:
