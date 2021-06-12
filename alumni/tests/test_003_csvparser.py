@@ -8,9 +8,9 @@ class TestCSVParser(unittest.TestCase):
         super().__init__(*args)
         self.parser = CSVParser()
 
-        self.parser.register(['ab'], 'ab', lambda ab: ab[0])
-        self.parser.register(['a', 'b'], 'ab', lambda ab: ab[0] + ab[1])
-        self.parser.register(['c'], 'c', lambda c: c[0])
+        self.parser.register(['ab'], 'ab', lambda ab: ab)
+        self.parser.register(['a', 'b'], 'ab', lambda a, b: a + b)
+        self.parser.register(['c'], 'c', lambda c: c)
 
     def test_simple_fields(self):
         first = self.parser.parse(['a', 'b'], [
@@ -33,7 +33,7 @@ class TestCSVParser(unittest.TestCase):
         ])
         self.assertListEqual(third, [{'ab': 'a1b1', 'c': 'c1'}, {
                              'ab': 'a2b2', 'c': 'c2'}], 'Parses multiple targets correctly')
-        
+
         fourth = self.parser.parse(['', 'b', 'a', 'c', ''], [
             ['x1', 'b1', 'a1', 'c1', 'y1'],
             ['x2', 'b2', 'a2', 'c2', 'y2']

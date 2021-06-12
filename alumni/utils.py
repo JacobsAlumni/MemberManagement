@@ -1,5 +1,12 @@
 from typing import TYPE_CHECKING
-from typing import Callable, List, Any, Dict, Set, Tuple, Optional
+from typing import List, Any, Dict, Set, Tuple, Optional, Iterable
+from typing import Protocol
+
+
+class ParsingCallback(Protocol):
+    """ A callback for parsing """
+
+    def __call__(self, *args: str) -> Any: ...
 
 
 class CSVParser(object):
@@ -21,9 +28,9 @@ class CSVParser(object):
         self._targets: Dict[int, str] = {}
 
         # contains a mapping from group id -> mapping function
-        self._mappers: Dict[int, Callable[[List[str]], Any]] = {}
+        self._mappers: Dict[int, ParsingCallback] = {}
 
-    def register(self, fields: List[str], target: str, map: Callable[[List[str]], Any]):
+    def register(self, fields: List[str], target: str, map: ParsingCallback):
         """ Register a new field that can be loaded """
         if target == "" or "" in fields:
             raise Exception('Target and Fields must not be the empty')
@@ -46,7 +53,7 @@ class CSVParser(object):
         self._mappers[group_id] = map
         self._targets[group_id] = target
 
-    def prepare(self, fields: List[str], required: Optional[List[str]] = None) -> Tuple[Dict[str, List[int]], Dict[str, Callable[[List[str]], Any]]]:
+    def prepare(self, fields: List[str], required: Optional[List[str]] = None) -> Tuple[Dict[str, List[int]], Dict[str, ParsingCallback]]:
         """ Parses a list of fields into a list of indexes """
 
         # check that fields are unique!
@@ -80,7 +87,7 @@ class CSVParser(object):
         # check that all the groups have all the requirements!
         # also track which group has which index!
         indexes: Dict[str, List[int]] = {}
-        mappers: Dict[str, Callable[[List[str]], Any]] = {}
+        mappers: Dict[str, ParsingCallback] = {}
         for group in groups:
             # check that all the fields are there
             for field in self._groups[group]:
@@ -118,8 +125,8 @@ class CSVParser(object):
 
             # apply the mapper to each target and save it!
             for (index, value) in enumerate(values):
-                params: List[str] = list(map(lambda i: value[i], idxs))
-                results[index][target] = mapper(params)
+                params: Iterable[str] = map(lambda i: value[i], idxs)
+                results[index][target] = mapper(*params)
 
         # and done!
         return results
