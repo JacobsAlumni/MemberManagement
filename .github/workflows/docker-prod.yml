@@ -25,5 +25,6 @@ jobs:
         with:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           platforms: ${{ env.PLATFORMS }}
+          context: .
           pull: true
           push: true
