@@ -24,6 +24,9 @@
 
 {% block object-tools-items %}
 <li>
+    <a href="{% changelist_search original.givenName original.familyName %}" target="_blank">Search for Duplicates by Name</a>
+</li>
+<li>
     <a href="{% url 'approval_approval' id=original.profile.id %}" target="_blank">Manage Approval</a>
 </li>
 <li>

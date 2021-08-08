@@ -3,6 +3,8 @@ from django.template import Library
 from django.urls import reverse
 from urllib.parse import parse_qsl
 
+from typing import List
+
 register = Library()
 
 
@@ -24,3 +26,10 @@ def changelist_link(context, filter: str, value: str) -> str:
 
     # and make a changelist link!
     return reverse('admin:{}_{}_changelist'.format(opts.app_label, opts.model_name)) + '?' + urlencode(query)
+
+@register.simple_tag(takes_context=True)
+def changelist_search(context, *values: List[str]) -> str:
+    opts = context.get('opts')
+
+    query = ' '.join(filter(lambda x: x, values))
+    return reverse('admin:{}_{}_changelist'.format(opts.app_label, opts.model_name)) + '?' + urlencode({'q': query})
