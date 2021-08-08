@@ -1,27 +1,39 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_urls %}
-
-{% block object-tools-items %}
-    <li>
-        <a href="{% url 'approval_approval' id=original.profile.id %}" target="_blank">Manage Approval</a>
-    </li>
-    <li>
-        <a href="{% url 'impersonate-start' uid=original.profile.id %}" target="_blank">Impersonate</a>
-    </li>
-    {% if original.membership and original.membership.customer %}
-        <li>
-            <a href="https://dashboard.stripe.com/{% if stripe_test_mode %}test/{% endif%}customers/{{ original.membership.customer }}" target="_blank">View on Stripe Dashboard</a>
-        </li>
-    {% endif %}
-    {{ block.super }}
-{% endblock %}
+{% load i18n admin_urls changelist_link %}
 
 {% block form_top %}
-    {{ block.super }}
+{{ block.super }}
 
-    {% if original.setup_completed %}{% else %}
-        <p class="errornote">
-            User has not completed setup. 
-        </p>
-    {% endif %}
+<div class="form-row">
+    <div>
+        {% if original.setup_completed %}{% else %}
+            <a href="{% changelist_link 'completed' '0' %}" style="color: black; background-color: yellow; padding: 2px; ">Setup Incomplete</a>
+        {% endif %}
+        {% if original.approval and original.approval.approval %}
+            <a href="{% changelist_link 'approval__approval__exact' '1' %}" style="color: black; background-color: lime; padding: 2px; ">Approved</a>
+        {% else %}
+            <a href="{% changelist_link 'approval__approval__exact' '0' %}" style="color: white; background-color: red; padding: 2px; ">Not Approved</a>
+        {% endif %}
+
+        {% if original.approval and original.approval.autocreated %}
+            <a href="{% changelist_link 'approval__autocreated__exact' '0' %}" style="color: white; background-color: blue; padding: 2px; ">Automatically Created</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block object-tools-items %}
+<li>
+    <a href="{% url 'approval_approval' id=original.profile.id %}" target="_blank">Manage Approval</a>
+</li>
+<li>
+    <a href="{% url 'impersonate-start' uid=original.profile.id %}" target="_blank">Impersonate</a>
+</li>
+{% if original.membership and original.membership.customer %}
+<li>
+    <a href="https://dashboard.stripe.com/{% if stripe_test_mode %}test/{% endif%}customers/{{ original.membership.customer }}"
+        target="_blank">View on Stripe Dashboard</a>
+</li>
+{% endif %}
+{{ block.super }}
 {% endblock %}
