@@ -1,5 +1,6 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
+{% load render_entrypoint from webpack_loader %}
 
 {% block title %}Application Approval {{ alumni.profile.username }} {% endblock %}
 {% block pagetitle %}User Approval {{ alumni.profile.username }}{% endblock %}
@@ -7,7 +8,7 @@
 {% block content %}
 <div class="uk-tile uk-tile-muted">
 
-    <form class="uk-form-horizontal" method="POST">
+    <form class="uk-form-horizontal" method="POST" autocomplete="off">
         {% csrf_token %}
         {{ form | as_uikit_form }}
         <input type="submit" class="uk-button uk-button-primary" value="Approve user">
@@ -114,4 +115,11 @@
         </tbody>
     </table>
 </div>
+{% endblock %}
+
+{% block extrascripts %}
+    <script type="text/javascript">
+        window.auto_email = {{ jsAutoEmail | safe }};
+    </script>
+    {% render_entrypoint "registry__approval" "js" %}
 {% endblock %}

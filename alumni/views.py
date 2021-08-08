@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 import string
 from enum import Enum
+import json
 
 from django.conf import settings
 from django.contrib import messages
@@ -24,11 +25,13 @@ if TYPE_CHECKING:
     from typing import Any, Dict
     from django.http import HttpResponse, HttpRequest
 
+
 class EmailStatus(Enum):
     EMAIL_OK = 0
     EMAIL_DIFFERS = 1
     EMAIL_DOESNOTEXIST = 2
     EMAIL_LINKEDOTHER = 3
+
     @staticmethod
     def message(value: EmailStatus) -> str:
         return ({
@@ -80,8 +83,12 @@ class ApprovalView(FormView):
         emailLinked = alumni.profile.googleassociation_set.exists()
         previousEmail = EmailStatus.message(check_existing_email(alumni))
 
+        jsAutoEmail = json.dumps(alumni.profile.username + '@jacobs-alumni.de')
+        if alumni.existingEmail:
+            jsAutoEmail = alumni.existingEmail
+
         context.update(
-            {'alumni': alumni, 'emailLinked': emailLinked, 'previousEmail': previousEmail})
+            {'alumni': alumni, 'emailLinked': emailLinked, 'previousEmail': previousEmail, 'jsAutoEmail': jsAutoEmail})
         return context
 
     def form_valid(self, form: UserApprovalForm) -> HTTPResponse:
