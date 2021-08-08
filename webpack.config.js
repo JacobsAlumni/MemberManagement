@@ -32,6 +32,7 @@ module.exports = {
     'payments__tier': './assets/src/payments/tier/index.ts',
 
     'registry__signup': './assets/src/registry/signup/index.ts',
+    'registry__approval': './assets/src/registry/approval/index.ts',
   },
 
   // magic .ts and .js
