@@ -17,10 +17,14 @@ Login
 {% block content %}
 <div>
     <div {% if googlefail %} class="uk-alert uk-alert-danger" uk-alert {% endif%}>
-        <button disabled id="g-signin" type="button" class="uk-button uk-button-primary">
-            <img id="g-signin-icon" src="{% static "media/btn_google_light_pressed_ios.svg" %}" /><span id="g-signin-text">Sign
-                in with Google</span>
-        </button>
+        <div id="g_id_onload"
+            data-client_id="{{ client_id }}"
+            data-callback="handleGoogleLogin"
+            data-ux-mode="popup"
+        >
+        </div>
+
+        <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-text="signin_with" data-shape="square"></div>
         {% if googlefail %}
             The Google Account you are attempting to sign in with is not associated to any portal account. 
             Please try again. 
@@ -38,12 +42,6 @@ Login
 {% block extrascripts %}
 
 <script>
-    window.google_login_settings = {
-        client_id: "{{ client_id | escapejs }}",
-        hosted_domain: "{{ gsuite_domain | escapejs }}",
-        prompt: "select_account",
-    }
-    
     window.login_script_settings = {
         next: "{{ next | escapejs }}",
         token_endpoint: "{% url 'token_login' %}"
