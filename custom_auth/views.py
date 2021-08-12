@@ -68,7 +68,6 @@ class ClientIdLoginView(views.LoginView):
     # Injects the OAuth client ID into the template context
     extra_context = {
         'client_id': settings.GSUITE_OAUTH_CLIENT_ID,
-        'gsuite_domain': settings.GSUITE_DOMAIN_NAME
     }
 
     def get_context_data(self, **kwargs):
