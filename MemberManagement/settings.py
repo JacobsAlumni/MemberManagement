@@ -82,7 +82,6 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'MemberManagement.context_processors.google_analytics_id',
                 'MemberManagement.context_processors.js_testmode_flag',
                 'MemberManagement.context_processors.portal_version',
                 'registry.context_processors.devel_warning',
@@ -136,8 +135,6 @@ LOGIN_URL = '/auth/login'
 LOGOUT_URL = '/auth/logout'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-
-GOOGLE_ANALYTICS_ID = None
 
 GSUITE_DOMAIN_NAME = 'jacobs-alumni.de'
 GSUITE_OAUTH_CLIENT_ID = '118982546822-515a0fn0ldm96ebev0af5naj6qn8pt9i.apps.googleusercontent.com'
