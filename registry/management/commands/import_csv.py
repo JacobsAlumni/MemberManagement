@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import re
 from datetime import datetime
 
 from alumni.fields import (AlumniCategoryField, ClassField, CountryField,
@@ -26,6 +27,7 @@ class AlumniParser(CSVParser):
         super().__init__()
 
         self.register(['birthday_de'], 'birthday', self._parse_birthday_de)
+        self.register(['birthday_us'], 'birthday', self._parse_birthday_us)
         self.register(['title'], 'gender', self._parse_title)
 
         self.register(['name_1'], 'given_name', self._parse_required)
@@ -42,6 +44,9 @@ class AlumniParser(CSVParser):
 
     def _parse_birthday_de(self, birthday_de) -> datetime:
         return datetime.strptime(birthday_de, '%d.%m.%Y')
+
+    def _parse_birthday_us(self, birthday_us) -> datetime:
+        return datetime.strptime(birthday_us, '%m/%d/%y')
 
     def _parse_title(self, title: str) -> GenderField:
         title = title.lower().strip()
@@ -66,6 +71,9 @@ class AlumniParser(CSVParser):
         "USA": "United States of America",
         "Swaziland": "Eswatini",
         "Palestine": "Palestine, State of",
+        "Islamabad (Pakistan)": "Pakistan",
+        "Kolda (Senegal)": "Senegal",
+        "Czech Republic": "Czechia",
     }
 
     def _parse_country(self, country: str) -> Optional[CountryField]:
@@ -85,13 +93,12 @@ class AlumniParser(CSVParser):
         raise Exception("Unknown Country: {}".format(country))
 
     def _parse_class(self, clz: str) -> ClassField:
-        # extract the year from the string
-        parts = clz.split(" ")
-        if len(parts) < 2:
-            raise Exception("Class must have at least two parts")
+        matches = list(re.findall(r'\d\d', clz))
+        if len(matches) != 1:
+            raise Exception("Expected class {} to have exactly one year information, but got {} matches".format(
+                clz, len(matches)))
 
-        # parse the year into an integer
-        year = int(parts[1]) + 2000
+        year = int(matches[0]) + 2000
         for (value, _) in ClassField.CHOICES:
             if value == year:
                 return year
@@ -121,9 +128,15 @@ class AlumniParser(CSVParser):
         "Psychologie": "Psychology",
         "International Relations: Politics and History": "International Politics and History (IPH)",
         "Medicinal Chemistry and Chemical Biology": "Medical Chemistry and Chemical Biology",
+        "Cell Biology": "Biochemistry and Cell Biology (BCCB)",
+        "Physics and Computer Science": "Physics",  # TODO: Support multiple mayors!
+        "Geosciences": "Geosciences and Astrophysics",
+        # TODO: Support multiple mayors!
+        "Integrated Social Sciences & Global Economics and Management": "Integrated Social Sciences",
     }
 
     def _parse_major(self, major: str) -> Optional[MajorField]:
+        major = major.strip()
         if major == "":
             return None
 
@@ -137,7 +150,7 @@ class AlumniParser(CSVParser):
             if description.lower() == major:
                 return key
 
-        raise Exception('Unknown major: {}'.format(org_major))
+        raise Exception('Unknown major: {0!r}'.format(org_major))
 
 
 class SimulateException(Exception):
