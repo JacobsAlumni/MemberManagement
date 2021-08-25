@@ -11,6 +11,7 @@ from django.core.management.base import BaseCommand
 from django.core.validators import validate_email
 from django.db import transaction
 from registry.views.setup import make_user
+from registry.forms import RegistrationMixin
 
 from typing import TYPE_CHECKING
 from typing import Dict, List, Optional
@@ -19,12 +20,18 @@ if TYPE_CHECKING:
 
 from alumni.utils import CSVParser
 
+class RegistrationValidator(RegistrationMixin):
+    def add_error(self, field: str, error: Exception):
+        raise error
 
 class AlumniParser(CSVParser):
     """ A CSVParser for Alumni """
 
+    registration: RegistrationValidator
+
     def __init__(self):
         super().__init__()
+        self.registration = RegistrationValidator()
 
         self.register(['birthday_de'], 'birthday', self._parse_birthday_de)
         self.register(['birthday_us'], 'birthday', self._parse_birthday_us)
@@ -37,7 +44,7 @@ class AlumniParser(CSVParser):
         self.register(['nationality_1'], 'nationality_1', self._parse_country)
         self.register(['nationality_2'], 'nationality_2', self._parse_country)
 
-        self.register(['email'], 'email', self._parse_required)
+        self.register(['email'], 'email', self._parse_email)
         self.register(['class'], 'year', self._parse_class)
         self.register(['degree'], 'degree', self._parse_degree)
         self.register(['major'], 'major', self._parse_major)
@@ -56,6 +63,11 @@ class AlumniParser(CSVParser):
             return GenderField.FEMALE
 
         return GenderField.UNSPECIFIED
+
+    def _parse_email(self, value: str) -> str:
+        value = self._parse_required(value)
+        self.registration._validate_email(value)
+        return value
 
     def _parse_required(self, value: str) -> str:
         if value == "":
