@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 from typing import List, Any, Dict, Set, Tuple, Optional, Iterable
 from typing import Protocol
 
@@ -29,6 +29,14 @@ class CSVParser(object):
 
         # contains a mapping from group id -> mapping function
         self._mappers: Dict[int, ParsingCallback] = {}
+
+    def groups(self) -> Iterator[Tuple[str, List[str]]]:
+        """ Returns a list of registed groups """
+
+        for key in self._groups:
+            target = self._targets[key]
+            group = self._groups[key]
+            yield [target, [m for m in group]]
 
     def register(self, fields: List[str], target: str, map: ParsingCallback):
         """ Register a new field that can be loaded """
