@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 import openpyxl
 from openpyxl.utils import get_column_letter
+from .stats import render_stats
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -167,6 +168,15 @@ def unlink_from_gsuite_action(modeladmin: ModelAdmin, request: HttpRequest, quer
 unlink_from_gsuite_action.short_description = 'Unlink Users from GSuite'
 
 
+def render_statistics(modeladmin: ModelAdmin, request: HttpRequest, queryset: QuerySet) -> HttpResponse:
+    """ Renders a statistics page for the given queryset """
+
+    return render_stats(request, queryset)
+
+
+render_statistics.short_description = 'Fancy Statistics'
+
+
 class AlumniAdminActions:
     """ Actions available in the Django Alumni Admin Page """
 
@@ -216,5 +226,6 @@ class AlumniAdminActions:
     actions = [
         export_as_xslx_action("Export as XSLX", fields=full_export_fields),
         link_to_gsuite_action,
-        unlink_from_gsuite_action
+        unlink_from_gsuite_action,
+        render_statistics,
     ]

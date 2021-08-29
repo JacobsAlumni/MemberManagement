@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from django.views.generic.base import TemplateView
+import alumni
+from alumni.admin.stats import render_stats
+
 import random
 import string
 from enum import Enum
@@ -8,10 +12,11 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView
+from django.views.generic import FormView, View
 from raven.contrib.django.raven_compat.models import client
 
 from custom_auth.utils.gsuite import create_user, get_user_id, patch_user
@@ -68,7 +73,6 @@ def check_existing_email(alumni: Alumni, candidate=None) -> EmailStatus:
 
 def generate_random_password() -> str:
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=settings.GSUITE_PASS_LENGTH))
-
 
 @method_decorator(staff_member_required, name='dispatch')
 class ApprovalView(FormView):
@@ -219,6 +223,23 @@ class ApprovalView(FormView):
         GoogleAssociation.link_user(alumni.profile)
         messages.success(request, 'Linked portal account')
 
+@method_decorator(staff_member_required, name='dispatch')
+class StatsListView(TemplateView):
+    template_name = 'stats/list.html'
+
+@method_decorator(staff_member_required, name='dispatch')
+class StatsViewAll(View):
+    alumni_qualifer_text = 'existing'
+    def get_querset(self) -> QuerySet:
+        return Alumni.objects.all()
+
+    def get(self, *args, **kwargs) -> HttpResponse:
+        return render_stats(self.request, self.get_querset(), alumni_qualifer_text=self.__class__.alumni_qualifer_text)
+
+class StatsViewApproved(StatsViewAll):
+    alumni_qualifer_text = 'approved'
+    def get_querset(self) -> QuerySet:
+        return Alumni.objects.filter(approval__approval = True)
 
 @staff_member_required
 def preview_welcome_email(request: HttpRequest, uid: str) -> HttpResponse:
