@@ -1,0 +1,102 @@
+{% extends "base/base.html" %}
+{% load render_entrypoint from webpack_loader %}
+
+{% block title %}Statistics{% if alumni_qualifer_text %} ({{ alumni_qualifer_text | title }} Alumni){% endif %}{% endblock %}
+
+{% block pagetitle %}
+    {% if alumni_qualifer_text %}
+    <a href="{% url "alumni_stats_index" %}" class="uk-button uk-button-default uk-button-small">
+        <span uk-icon="icon: arrow-left"></span>
+        Back to Overview
+    </a>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
+{% block head %}
+{% render_entrypoint "registry__stats" "css" %}
+{% endblock %}
+
+{% block content %}
+
+<p class="uk-article-lead">
+    {% if alumni_qualifer_text %}
+        This page contains statistics about all {{ alumni_qualifer_text }} <span id='total'>(loading)</span> alumni.
+        It is visible to administrators only.
+    {% else %}
+        This page contains statistics of the selected dataset of <span id='total'>(loading)</span> alumni.
+        It is visible only to you.
+    {% endif %}    
+</p>
+
+<p class="uk-h2">Application Status</p>
+
+<div class="uk-grid uk-child-width-1-3@m">
+    <div>
+        <p class="uk-h3">Setup Completed</p>
+        <div id='setup'></div>
+    </div>
+    <div>
+        <p class="uk-h3">Approved</p>
+        <div id='approval'></div>
+    </div>
+    <div>
+        <p class="uk-h3">Automatically Imported</p>
+        <div id='auto'></div>
+    </div>
+</div>
+
+<p class="uk-h2">Membership Type</p>
+<div class="uk-grid uk-child-width-1-2@m">
+    <div>
+        <p class="uk-h3">Tier</p>
+        <div id='tier'></div>
+    </div>
+    <div>
+        <p class="uk-h3">Category</p>
+        <div id='category'></div>
+    </div>
+</div>
+
+<p class="uk-h2">Academics & Jacobs</p>
+<div class="uk-grid uk-child-width-1-2@m">
+    <div>
+        <p class="uk-h3">Degree</p>
+        <div id='degree'></div>
+    </div>
+    <div>
+        <p class="uk-h3">Graduation</p>
+        <div id='graduation'></div>
+    </div>
+
+    <div>
+        <p class="uk-h3">College</p>
+        <div id='college'></div>
+    </div>
+    <div>
+        <p class="uk-h3">Major</p>
+        <div id='major'></div>
+    </div>
+    
+</div>
+
+<p class="uk-h2">Misc</p>
+<div class="uk-grid uk-child-width-1-2@m">
+    <div>
+        <p class="uk-h3">Gender</p>
+        <div id='gender'></div>
+    </div>
+    <div>
+        <p class="uk-h3">Atlas Inclusion</p>
+        <div id='atlas'></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extrascripts %}
+    <script type="text/javascript">
+        window.stats = {{ stats | safe }};
+    </script>
+    {% render_entrypoint "registry__stats" "js" %}
+{% endblock %}

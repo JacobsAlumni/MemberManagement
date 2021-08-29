@@ -3,7 +3,6 @@ from __future__ import annotations
 import datetime
 
 from django import forms
-from django.contrib.auth.models import User
 
 from alumni.fields import CountryField
 

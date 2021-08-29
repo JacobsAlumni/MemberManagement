@@ -1,0 +1,27 @@
+{% extends "base/base.html" %}
+
+{% block title %}List of Statistics Pages{% endblock %}
+
+{% block pagetitle %}List of Statistics Pages{% endblock %}
+
+{% block content %}
+
+<p class="uk-article-lead">
+    Click below to see generated statistics pages.
+    They are only visible to administrators.
+</p>
+
+<ul class="uk-list uk-list-striped">
+    <li>
+        <a href="{% url 'alumni_stats_all' %}">All Alumni</a>
+    </li>
+    <li>
+        <a href="{% url 'alumni_stats_approved' %}">Approved Alumni</a>
+    </li>
+</ul>
+
+<p>
+    You can also generate a custom statistics page from Django Admin, by selecting a set of alumni and selecting the <code>Fancy Statistics</code> Action.
+</p>
+
+{% endblock %}
