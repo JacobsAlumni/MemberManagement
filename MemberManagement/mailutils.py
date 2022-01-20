@@ -14,7 +14,7 @@ from base64 import decodebytes
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Union, List, Any
+    from typing import Tuple, Union, List, Any
 
 
 def send_email(destination: Union[str, List[str]], subject: str, template: str, **kwargs: Any) -> int:
@@ -66,7 +66,7 @@ def _create_email_message(subject: str, html: str, from_email: str, recipient_li
 BASE_64_STRING = 'data:image/png;base64,'
 
 
-def _extract_images(html: str) -> (str, List[MIMEImage]):
+def _extract_images(html: str) -> Tuple[str, List[MIMEImage]]:
     soup = BeautifulSoup(html, features='lxml')
     images = []
 

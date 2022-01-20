@@ -23,7 +23,7 @@ from .models import SubscriptionInformation, PaymentIntent
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Dict, Any, Optional
+    from typing import Dict, Any, Optional, Tuple, List
     from .models import MembershipInformation
     from django.http import HttpResponse
 
@@ -290,7 +290,7 @@ class PaymentsTableMixin:
             raise Exception("unknown currency {}".format(cur))
 
     @classmethod
-    def get_invoice_table(cls, customer: Dict[str, Any]) -> (Optional[List[Dict[str, Any]]], Optional[str]):
+    def get_invoice_table(cls, customer: Dict[str, Any]) -> Tuple[Optional[List[Dict[str, Any]]], Optional[str]]:
         invoices, err = stripewrapper.get_payment_table(customer)
         described = []
 
@@ -321,7 +321,7 @@ class PaymentsTableMixin:
             return 'Unknown Payment Method. Please contact support. '
 
     @classmethod
-    def get_method_table(cls, customer: str) -> (Optional[List[Dict[str, Any]]], Optional[str]) :
+    def get_method_table(cls, customer: str) -> Tuple[Optional[List[Dict[str, Any]]], Optional[str]]:
         methods, err = stripewrapper.get_methods_table(customer)
         if err is None:
             methods = [cls.format_method(method) for method in methods]

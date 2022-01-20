@@ -14,7 +14,7 @@ from payments import stripewrapper
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Optional, Any
+    from typing import Optional, Any, Tuple
     from datetime import datetime, timedelta
 
 
@@ -108,7 +108,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         # and return it
         return the_sub
 
-    def change_tier(self) -> (Optional[SubscriptionInformation], Optional[str]):
+    def change_tier(self) -> Tuple[Optional[SubscriptionInformation], Optional[str]]:
         """ Designates this user as changing tier """
 
         # the tier we want to switch to
@@ -144,7 +144,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         # Patron -> Contributor
         return self._switch_paid_tier(desired_tier)
 
-    def _downgrade_to_starter(self) -> (Optional[SubscriptionInformation], Optional[str]):
+    def _downgrade_to_starter(self) -> Tuple[Optional[SubscriptionInformation], Optional[str]]:
         if self.member.category != AlumniCategoryField.REGULAR:
             return None, 'Non-regular Alumni are not allowed to downgrade to the free tier. '
 
@@ -171,7 +171,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
         # and return the instance
         return instance, None
 
-    def _upgrade_to_paid(self, desired_tier: str) -> (None, None):
+    def _upgrade_to_paid(self, desired_tier: str) -> Tuple[None, None]:
         """ Upgrades from the free to the desired tier """
 
         # store the 'desired' tier, so that we know to ask for payment details
@@ -180,7 +180,7 @@ class MembershipInformation(AlumniComponentMixin, models.Model):
 
         return None, None
 
-    def _switch_paid_tier(self, desired_tier: str) -> (Optional[SubscriptionInformation], Optional[str]):
+    def _switch_paid_tier(self, desired_tier: str) -> Tuple[Optional[SubscriptionInformation], Optional[str]]:
         """ Switches the paid tier """
 
         # find the current subscription

@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import TypeVar, Callable, Optional, List
     T = TypeVar['T']
+    from datetime import date
 
 
 def _safe(operation: Callable[[stripeapi], T]) -> Callable[[T], (Optional[T], Optional[str])]:
@@ -70,7 +71,7 @@ def create_customer(stripe: stripeapi, alumni_instance: Alumni) -> str:
 
 
 @_as_safe_operation
-def clear_all_payment_sources(stripe: stripapi, customer_id: str) -> str:
+def clear_all_payment_sources(stripe: stripeapi, customer_id: str) -> str:
     """ Removes all payment sources from an alumni """
 
     for source in stripe.Customer.retrieve(customer_id).sources.list().data:
@@ -86,7 +87,7 @@ def clear_all_payment_sources(stripe: stripapi, customer_id: str) -> str:
 
 
 @_as_safe_operation
-def update_payment_method(stripe: stripapi, customer_id: str, source_id: Optional[str], card_id: Optional[str]) -> Optional[bool]:
+def update_payment_method(stripe: stripeapi, customer_id: str, source_id: Optional[str], card_id: Optional[str]) -> Optional[bool]:
     """ Sets the default payment method for a customer to source or card """
 
     # clear all existing methods
