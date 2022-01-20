@@ -61,6 +61,7 @@ python manage.py runserver
 In principle the settings can be found in [`settings.py`](MemberManagement/settings.py). 
 To enable easier debugging, it is configured to automatically import settings from a file called `MemberManagement/local_settings.py`.
 This file is intended to contain local settings, such as session tokens, or external authentication credentials. 
+A template `local_settings.py` can be generated using [`python manage.py gen_local_settings`](MemberManagement/management/commands/gen_local_settings.py). 
 The file is also `.gitignore`d and should not be committed. 
 
 Notice that however because of external integrations, some features may not work as expected. 
