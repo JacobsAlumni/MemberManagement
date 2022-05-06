@@ -1,5 +1,5 @@
-Django==3.1.14
-django-countries==6.0
+Django==4.0.4
+django-countries==7.3.2
 django-cookie-law==2.0.3
 django-impersonate==1.7
 jsonfield==3.1.0
@@ -18,7 +18,7 @@ webencodings==0.5.1
 requests==2.23.0
 tqdm==4.43.0
 django-webpack5-loader==0.8.5
-django-extensions==2.2.9
+django-extensions==3.1.5
 djangorestframework==3.11.2
 django-money==1.1
 py-moneyed==1.2
