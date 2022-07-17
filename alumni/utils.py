@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Iterator
-from typing import List, Any, Dict, Set, Tuple, Optional, Iterable
+from typing import List, Any, Dict, Set, Tuple, Optional, Iterable, Union
 from typing import Protocol
 
 
@@ -22,7 +22,7 @@ class CSVParser(object):
         self._groups: Dict[int, List[str]] = {}
 
         # contains a list of mappings from field id -> group id
-        self._fieldmap: Dict[str, int] = {}
+        self._fieldmap: Dict[str, List[int]] = {}
 
         # names of the targeted fields
         self._targets: Dict[int, str] = {}
@@ -38,7 +38,7 @@ class CSVParser(object):
             group = self._groups[key]
             yield [target, [m for m in group]]
 
-    def register(self, fields: List[str], target: str, map: ParsingCallback):
+    def register(self, fields: List[str], target: Union[str, List[str]], map: ParsingCallback):
         """ Register a new field that can be loaded """
         if target == "" or "" in fields:
             raise Exception('Target and Fields must not be the empty')
@@ -47,14 +47,11 @@ class CSVParser(object):
         group_id: int = self._counter
         self._counter += 1
 
-        # check that none of the field ids are used
+        # add the fields to the fieldmap!
         for field in fields:
-            if field in self._fieldmap:
-                raise Exception('Field {} already used by group'.format(field))
-
-        # store the group ids for all the fields
-        for field in fields:
-            self._fieldmap[field] = group_id
+            if field not in self._fieldmap:
+                self._fieldmap[field] = []
+            self._fieldmap[field].append(group_id)
 
         # store the required fields and map
         self._groups[group_id] = [f for f in fields]
@@ -81,9 +78,9 @@ class CSVParser(object):
             if field not in self._fieldmap:
                 raise Exception('Unknown field {}'.format(field))
 
-            group = self._fieldmap[field]
-            groups.add(group)
-            targets.add(self._targets[group])
+            for group in self._fieldmap[field]:
+                groups.add(group)
+                targets.add(self._targets[group])
 
         if required is None:
             required = list()

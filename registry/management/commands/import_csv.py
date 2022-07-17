@@ -20,9 +20,11 @@ if TYPE_CHECKING:
 
 from alumni.utils import CSVParser
 
+
 class RegistrationValidator(RegistrationMixin):
     def add_error(self, field: str, error: Exception):
         raise error
+
 
 class AlumniParser(CSVParser):
     """ A CSVParser for Alumni """
@@ -36,6 +38,8 @@ class AlumniParser(CSVParser):
         self.register(['birthday_de'], 'birthday', self._parse_birthday_de)
         self.register(['birthday_us'], 'birthday', self._parse_birthday_us)
         self.register(['title'], 'gender', self._parse_title)
+        self.register(['name_1_3'], 'given_name', self._parse_given_name)
+        self.register(['name_1_3'], 'middle_name', self._parse_middle_name)
 
         self.register(['name_1'], 'given_name', self._parse_required)
         self.register(['name_2'], 'family_name', self._parse_required)
@@ -46,6 +50,7 @@ class AlumniParser(CSVParser):
 
         self.register(['email'], 'email', self._parse_email)
         self.register(['class'], 'year', self._parse_class)
+        self.register(['year'], 'year', self._parse_year)
         self.register(['degree'], 'degree', self._parse_degree)
         self.register(['major'], 'major', self._parse_major)
 
@@ -65,9 +70,17 @@ class AlumniParser(CSVParser):
         return GenderField.UNSPECIFIED
 
     def _parse_email(self, value: str) -> str:
-        value = self._parse_required(value)
+        value = self._parse_required(value.strip())
         self.registration._validate_email(value)
         return value
+
+    def _parse_given_name(self, value: str) -> str:
+        value = self._parse_required(value.strip())
+        return value.split(" ")[0]
+
+    def _parse_middle_name(self, value: str) -> str:
+        value = self._parse_required(value.strip())
+        return " ".join(value.split(" ")[1:])
 
     def _parse_required(self, value: str) -> str:
         if value == "":
@@ -111,6 +124,19 @@ class AlumniParser(CSVParser):
                 clz, len(matches)))
 
         year = int(matches[0]) + 2000
+        for (value, _) in ClassField.CHOICES:
+            if value == year:
+                return year
+
+        return ClassField.OTHER
+
+    def _parse_year(self, year: str) -> ClassField:
+        matches = list(re.findall(r'\d\d\d\d', year))
+        if len(matches) != 1:
+            raise Exception("Expected year {} to have exactly one year information, but got {} matches".format(
+                year, len(matches)))
+
+        year = int(matches[0])
         for (value, _) in ClassField.CHOICES:
             if value == year:
                 return year
