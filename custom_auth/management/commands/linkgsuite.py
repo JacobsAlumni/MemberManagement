@@ -56,10 +56,10 @@ def link_gsuite_users(users: QuerySet, remove: bool, on_message: Callable[str, N
                         user.username))
 
             # And link them
-            link = GoogleAssociation.link_user(user, service=service)
+            link, err = GoogleAssociation.link_user(user, service=service)
             if link is None:
-                on_message("Unable to link user {}: Unable to find GSuite (does it exist?)".format(
-                    user.username))
+                on_message("Unable to link user {}: {}".format(
+                    user.username, err))
             else:
                 on_message(
                     "Linked user {} to G-Suite ID {}".format(user.username, link.google_user_id))

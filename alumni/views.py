@@ -220,11 +220,11 @@ class ApprovalView(FormView):
 
         # Link user
         messages.info(request, 'Linking portal account')
-        link = GoogleAssociation.link_user(alumni.profile)
+        link, err = GoogleAssociation.link_user(alumni.profile)
         if link is not None:
             messages.success(request, 'Linked portal account')
         else:
-            messages.warning(request, 'Could not link portal account, please relink manually. ')
+            messages.warning(request, 'Could not link portal account: {}. Please relink manually using Django Admin. '.format(err))
 
 @method_decorator(staff_member_required, name='dispatch')
 class StatsListView(TemplateView):
