@@ -18,12 +18,16 @@ In general it fulfills six purposes:
 ## Installing
 
 The entire application can be run locally for a development setup and via [Docker](https://www.docker.com/) in production. 
+For local dependency versions, we make use of the [.tool-versions](./tool-versions) file provided by [asdf](https://asdf-vm.com/).
 
 ### Local Development Instance
 
-To run a local instance, install Python 3.9 or newer, then clone this repository and afterwards set up a [virtual environment](https://docs.python.org/3/library/venv.html) as follows:
+To run a local instance, install Python 3.9, then clone this repository and afterwards set up a [virtual environment](https://docs.python.org/3/library/venv.html) as follows:
 
 ```bash
+# install the right python as per asdf
+asdf install
+
 # Create and activate venv in venv/ 
 python3 -m venv venv
 source venv/bin/activate
@@ -43,6 +47,8 @@ Afterwards install the frontend dependencies using [yarn](https://yarnpkg.com/):
 ```bash
 yarn
 ```
+
+Note that this is only tested using the NodeJS version specified in `.tool-versions`.
 
 
 By default a local instance is then configured to store data in a local `db.sqlite3` database. 
