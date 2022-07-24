@@ -87,12 +87,12 @@ class ApprovalView(FormView):
         emailLinked = alumni.profile.googleassociation_set.exists()
         previousEmail = EmailStatus.message(check_existing_email(alumni))
 
-        jsAutoEmail = json.dumps(alumni.profile.username + '@jacobs-alumni.de')
+        jsAutoEmail = alumni.profile.username + '@jacobs-alumni.de'
         if alumni.existingEmail:
             jsAutoEmail = alumni.existingEmail
 
         context.update(
-            {'alumni': alumni, 'emailLinked': emailLinked, 'previousEmail': previousEmail, 'jsAutoEmail': jsAutoEmail})
+            {'alumni': alumni, 'emailLinked': emailLinked, 'previousEmail': previousEmail, 'jsAutoEmail': json.dumps(jsAutoEmail)})
         return context
 
     def form_valid(self, form: UserApprovalForm) -> HTTPResponse:
