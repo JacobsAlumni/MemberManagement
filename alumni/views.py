@@ -220,8 +220,11 @@ class ApprovalView(FormView):
 
         # Link user
         messages.info(request, 'Linking portal account')
-        GoogleAssociation.link_user(alumni.profile)
-        messages.success(request, 'Linked portal account')
+        link = GoogleAssociation.link_user(alumni.profile)
+        if link is not None:
+            messages.success(request, 'Linked portal account')
+        else:
+            messages.warning(request, 'Could not link portal account, please relink manually. ')
 
 @method_decorator(staff_member_required, name='dispatch')
 class StatsListView(TemplateView):
