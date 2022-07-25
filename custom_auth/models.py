@@ -17,7 +17,7 @@ class GoogleAssociation(models.Model):
     google_user_id: str = models.CharField(max_length=64)
 
     @classmethod
-    def link_user(cls, user: User, service: Optional[Resource]=None) -> [Optional[GoogleAssociation], Optional[str]]:
+    def link_user(cls, user: User, uid: Optional[str] = None, service: Optional[Resource]=None) -> [Optional[GoogleAssociation], Optional[str]]:
         # refresh the user from the database
         user.refresh_from_db()
 
@@ -33,7 +33,10 @@ class GoogleAssociation(models.Model):
             return None, "Approval GSuite does not exist"
 
         # get the user id
-        google_user_id = get_user_id(approval.gsuite, service=service)
+        if uid is not None:
+            google_user_id = uid
+        else:
+            google_user_id = get_user_id(approval.gsuite, service=service)
 
         # or return None if we do not have one
         if google_user_id is None:

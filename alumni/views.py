@@ -27,7 +27,7 @@ from .models import Alumni
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Any, Dict
+    from typing import Any, Dict, Optional
     from django.http import HttpResponse, HttpRequest
 
 
@@ -155,7 +155,7 @@ class ApprovalView(FormView):
         messages.success(request, 'Created user with id {}'.format(uid))
 
         # Approve + Link
-        self.approve_and_link(request, email, alumni)
+        self.approve_and_link(request, email, alumni, uid = uid)
 
         # Send email
         messages.info(request, 'Sending Welcome email')
@@ -177,7 +177,7 @@ class ApprovalView(FormView):
         messages.success(request, 'Patched user with id {}'.format(uid))
 
         # Approve + Link
-        self.approve_and_link(request, email, alumni)
+        self.approve_and_link(request, email, alumni, uid = uid)
 
         # Send email
         messages.info(request, 'Sending Welcome Back email')
@@ -202,14 +202,14 @@ class ApprovalView(FormView):
         messages.success(request, 'Patched user with id {}'.format(uid))
 
         # Approve + Link
-        self.approve_and_link(request, email, alumni)
+        self.approve_and_link(request, email, alumni, uid = uid)
 
         # Send email
         messages.info(request, 'Sending Welcome Back email')
         alumni.send_welcome_email(password=password, back=True)
         messages.success(request, 'Sent Welcome Back email')
 
-    def approve_and_link(self, request: HttpRequest, email: str, alumni: Alumni) -> None:
+    def approve_and_link(self, request: HttpRequest, email: str, alumni: Alumni, uid: Optional[str] = None) -> None:
         # Approve user
         messages.info(request, 'Storing approval info')
         alumni.approval.approval = True
@@ -220,7 +220,7 @@ class ApprovalView(FormView):
 
         # Link user
         messages.info(request, 'Linking portal account')
-        link, err = GoogleAssociation.link_user(alumni.profile)
+        link, err = GoogleAssociation.link_user(alumni.profile, uid = uid)
         if link is not None:
             messages.success(request, 'Linked portal account')
         else:
