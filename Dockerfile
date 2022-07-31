@@ -23,7 +23,7 @@ ADD assets/ /app/assets/
 RUN yarn build
 
 # image for python
-FROM python:3.9-alpine
+FROM python:3.10-alpine
 
 # Install binary python dependencies
 RUN apk add --no-cache \
