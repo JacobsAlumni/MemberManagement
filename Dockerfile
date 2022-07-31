@@ -5,7 +5,7 @@ RUN git describe --always > /PORTAL_VERSION
 RUN echo "Saved version file containing '$(cat /PORTAL_VERSION)'"
 
 # image for building node dependencies
-FROM node:12-alpine as frontend
+FROM node:16-alpine as frontend
 
 RUN apk add --no-cache \
     git
