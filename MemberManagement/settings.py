@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'atlas',
     'payments',
     'donation_receipts',
+    'donations',
     'impersonate',
     'django_forms_uikit',
     'django_countries',
