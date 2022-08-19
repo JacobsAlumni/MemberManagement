@@ -42,7 +42,7 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
     if data['currency'] != 'eur':
         return
 
-    if data['status'] != 'succeeded':
+    if data['status'] == 'succeeded':
         try:
             donation = Donation.objects.get(payment_id=data['id'])
             donation.completed = True

@@ -1,5 +1,6 @@
 import stripe
 from babel.numbers import get_currency_precision
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.translation import gettext
 from django.views.generic import CreateView, TemplateView, DetailView
@@ -15,6 +16,13 @@ def money_to_integer(money):
     )
 
 
+def user_to_stripe_customer_id(user):
+    try:
+        return user.alumni.membership.customer
+    except ObjectDoesNotExist:
+        pass
+
+
 class DonateView(CreateView):
     model = Donation
     fields = ["amount", "target"]
@@ -26,6 +34,7 @@ class DonateView(CreateView):
             success_url=self.request.build_absolute_uri(reverse('donation-detail', args=(str(self.object.external_id),))),
             mode="payment",
             currency=self.object.amount_currency,
+            customer=user_to_stripe_customer_id(self.request.user),
             line_items=[
                 {
                     "price_data": {
