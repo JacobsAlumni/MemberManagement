@@ -64,6 +64,12 @@ and in a seperate terminal the normal django development server:
 python manage.py runserver
 ```
 
+If you'd like to generate donation receipts PDFs, also run this
+
+```bash
+ docker run -p 3000:3000 ghcr.io/kuboschek/pdf-render-server
+```
+
 In principle the settings can be found in [`settings.py`](MemberManagement/settings.py). 
 To enable easier debugging, it is configured to automatically import settings from a file called `MemberManagement/local_settings.py`.
 This file is intended to contain local settings, such as session tokens, or external authentication credentials. 

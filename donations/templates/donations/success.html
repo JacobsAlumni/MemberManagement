@@ -5,15 +5,23 @@
 <div class="uk-clearfix">
     <h1>Thank you for supporting our cause!</h1>
     <h2>Your donation enables our continued work.</h2>
-    {% if object.completed %}
-        <p>Your payment has been processed. Check your email for instructions on acquiring a donation receipt.</p>
-    {% else %}
+    {% if user and receipt.finalized and object.completed %}
         <p>
-            Once your payment is fully processed, we will let you know.
-            {% if object.target %}
-                Your donation towards {{ object.target.label }} will be taken into consideration regardless.
-            {% endif %}
+            As an association member, you will receive your donation receipt by email shortly.
+            You may also download it <a href="{% url 'download' receipt %}">here</a>.
         </p>
+    {% else %}
+        {% if object.completed %}
+            <p>Your payment has been processed. Check your email for instructions on acquiring a donation receipt.</p>
+        {% else %}
+            <p>
+                Once your payment is fully processed, we will let you know.
+                {% if object.target %}
+                    Your donation towards {{ object.target.label }} will be taken into consideration regardless.
+                {% endif %}
+            </p>
+        {% endif %}
+
     {% endif %}
 </div>
 {% endblock %}

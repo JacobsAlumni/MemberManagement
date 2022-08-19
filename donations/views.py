@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.translation import gettext
 from django.views.generic import CreateView, TemplateView, DetailView
 
+from donation_receipts.models import STRIPE, DonationReceipt
 from donations.models import Donation
 
 
@@ -59,6 +60,18 @@ class DonationSuccessView(DetailView):
     model = Donation
     template_name = "donations/success.html"
     slug_field = "external_id"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        try:
+            ctx.update({
+                "receipt": DonationReceipt.objects.get(payment_stream=STRIPE, payment_reference=self.object.payment_id)
+            })
+        except DonationReceipt.DoesNotExist:
+            pass
+
+        return ctx
 
 class DonationFailedView(TemplateView):
     template_name = "donations/failed.html"
