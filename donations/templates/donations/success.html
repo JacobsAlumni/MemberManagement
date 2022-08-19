@@ -2,26 +2,40 @@
 {% load uikit_tags %}
 
 {% block content %}
-<div class="uk-clearfix">
-    <h1>Thank you for supporting our cause!</h1>
-    <h2>Your donation enables our continued work.</h2>
-    {% if user and receipt.finalized and object.completed %}
-        <p>
-            As an association member, you will receive your donation receipt by email shortly.
-            You may also download it <a href="{% url 'download' receipt %}">here</a>.
-        </p>
-    {% else %}
+    <div class="uk-clearfix">
+        <h1>Thank you for supporting our cause!</h1>
+        <h2>Your donation enables our continued work.</h2>
         {% if object.completed %}
-            <p>Your payment has been processed. Check your email for instructions on acquiring a donation receipt.</p>
+            {% if receipt.finalized %}
+                {# If a receipt exists and is complete, offer it. #}
+                {# TODO: Confirm that receipt download works for anonymous users. #}
+                <p><a href="{% url 'download' receipt %}">Download Receipt</a></p>
+            {% elif receipt %}
+                {# This case is when the receipt wasn't finalized, but was created #}
+                <p>We will e-mail your tax receipt once it's ready.</p>
+            {% else %}
+                {% if user %}
+                    {# If we're logged in, but no receipt exists, the user needs to fill in their address. #}
+                    {# TODO: Retry creating DonationReceipts based on PaymentIntents after address updates. #}
+                    <p>
+                        We tried issuing your receipt, but have no address on file. <a href="#">Provide your address
+                        now</a>.
+                    </p>
+                {% else %}
+                    {# These are anonymous users, who may have just donated, or may have come back from an e-mail. #}
+                    <p>
+                        Your payment was successfully processed! If you would like a receipt, please <a href="#">provide
+                        your details</a>.
+                    </p>
+                {% endif %}
+            {% endif %}
         {% else %}
             <p>
-                Once your payment is fully processed, we will let you know.
+                Once your payment is fully processed, you'll hear from us by e-mail.
                 {% if object.target %}
                     Your donation towards {{ object.target.label }} will be taken into consideration regardless.
                 {% endif %}
             </p>
         {% endif %}
-
-    {% endif %}
-</div>
+    </div>
 {% endblock %}
