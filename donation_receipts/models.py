@@ -100,6 +100,9 @@ def _get_donating_alum(stripe_customer_id):
 
 @receiver(signals.post_save, sender='alumni.Address')
 def _trigger_receipt_generation(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+
     """ When a previously missing address becomes available, check to see if we can generate more receipts now"""
     stripe_customer_id = instance.member.membership.customer
 
@@ -110,6 +113,9 @@ def _trigger_receipt_generation(sender, instance, created, **kwargs):
 
 @receiver(signals.post_save, sender='payments.PaymentIntent')
 def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+
     data = instance.data
 
     if data['status'] != 'succeeded' or data['currency'] != 'eur':
@@ -149,6 +155,9 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
 
 @receiver(signals.post_save, sender=DonationReceipt)
 def _maybe_email_donation_receipt(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+
     receipt = instance
     if receipt.receipt_pdf and not receipt.email_sent:
         mail = mailutils.prepare_email(receipt.email_to, 'Jacobs Alumni Association - Donation Receipt',
