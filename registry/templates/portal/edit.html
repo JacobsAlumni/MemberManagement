@@ -4,10 +4,12 @@
 {% block title %}Edit - {{ name }} {% endblock %}
 
 {% block pagetitle %}
+    {% if not next %}
 <a href="{% url "portal" %}" class="uk-button uk-button-default uk-button-small">
         <span uk-icon="icon: arrow-left"></span>
         Back to Portal
     </a>
+    {% endif %}
     Edit Data - {{ name }}
 {% endblock %}
 
