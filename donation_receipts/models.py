@@ -6,7 +6,7 @@ from typing import Iterable
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models import signals
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
@@ -100,15 +100,19 @@ def _get_donating_alum(stripe_customer_id):
 
 @receiver(signals.post_save, sender='alumni.Address')
 def _trigger_receipt_generation(sender, instance, created, **kwargs):
+    """ When a previously missing address becomes available, check to see if we can generate more receipts now"""
+
     if kwargs.get('raw', False):
         return
 
-    """ When a previously missing address becomes available, check to see if we can generate more receipts now"""
-    stripe_customer_id = instance.member.membership.customer
+    try:
+        stripe_customer_id = instance.member.membership.customer
 
-    pis: Iterable[PaymentIntent] = PaymentIntent.objects.filter(data__customer=stripe_customer_id)
-    for pi in pis:
-        _maybe_generate_donation_receipt(sender, pi, False)
+        pis: Iterable[PaymentIntent] = PaymentIntent.objects.filter(data__customer=stripe_customer_id)
+        for pi in pis:
+            _maybe_generate_donation_receipt(sender, pi, False)
+    except ObjectDoesNotExist:
+        pass
 
 
 @receiver(signals.post_save, sender='payments.PaymentIntent')
