@@ -230,6 +230,9 @@ DONATION_RECEIPT_TEMPLATE = 'donation_receipts/receipt_pdf.html'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 SIGNATURE_IMAGE = os.path.join(BASE_DIR, 'donation_receipts/sig.png')
 
+# If true, will finalize donation receipts right when creating them
+FINALIZE_AUTOMATICALLY = True
+
 # Portal Version from file added during Docker build. Also present in dev env
 try:
     with open(os.path.join(BASE_DIR, 'PORTAL_VERSION')) as f:

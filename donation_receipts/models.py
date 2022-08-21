@@ -154,6 +154,8 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
     if receipt.finalized:
         return
 
+    receipt.finalized = settings.FINALIZE_AUTOMATICALLY
+
     receipt.save()
 
 
