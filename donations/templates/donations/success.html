@@ -1,0 +1,52 @@
+{% extends "base/base.html" %}
+{% load uikit_tags %}
+
+{% block head %}
+    <meta http-equiv="refresh" content="3">
+{% endblock %}
+
+{% block content %}
+    <div class="uk-clearfix">
+        <h1>Thank You</h1>
+        {% if object.completed %}
+            {% if receipt.finalized %}
+                {# If we have a logged in user, and a receipt exists, offer it #}
+                {% if user.alumni %}
+                    <h3><a href="{% url 'download' receipt %}">Download Receipt</a></h3>
+                {# Anonymous users only get one e-mail #}
+                {% else %}
+                    <h3>We've emailed your receipt.</h3>
+                {% endif %}
+            {% elif receipt %}
+                {# This case is when the receipt wasn't finalized, but was created #}
+                <h3>We will e-mail your tax receipt once it's ready.</h3>
+            {% else %}
+                {% if user.alumni %}
+                    {# If we're logged in, but no receipt exists, the user needs to fill in their address. #}
+                    {% if not user.alumni.address.is_filled %}
+                        <h3>
+                            We tried issuing your receipt, but have no address on file.
+                            Please <a href="{% url 'edit_address' %}?next={% url 'donation-detail' object.external_id %}">
+                            provide your address</a>.
+                        </h3>
+                    {% else %}
+                        <h3>If you'd like a receipt, please contact support.</h3>
+                    {% endif %}
+                {% else %}
+                    {# These are anonymous users, who may have just donated, or may have come back from an e-mail. #}
+                    <h3>
+                        Your payment was successfully processed! If you would like a receipt, please
+                        <a href="{% url 'receipt-create' object.external_id %}">provide your address</a>.
+                    </h3>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            <h3>
+                Once your payment is fully processed, you'll hear from us by e-mail.
+                {% if object.target %}
+                    Your donation towards {{ object.target.label }} will be taken into consideration regardless.
+                {% endif %}
+            </h3>
+        {% endif %}
+    </div>
+{% endblock %}

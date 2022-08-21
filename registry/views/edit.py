@@ -22,9 +22,12 @@ def editViewFactory(prop: Optional[str], FormClass: Type[Form], name: str) -> Ca
 
     @require_setup_completed
     def edit(request: HttpRequest) -> HttpResponse:
+        next = request.GET.get("next")
 
         # figure out the edit url to redirect to
-        if prop is None:
+        if next:
+            url = next
+        elif prop is None:
             url = reverse('edit')
         else:
             url = reverse('edit_{}'.format(prop))
@@ -50,7 +53,7 @@ def editViewFactory(prop: Optional[str], FormClass: Type[Form], name: str) -> Ca
                 # Add a success message
                 messages.success(request, 'Changes saved. ')
 
-                # and then continue to the main portal page.
+                # and then continue to the next page
                 return redirect(url)
 
         # if we did not have any post data, simply create a new form
@@ -62,6 +65,7 @@ def editViewFactory(prop: Optional[str], FormClass: Type[Form], name: str) -> Ca
                       {
                           'form': form,
                           'name': name,
+                          'next': next,
                           'messsages': get_messages(request)
                       })
 

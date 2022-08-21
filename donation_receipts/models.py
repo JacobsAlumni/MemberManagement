@@ -1,10 +1,12 @@
 import base64
 import uuid
 from os import path
+from typing import Iterable
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.dispatch import receiver
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.db.models import signals
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
@@ -19,6 +21,7 @@ from djmoney.money import Money
 import pdfrender
 
 from MemberManagement import mailutils
+from payments.models import PaymentIntent
 from registry.models import Alumni
 
 from .utils import _convert_to_written
@@ -90,11 +93,33 @@ For bank accounts, use the SEPA transfer ID. For other payment sources, leave a 
     def download_filename(self):
         return 'JAA Donation Receipt {date}.pdf'.format(date=self.received_on)
 
+
 def _get_donating_alum(stripe_customer_id):
     return Alumni.objects.get(membership__customer=stripe_customer_id)
 
+
+@receiver(signals.post_save, sender='alumni.Address')
+def _trigger_receipt_generation(sender, instance, created, **kwargs):
+    """ When a previously missing address becomes available, check to see if we can generate more receipts now"""
+
+    if kwargs.get('raw', False):
+        return
+
+    try:
+        stripe_customer_id = instance.member.membership.customer
+
+        pis: Iterable[PaymentIntent] = PaymentIntent.objects.filter(data__customer=stripe_customer_id)
+        for pi in pis:
+            _maybe_generate_donation_receipt(sender, pi, False)
+    except ObjectDoesNotExist:
+        pass
+
+
 @receiver(signals.post_save, sender='payments.PaymentIntent')
 def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+
     data = instance.data
 
     if data['status'] != 'succeeded' or data['currency'] != 'eur':
@@ -105,7 +130,10 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
     except Alumni.DoesNotExist:
         return
 
-    if not donation_sender.address:
+    try:
+        if not donation_sender.address:
+            return
+    except ObjectDoesNotExist:
         return
 
     if not donation_sender.address.is_filled():
@@ -126,11 +154,14 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
     if receipt.finalized:
         return
 
-
     receipt.save()
+
 
 @receiver(signals.post_save, sender=DonationReceipt)
 def _maybe_email_donation_receipt(sender, instance, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+
     receipt = instance
     if receipt.receipt_pdf and not receipt.email_sent:
         mail = mailutils.prepare_email(receipt.email_to, 'Jacobs Alumni Association - Donation Receipt',

@@ -38,6 +38,7 @@ COUNTRIES_OVERRIDE = {
 
 INSTALLED_APPS = [
     'django.contrib.auth',
+    'django.contrib.sites',
     'registry',
     'cookielaw',
     'alumni',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'atlas',
     'payments',
     'donation_receipts',
+    'donations',
     'impersonate',
     'django_forms_uikit',
     'django_countries',
@@ -221,3 +223,5 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+SITE_ID = 1

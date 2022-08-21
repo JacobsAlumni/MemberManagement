@@ -1,0 +1,14 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+    <p>Thank you for your generous contribution to the Alumni Association.</p>
+
+    <p>If you would like to receive a tax receipt, please proceed to <a href="{{ domain }}{% url 'donation-detail' object.external_id %}">fill
+        your details.</a></p>
+
+    <p>
+        Best regards,<br/>
+
+        Jacobs Alumni Association
+    </p>
+{% endblock %}

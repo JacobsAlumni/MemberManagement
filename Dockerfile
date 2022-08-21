@@ -57,6 +57,7 @@ ADD custom_auth/ /app/custom_auth
 ADD atlas/ /app/atlas
 ADD payments/ /app/payments
 ADD docker/ /app/docker
+ADD donations/ /app/donations
 ADD donation_receipts/ /app/donation_receipts
 
 # copy over the frontend assets
