@@ -55,7 +55,8 @@ class DonateView(CreateView):
                 "card": {
                     "setup_future_usage": "off_session"
                 }
-            }
+            },
+            submit_type="donate",
         )
 
         self.object.payment_id = session.payment_intent
