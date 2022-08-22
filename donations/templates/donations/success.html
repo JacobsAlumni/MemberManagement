@@ -2,7 +2,9 @@
 {% load uikit_tags %}
 
 {% block head %}
-    <meta http-equiv="refresh" content="3">
+    {% if not object.completed or not receipt.finalized %}
+        <meta http-equiv="refresh" content="3">
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -12,7 +14,8 @@
             {% if receipt.finalized %}
                 {# If we have a logged in user, and a receipt exists, offer it #}
                 {% if user.alumni %}
-                    <h3><a href="{% url 'download' receipt %}">Download Receipt</a></h3>
+                    <h3>Your contributions enable our continued work!</h3>
+                    <h4>You may <a href="{% url 'download' receipt %}">download your receipt</a> now</h4>
                 {# Anonymous users only get one e-mail #}
                 {% else %}
                     <h3>We've emailed your receipt.</h3>
@@ -48,5 +51,6 @@
                 {% endif %}
             </h3>
         {% endif %}
+        <p>In case of questions or problems, please contact support@jacobs-alumni.de</p>
     </div>
 {% endblock %}
