@@ -32,6 +32,7 @@ django-pdf-render = "0.1.2"
 channels = "^3.0.5"
 channels-redis = "^3.4.1"
 whitenoise = "^6.2.0"
+lxml = "4.9.1"
 
 [tool.poetry.dev-dependencies]
 pycodestyle = "2.6.0"

@@ -58,19 +58,6 @@ def _maybe_complete_donation(sender, instance, created, **kwargs):
         except Donation.DoesNotExist:
             pass
 
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-
-@receiver(signals.post_save, sender='payments.PaymentIntent')
-def _maybe_complete_donation(sender, instance, created, **kwargs):
-    all_succeeded = sender.objects.filter(data__status="succeeded")
-    total_amount = sum(map(lambda x: x.data["amount"], all_succeeded))
-
-    layer = get_channel_layer()
-    async_to_sync(layer.group_send)("donation_updates", {"type": "donations.total", "total_amount": total_amount})
-
-
-
 @receiver(signals.post_save, sender='donations.Donation')
 def _maybe_email_donor(sender, instance: Donation, created, **kwargs):
     if not instance.completed:
