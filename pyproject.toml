@@ -27,6 +27,7 @@ django-webpack5-loader = "0.8.5"
 django-extensions = "2.2.9"
 djangorestframework = "3.11.2"
 django-money = "1.1"
+py-moneyed = "1.2"
 django-pdf-render = "0.1.2"
 channels = "^3.0.5"
 
