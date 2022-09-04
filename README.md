@@ -28,15 +28,11 @@ To run a local instance, install Python 3.9, then clone this repository and afte
 # install the right python as per asdf
 asdf install
 
-# Create and activate venv in venv/ 
-python3 -m venv venv
-source venv/bin/activate
+# Install poetry
+pip install poetry
 
 # Install dependencies
-pip install -r requirements.txt
-
-# Install development dependencies
-pip install -r requirements-dev.txt
+poetry install
 
 # Run migrations
 python manage.py migrate
