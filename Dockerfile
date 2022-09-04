@@ -108,6 +108,6 @@ VOLUME /data/
 EXPOSE 80
 
 ENTRYPOINT ["/app/docker/entrypoint.sh"]
-CMD ["uwsgi", "--ini", "/app/docker/uwsgi.ini"]
+CMD ["uvicorn", "MemberManagement.asgi:application", "--host", "0.0.0.0", "--port", "80"]
 
 COPY --from=version /PORTAL_VERSION /app/PORTAL_VERSION

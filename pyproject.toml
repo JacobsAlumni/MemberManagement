@@ -30,6 +30,8 @@ django-money = "1.1"
 py-moneyed = "1.2"
 django-pdf-render = "0.1.2"
 channels = "^3.0.5"
+channels-redis = "^3.4.1"
+whitenoise = "^6.2.0"
 
 [tool.poetry.dev-dependencies]
 pycodestyle = "2.6.0"

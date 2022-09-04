@@ -29,6 +29,15 @@ DATABASES = {
     }
 }
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.setdefault("REDIS_HOST", "redis"), int(os.environ.setdefault("REDIS_PORT", "6379")))],
+        },
+    },
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.setdefault("EMAIL_HOST", "")
 EMAIL_HOST_USER = os.environ.setdefault("EMAIL_HOST_USER", "")
@@ -37,7 +46,7 @@ EMAIL_FROM = os.environ.setdefault("EMAIL_FROM",
                                    'Alumni Association Portal <portal@jacobs-alumni.de>')
 
 # staticfiles
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # add the stripe keys
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')

@@ -1,10 +1,23 @@
 {% extends "base/base.html" %}
 {% load uikit_tags %}
+{% load render_entrypoint from webpack_loader %}
+
+{% block head %}
+{% render_entrypoint "donate__form" "css" %}
+{% endblock %}
 
 {% block content %}
+    <h1>Donate To The Alumni Association</h1>
+    <div id="total_donations">
+        (Donations So Far: ???)
+    </div>
     <form class="uk-form-horizontal" method="POST">
         {% csrf_token %}
         {{ form | as_uikit_form }}
         <input type="submit" class="uk-button uk-button-primary" value="Save">
     </form>
+{% endblock %}
+
+{% block extrascripts %}
+    {% render_entrypoint "donate__form" "js" %}
 {% endblock %}
