@@ -13,5 +13,4 @@ def _maybe_complete_donation(sender, instance, created, **kwargs):
         new_amount = instance.data["amount"]
 
         layer = layers.get_channel_layer()
-        sync.async_to_sync(layer.group_send)("donation_updates", {"type": "donations.total", "amounts": {"total": total_amount, "new": new_amount}})
-
+        sync.async_to_sync(layer.group_send)("donation_updates", {"type": "donations.total", "amounts": {"total": total_amount, "current": new_amount}})
