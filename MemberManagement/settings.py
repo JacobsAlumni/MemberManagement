@@ -37,6 +37,7 @@ COUNTRIES_OVERRIDE = {
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
     'django.contrib.auth',
     'django.contrib.sites',
     'registry',
@@ -58,11 +59,13 @@ INSTALLED_APPS = [
     'webpack_loader',
     'django_extensions',
     'rest_framework',
-    'djmoney'
+    'djmoney',
+    'channels',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -99,6 +102,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'MemberManagement.wsgi.application'
+ASGI_APPLICATION = 'MemberManagement.asgi.application'
 
 
 # Database
@@ -172,14 +176,23 @@ USE_L10N = True
 USE_TZ = True
 
 
+# Django Channels settings
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),
     os.path.join(BASE_DIR, "static"),
 ]
+
 
 # webpack settings
 WEBPACK_LOADER = {

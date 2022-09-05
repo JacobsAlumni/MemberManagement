@@ -30,6 +30,7 @@ RUN apk add --no-cache \
     build-base \
     mailcap \
     libxslt-dev \
+    libffi-dev \
     linux-headers \
     pcre-dev \
     python3-dev
@@ -37,14 +38,16 @@ RUN apk add --no-cache \
 ADD docker/uwsgi.ini /app/uwsgi.ini
 
 # Add requirements and install dependencies
-ADD requirements.txt /app/
+ADD pyproject.toml /app/
+ADD poetry.lock /app/
 ADD requirements-prod.txt /app/
 WORKDIR /app/
 
 # install all the python runtime dependencies
 RUN mkdir -p /var/www/static/ \
-    && pip install -r requirements.txt \
-    && pip install -r requirements-prod.txt
+    && pip install -r requirements-prod.txt \
+    && poetry config virtualenvs.create false \
+    && poetry install --only main
 
 # Install Django App and setup the setting module
 ADD manage.py /app/
@@ -105,6 +108,6 @@ VOLUME /data/
 EXPOSE 80
 
 ENTRYPOINT ["/app/docker/entrypoint.sh"]
-CMD ["uwsgi", "--ini", "/app/docker/uwsgi.ini"]
+CMD ["uvicorn", "MemberManagement.asgi:application", "--host", "0.0.0.0", "--port", "80"]
 
 COPY --from=version /PORTAL_VERSION /app/PORTAL_VERSION

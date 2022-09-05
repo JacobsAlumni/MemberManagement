@@ -31,7 +31,7 @@ class Donation(models.Model):
 
     # A user can specify what to donate towards - or leave it blank
     target = models.ForeignKey(DonationTarget, verbose_name=gettext("Donating towards"), null=True, blank=True, on_delete=models.SET_NULL)
-    amount = money_fields.MoneyField(max_digits=5, decimal_places=2, default_currency='EUR')
+    amount = money_fields.MoneyField(max_digits=10, decimal_places=2, default_currency='EUR')
 
     # Anonymous donations get linked to a stripe customer with this
     # This also gives us the anonymous user email
@@ -57,7 +57,6 @@ def _maybe_complete_donation(sender, instance, created, **kwargs):
             donation.save()
         except Donation.DoesNotExist:
             pass
-
 
 @receiver(signals.post_save, sender='donations.Donation')
 def _maybe_email_donor(sender, instance: Donation, created, **kwargs):

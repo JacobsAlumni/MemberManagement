@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "membermanagement"
+version = "0.1.0"
+description = "The Django Application for managing Jacobs University Bremen Alumni Members."
+authors = ["Leonhard Kuboschek <leo@legartis.ai>"]
+license = "GPL3"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "3.1.14"
+django-countries = "6.0"
+django-cookie-law = "2.0.3"
+django-impersonate = "1.7"
+jsonfield = "3.1.0"
+openpyxl = "3.0.3"
+raven = "6.10.0"
+stripe = "4.0.2"
+google-auth = "1.11.2"
+django-sesame = "1.7"
+pre-js-py = "1.2.0"
+google-api-python-client = "1.7.11"
+beautifulsoup4 = "4.8.2"
+django-htmlmin = "0.11.0"
+requests = "2.23.0"
+tqdm = "4.43.0"
+django-webpack5-loader = "0.8.5"
+django-extensions = "2.2.9"
+djangorestframework = "3.11.2"
+django-money = "1.1"
+py-moneyed = "1.2"
+django-pdf-render = "0.1.2"
+channels = "^3.0.5"
+channels-redis = "^3.4.1"
+whitenoise = "^6.2.0"
+lxml = "4.9.1"
+
+[tool.poetry.dev-dependencies]
+pycodestyle = "2.6.0"
+pytest = "6.2.5"
+pytest-django = "3.9.0"
+selenium = "3.141.0"
+django-selenium-test = "1.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

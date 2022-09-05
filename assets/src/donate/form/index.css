@@ -1,0 +1,26 @@
+ul.reasons {
+    list-style-type: "✔️";
+    margin-left: 0;
+}
+
+ul.reasons li {
+    padding-left: 1em;
+}
+
+.circle {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 8px;
+    background-color: #62bd19;
+    border-radius: 50%;
+
+    animation: pulsate 2s ease-out;
+    animation-iteration-count: infinite; 
+}
+
+@keyframes pulsate {
+    0% {opacity: 0.3}
+    50% {opacity: 1.0;}
+    100% {opacity: 0.3}
+}

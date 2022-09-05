@@ -34,6 +34,8 @@ module.exports = {
     'registry__signup': './assets/src/registry/signup/index.ts',
     'registry__approval': './assets/src/registry/approval/index.ts',
     'registry__stats': './assets/src/registry/stats/index.ts',
+    
+    'donate__form': './assets/src/donate/form/index.ts',
   },
 
   // magic .ts and .js
