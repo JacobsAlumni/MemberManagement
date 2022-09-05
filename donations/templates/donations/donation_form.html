@@ -25,12 +25,12 @@
             </div>
             <div><br /></div>
 
-            <div class="uk-card uk-card-default">
+            <div class="uk-card uk-card-default uk-hidden" id="live-display">
                 <div class="uk-card-header">
                     <h3 class="uk-card-title">Live Donations</h3>
                 </div>
                 <div class="uk-card-body">
-                    <ol id="current-donations"></ol>
+                    <ul id="current-donations"></ul>
                 </div>
                 <div class="uk-card-footer">
                     <div>
@@ -47,6 +47,10 @@
                 {{ form | as_uikit_form }}
                 <input type="submit" class="uk-button uk-button-primary" value="Donate">
             </form>
+        </div>
+        <div>
+            <br>
+            <span class="uk-text-meta">Use "," as the decimal separator, i.e. "1.000,23" means 1000 Euros and 23 Cents.</span>
         </div>
     </div
 {% endblock %}

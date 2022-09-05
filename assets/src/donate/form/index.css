@@ -7,6 +7,10 @@ ul.reasons li {
     padding-left: 1em;
 }
 
+ul#current-donations {
+    list-style: none;
+}
+
 .circle {
     display: inline-block;
     width: 8px;
