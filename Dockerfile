@@ -47,7 +47,7 @@ WORKDIR /app/
 RUN mkdir -p /var/www/static/ \
     && pip install -r requirements-prod.txt \
     && poetry config virtualenvs.create false \
-    && poetry install --no-dev
+    && poetry install --only main
 
 # Install Django App and setup the setting module
 ADD manage.py /app/
