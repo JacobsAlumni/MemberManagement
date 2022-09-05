@@ -11,7 +11,9 @@ function formatAmount(amount: number) {
 }
 
 
-const socket = new WebSocket('ws://' + window.location.host + window.location.pathname);
+const prot = window.location.protocol.replace("http", "ws")
+
+const socket = new WebSocket(prot + '//' + window.location.host + window.location.pathname);
 socket.onmessage = function (event) {
     const {
         amounts: {
