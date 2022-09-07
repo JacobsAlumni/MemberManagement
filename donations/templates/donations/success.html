@@ -24,7 +24,7 @@
                 {% endif %}
             {% elif receipt %}
                 {# This case is when the receipt wasn't finalized, but was created #}
-                <h3>We will e-mail your tax receipt once it's ready.</h3>
+                <h3>We will e-mail your tax receipt once it's ready. You may still <a href="{% url 'receipt-create' object.external_id %}">update your receipt</a>.</h3>
             {% else %}
                 {% if user.alumni %}
                     {# If we're logged in, but no receipt exists, the user needs to fill in their address. #}
