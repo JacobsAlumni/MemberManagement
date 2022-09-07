@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext
+from django.forms import ModelForm
 from django.views.generic import CreateView, TemplateView, DetailView, UpdateView
 
 import donation_receipts.models
@@ -65,9 +66,22 @@ class DonateView(CreateView):
         return session.url
 
 
+class ReceiptForm(ModelForm):
+    class Meta:
+        model = donation_receipts.models.DonationReceipt
+        fields = ['email_name', 'sender_info']
+
+        labels = {
+            "email_name": "Full Name",
+            "sender_info": "Name and Address"
+        }
+        help_texts = {
+            "email_name": "As you'd like to be addressed",
+            "sender_info": "Your full legal name and your address, on multiple lines"
+        }
+
 class ReceiptCreateView(UpdateView):
-    model = donation_receipts.models.DonationReceipt
-    fields = ['email_name', 'sender_info']
+    form_class = ReceiptForm
 
     def render_to_response(self, context, **response_kwargs):
         if self.object.finalized:

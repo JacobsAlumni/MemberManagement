@@ -66,6 +66,16 @@ If you'd like to generate donation receipts PDFs, also run this
  docker run -p 3000:3000 ghcr.io/kuboschek/pdf-render-server
 ```
 
+If you'd like to also receive Stripe webhooks: Install the Stripe CLI.
+**Make sure to set STRIPE_WEBHOOK_SECRET** in local_settings.py
+
+Then run
+```bash
+ stripe listen --forward-to=http://localhost:8080/payments/webhook/
+```
+
+### Further Settings
+
 In principle the settings can be found in [`settings.py`](MemberManagement/settings.py). 
 To enable easier debugging, it is configured to automatically import settings from a file called `MemberManagement/local_settings.py`.
 This file is intended to contain local settings, such as session tokens, or external authentication credentials. 

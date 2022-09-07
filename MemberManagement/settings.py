@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'djmoney',
+    'djmoney.contrib.exchange',
     'channels',
 ]
 
@@ -216,7 +217,11 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_FROM = 'Alumni Association Portal Login <email_login@jacobs-alumni.de>'
 
 # djmoney settings
-CURRENCIES = ('EUR', )
+CURRENCIES = ('EUR', 'USD')
+BASE_CURRENCY = 'EUR'
+EXCHANGE_BACKEND = 'djmoney.contrib.exchange.backends.FixerBackend'
+FIXER_URL = 'https://api.exchangerate.host/latest?symbols=' + ','.join(CURRENCIES)
+FIXER_ACCESS_KEY = 'dummy'
 
 # Donation receipts settings
 PDF_RENDER_SERVER = 'http://localhost:3000'

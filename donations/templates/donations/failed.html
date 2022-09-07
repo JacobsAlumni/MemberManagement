@@ -1,1 +1,18 @@
-The Checkout Session was cancelled.
+{% extends "base/base.html" %}
+{% load uikit_tags %}
+
+{% block head %}
+    {% if not object.completed or not receipt.finalized %}
+        <meta http-equiv="refresh" content="3">
+    {% endif %}
+{% endblock %}
+
+{% block title %}Very Sorry{% endblock %}
+
+{% block content %}
+    <div class="uk-clearfix">
+        <h1>Very Sorry</h1>
+        <p>We couldn't process your donation.</p>
+        <a class="uk-button uk-button-primary" href="{% url 'donate' %}">Try Again</a>
+    </div>
+{% endblock %}

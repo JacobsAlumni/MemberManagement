@@ -31,7 +31,10 @@ class Donation(models.Model):
 
     # A user can specify what to donate towards - or leave it blank
     target = models.ForeignKey(DonationTarget, verbose_name=gettext("Donating towards"), null=True, blank=True, on_delete=models.SET_NULL)
-    amount = money_fields.MoneyField(max_digits=10, decimal_places=2, default_currency='EUR')
+    amount = money_fields.MoneyField(max_digits=10, decimal_places=2, currency_choices=(
+        ("EUR", "Euros"),
+        ("USD", "US Dollars"), 
+    ), default_currency='EUR', help_text="Use \",\" as the decimal separator, i.e. \"1.000,23\" means 1000 Euros and 23 Cents. ")
 
     # Anonymous donations get linked to a stripe customer with this
     # This also gives us the anonymous user email

@@ -7,8 +7,9 @@ ul.reasons li {
     padding-left: 1em;
 }
 
-ul#current-donations {
+ul#donation_totals {
     list-style: none;
+    padding-left: 0;
 }
 
 .circle {

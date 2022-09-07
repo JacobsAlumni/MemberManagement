@@ -5,3 +5,4 @@
 {% if user.is_authenticated%}<li class="hoverable"><a class="uk-active" href="{% url 'list' %}">Donation Receipts</a></li>{% endif %}
 {% if user.is_staff %}<li class="hoverable"><a href="{% url 'admin:index' %}">Django Admin</a></li>{% endif %}
 {% if user.is_impersonate %}<li class="hoverable"><a href="{% url 'impersonate-stop' %}">Stop Impersonating</a></li>{% endif %}
+<li class="hoverable"><a href="{% url 'donate' %}">Donate</a></li>
