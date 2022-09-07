@@ -15,7 +15,7 @@
             {% if field|css_class == 'checkboxinput' %}
                 <p></p>
             {% else %}
-                <p>{{ field.help_text|safe }}</p>
+                <p class="uk-text-meta">{{ field.help_text|safe }}</p>
             {% endif %}
         </div>
         
@@ -23,7 +23,9 @@
         {% if field|css_class == 'checkboxinput' %}
             <div class="uk-form-controls uk-form-controls-text">
                 {{ field|safe }}
-                {{ field.help_text|safe }}
+                <span class="uk-text-meta">
+                    {{ field.help_text|safe }}
+                </span>
             </div>
 
             <div class="uk-form-controls uk-form-controls-text uk-visible@m">
@@ -38,7 +40,7 @@
 
             <div class="uk-form-controls uk-form-controls-text uk-visible@m">
                 {% include "uikit/_field_errors.html" %}
-                <p>{{ field.help_text|safe }}</p>
+                <p class="uk-text-meta">{{ field.help_text|safe }}</p>
             </div>
         {% endif %}
 
