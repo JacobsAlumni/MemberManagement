@@ -41,6 +41,9 @@ pytest-django = "3.9.0"
 selenium = "3.141.0"
 django-selenium-test = "1.1.0"
 
+[tool.poetry.group.dev.dependencies]
+black = {version = "^22.8.0", allow-prereleases = true}
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

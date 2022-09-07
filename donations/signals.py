@@ -6,7 +6,8 @@ from donations.models import Donation
 
 from donations.utils import get_total_payments
 
-@receiver(signals.post_save, sender='payments.PaymentIntent')
+
+@receiver(signals.post_save, sender="payments.PaymentIntent")
 def _maybe_complete_donation(sender, instance, created, **kwargs):
     # Only notify when a PaymentIntent succeeds
     if instance.data["status"] == "succeeded":
@@ -14,7 +15,7 @@ def _maybe_complete_donation(sender, instance, created, **kwargs):
 
         new_amount = instance.data["amount"]
         new_currency = instance.data["currency"]
-        
+
         for_target = None
 
         # Find donation for this PaymentIntent
@@ -26,11 +27,14 @@ def _maybe_complete_donation(sender, instance, created, **kwargs):
             pass
 
         layer = layers.get_channel_layer()
-        sync.async_to_sync(layer.group_send)("donation_updates", {
-            "type": "donations.total",
-            "amounts": {
-                "total": total_amount, 
-                "current": {"amount": new_amount, "currency": new_currency}, 
-                "for_target": for_target
-            }
-        })
+        sync.async_to_sync(layer.group_send)(
+            "donation_updates",
+            {
+                "type": "donations.total",
+                "amounts": {
+                    "total": total_amount,
+                    "current": {"amount": new_amount, "currency": new_currency},
+                    "for_target": for_target,
+                },
+            },
+        )

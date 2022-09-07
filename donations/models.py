@@ -16,6 +16,7 @@ from alumni import models as alumni_models
 
 class DonationTarget(models.Model):
     """These are options a user can choose to donate towards"""
+
     label = models.CharField(max_length=512)
     active = models.BooleanField(default=True)
 
@@ -30,11 +31,23 @@ class Donation(models.Model):
     external_id = models.UUIDField(default=uuid4)
 
     # A user can specify what to donate towards - or leave it blank
-    target = models.ForeignKey(DonationTarget, verbose_name=gettext("Donating towards"), null=True, blank=True, on_delete=models.SET_NULL)
-    amount = money_fields.MoneyField(max_digits=10, decimal_places=2, currency_choices=(
-        ("EUR", "Euros"),
-        ("USD", "US Dollars"), 
-    ), default_currency='EUR', help_text="Use \",\" as the decimal separator, i.e. \"1.000,23\" means 1000 Euros and 23 Cents. ")
+    target = models.ForeignKey(
+        DonationTarget,
+        verbose_name=gettext("Donating towards"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    amount = money_fields.MoneyField(
+        max_digits=10,
+        decimal_places=2,
+        currency_choices=(
+            ("EUR", "Euros"),
+            ("USD", "US Dollars"),
+        ),
+        default_currency="EUR",
+        help_text='Use "," as the decimal separator, i.e. "1.000,23" means 1000 Euros and 23 Cents. ',
+    )
 
     # Anonymous donations get linked to a stripe customer with this
     # This also gives us the anonymous user email
@@ -46,22 +59,23 @@ class Donation(models.Model):
     # Alumni donations use the existing donation receipt flow, no fields required here
 
 
-@receiver(signals.post_save, sender='payments.PaymentIntent')
+@receiver(signals.post_save, sender="payments.PaymentIntent")
 def _maybe_complete_donation(sender, instance, created, **kwargs):
     data = instance.data
 
-    if data['currency'] != 'eur':
+    if data["currency"] != "eur":
         return
 
-    if data['status'] == 'succeeded':
+    if data["status"] == "succeeded":
         try:
-            donation = Donation.objects.get(payment_id=data['id'])
+            donation = Donation.objects.get(payment_id=data["id"])
             donation.completed = datetime.datetime.now()
             donation.save()
         except Donation.DoesNotExist:
             pass
 
-@receiver(signals.post_save, sender='donations.Donation')
+
+@receiver(signals.post_save, sender="donations.Donation")
 def _maybe_email_donor(sender, instance: Donation, created, **kwargs):
     if not instance.completed:
         return
@@ -71,7 +85,12 @@ def _maybe_email_donor(sender, instance: Donation, created, **kwargs):
 
     domain = Site.objects.get_current().domain
 
-    mail = mailutils.prepare_email(receipt_email, 'Jacobs Alumni Association - Thank You!',
-                                   'emails/donation_complete.html', object=instance, domain=domain)
+    mail = mailutils.prepare_email(
+        receipt_email,
+        "Jacobs Alumni Association - Thank You!",
+        "emails/donation_complete.html",
+        object=instance,
+        domain=domain,
+    )
 
     mail.send()
