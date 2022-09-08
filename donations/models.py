@@ -63,9 +63,6 @@ class Donation(models.Model):
 def _maybe_complete_donation(sender, instance, created, **kwargs):
     data = instance.data
 
-    if data["currency"] != "eur":
-        return
-
     if data["status"] == "succeeded":
         try:
             donation = Donation.objects.get(payment_id=data["id"])
