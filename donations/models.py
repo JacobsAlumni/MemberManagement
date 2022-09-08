@@ -46,7 +46,7 @@ class Donation(models.Model):
             ("USD", "US Dollars"),
         ),
         default_currency="EUR",
-        help_text='Use "," as the decimal separator, i.e. "1.000,23" means 1000 Euros and 23 Cents. ',
+        help_text='Use "." as the decimal separator, i.e. "1000.23" means 1000 Euros and 23 Cents. ',
     )
 
     # Anonymous donations get linked to a stripe customer with this

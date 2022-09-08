@@ -3,32 +3,27 @@ import './index.css';
 const live_display = document.getElementById('live-display') as HTMLDivElement
 const donation_totals = document.getElementById('donation_totals') as HTMLUListElement
 const recent_donation = document.getElementById('recent-donation') as HTMLSpanElement
+const id_amount_0 = document.getElementById('id_amount_0') as HTMLDivElement
 
-const thankYous = [
-    "Very generous.",
-    "Thank You!",
-    "Much appreciated!"
-]
+// force english locale for the amount input!
+// this *should* be the default, but we want to make sure.
+const LOCALE = 'en'
+id_amount_0?.setAttribute('lang', LOCALE)
+
 
 const currencyNames: Record<string, string> = {
     'eur': '€',
     'usd': '$',
 }
 
-function formatAmount(amount: number, currency: string) {
-    const inFull = (amount / 100).toLocaleString('de')
+/** formatAmount formats an amount of a specific currency to a string */
+function formatAmount(amount: number, currency: string): string {
+    const inFull = (amount / 100).toLocaleString(LOCALE)
     const curName = currencyNames[currency] ?? currency
     return `${inFull} ${curName}`
 }
 
-const prot = window.location.protocol.replace("http", "ws")
-
-const socket = new WebSocket(prot + '//' + window.location.host + window.location.pathname);
-
-socket.onclose = function () {
-    live_display.classList.add("uk-hidden")
-}
-
+/** An event representing a new donation */
 type DonationEvent = {
     amounts: {
         total: Record<string, number>;
@@ -36,6 +31,21 @@ type DonationEvent = {
         for_target: string | null;
     }
 }
+
+const prot = window.location.protocol.replace("http", "ws")
+
+const socket = new WebSocket(prot + '//' + window.location.host + window.location.pathname)
+
+socket.onclose = function () {
+    live_display.classList.add("uk-hidden")
+}
+
+
+const thankYous = [
+    "Very generous.",
+    "Thank You!",
+    "Much appreciated!"
+]
 
 socket.onmessage = function (event) {
     live_display.classList.remove("uk-hidden")
