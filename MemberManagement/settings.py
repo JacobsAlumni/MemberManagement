@@ -214,7 +214,8 @@ EMAIL_PORT = 587
 
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
-EMAIL_FROM = 'Alumni Association Portal Login <email_login@jacobs-alumni.de>'
+EMAIL_REPLY_TO = 'support@jacobs-alumni.de'
+EMAIL_FROM = 'Alumni Association Portal <portal@portal.jacobs-alumni.de>'
 
 # djmoney settings
 CURRENCIES = ('EUR', 'USD')

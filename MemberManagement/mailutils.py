@@ -23,7 +23,7 @@ def send_email(destination: Union[str, List[str]], subject: str, template: str, 
 
     return email.send()
 
-def prepare_email(destination: Union[str, List[str]], subject: str, template: str, **kwargs: Any) -> EmailMessage:
+def prepare_email(destination: Union[str, List[str]], subject: str, template: str, reply_to: Optional[str] = settings.EMAIL_REPLY_TO, **kwargs: Any) -> EmailMessage:
     # Make sure that destionation is a list
     if not isinstance(destination, list):
         destination = [destination]
@@ -33,12 +33,12 @@ def prepare_email(destination: Union[str, List[str]], subject: str, template: st
 
     # Create an email message
     email = _create_email_message(
-        subject, html, settings.EMAIL_FROM, destination)
+        subject, html, settings.EMAIL_FROM, destination, reply_to)
 
     return email
 
 
-def _create_email_message(subject: str, html: str, from_email: str, recipient_list: List[str]) -> EmailMessage:
+def _create_email_message(subject: str, html: str, from_email: str, recipient_list: List[str], reply_to: Optional[str]) -> EmailMessage:
     """ Creates a connection for the email to be sent """
 
     # Extract images out of the email
@@ -56,7 +56,7 @@ def _create_email_message(subject: str, html: str, from_email: str, recipient_li
 
     # create the plain text email and attach the html
     email = EmailMessage(subject, '', from_email,
-                         recipient_list, connection=connection)
+                         recipient_list, connection=connection, reply_to=(reply_to,))
     email.attach(html_part)
 
     # and return the email
