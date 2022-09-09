@@ -1,6 +1,6 @@
 import stripe
 from babel.numbers import get_currency_precision
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext
@@ -13,11 +13,7 @@ from donations.models import Donation
 
 
 def money_to_integer(money):
-    return int(
-        money.amount * (
-                10 ** get_currency_precision(money.currency.code)
-        )
-    )
+    return int(money.amount * (10 ** get_currency_precision(money.currency.code)))
 
 
 def user_to_stripe_customer_id(user):
@@ -41,22 +37,17 @@ class DonateView(CreateView):
                 {
                     "price_data": {
                         "currency": self.object.amount_currency,
-                        "product_data": {
-                            "name": gettext("Donation")
-                        },
+                        "product_data": {"name": gettext("Donation")},
                         "unit_amount": money_to_integer(self.object.amount),
                     },
-                    "quantity": 1
+                    "quantity": 1,
                 }
             ],
-            cancel_url=self.request.build_absolute_uri(reverse('donate')),
+            cancel_url=self.request.build_absolute_uri(reverse("donate")),
             success_url=self.request.build_absolute_uri(
-                reverse('donation-detail', args=(str(self.object.external_id),))),
-            payment_method_options={
-                "card": {
-                    "setup_future_usage": "off_session"
-                }
-            },
+                reverse("donation-detail", args=(str(self.object.external_id),))
+            ),
+            payment_method_options={"card": {"setup_future_usage": "off_session"}},
             submit_type="donate",
         )
 
@@ -69,16 +60,28 @@ class DonateView(CreateView):
 class ReceiptForm(ModelForm):
     class Meta:
         model = donation_receipts.models.DonationReceipt
-        fields = ['email_name', 'sender_info']
+        fields = ["sender_info"]
 
-        labels = {
-            "email_name": "Full Name",
-            "sender_info": "Name and Address"
-        }
+        labels = {"sender_info": "Name and Address"}
         help_texts = {
-            "email_name": "As you'd like to be addressed",
             "sender_info": "Your full legal name and your address, on multiple lines"
         }
+
+    def clean(self):
+        sender_info: str = self.cleaned_data["sender_info"]
+        if sender_info is None:
+            raise ValidationError({"sender_info": "May not be blank"})
+
+        lines = sender_info.splitlines()
+        if len(lines) < 2:
+            raise ValidationError({"sender_info": "Must contain at least two lines"})
+        self.instance.email_name = lines[0]
+
+        return super().clean()
+
+    def is_valid(self) -> bool:
+        return super().is_valid()
+
 
 class ReceiptCreateView(UpdateView):
     form_class = ReceiptForm
@@ -90,19 +93,24 @@ class ReceiptCreateView(UpdateView):
         return super().render_to_response(context, **response_kwargs)
 
     def get_object(self, queryset=None):
-        donation = Donation.objects.get(external_id=self.kwargs['slug'])
+        donation = Donation.objects.get(external_id=self.kwargs["slug"])
         pi: stripe.PaymentIntent = stripe.PaymentIntent.retrieve(donation.payment_id)
 
         # get the existing object or created a new one
-        obj, created = DonationReceipt.objects.get_or_create(payment_stream=STRIPE, payment_reference=pi.id,
-                                                             defaults={'received_on': donation.completed,
-                                                                       'amount': donation.amount,
-                                                                       'email_to': pi.receipt_email})
+        obj, created = DonationReceipt.objects.get_or_create(
+            payment_stream=STRIPE,
+            payment_reference=pi.id,
+            defaults={
+                "received_on": donation.completed,
+                "amount": donation.amount,
+                "email_to": pi.receipt_email,
+            },
+        )
 
         return obj
 
     def get_success_url(self):
-        return reverse('donation-detail', args=(self.kwargs['slug'],))
+        return reverse("donation-detail", args=(self.kwargs["slug"],))
 
 
 class DonationSuccessView(DetailView):
@@ -114,9 +122,13 @@ class DonationSuccessView(DetailView):
         ctx = super().get_context_data(**kwargs)
 
         try:
-            ctx.update({
-                "receipt": DonationReceipt.objects.get(payment_stream=STRIPE, payment_reference=self.object.payment_id)
-            })
+            ctx.update(
+                {
+                    "receipt": DonationReceipt.objects.get(
+                        payment_stream=STRIPE, payment_reference=self.object.payment_id
+                    )
+                }
+            )
         except DonationReceipt.DoesNotExist:
             pass
 
