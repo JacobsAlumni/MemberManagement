@@ -94,6 +94,8 @@ ENV DJANGO_DB_PORT ""
 ENV STRIPE_SECRET_KEY ""
 ENV STRIPE_PUBLISHABLE_KEY ""
 
+ENV FINALIZE_AUTOMATICALLY "1"
+
 # GSuite Auth file should be in the data volume
 ENV GSUITE_AUTH_FILE /data/credentials.json
 
