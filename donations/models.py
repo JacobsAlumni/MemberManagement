@@ -85,7 +85,7 @@ def _maybe_email_donor(sender, instance: Donation, created, **kwargs):
 
         if alum:
             return
-        
+
     except alumni_models.Alumni.DoesNotExist:
         pass
 
