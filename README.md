@@ -2,9 +2,9 @@
 
 ![Build Status](https://github.com/JacobsAlumni/MemberManagement/workflows/CI/badge.svg)
 
-The Django Application for managing Jacobs University Bremen Alumni Members. 
+The Django Application for managing Jacobs University Bremen Alumni Members.
 
-In general it fulfills six purposes: 
+In general it fulfills six purposes:
 
 1. *Registration* of new Alumni Members
 2. *Processing* of Applications
@@ -17,7 +17,7 @@ In general it fulfills six purposes:
 
 ## Installing
 
-The entire application can be run locally for a development setup and via [Docker](https://www.docker.com/) in production. 
+The entire application can be run locally for a development setup and via [Docker](https://www.docker.com/) in production.
 For local dependency versions, we make use of the [.tool-versions](./tool-versions) file provided by [asdf](https://asdf-vm.com/).
 
 ### Local Development Instance
@@ -34,6 +34,9 @@ pip install poetry
 # Install dependencies
 poetry install
 
+# Install pre-commit hooks
+pre-commit install
+
 # Run migrations
 python manage.py migrate
 ```
@@ -47,7 +50,7 @@ yarn
 Note that this is only tested using the NodeJS version specified in `.tool-versions`.
 
 
-By default a local instance is then configured to store data in a local `db.sqlite3` database. 
+By default a local instance is then configured to store data in a local `db.sqlite3` database.
 One needs to start the django app in two parts, one part building the frontend dependencies using:
 
 ```bash
@@ -76,25 +79,25 @@ Then run
 
 ### Further Settings
 
-In principle the settings can be found in [`settings.py`](MemberManagement/settings.py). 
+In principle the settings can be found in [`settings.py`](MemberManagement/settings.py).
 To enable easier debugging, it is configured to automatically import settings from a file called `MemberManagement/local_settings.py`.
-This file is intended to contain local settings, such as session tokens, or external authentication credentials. 
-A template `local_settings.py` can be generated using [`python manage.py gen_local_settings`](MemberManagement/management/commands/gen_local_settings.py). 
-The file is also `.gitignore`d and should not be committed. 
+This file is intended to contain local settings, such as session tokens, or external authentication credentials.
+A template `local_settings.py` can be generated using [`python manage.py gen_local_settings`](MemberManagement/management/commands/gen_local_settings.py).
+The file is also `.gitignore`d and should not be committed.
 
-Notice that however because of external integrations, some features may not work as expected. 
-See the Configuration sections of the appropriate settings to configure. 
+Notice that however because of external integrations, some features may not work as expected.
+See the Configuration sections of the appropriate settings to configure.
 
 ### Deployment via Docker
 
-It is also possible to deploy this application via [Docker](https://www.docker.com/). 
+It is also possible to deploy this application via [Docker](https://www.docker.com/).
 This repository is automatically built as a [GitHub Package](https://github.com/users/jacobsalumni/packages/container/package/membermanagement) for every push on the main and prod branches.
 - for the `main` branch, use `ghcr.io/jacobsalumni/membermanagement:latest`
 - for the `prod` branch, use `ghcr.io/jacobsalumni/membermanagement:prod`
 
-For Docker purposes the configuration file `MemberManagement/docker_settings.py` is used.  
-By default, it also uses a local sqlite database. 
-All configuration can be set via environment variables, see [Dockerfile](Dockerfile) for details. 
+For Docker purposes the configuration file `MemberManagement/docker_settings.py` is used.
+By default, it also uses a local sqlite database.
+All configuration can be set via environment variables, see [Dockerfile](Dockerfile) for details.
 
 ## Weekly jobs
 
@@ -107,7 +110,7 @@ python manage.py runjobs weekly
 ## Code Structure
 
 The code is layed out as any other Django app.
-The entry point can be found in `MemberManagement`. 
+The entry point can be found in `MemberManagement`.
 
 The following portal-related apps exist:
 
@@ -123,10 +126,10 @@ The following independent apps also exist:
 
 ## Tests
 
-This project contains several integration tests to ensure that user-facing functionality works as intended. 
-These integration tests make use of [Selenium](https://docs.seleniumhq.org) and [django-selenium-clean](https://github.com/aptiko/django-selenium-clean). 
+This project contains several integration tests to ensure that user-facing functionality works as intended.
+These integration tests make use of [Selenium](https://docs.seleniumhq.org) and [django-selenium-clean](https://github.com/aptiko/django-selenium-clean).
 
-In addition to integration tests, other unit tests also exist. 
+In addition to integration tests, other unit tests also exist.
 One non-feature related test is the CodeStyle test. This enforces PEP8-compliance except for maximum line length.
 
 The integration tests run headless by default and support the following browsers:
@@ -141,7 +144,7 @@ yarn build # ensure that static assets have been built
 pytest # to run the tests
 ```
 
-By default, the tests are running in headless mode. 
+By default, the tests are running in headless mode.
 To enforce a visible browser, instead use:
 
 ```bash
@@ -149,7 +152,7 @@ yarn build # ensure that static assets have been built
 SELENIUM_HEADLESS=0 pytest # to run headless
 ```
 
-When offline Stripe frontend tests might fail because they require a connection to Stripe Servers. 
+When offline Stripe frontend tests might fail because they require a connection to Stripe Servers.
 To work around this, you can set the `SKIP_STRIPE_TESTS` variable as follows:
 
 ```bash
@@ -157,7 +160,7 @@ yarn build
 SKIP_STRIPE_TESTS=1 pytest
 ```
 
-Travis CI runs Chrome and Firefox tests in headless mode after every commit.  
+Travis CI runs Chrome and Firefox tests in headless mode after every commit.
 
 ## License
 
