@@ -12,6 +12,7 @@ from djmoney.models import fields as money_fields
 
 from MemberManagement import mailutils
 from alumni import models as alumni_models
+from donation_receipts.models import _get_donating_alum
 
 
 class DonationTarget(models.Model):
@@ -78,6 +79,16 @@ def _maybe_email_donor(sender, instance: Donation, created, **kwargs):
         return
 
     pi: stripe.PaymentIntent = stripe.PaymentIntent.retrieve(instance.payment_id)
+
+    try:
+        alum = _get_donating_alum(pi.customer)
+
+        if alum:
+            return
+
+    except alumni_models.Alumni.DoesNotExist:
+        pass
+
     receipt_email = pi.receipt_email
 
     domain = Site.objects.get_current().domain
