@@ -104,7 +104,7 @@ class Address(AlumniComponentMixin, models.Model):
     def coords(self, default: Optional[Union[List[float], List[None]]] = None) -> Union[List[float], List[None]]:
         """ The coordinates of this user """
         from atlas.models import GeoLocation
-        lat, lng = GeoLocation.getLoc(self.country, self.zip)
+        lat, lng = GeoLocation.getLoc(self.country, self.zip, self.member.atlas.reducedAccuracy)
         if lat is None or lng is None:
             return [None, None]
         else:
