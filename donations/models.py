@@ -38,6 +38,7 @@ class Donation(models.Model):
         null=True,
         blank=True,
         on_delete=models.PROTECT,
+        limit_choices_to={"active": True},
     )
     amount = money_fields.MoneyField(
         max_digits=10,
