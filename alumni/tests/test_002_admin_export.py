@@ -51,6 +51,7 @@ EXPECT_EXPORT = [
     ['membership__desired_tier', None, None, None, None, None, None, None, None, None, None],
     ['atlas__secret', None, None, None, None, None, None, None, None, None, None],
     ['atlas__included', True, True, True, False, True, True, True, False, True, True],
+    ['atlas__reducedAccuracy', False, False, False, False, False, False, False, False, False, False],
     ['atlas__birthdayVisible', True, True, True, False, False, True, False, False, False, True],
     ['atlas__contactInfoVisible', True, True, True, False, False, True, False, False, False, True],
     ['setup__date', datetime.datetime(2020, 2, 4, 15, 45, 59, 68000), datetime.datetime(2020, 2, 4, 15, 41, 38, 526000), datetime.datetime(2020, 2, 4, 15, 37, 17, 985000), datetime.datetime(2020, 2, 4, 15, 32, 58, 671000), datetime.datetime(2020, 2, 4, 15, 29, 9, 613000), datetime.datetime(2020, 2, 4, 15, 22, 13, 355000), datetime.datetime(2020, 2, 4, 15, 18, 29, 525001), datetime.datetime(2020, 2, 4, 15, 14, 49, 552000), datetime.datetime(2020, 2, 4, 15, 2, 4, 249000), datetime.datetime(2019, 9, 19, 16, 42, 5, 269000)]

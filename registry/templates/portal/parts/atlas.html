@@ -9,7 +9,16 @@
             <tbody>
                 <tr>
                     <td>Included on Alumni Atlas</td>
-                    <td>{{ user.alumni.atlas.included|print_boolean }}</td>
+                    <td>
+                        {{ user.alumni.atlas.included|print_boolean }}
+                        <small>
+                            {% if user.alumni.atlas.reducedAccuracy %}
+                                (reduced accuracy)
+                            {% else %}
+                                (ZIP-code accuracy)
+                            {% endif %}
+                        </small>
+                    </td>
                 </tr>
                 <tr>
                     <td>Birthday Visible</td>

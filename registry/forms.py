@@ -185,9 +185,10 @@ class AtlasSettingsForm(forms.ModelForm):
 
     class Meta:
         model = AtlasSettings
-        fields = ['included', 'birthdayVisible', 'contactInfoVisible']
+        fields = ['included', 'reducedAccuracy', 'birthdayVisible', 'contactInfoVisible']
         labels = {
             'included': '',
+            'reducedAccuracy': '',
             'birthdayVisible': '',
             'contactInfoVisible': '',
         }

@@ -1145,6 +1145,7 @@
         "fields": {
             "member": 1,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": true,
             "contactInfoVisible": true,
             "secret": null
@@ -1156,6 +1157,7 @@
         "fields": {
             "member": 10,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": true,
             "contactInfoVisible": true,
             "secret": null
@@ -1167,6 +1169,7 @@
         "fields": {
             "member": 2,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": false,
             "contactInfoVisible": false,
             "secret": null
@@ -1178,6 +1181,7 @@
         "fields": {
             "member": 3,
             "included": false,
+            "reducedAccuracy": false,
             "birthdayVisible": false,
             "contactInfoVisible": false,
             "secret": null
@@ -1189,6 +1193,7 @@
         "fields": {
             "member": 4,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": false,
             "contactInfoVisible": false,
             "secret": null
@@ -1200,6 +1205,7 @@
         "fields": {
             "member": 5,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": true,
             "contactInfoVisible": true,
             "secret": null
@@ -1211,6 +1217,7 @@
         "fields": {
             "member": 6,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": false,
             "contactInfoVisible": false,
             "secret": null
@@ -1222,6 +1229,7 @@
         "fields": {
             "member": 7,
             "included": false,
+            "reducedAccuracy": false,
             "birthdayVisible": false,
             "contactInfoVisible": false,
             "secret": null
@@ -1233,6 +1241,7 @@
         "fields": {
             "member": 8,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": true,
             "contactInfoVisible": true,
             "secret": null
@@ -1244,6 +1253,7 @@
         "fields": {
             "member": 9,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": true,
             "contactInfoVisible": true,
             "secret": null

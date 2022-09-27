@@ -217,7 +217,7 @@ class AlumniAdminActions:
         'membership__tier', 'membership__desired_tier',
 
         # Atlas Settings
-        'atlas__secret', 'atlas__included', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',
+        'atlas__secret', 'atlas__included', 'atlas__reducedAccuracy', 'atlas__birthdayVisible', 'atlas__contactInfoVisible',
 
         # Setup Data
         'setup__date',

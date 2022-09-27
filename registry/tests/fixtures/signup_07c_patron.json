@@ -110,6 +110,7 @@
         "fields": {
             "member": 1,
             "included": true,
+            "reducedAccuracy": false,
             "birthdayVisible": true,
             "contactInfoVisible": true,
             "secret": null
