@@ -37,7 +37,8 @@ class Donation(models.Model):
         verbose_name=gettext("Donating towards"),
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
+        limit_choices_to={"active": True},
     )
     amount = money_fields.MoneyField(
         max_digits=10,
