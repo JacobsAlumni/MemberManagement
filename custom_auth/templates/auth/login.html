@@ -16,6 +16,21 @@ Login
 
 {% block content %}
 <div>
+    <div>
+        <p>
+            You <b>MUST</b> use a <code>@jacobs-alumni.de</code> email address to be able to use the <b>Sign In With Google</b> button below.
+            When multiple accounts display in the popup, choose only your Alumni Account.
+            If it is not on the list, select <b>Add Another Account</b> and login.
+            Attempting to sign in with a personal <code>@gmail.com</code> (or other address) will not work, and you will receive an error message.
+        </p>
+        <p>
+            If you do not have an Alumni Email, enter the <b>private email address</b> you signed up with at the bottom and we will send you an email to login.
+        </p>
+        <p>
+            If neither method works for you <a href="mailto:support@jacobs-alumni.de">contact support</a>.
+        </p>
+    </div>
+
     <div {% if googlefail %} class="uk-alert uk-alert-danger" uk-alert {% endif%}>
         <div id="g_id_onload"
             data-client_id="{{ client_id }}"
