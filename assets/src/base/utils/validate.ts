@@ -38,7 +38,7 @@ export default abstract class FormVueValidatable extends Vue {
     abstract readonly submitEndpoint: string | null;
 
     /** Submits the form if it is valid */
-    async submitForm() {
+    submitForm = async () => {
         const validation = await this.validateForm();
         // For debugging: Force submit
         (window as any).forceSubmit = () => { submitForm(this.formInstance, this.submitEndpoint, this.formKeys); }
@@ -48,7 +48,7 @@ export default abstract class FormVueValidatable extends Vue {
     }
 
     /** Makes a validation request for this form, and then returns the result */
-    async validateForm(): Promise<ValidateResult> {
+    validateForm = async (): Promise<ValidateResult> => {
         const validated = await submitFormAjax<ValidateResult>(this.formInstance, this.validateEndpoint, this.formKeys);
         this.validateResult = validated;
         return validated;
