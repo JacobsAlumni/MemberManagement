@@ -21,7 +21,8 @@ EMAIL_BLACKLIST = [
     'jacobs-alumni.de',
     'jacobs-alumni.com',
     'jacobs-alumni.eu',
-    'jacobs-university.de'
+    'jacobs-university.de',
+    'constructor.university'
 ]
 
 
