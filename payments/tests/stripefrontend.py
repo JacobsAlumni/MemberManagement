@@ -4,6 +4,7 @@ import os
 from unittest import SkipTest
 
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.action_chains import ActionChains
 from MemberManagement.tests.integration import IntegrationTestBase
 
 from typing import TYPE_CHECKING
@@ -69,6 +70,9 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         # select debit card payment method
         Select(element).select_by_visible_text('Credit or Debit Card')
 
+        # scroll the card into view!
+        self.selenium.execute_script("document.querySelector('#card-element').scrollIntoView();")
+
         # select the card frame and fill out the fake data
         frame = self.find_element('#card-element iframe')
         self.selenium.switch_to.frame(frame_reference=frame)
@@ -95,6 +99,9 @@ class StripeFrontendTestMixin(IntegrationTestBase):
         # select sepa payment method
         Select(element).select_by_visible_text(
             'Automatic Bank Transfer (SEPA)')
+
+        # scroll the iban into view (to make sure stripe loads it)
+        self.selenium.execute_script("document.querySelector('#iban-element').scrollIntoView();")
 
         # select the iban frame and fill out the fake data
         frame = self.find_element('#iban-element iframe')
