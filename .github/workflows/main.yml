@@ -13,10 +13,10 @@ jobs:
                 browser: ["chrome", "firefox"]
 
         steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
 
         - name: Install Python ${{ matrix.python }}
-          uses: actions/setup-python@v1
+          uses: actions/setup-python@v4
           with:
             python-version: ${{ matrix.python }}
         - name: Install Chrome Webdriver
@@ -68,7 +68,7 @@ jobs:
         name: Docker Smoke Test
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
         
         - name: 'Build Docker Container'
           run: docker build -t jacobsalumni/membermanagement .
