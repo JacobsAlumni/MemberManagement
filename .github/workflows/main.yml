@@ -22,17 +22,27 @@ jobs:
         - name: Install Chrome Webdriver
           if: ${{ matrix.browser == 'chrome' }}
           run: |
+            python3 -m venv venv
+            source venv/bin/activate
+
             pip install seleniumbase
             sudo apt-get install -y google-chrome-stable
             seleniumbase install chromedriver
-            pip uninstall -y seleniumbase
+            
+            deactivate
+            rm -rf venv
         - name: Install Firefox Webdriver
           if: ${{ matrix.browser == 'firefox' }}
           run: |
+            python3 -m venv venv
+            source venv/bin/activate
+
             pip install seleniumbase
             sudo apt-get install -y firefox
-            seleniumbase install geckodriver
-            pip uninstall -y seleniumbase
+            seleniumbase install chromedriver
+            
+            deactivate
+            rm -rf venv
         - name: Run 'poetry install'
           run: |
             pip install poetry
