@@ -4,13 +4,13 @@ from datetime import timedelta
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.utils import timezone
+from datetime import timezone, datetime
 
 from alumni.fields.tier import TierField
 from MemberManagement.tests.integration import IntegrationTest, IntegrationTestBase
 from payments.models import MembershipInformation, SubscriptionInformation
 
-MOCKED_TIME = timezone.datetime(
+MOCKED_TIME = datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 MOCKED_END = MOCKED_TIME + timedelta(days=2 * 365)
 MOCKED_CUSTOMER = 'cus_Fq8yG7rLrc6sKZ'

@@ -3,7 +3,7 @@ from __future__ import annotations
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.utils import timezone
+from datetime import timezone, datetime
 
 from alumni.fields.tier import TierField
 from MemberManagement.tests.integration import IntegrationTest
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from typing import Optional
     from ..models import SubscriptionInformation
 
-MOCKED_TIME = timezone.datetime(
+MOCKED_TIME = datetime(
     2020, 2, 4, 15, 52, 27, 62000, tzinfo=timezone.utc)
 
 

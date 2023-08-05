@@ -6,7 +6,7 @@ from MemberManagement.tests.integration import IntegrationTest, IntegrationTestB
 
 from unittest import mock
 
-from django.utils import timezone
+from datetime import timezone, datetime
 
 METHODS_TABLE = [
     {
@@ -35,7 +35,7 @@ PAYMENTS_TABLE = [
     }
 ]
 
-MOCKED_TIME = timezone.datetime(
+MOCKED_TIME = datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 
 

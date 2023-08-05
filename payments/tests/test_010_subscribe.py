@@ -4,7 +4,7 @@ from datetime import timedelta
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.utils import timezone
+from datetime import timezone, datetime, datetime
 
 from MemberManagement.tests.integration import IntegrationTest
 from payments.models import SubscriptionInformation
@@ -13,7 +13,7 @@ from .stripefrontend import StripeFrontendTestMixin
 
 from alumni.fields import TierField
 
-MOCKED_TIME = timezone.datetime(
+MOCKED_TIME = datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 MOCKED_END = MOCKED_TIME + timedelta(days=2 * 365)
 

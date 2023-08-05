@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
+from datetime import timezone, datetime
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, View
 from raven.contrib.django.raven_compat.models import client

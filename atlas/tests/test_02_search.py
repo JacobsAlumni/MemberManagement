@@ -5,7 +5,7 @@ from unittest import mock
 
 from alumni.models import Alumni
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.utils import timezone
+from datetime import timezone, datetime
 
 from MemberManagement.tests.integration import IntegrationTest
 

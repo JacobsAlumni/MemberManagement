@@ -3,11 +3,11 @@ from __future__ import annotations
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.utils import timezone
+from datetime import timezone, datetime
 
 from MemberManagement.tests.integration import IntegrationTest
 
-MOCKED_TIME = timezone.datetime(
+MOCKED_TIME = datetime(
     2019, 9, 19, 16, 42, 5, 269, tzinfo=timezone.utc)
 
 

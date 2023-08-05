@@ -7,7 +7,7 @@ from unittest import mock
 from django.contrib.auth.models import User
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.utils import timezone
+from datetime import timezone, datetime
 
 from alumni.fields import (AlumniCategoryField, CollegeField, GenderField,
                            TierField, DegreeField, ClassField, MajorField, IndustryField, JobField)
@@ -16,7 +16,7 @@ from MemberManagement.tests.integration import IntegrationTest, IntegrationTestB
 
 from selenium.webdriver.common.keys import Keys
 
-MOCKED_TIME = timezone.datetime(
+MOCKED_TIME = datetime(
     2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 MOCKED_END = MOCKED_TIME + timedelta(days=2 * 365)
 MOCKED_CUSTOMER = 'cus_Fq8yG7rLrc6sKZ'

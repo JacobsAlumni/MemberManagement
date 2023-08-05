@@ -3,13 +3,13 @@ from __future__ import annotations
 from unittest import mock
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.utils import timezone
+from datetime import timezone, datetime
 
 from MemberManagement.tests.integration import IntegrationTest
 
 from .stripefrontend import StripeFrontendTestMixin
 
-MOCKED_TIME = timezone.datetime(
+MOCKED_TIME = datetime(
     2020, 2, 4, 15, 52, 27, 62000, tzinfo=timezone.utc)
 
 

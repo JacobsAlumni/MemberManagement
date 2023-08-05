@@ -11,7 +11,7 @@ from django.db.models import signals
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.template import Context
-from django.utils import timezone
+from datetime import timezone, datetime
 
 from djmoney.models import fields
 from django.conf import settings

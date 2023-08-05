@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from django.db import models
 
-from django.utils import timezone
+from datetime import timezone, datetime
 from datetime import timedelta
 
 from alumni.models import Alumni
