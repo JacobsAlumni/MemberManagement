@@ -22,6 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'wn_2m*p3v6i&+!cjf-%6j0yc1a3g2j%h@h865@=wcons^4skox'
 
+# Fix for (models.W042): Auto-created primary key used when not defining a primary key type, by default 'django.db.models.AutoField'.
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 JS_TEST_MODE_FLAG = False
