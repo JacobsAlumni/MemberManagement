@@ -39,15 +39,15 @@ class AdminTest(IntegrationTest, StaticLiveServerTestCase):
 
     def _select_filter(self, name: str, title: str) -> None:
 
-        # find the filter <h3> and <ul>
-        h3 = self.selenium.find_element(By.XPATH,'//*[@id="changelist-filter"]/h3[text()="By ' + name + '"]')
-        ul = self.find_next_sibling(h3)
+        # find the filter <ul> from the <summary>
+        summary = self.selenium.find_element(By.XPATH,  '//*[@id="changelist-filter"]/details/summary[text()="By ' + name + '"]')
+        ul = self.find_next_sibling(summary)
         if ul is None:
             raise AssertionError("Filter does not exist")
 
         # click the filter with the right title
         for a in ul.find_elements(By.CSS_SELECTOR, 'a'):
-            if a.get_attribute("title") == title:
+            if a.text == title:
                 a.click()
                 return
 
