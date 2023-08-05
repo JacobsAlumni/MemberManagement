@@ -10,6 +10,8 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from .stats import render_stats
 
+from datetime import datetime
+
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Any, List, Iterator, Optional, Callable
@@ -62,6 +64,10 @@ def get_model_prop(modeladmin: ModelAdmin, obj: Any, field: str, default: Any = 
 
 def to_excel(value: Any) -> ExcelCellType:
     """ Turns any value into a value understood by excel """
+    
+    # excel doesn't support tzinfo
+    if isinstance(value, datetime):
+        return value.replace(tzinfo=None)
 
     # if we know the type, return it immediately
     if isinstance(value, cell.KNOWN_TYPES):
