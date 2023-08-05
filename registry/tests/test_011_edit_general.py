@@ -8,6 +8,8 @@ from alumni.fields.category import AlumniCategoryField
 from alumni.fields.gender import GenderField
 from MemberManagement.tests.integration import IntegrationTest
 
+from selenium.webdriver.common.by import By
+
 
 class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
@@ -79,7 +81,7 @@ class EditDataTest(IntegrationTest, StaticLiveServerTestCase):
 
         # check that we stayed on the page, but the email field was marked incorrect
         self.assert_url_equal('edit')
-        self.assertIn('uk-form-danger', self.selenium.find_element_by_id(
+        self.assertIn('uk-form-danger', self.selenium.find_element(By.ID,
             'id_email').get_attribute('class').split(' '), 'email field marked up as incorrect')
 
         alumni = self.user.alumni

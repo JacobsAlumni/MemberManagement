@@ -5,6 +5,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from MemberManagement.tests.integration import IntegrationTest
 
 from alumni.models import Alumni
+from selenium.webdriver.common.by import By
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -18,7 +19,7 @@ class AdminTest(IntegrationTest, StaticLiveServerTestCase):
 
     def _assert_admin_results(self, model: str, objects: List[model.Model]) -> None:
         # find the elements on the page
-        elements = self.selenium.find_elements_by_css_selector('table#result_list > tbody > tr > th > a')
+        elements = self.selenium.find_elements(By.CSS_SELECTOR, 'table#result_list > tbody > tr > th > a')
         got_result_list = [l.get_attribute('href').split('?')[0] for l in elements]
 
         # find the urls that are being linked to
@@ -39,13 +40,13 @@ class AdminTest(IntegrationTest, StaticLiveServerTestCase):
     def _select_filter(self, name: str, title: str) -> None:
 
         # find the filter <h3> and <ul>
-        h3 = self.selenium.find_element_by_xpath('//*[@id="changelist-filter"]/h3[text()="By ' + name + '"]')
+        h3 = self.selenium.find_element(By.XPATH,'//*[@id="changelist-filter"]/h3[text()="By ' + name + '"]')
         ul = self.find_next_sibling(h3)
         if ul is None:
             raise AssertionError("Filter does not exist")
 
         # click the filter with the right title
-        for a in ul.find_elements_by_css_selector('a'):
+        for a in ul.find_elements(By.CSS_SELECTOR, 'a'):
             if a.get_attribute("title") == title:
                 a.click()
                 return

@@ -7,6 +7,8 @@ from alumni.models import Alumni
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from datetime import timezone, datetime
 
+from selenium.webdriver.common.by import By
+
 from MemberManagement.tests.integration import IntegrationTest
 
 
@@ -28,7 +30,7 @@ class SearchResultsTest(IntegrationTest, StaticLiveServerTestCase):
                               'query': quoted_query})
 
         # get the links to the actual search results
-        search_result_links = self.selenium.find_elements_by_class_name(
+        search_result_links = self.selenium.find_elements(By.CLASS_NAME,
             'search_result_link')
         got_result_list = [l.get_attribute('href')
                            for l in search_result_links]
@@ -63,7 +65,7 @@ class SearchResultsTest(IntegrationTest, StaticLiveServerTestCase):
         submit_button = self.fill_out_form('atlas_home', 'id_button_search')
 
         self.select_dropdown('aft_id_select_college', 'Krupp')
-        self.selenium.find_element_by_id('aft_id_button_college').click()
+        self.selenium.find_element(By.ID, 'aft_id_button_college').click()
 
         # click and assert results
         submit_button.click()
@@ -75,7 +77,7 @@ class SearchResultsTest(IntegrationTest, StaticLiveServerTestCase):
         })
 
         self.select_dropdown('aft_id_select_college', 'Krupp')
-        self.selenium.find_element_by_id('aft_id_button_college').click()
+        self.selenium.find_element(By.ID, 'aft_id_button_college').click()
 
         # click and assert results
         submit_button.click()

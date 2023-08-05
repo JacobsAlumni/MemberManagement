@@ -4,6 +4,8 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from MemberManagement.tests.integration import IntegrationTest
 
+from selenium.webdriver.common.by import By
+
 
 class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/integration.json']
@@ -87,5 +89,5 @@ class EditAddressTest(IntegrationTest, StaticLiveServerTestCase):
 
         # and fields were marked as incorrect
         for id_ in ['id_address_line_1', 'id_zip', 'id_city']:
-            self.assertIn('uk-form-danger', self.selenium.find_element_by_id(id_).get_attribute(
+            self.assertIn('uk-form-danger', self.selenium.find_element(By.ID, id_).get_attribute(
                 'class').split(' '), '{} field marked up as incorrect'.format(id_))

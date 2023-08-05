@@ -5,6 +5,8 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from MemberManagement.tests.integration import IntegrationTest
 
+from selenium.webdriver.common.by import By
+
 from alumni.models import Alumni
 import datetime
 
@@ -68,7 +70,7 @@ class AdminExportTest(IntegrationTest, StaticLiveServerTestCase):
 
         # select all elements and 'Export as XSLX' action
         self.find_element('#action-toggle').click()
-        select = self.selenium.find_element_by_xpath('//*[@id="changelist-form"]/div[1]/label/select')
+        select = self.selenium.find_element(By.XPATH, '//*[@id="changelist-form"]/div[1]/label/select')
         self.select_dropdown(select, 'Export as XSLX')
 
         # intercept the form download

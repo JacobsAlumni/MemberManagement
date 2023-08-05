@@ -3,6 +3,8 @@ from __future__ import annotations
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from MemberManagement.tests.integration import IntegrationTest
 
+from selenium.webdriver.common.by import By
+
 class AddressTest(IntegrationTest, StaticLiveServerTestCase):
     fixtures = ['registry/tests/fixtures/signup_00_register.json']
     user = 'Mounfem'
@@ -67,5 +69,5 @@ class AddressTest(IntegrationTest, StaticLiveServerTestCase):
                               'Check that the user stays on the address page')
 
         for id_ in ['id_address_line_1', 'id_zip', 'id_city', 'id_country']:
-            self.assertIn('uk-form-danger', self.selenium.find_element_by_id(id_).get_attribute(
+            self.assertIn('uk-form-danger', self.selenium.find_element(By.ID, id_).get_attribute(
                 'class').split(' '), '{} field marked up as incorrect'.format(id_))

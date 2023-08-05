@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from datetime import timezone, datetime
 
+from selenium.webdriver.common.by import By
+
 from alumni.fields import (AlumniCategoryField, CollegeField, GenderField,
                            TierField, DegreeField, ClassField, MajorField, IndustryField, JobField)
 from alumni.models import Alumni
@@ -40,7 +42,7 @@ class SignupTestBase(IntegrationTestBase):
         for nation in nations:
             element.click()
             element.send_keys(nation)
-            element.find_element_by_xpath(
+            element.find_element(By.XPATH,
                 ".//span[text()=\"" + nation + "\"]").click()
 
     def assert_related_created(self, alumni: Alumni):
