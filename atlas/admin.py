@@ -7,10 +7,11 @@ from .models import GeoLocation, AtlasSettings
 
 # Register your models here.
 
+
 class GeoAdmin(admin.ModelAdmin):
-    list_filter = ('country', )
-    list_display = ('country', 'zip', 'lat', 'lon')
-    search_fields = ('country', 'zip')
+    list_filter = ("country",)
+    list_display = ("country", "zip", "lat", "lon")
+    search_fields = ("country", "zip")
 
 
 class AtlasSettingsInline(admin.StackedInline):

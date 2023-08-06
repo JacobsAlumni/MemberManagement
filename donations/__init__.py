@@ -1,1 +1,1 @@
-default_app_config = 'donations.apps.DonationsConfig'
+default_app_config = "donations.apps.DonationsConfig"

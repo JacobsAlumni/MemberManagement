@@ -14,7 +14,7 @@ JS_TEST_MODE_FLAG = True
 # Disable stripe keys in testing mode
 STRIPE_SECRET_KEY = None
 STRIPE_PUBLISHABLE_KEY = None
-STRIPE_WEBHOOK_SECRET = 'useless-secret'
+STRIPE_WEBHOOK_SECRET = "useless-secret"
 
 # enforce minimization for the tests
 # so that we can test the production code
@@ -26,12 +26,12 @@ from selenium import webdriver
 headless = os.environ.get("SELENIUM_HEADLESS", "1") == "1"
 
 SELENIUM_WEBDRIVERS = {
-    'default': make_chrome_driver([], {}, headless=headless),
-    'chrome': make_chrome_driver([], {}, headless=headless),
-    'firefox': make_firefox_driver([], {}, headless=headless),
-    'safari': {
-        'callable': webdriver.Safari,
-        'args': (),
-        'kwargs': {},
+    "default": make_chrome_driver([], {}, headless=headless),
+    "chrome": make_chrome_driver([], {}, headless=headless),
+    "firefox": make_firefox_driver([], {}, headless=headless),
+    "safari": {
+        "callable": webdriver.Safari,
+        "args": (),
+        "kwargs": {},
     },
 }

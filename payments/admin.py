@@ -17,6 +17,7 @@ class ReadOnlyModelAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
 class MembershipInformationInline(admin.StackedInline):
     model = MembershipInformation
     extra = 0
@@ -25,6 +26,7 @@ class MembershipInformationInline(admin.StackedInline):
 class SubscriptionInformationInline(admin.TabularInline):
     model = SubscriptionInformation
     extra = 0
+
 
 @admin.register(PaymentIntent)
 class PaymentIntentAdmin(ReadOnlyModelAdmin):

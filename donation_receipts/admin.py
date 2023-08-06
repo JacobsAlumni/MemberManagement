@@ -8,28 +8,32 @@ from . import models
 
 @admin.register(models.DonationReceipt)
 class DonationReceiptAdmin(admin.ModelAdmin):
-    readonly_fields = ('receipt_pdf', 'issued_on')
-    list_display = ('get_user_name', 'received_on', 'amount')
-    list_filter = ('finalized', )
-    date_hierarchy = 'received_on'
+    readonly_fields = ("receipt_pdf", "issued_on")
+    list_display = ("get_user_name", "received_on", "amount")
+    list_filter = ("finalized",)
+    date_hierarchy = "received_on"
 
     fieldsets = (
-        (None, {
-            'fields': ('finalized', )
-        }),
-        (_('Donation Info'), {
-            'fields': ('received_on', 'amount', 'sender_info')
-        }),
-        (_('Email Info'), {
-            'fields': ('email_name', 'email_to', 'email_sent')
-        }),
-        (_('Internal Tracking'), {
-            'fields': ('received_from', 'payment_stream', 'payment_reference', 'internal_notes')
-        })
+        (None, {"fields": ("finalized",)}),
+        (_("Donation Info"), {"fields": ("received_on", "amount", "sender_info")}),
+        (_("Email Info"), {"fields": ("email_name", "email_to", "email_sent")}),
+        (
+            _("Internal Tracking"),
+            {
+                "fields": (
+                    "received_from",
+                    "payment_stream",
+                    "payment_reference",
+                    "internal_notes",
+                )
+            },
+        ),
     )
 
     def has_delete_permission(self, request, obj=None):
-        return super().has_delete_permission(request, obj) and (obj and not obj.finalized)
+        return super().has_delete_permission(request, obj) and (
+            obj and not obj.finalized
+        )
 
     def get_user_name(self, obj):
         try:
@@ -42,8 +46,8 @@ class DonationReceiptAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.finalized:
-            return ['received_on', 'issued_on', 'amount', 'sender_info', 'finalized']
+            return ["received_on", "issued_on", "amount", "sender_info", "finalized"]
 
         return super().get_readonly_fields(request, obj=obj)
 
-    get_user_name.short_description = 'Received From'
+    get_user_name.short_description = "Received From"

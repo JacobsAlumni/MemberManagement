@@ -12,4 +12,16 @@ from .tier import TierField
 from .payment import PaymentTypeField
 from .year import ClassField
 
-__all__ = ['AlumniCategoryField', 'ClassField', 'CollegeField', 'CountryField', 'DegreeField', 'GenderField', 'IndustryField', 'JobField', 'MajorField', 'TierField', 'PaymentTypeField']
+__all__ = [
+    "AlumniCategoryField",
+    "ClassField",
+    "CollegeField",
+    "CountryField",
+    "DegreeField",
+    "GenderField",
+    "IndustryField",
+    "JobField",
+    "MajorField",
+    "TierField",
+    "PaymentTypeField",
+]

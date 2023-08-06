@@ -10,36 +10,46 @@ from alumni.fields.tier import TierField
 from MemberManagement.tests.integration import IntegrationTest, IntegrationTestBase
 from payments.models import MembershipInformation, SubscriptionInformation
 
-MOCKED_TIME = datetime(
-    2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
+MOCKED_TIME = datetime(2019, 9, 19, 16, 41, 17, 40, tzinfo=timezone.utc)
 MOCKED_END = MOCKED_TIME + timedelta(days=2 * 365)
-MOCKED_CUSTOMER = 'cus_Fq8yG7rLrc6sKZ'
+MOCKED_CUSTOMER = "cus_Fq8yG7rLrc6sKZ"
 
 
 class SignupTestBase(IntegrationTestBase):
     def test_setup_tier_elements(self) -> None:
         # fill out the tier and check that the right tier into is displayed
-        self.fill_out_form('setup_membership', 'input_id_submit', select_dropdowns={
-            "id_tier": TierField.get_description(self.__class__.tier)
-        })
+        self.fill_out_form(
+            "setup_membership",
+            "input_id_submit",
+            select_dropdowns={
+                "id_tier": TierField.get_description(self.__class__.tier)
+            },
+        )
 
         for tier in [TierField.STARTER, TierField.CONTRIBUTOR, TierField.PATRON]:
             if tier == self.__class__.tier:
-                self.assert_element_displayed('#description-{}'.format(tier))
+                self.assert_element_displayed("#description-{}".format(tier))
             else:
-                self.assert_element_not_displayed(
-                    '#description-{}'.format(tier))
+                self.assert_element_not_displayed("#description-{}".format(tier))
 
-    @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
-    @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
+    @mock.patch("django.utils.timezone.now", mock.Mock(return_value=MOCKED_TIME))
+    @mock.patch(
+        "payments.stripewrapper.create_customer", return_value=(MOCKED_CUSTOMER, None)
+    )
     def test_setup_tier_ok(self, mocked: mock.Mock) -> None:
         # fill out the form an select the contributor tier
-        self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
-            "id_tier": TierField.get_description(self.__class__.tier)
-        })
+        self.submit_form(
+            "setup_membership",
+            "input_id_submit",
+            select_dropdowns={
+                "id_tier": TierField.get_description(self.__class__.tier)
+            },
+        )
 
-        self.assert_url_equal('setup_subscription',
-                              'Check that the user gets redirected to the subscription page')
+        self.assert_url_equal(
+            "setup_subscription",
+            "Check that the user gets redirected to the subscription page",
+        )
 
         # check that the stripe api was called with the object as a parameter
         alumni = self.user.alumni
@@ -54,20 +64,26 @@ class SignupTestBase(IntegrationTestBase):
         with self.assertRaises(SubscriptionInformation.DoesNotExist):
             SubscriptionInformation.objects.get(member=alumni)
 
-    @mock.patch('payments.stripewrapper.create_customer', return_value=(None, "debug"))
+    @mock.patch("payments.stripewrapper.create_customer", return_value=(None, "debug"))
     def test_setup_tier_fail(self, mocked: mock.Mock) -> None:
         # fill out the form an select the starter tier
-        btn = self.fill_out_form('setup_membership', 'input_id_submit', select_dropdowns={
-            "id_tier": TierField.get_description(self.__class__.tier)
-        })
+        btn = self.fill_out_form(
+            "setup_membership",
+            "input_id_submit",
+            select_dropdowns={
+                "id_tier": TierField.get_description(self.__class__.tier)
+            },
+        )
 
         # click the submit button and wait for the page to load
         btn.click()
         self.find_element(None)
 
         # we stay on the same page
-        self.assert_url_equal('setup_membership',
-                              'Check that the user does not get redirected to the final page')
+        self.assert_url_equal(
+            "setup_membership",
+            "Check that the user does not get redirected to the final page",
+        )
 
         # check that the stripe api was called with the object as a parameter
         alumni = self.user.alumni
@@ -83,19 +99,24 @@ class SignupTestBase(IntegrationTestBase):
 
 
 class StarterSignupTest(SignupTestBase, IntegrationTest, StaticLiveServerTestCase):
-    fixtures = ['registry/tests/fixtures/signup_06_atlas.json']
-    user = 'Mounfem'
+    fixtures = ["registry/tests/fixtures/signup_06_atlas.json"]
+    user = "Mounfem"
     tier = TierField.STARTER
 
-    @mock.patch('django.utils.timezone.now', mock.Mock(return_value=MOCKED_TIME))
-    @mock.patch('payments.stripewrapper.create_customer', return_value=(MOCKED_CUSTOMER, None))
+    @mock.patch("django.utils.timezone.now", mock.Mock(return_value=MOCKED_TIME))
+    @mock.patch(
+        "payments.stripewrapper.create_customer", return_value=(MOCKED_CUSTOMER, None)
+    )
     def test_setup_tier_ok(self, mocked: mock.Mock) -> None:
-        self.submit_form('setup_membership', 'input_id_submit', select_dropdowns={
-            "id_tier": TierField.get_description(TierField.STARTER)
-        })
+        self.submit_form(
+            "setup_membership",
+            "input_id_submit",
+            select_dropdowns={"id_tier": TierField.get_description(TierField.STARTER)},
+        )
 
-        self.assert_url_equal('setup_setup',
-                              'Check that the user gets redirected to the final page')
+        self.assert_url_equal(
+            "setup_setup", "Check that the user gets redirected to the final page"
+        )
 
         # check that the stripe api was called with the object as a parameter
         alumni = self.user.alumni
@@ -104,7 +125,7 @@ class StarterSignupTest(SignupTestBase, IntegrationTest, StaticLiveServerTestCas
         # check that the membership object was created
         membership = alumni.membership
         self.assertEqual(membership.tier, TierField.STARTER)
-        self.assertEqual(membership.customer, 'cus_Fq8yG7rLrc6sKZ')
+        self.assertEqual(membership.customer, "cus_Fq8yG7rLrc6sKZ")
 
         # check that the subscription was created appropriately
         subscription = SubscriptionInformation.objects.get(member=alumni)
@@ -116,12 +137,12 @@ class StarterSignupTest(SignupTestBase, IntegrationTest, StaticLiveServerTestCas
 
 
 class ContributorSignupTest(SignupTestBase, IntegrationTest, StaticLiveServerTestCase):
-    fixtures = ['registry/tests/fixtures/signup_06_atlas.json']
-    user = 'Mounfem'
+    fixtures = ["registry/tests/fixtures/signup_06_atlas.json"]
+    user = "Mounfem"
     tier = TierField.CONTRIBUTOR
 
 
 class PatronSignupTest(SignupTestBase, IntegrationTest, StaticLiveServerTestCase):
-    fixtures = ['registry/tests/fixtures/signup_06_atlas.json']
-    user = 'Mounfem'
+    fixtures = ["registry/tests/fixtures/signup_06_atlas.json"]
+    user = "Mounfem"
     tier = TierField.PATRON

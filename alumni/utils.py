@@ -4,13 +4,14 @@ from typing import Protocol
 
 
 class ParsingCallback(Protocol):
-    """ A callback for parsing """
+    """A callback for parsing"""
 
-    def __call__(self, *args: str) -> Any: ...
+    def __call__(self, *args: str) -> Any:
+        ...
 
 
 class CSVParser(object):
-    """ CSVParser can parse a list of lists into a parsed set of JSON values """
+    """CSVParser can parse a list of lists into a parsed set of JSON values"""
 
     def __init__(self) -> None:
         super().__init__()
@@ -31,17 +32,19 @@ class CSVParser(object):
         self._mappers: Dict[int, ParsingCallback] = {}
 
     def groups(self) -> Iterator[Tuple[str, List[str]]]:
-        """ Returns a list of registed groups """
+        """Returns a list of registed groups"""
 
         for key in self._groups:
             target = self._targets[key]
             group = self._groups[key]
             yield [target, [m for m in group]]
 
-    def register(self, fields: List[str], target: Union[str, List[str]], map: ParsingCallback):
-        """ Register a new field that can be loaded """
+    def register(
+        self, fields: List[str], target: Union[str, List[str]], map: ParsingCallback
+    ):
+        """Register a new field that can be loaded"""
         if target == "" or "" in fields:
-            raise Exception('Target and Fields must not be the empty')
+            raise Exception("Target and Fields must not be the empty")
 
         # get a new group id
         group_id: int = self._counter
@@ -58,13 +61,15 @@ class CSVParser(object):
         self._mappers[group_id] = map
         self._targets[group_id] = target
 
-    def prepare(self, fields: List[str], required: Optional[List[str]] = None) -> Tuple[Dict[str, List[int]], Dict[str, ParsingCallback], List[str]]:
-        """ Parses a list of fields into a list of indexes """
+    def prepare(
+        self, fields: List[str], required: Optional[List[str]] = None
+    ) -> Tuple[Dict[str, List[int]], Dict[str, ParsingCallback], List[str]]:
+        """Parses a list of fields into a list of indexes"""
 
         # check that fields are unique!
-        non_empty_fields = list(filter(lambda f: f != '', fields))
+        non_empty_fields = list(filter(lambda f: f != "", fields))
         if len(non_empty_fields) != len(set(non_empty_fields)):
-            raise Exception('fields contain duplicate field')
+            raise Exception("fields contain duplicate field")
 
         # check that all the fields exist
         # and keep track of referenced groups and targets!
@@ -72,11 +77,11 @@ class CSVParser(object):
         targets: Set[str] = set()
         for field in fields:
             # ignore empty field
-            if field == '':
+            if field == "":
                 continue
 
             if field not in self._fieldmap:
-                raise Exception('Unknown field {}'.format(field))
+                raise Exception("Unknown field {}".format(field))
 
             for group in self._fieldmap[field]:
                 groups.add(group)
@@ -87,7 +92,10 @@ class CSVParser(object):
         for target in required:
             if target not in targets:
                 raise Exception(
-                    'Target {} is required, but not provided by any field. '.format(target))
+                    "Target {} is required, but not provided by any field. ".format(
+                        target
+                    )
+                )
 
         # check that all the groups have all the requirements!
         # also track which group has which index!
@@ -98,12 +106,14 @@ class CSVParser(object):
             for field in self._groups[group]:
                 if field not in fields:
                     raise Exception(
-                        'Group {} requires field {}, but it is not provided'.format(group, field))
+                        "Group {} requires field {}, but it is not provided".format(
+                            group, field
+                        )
+                    )
 
             # store all the indexes for the target
             target = self._targets[group]
-            indexes[target] = [fields.index(field)
-                               for field in self._groups[group]]
+            indexes[target] = [fields.index(field) for field in self._groups[group]]
             mappers[target] = self._mappers[group]
 
         # sort the targets
@@ -113,15 +123,21 @@ class CSVParser(object):
         # and return
         return indexes, mappers, stargets
 
-    def parse(self, fields: List[str], values: List[List[Any]], required: Optional[List[str]] = None) -> Tuple[List[Dict[str, Any]], List[str]]:
-        """ Parses a list of fields and values """
+    def parse(
+        self,
+        fields: List[str],
+        values: List[List[Any]],
+        required: Optional[List[str]] = None,
+    ) -> Tuple[List[Dict[str, Any]], List[str]]:
+        """Parses a list of fields and values"""
 
         # check that the values are of the correct length
         count = len(fields)
         for (i, v) in enumerate(values):
             if len(v) != count:
                 raise Exception(
-                    'Malformed values: Index {} is not of expected length'.format(i))
+                    "Malformed values: Index {} is not of expected length".format(i)
+                )
 
         # figure out which indexes everything is at
         indexes, mappers, targets = self.prepare(fields, required=required)

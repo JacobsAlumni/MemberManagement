@@ -2,27 +2,24 @@ from __future__ import annotations
 
 from .custom import CustomTextChoiceField
 
-__all__ = ['TierField']
+__all__ = ["TierField"]
 
 
 class TierField(CustomTextChoiceField):
-    STARTER = 'st'
-    CONTRIBUTOR = 'co'
-    PATRON = 'pa'
+    STARTER = "st"
+    CONTRIBUTOR = "co"
+    PATRON = "pa"
 
     CHOICES = (
-        (CONTRIBUTOR,
-         "Contributor – Standard membership for 39€ p.a."),
-        (STARTER,
-         "Starter – Free Membership for 0€ p.a."),
-        (PATRON,
-         "Patron – Premium membership for 249€ p.a."),
+        (CONTRIBUTOR, "Contributor – Standard membership for 39€ p.a."),
+        (STARTER, "Starter – Free Membership for 0€ p.a."),
+        (PATRON, "Patron – Premium membership for 249€ p.a."),
     )
 
     STRIPE_IDS = {
         CONTRIBUTOR: "contributor-membership",
         STARTER: "starter-membership",
-        PATRON: "patron-membership"
+        PATRON: "patron-membership",
     }
 
     @staticmethod
