@@ -166,6 +166,8 @@ AUTHENTICATION_BACKENDS = [
 
 SESAME_MAX_AGE = 300  # Emailed tokens expire after 5 minutes
 
+SESAME_TOKEN_NAME = 'url_auth_token'
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 

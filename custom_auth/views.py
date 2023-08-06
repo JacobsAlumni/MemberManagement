@@ -37,8 +37,8 @@ def email_token_login(request: HttpRequest) -> HttpResponse:
 
     token = request.POST.get('token', None)
 
-    # Naming of parameter is 'url_auth_token' to fit name used by django-sesame
-    res = authenticate(request, url_auth_token=token)
+    # Naming of parameter is 'sesame' to fit name used by django-sesame
+    res = authenticate(request, sesame=token)
 
     if res is not None:
         login(request, res)
