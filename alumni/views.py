@@ -95,7 +95,7 @@ class ApprovalView(FormView):
             {'alumni': alumni, 'emailLinked': emailLinked, 'previousEmail': previousEmail, 'jsAutoEmail': json.dumps(jsAutoEmail)})
         return context
 
-    def form_valid(self, form: UserApprovalForm) -> HTTPResponse:
+    def form_valid(self, form: UserApprovalForm) -> HttpResponse:
         # grab the context
         context = self.get_context_data(form=form)
 
