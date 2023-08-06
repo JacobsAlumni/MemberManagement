@@ -7,7 +7,7 @@ from unittest import mock
 from django.contrib.auth.models import User
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from datetime import timezone, datetime
+from datetime import timezone, datetime, date
 
 from selenium.webdriver.common.by import By
 
@@ -166,7 +166,7 @@ class SignupTestBase(IntegrationTestBase):
         self.assertEqual(obj.existingEmail, None)
         self.assertEqual(obj.resetExistingEmailPassword, False)
         self.assertEqual(obj.sex, GenderField.UNSPECIFIED)
-        self.assertEqual(obj.birthday, datetime.date(1948, 11, 7))
+        self.assertEqual(obj.birthday, date(1948, 11, 7))
         self.assertListEqual(
             list(map(lambda c: c.name, obj.nationality)), ['Germany'])
         self.assertEqual(obj.category, AlumniCategoryField.REGULAR)
@@ -217,7 +217,7 @@ class SignupTestBase(IntegrationTestBase):
         self.assertEqual(obj.existingEmail, None)
         self.assertEqual(obj.resetExistingEmailPassword, False)
         self.assertEqual(obj.sex, GenderField.UNSPECIFIED)
-        self.assertEqual(obj.birthday, datetime.date(1948, 11, 7))
+        self.assertEqual(obj.birthday, date(1948, 11, 7))
         self.assertListEqual(
             list(map(lambda c: c.name, obj.nationality)), ['Germany'])
         self.assertEqual(obj.category, AlumniCategoryField.REGULAR)
@@ -268,7 +268,7 @@ class SignupTestBase(IntegrationTestBase):
         self.assertEqual(obj.existingEmail, None)
         self.assertEqual(obj.resetExistingEmailPassword, False)
         self.assertEqual(obj.sex, GenderField.UNSPECIFIED)
-        self.assertEqual(obj.birthday, datetime.date(1948, 11, 7))
+        self.assertEqual(obj.birthday, date(1948, 11, 7))
         self.assertListEqual(
             list(map(lambda c: c.name, obj.nationality)), ['Germany'])
         self.assertEqual(obj.category, AlumniCategoryField.REGULAR)
