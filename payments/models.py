@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from django.db import models
 
-from datetime import timezone, datetime
-from datetime import timedelta
+
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 from alumni.models import Alumni
 from alumni.fields import TierField, AlumniCategoryField
