@@ -1,0 +1,19 @@
+/** this file contains hooks to make the post-only logout link work */
+form.logout-nav-form {
+    display: flex;
+    align-items: center;
+    column-gap: .25em;
+}
+
+button.logout-nav-link {
+    background-color: transparent;
+
+    font-size: 1.5rem;
+    line-height: 1.5;
+
+    border: none;
+    padding: 5px 0;
+
+    width: 100%;
+    text-align: center;
+}

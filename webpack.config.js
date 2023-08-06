@@ -18,7 +18,8 @@ module.exports = {
     'base__base': [
       'jacobs-alumni-style',
       'nodep-date-input-polyfill',
-      './assets/src/base/base/cookielaw.js'
+      './assets/src/base/base/cookielaw.js',
+      './assets/src/base/base/logout-post.css',
     ],
 
     'atlas__atlas': './assets/src/atlas/atlas/index.ts',

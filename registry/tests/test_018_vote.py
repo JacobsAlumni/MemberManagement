@@ -41,19 +41,23 @@ class VoteLinkTest(IntegrationTest, StaticLiveServerTestCase):
             "Check that getting the token again returns the same token",
         )
 
-    def test_export_tokens(self) -> None:
-        """Tests that exporting tokens works as expected"""
+    def _tokens(self) -> None:
+        """Returns the expected tokens for the first VoteLink"""
 
         # get the link and user object
         link = VoteLink.objects.get(pk=1)
 
-        # create tokens for all the alumni and count them
         tokens = []
         for alumni in Alumni.objects.all():
             token = link.get_token(alumni)
             tokens.append(str(token.token))
         tokens = sorted(tokens)
-        expect_tokens = "\r\n".join(tokens + [""]).encode("utf-8")
+        return "\r\n".join(tokens + [""]).encode("utf-8")
+
+    def test_export_tokens_super(self) -> None:
+        """Tests that exporting tokens works as expected for a superuser"""
+
+        expect_tokens = self._tokens()
 
         # Check that the superuser can download tokens
         self.login("Mounfem")
@@ -63,8 +67,12 @@ class VoteLinkTest(IntegrationTest, StaticLiveServerTestCase):
         self.assertTrue(tokens_download_ok, "Tokens could be downloaded successfully")
         self.assertEqual(got_tokens, expect_tokens, "Right tokens were returned")
 
+    def test_export_tokens_normal(self) -> None:
+        """Tests that exporting tokens works as expected for a superuser"""
+
+        expect_tokens = self._tokens()
+
         # Check that the non-superuser can not download tokens
-        self.load_live_url("logout")
         self.login("Aint1975")
         _, got_tokens = self.get_url_download("registry_tokens", kwargs={"id": "1"})
         self.assertNotEqual(
