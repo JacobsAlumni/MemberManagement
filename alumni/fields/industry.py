@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .custom import CustomIntegerChoiceField
 
-__all__ = ['IndustryField']
+__all__ = ["IndustryField"]
 
 
 class IndustryField(CustomIntegerChoiceField):
@@ -192,8 +192,7 @@ class IndustryField(CustomIntegerChoiceField):
         (DESIGN, "Design"),
         (E_LEARNING, "E-Learning"),
         (EDUCATION_MANAGEMENT, "Education Management"),
-        (ELECTRICALELECTRONIC_MANUFACTURING,
-         "Electrical/Electronic Manufacturing"),
+        (ELECTRICALELECTRONIC_MANUFACTURING, "Electrical/Electronic Manufacturing"),
         (ENTERTAINMENT, "Entertainment"),
         (ENVIRONMENTAL_SERVICES, "Environmental Services"),
         (EVENTS_SERVICES, "Events Services"),
@@ -221,12 +220,10 @@ class IndustryField(CustomIntegerChoiceField):
         (INDIVIDUAL_FAMILY_SERVICES, "Individual & Family Services"),
         (INDUSTRIAL_AUTOMATION, "Industrial Automation"),
         (INFORMATION_SERVICES, "Information Services"),
-        (INFORMATION_TECHNOLOGY_AND_SERVICES,
-         "Information Technology and Services"),
+        (INFORMATION_TECHNOLOGY_AND_SERVICES, "Information Technology and Services"),
         (INSURANCE, "Insurance"),
         (INTERNATIONAL_AFFAIRS, "International Affairs"),
-        (INTERNATIONAL_TRADE_AND_DEVELOPMENT,
-         "International Trade and Development"),
+        (INTERNATIONAL_TRADE_AND_DEVELOPMENT, "International Trade and Development"),
         (INTERNET, "Internet"),
         (INVESTMENT_BANKING, "Investment Banking"),
         (INVESTMENT_MANAGEMENT, "Investment Management"),
@@ -244,8 +241,7 @@ class IndustryField(CustomIntegerChoiceField):
         (MARITIME, "Maritime"),
         (MARKET_RESEARCH, "Market Research"),
         (MARKETING_AND_ADVERTISING, "Marketing and Advertising"),
-        (MECHANICAL_OR_INDUSTRIAL_ENGINEERING,
-         "Mechanical or Industrial Engineering"),
+        (MECHANICAL_OR_INDUSTRIAL_ENGINEERING, "Mechanical or Industrial Engineering"),
         (MEDIA_PRODUCTION, "Media Production"),
         (MEDICAL_DEVICES, "Medical Devices"),
         (MEDICAL_PRACTICE, "Medical Practice"),
@@ -257,9 +253,7 @@ class IndustryField(CustomIntegerChoiceField):
         (MUSIC, "Music"),
         (NANOTECHNOLOGY, "Nanotechnology"),
         (NEWSPAPERS, "Newspapers"),
-        (
-            NONPROFIT_ORGANIZATION_MANAGEMENT,
-            "Nonprofit Organization Management"),
+        (NONPROFIT_ORGANIZATION_MANAGEMENT, "Nonprofit Organization Management"),
         (OIL_ENERGY, "Oil & Energy"),
         (ONLINE_MEDIA, "Online Media"),
         (OTHER, "Other"),
@@ -278,15 +272,13 @@ class IndustryField(CustomIntegerChoiceField):
         (PROFESSIONAL_TRAINING_COACHING, "Professional Training & Coaching"),
         (PROGRAM_DEVELOPMENT, "Program Development"),
         (PUBLIC_POLICY, "Public Policy"),
-        (PUBLIC_RELATIONS_AND_COMMUNICATIONS,
-         "Public Relations and Communications"),
+        (PUBLIC_RELATIONS_AND_COMMUNICATIONS, "Public Relations and Communications"),
         (PUBLIC_SAFETY, "Public Safety"),
         (PUBLISHING, "Publishing"),
         (RAILROAD_MANUFACTURE, "Railroad Manufacture"),
         (RANCHING, "Ranching"),
         (REAL_ESTATE, "Real Estate"),
-        (RECREATIONAL_FACILITIES_AND_SERVICES,
-         "Recreational Facilities and Services"),
+        (RECREATIONAL_FACILITIES_AND_SERVICES, "Recreational Facilities and Services"),
         (RELIGIOUS_INSTITUTIONS, "Religious Institutions"),
         (RENEWABLES_ENVIRONMENT, "Renewables & Environment"),
         (RESEARCH, "Research"),

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .custom import CustomIntegerChoiceField
 
-__all__ = ['CollegeField']
+__all__ = ["CollegeField"]
 
 
 class CollegeField(CustomIntegerChoiceField):
@@ -13,9 +13,9 @@ class CollegeField(CustomIntegerChoiceField):
     CV = 5
 
     CHOICES = (
-        (KRUPP, 'Krupp'),
-        (MERCATOR, 'Mercator'),
-        (CIII, 'College III'),
-        (NORDMETALL, 'Nordmetall'),
-        (CV, 'College V')
+        (KRUPP, "Krupp"),
+        (MERCATOR, "Mercator"),
+        (CIII, "College III"),
+        (NORDMETALL, "Nordmetall"),
+        (CV, "College V"),
     )

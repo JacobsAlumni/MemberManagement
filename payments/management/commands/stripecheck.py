@@ -9,11 +9,13 @@ from payments.models import MembershipInformation
 from tqdm import tqdm
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Any
 
+
 class Command(BaseCommand):
-    help = 'Checks Stripe Customer Data'
+    help = "Checks Stripe Customer Data"
 
     def handle(self, *args: Any, **kwargs: Any) -> None:
         try:
@@ -30,15 +32,19 @@ class Command(BaseCommand):
         # check all the customers
         with tqdm(total=MembershipInformation.objects.count()) as tbar:
             _, err = stripewrapper.map_customers(
-                lambda customer: self.check_customer(tbar, customer))
+                lambda customer: self.check_customer(tbar, customer)
+            )
             if err is not None:
                 raise err
 
         # raise an error for non-existent customers
         for info in MembershipInformation.objects.filter(stripe_check=False):
             user = info.member.profile.username
-            print('Customer {0!r} (for user {1!r}): Customer not found in Stripe Customer database'.format(
-                info.customer, user))
+            print(
+                "Customer {0!r} (for user {1!r}): Customer not found in Stripe Customer database".format(
+                    info.customer, user
+                )
+            )
 
     def check_customer(self, tbar: tqdm, stripe_customer: Dict[str, Any]) -> str:
         tbar.update(1)  # next customer seen
@@ -46,19 +52,20 @@ class Command(BaseCommand):
 
         # grab the customer in the db
         try:
-            info = MembershipInformation.objects.get(
-                customer=customer_id)
+            info = MembershipInformation.objects.get(customer=customer_id)
         except MembershipInformation.DoesNotExist:
-            tbar.write('Customer {0!r}: Customer does not belong to any known Alumni'.format(
-                customer_id))
+            tbar.write(
+                "Customer {0!r}: Customer does not belong to any known Alumni".format(
+                    customer_id
+                )
+            )
             return
 
         # we used it in the stripe check
         info.stripe_check = True
         info.save()
 
-        errors = stripewrapper.check_customer_stripe_props(
-            info.member, stripe_customer)
+        errors = stripewrapper.check_customer_stripe_props(info.member, stripe_customer)
         for err in errors:
             tbar.write(err)
 

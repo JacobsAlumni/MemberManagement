@@ -7,17 +7,21 @@ from django.core.exceptions import ObjectDoesNotExist
 from custom_auth.utils.gsuite import get_user_id
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Optional
     from django.contrib.auth.models import User
     from googleapiclient.discovery import Resource
+
 
 class GoogleAssociation(models.Model):
     user: User = models.ForeignKey(auth.get_user_model(), on_delete=models.CASCADE)
     google_user_id: str = models.CharField(max_length=64)
 
     @classmethod
-    def link_user(cls, user: User, uid: Optional[str] = None, service: Optional[Resource]=None) -> [Optional[GoogleAssociation], Optional[str]]:
+    def link_user(
+        cls, user: User, uid: Optional[str] = None, service: Optional[Resource] = None
+    ) -> [Optional[GoogleAssociation], Optional[str]]:
         # refresh the user from the database
         user.refresh_from_db()
 
@@ -44,7 +48,8 @@ class GoogleAssociation(models.Model):
 
         # Create or update the object
         obj, created = cls.objects.update_or_create(
-            user=user, defaults={'google_user_id': google_user_id})
+            user=user, defaults={"google_user_id": google_user_id}
+        )
 
         # if the user is not staff and is not a superuser
         # then we need to lock their password

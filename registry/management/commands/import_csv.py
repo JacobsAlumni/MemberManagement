@@ -4,8 +4,15 @@ import csv
 import re
 from datetime import datetime
 
-from alumni.fields import (AlumniCategoryField, ClassField, CountryField,
-                           DegreeField, GenderField, MajorField, TierField)
+from alumni.fields import (
+    AlumniCategoryField,
+    ClassField,
+    CountryField,
+    DegreeField,
+    GenderField,
+    MajorField,
+    TierField,
+)
 from alumni.models import Alumni, SetupCompleted
 from django.core.management.base import BaseCommand
 from django.core.validators import validate_email
@@ -15,6 +22,7 @@ from registry.forms import RegistrationMixin
 
 from typing import TYPE_CHECKING
 from typing import Dict, List, Optional
+
 if TYPE_CHECKING:
     from argparse import ArgumentParser
 
@@ -27,7 +35,7 @@ class RegistrationValidator(RegistrationMixin):
 
 
 class AlumniParser(CSVParser):
-    """ A CSVParser for Alumni """
+    """A CSVParser for Alumni"""
 
     registration: RegistrationValidator
 
@@ -35,30 +43,30 @@ class AlumniParser(CSVParser):
         super().__init__()
         self.registration = RegistrationValidator()
 
-        self.register(['birthday_de'], 'birthday', self._parse_birthday_de)
-        self.register(['birthday_us'], 'birthday', self._parse_birthday_us)
-        self.register(['title'], 'gender', self._parse_title)
-        self.register(['name_1_3'], 'given_name', self._parse_given_name)
-        self.register(['name_1_3'], 'middle_name', self._parse_middle_name)
+        self.register(["birthday_de"], "birthday", self._parse_birthday_de)
+        self.register(["birthday_us"], "birthday", self._parse_birthday_us)
+        self.register(["title"], "gender", self._parse_title)
+        self.register(["name_1_3"], "given_name", self._parse_given_name)
+        self.register(["name_1_3"], "middle_name", self._parse_middle_name)
 
-        self.register(['name_1'], 'given_name', self._parse_required)
-        self.register(['name_2'], 'family_name', self._parse_required)
-        self.register(['name_3'], 'middle_name', self._parse_optional)
+        self.register(["name_1"], "given_name", self._parse_required)
+        self.register(["name_2"], "family_name", self._parse_required)
+        self.register(["name_3"], "middle_name", self._parse_optional)
 
-        self.register(['nationality_1'], 'nationality_1', self._parse_country)
-        self.register(['nationality_2'], 'nationality_2', self._parse_country)
+        self.register(["nationality_1"], "nationality_1", self._parse_country)
+        self.register(["nationality_2"], "nationality_2", self._parse_country)
 
-        self.register(['email'], 'email', self._parse_email)
-        self.register(['class'], 'year', self._parse_class)
-        self.register(['year'], 'year', self._parse_year)
-        self.register(['degree'], 'degree', self._parse_degree)
-        self.register(['major'], 'major', self._parse_major)
+        self.register(["email"], "email", self._parse_email)
+        self.register(["class"], "year", self._parse_class)
+        self.register(["year"], "year", self._parse_year)
+        self.register(["degree"], "degree", self._parse_degree)
+        self.register(["major"], "major", self._parse_major)
 
     def _parse_birthday_de(self, birthday_de) -> datetime:
-        return datetime.strptime(birthday_de, '%d.%m.%Y')
+        return datetime.strptime(birthday_de, "%d.%m.%Y")
 
     def _parse_birthday_us(self, birthday_us) -> datetime:
-        return datetime.strptime(birthday_us, '%m/%d/%y')
+        return datetime.strptime(birthday_us, "%m/%d/%y")
 
     def _parse_title(self, title: str) -> GenderField:
         title = title.lower().strip()
@@ -118,10 +126,13 @@ class AlumniParser(CSVParser):
         raise Exception("Unknown Country: {}".format(country))
 
     def _parse_class(self, clz: str) -> ClassField:
-        matches = list(re.findall(r'\d\d', clz))
+        matches = list(re.findall(r"\d\d", clz))
         if len(matches) != 1:
-            raise Exception("Expected class {} to have exactly one year information, but got {} matches".format(
-                clz, len(matches)))
+            raise Exception(
+                "Expected class {} to have exactly one year information, but got {} matches".format(
+                    clz, len(matches)
+                )
+            )
 
         year = int(matches[0]) + 2000
         for (value, _) in ClassField.CHOICES:
@@ -131,10 +142,13 @@ class AlumniParser(CSVParser):
         return ClassField.OTHER
 
     def _parse_year(self, year: str) -> ClassField:
-        matches = list(re.findall(r'\d\d\d\d', year))
+        matches = list(re.findall(r"\d\d\d\d", year))
         if len(matches) != 1:
-            raise Exception("Expected year {} to have exactly one year information, but got {} matches".format(
-                year, len(matches)))
+            raise Exception(
+                "Expected year {} to have exactly one year information, but got {} matches".format(
+                    year, len(matches)
+                )
+            )
 
         year = int(matches[0])
         for (value, _) in ClassField.CHOICES:
@@ -158,7 +172,7 @@ class AlumniParser(CSVParser):
         for (key, description) in DegreeField.CHOICES:
             if description.lower() == degree:
                 return key
-        raise Exception('Unknown degree: {}'.format(org_degree))
+        raise Exception("Unknown degree: {}".format(org_degree))
 
     MAJOR_ALTS: Dict[str, MajorField] = {
         "Global Economics and Management": "Global Economics and Management (GEM)",
@@ -188,7 +202,7 @@ class AlumniParser(CSVParser):
             if description.lower() == major:
                 return key
 
-        raise Exception('Unknown major: {0!r}'.format(org_major))
+        raise Exception("Unknown major: {0!r}".format(org_major))
 
 
 class SimulateException(Exception):
@@ -196,41 +210,39 @@ class SimulateException(Exception):
 
 
 class Command(BaseCommand):
-    help = 'Import a CSV of generated users'
+    help = "Import a CSV of generated users"
 
     def add_arguments(self, parser: ArgumentParser) -> None:
+        parser.add_argument("files", nargs="*", help="Path to csv of users to import ")
         parser.add_argument(
-            'files', nargs='*', help='Path to csv of users to import ')
-        parser.add_argument(
-            '--columns',
-            default=',birthday_de,title,name_2,name_1,name_3,nationality_1,nationality_2,email,class,degree,major',
-            help="Comma seperated list of fields to parse"
+            "--columns",
+            default=",birthday_de,title,name_2,name_1,name_3,nationality_1,nationality_2,email,class,degree,major",
+            help="Comma seperated list of fields to parse",
         )
         parser.add_argument(
-            '--simulate',
+            "--simulate",
             type=bool,
-            help="Don't actually created any users, just simulate creating them"
+            help="Don't actually created any users, just simulate creating them",
         )
         parser.add_argument(
-            '--no-stripe',
+            "--no-stripe",
             type=bool,
-            help="Skip creating stripe accounts. Use with care. "
+            help="Skip creating stripe accounts. Use with care. ",
         )
         parser.add_argument(
-            '--list-columns',
-            action='store_true',
-            dest='list_columns',
-            help="List available columns and exit. "
+            "--list-columns",
+            action="store_true",
+            dest="list_columns",
+            help="List available columns and exit. ",
         )
 
     def handle(self, *args, **kwargs) -> None:
         # create the parser and required arguments
         parser = AlumniParser()
-        required = ['given_name', 'family_name',
-                    'email', 'birthday', 'nationality_1']
+        required = ["given_name", "family_name", "email", "birthday", "nationality_1"]
 
         # list all columns if requested
-        columns = kwargs['list_columns']
+        columns = kwargs["list_columns"]
         if columns:
             return self.list_columns(parser, required, *args, **kwargs)
 
@@ -256,13 +268,13 @@ class Command(BaseCommand):
 
     def do_import(self, parser: AlumniParser, required: List[str], *args, **kwargs):
         # Find the file to parse
-        files = kwargs['files']
+        files = kwargs["files"]
         if len(files) != 1:
             raise Exception("expected exactly one file")
 
         # read the csv lines!
         lines: List[List[str]] = []
-        with open(files[0], 'r') as f:
+        with open(files[0], "r") as f:
             # open the csv file and skip the first line
             reader = csv.reader(f)
             reader.__next__()
@@ -270,7 +282,7 @@ class Command(BaseCommand):
             # store the rest of the lines
             lines = list(reader)
 
-        columns = kwargs['columns'].split(",")
+        columns = kwargs["columns"].split(",")
 
         # parse the actual fields!
         parsed, targets = parser.parse(
@@ -279,8 +291,8 @@ class Command(BaseCommand):
             required=required,
         )
 
-        simulate = kwargs['simulate']
-        no_stripe = kwargs['no_stripe']
+        simulate = kwargs["simulate"]
+        no_stripe = kwargs["no_stripe"]
         try:
             with transaction.atomic():
                 # iterate over the users and create them, if they already exists, skip them!
@@ -288,25 +300,27 @@ class Command(BaseCommand):
                     try:
 
                         # read names
-                        given_name = person['given_name']
-                        middle_name = person['middle_name'] if 'middle_name' in targets else None
+                        given_name = person["given_name"]
+                        middle_name = (
+                            person["middle_name"] if "middle_name" in targets else None
+                        )
                         if middle_name is None:
                             middle_name = ""
-                        family_name = person['family_name']
+                        family_name = person["family_name"]
 
                         # read email
-                        email = person['email']
+                        email = person["email"]
                         validate_email(email)
 
                         # read nationality
-                        nationality = person['nationality_1']
-                        if 'nationality_2' in targets:
-                            nationality_2 = person['nationality_2']
+                        nationality = person["nationality_1"]
+                        if "nationality_2" in targets:
+                            nationality_2 = person["nationality_2"]
                             if nationality_2 is not None:
                                 nationality = [nationality, nationality_2]
 
                         # read birthday
-                        birthday = person['birthday']
+                        birthday = person["birthday"]
 
                         # read member type and tier
                         member_type = AlumniCategoryField.REGULAR
@@ -323,7 +337,7 @@ class Command(BaseCommand):
                             birthday=birthday,
                             member_type=member_type,
                             member_tier=member_tier,
-                            skip_stripe=skip_stripe
+                            skip_stripe=skip_stripe,
                         )
 
                         # Store that the user was autocreated
@@ -332,17 +346,17 @@ class Command(BaseCommand):
                         alumni.approval.save()
 
                         # store the gender
-                        if 'gender' in targets:
-                            alumni.sex = person['gender']
+                        if "gender" in targets:
+                            alumni.sex = person["gender"]
                         alumni.save()
 
                         # store additional jacobs data
-                        if 'year' in targets:
-                            alumni.jacobs.graduation = person['year']
-                        if 'degree' in targets:
-                            alumni.jacobs.degree = person['degree']
-                        if 'major' in targets and person['major'] is not None:
-                            alumni.jacobs.major = person['major']
+                        if "year" in targets:
+                            alumni.jacobs.graduation = person["year"]
+                        if "degree" in targets:
+                            alumni.jacobs.degree = person["degree"]
+                        if "major" in targets and person["major"] is not None:
+                            alumni.jacobs.major = person["major"]
                         alumni.jacobs.save()
 
                         SetupCompleted.objects.create(member=alumni)

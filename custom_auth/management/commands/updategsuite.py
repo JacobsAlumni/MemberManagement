@@ -9,6 +9,7 @@ from custom_auth.utils.gsuite import make_directory_service, patch_user
 from custom_auth.models import GoogleAssociation
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Callable
     from django.contrib.auth.models import User
@@ -17,15 +18,18 @@ if TYPE_CHECKING:
 
 
 class Command(BaseCommand):
-    help = 'Links Google and Portal Accounts'
+    help = "Links Google and Portal Accounts"
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
-            'users', nargs='*', help='Usernames of user(s) to update. If empty, update all users. ')
+            "users",
+            nargs="*",
+            help="Usernames of user(s) to update. If empty, update all users. ",
+        )
 
     def handle(self, *args, **kwargs) -> None:
         # Get the user objects from the database
-        usernames = kwargs['users']
+        usernames = kwargs["users"]
         if len(usernames) == 0:
             users = get_user_model().objects.all()
         else:
@@ -35,7 +39,7 @@ class Command(BaseCommand):
 
 
 def update_gsuite_users(users: QuerySet, on_message: Callable[str, None]) -> None:
-    """ Links GSuite Users """
+    """Links GSuite Users"""
 
     # Create a GSuite Service
     service = make_directory_service()

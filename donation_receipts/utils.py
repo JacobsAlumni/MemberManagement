@@ -1,21 +1,21 @@
 import locale
 
 _NUMERAL_MAP = {
-    '0': 'null',
-    '1': 'eins',
-    '2': 'zwei',
-    '3': 'drei',
-    '4': 'vier',
-    '5': 'fünf',
-    '6': 'sechs',
-    '7': 'sieben',
-    '8': 'acht',
-    '9': 'neun',
-    ',': 'komma',
+    "0": "null",
+    "1": "eins",
+    "2": "zwei",
+    "3": "drei",
+    "4": "vier",
+    "5": "fünf",
+    "6": "sechs",
+    "7": "sieben",
+    "8": "acht",
+    "9": "neun",
+    ",": "komma",
     # Ignore '.' as indicated in https://esth.bundesfinanzministerium.de/esth/2016/C-Anhaenge/Anhang-37/I/anhang-37-I.html under point 5
 }
 
-_DELIMITER = ' - '
+_DELIMITER = " - "
 
 
 def _convert_to_numeral(number):
@@ -26,14 +26,14 @@ def _convert_to_numeral(number):
 
     for index, char in enumerate(reversed(str(whole))):
         if index != 0 and index % 3 == 0:
-            whole_dotted.append('.')
+            whole_dotted.append(".")
         whole_dotted.append(char)
 
     out = "".join(reversed(whole_dotted))
 
     # only add decimal numbers if not 00
     if number - whole:
-        out += ',' + decimal
+        out += "," + decimal
 
     return out
 

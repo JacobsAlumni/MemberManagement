@@ -1,8 +1,15 @@
 from __future__ import annotations
 from django.contrib import admin
 
-from ..models import Address, JobInformation, SocialMedia, \
-    JacobsData, Approval, Skills, SetupCompleted
+from ..models import (
+    Address,
+    JobInformation,
+    SocialMedia,
+    JacobsData,
+    Approval,
+    Skills,
+    SetupCompleted,
+)
 
 from atlas.admin import AtlasSettingsInline
 from payments.admin import MembershipInformationInline, SubscriptionInformationInline
@@ -44,5 +51,15 @@ class SetupCompletedInline(admin.StackedInline):
 
 
 class AlumniAdminInlines:
-    inlines = [SetupCompletedInline, ApprovalInline, AddressInline, SocialMediaInline, JacobsDataInline,
-               JobInformationInline, SkillsInline, MembershipInformationInline, SubscriptionInformationInline, AtlasSettingsInline]
+    inlines = [
+        SetupCompletedInline,
+        ApprovalInline,
+        AddressInline,
+        SocialMediaInline,
+        JacobsDataInline,
+        JobInformationInline,
+        SkillsInline,
+        MembershipInformationInline,
+        SubscriptionInformationInline,
+        AtlasSettingsInline,
+    ]

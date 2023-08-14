@@ -22,31 +22,44 @@ from .views import HomeView, HealthCheckDynamic, HealthCheckStatic
 
 urlpatterns = [
     # Static Views
-    path('', HomeView.as_view(), name='root'),
-    path('healthcheck/', HealthCheckDynamic.as_view(), name='healthcheck'),
-    path('healthcheck/static/', HealthCheckStatic.as_view(), name='healthcheck'),
-    path('imprint/', RedirectView.as_view(url='https://jacobs-alumni.de/imprint/',
-                                            permanent=False), name='imprint'),
-
+    path("", HomeView.as_view(), name="root"),
+    path("healthcheck/", HealthCheckDynamic.as_view(), name="healthcheck"),
+    path("healthcheck/static/", HealthCheckStatic.as_view(), name="healthcheck"),
+    path(
+        "imprint/",
+        RedirectView.as_view(url="https://jacobs-alumni.de/imprint/", permanent=False),
+        name="imprint",
+    ),
     # Root redirects
-    path('register/', RedirectView.as_view(pattern_name='register',
-                                             permanent=False), name='root_register'),
-    path('privacy/', RedirectView.as_view(url='https://jacobs-alumni.de/privacy/',
-                                            permanent=False), name='privacy'),
-    path('vote/', RedirectView.as_view(pattern_name='registry_vote',
-                                             permanent=False), name='root_vote'),
-
+    path(
+        "register/",
+        RedirectView.as_view(pattern_name="register", permanent=False),
+        name="root_register",
+    ),
+    path(
+        "privacy/",
+        RedirectView.as_view(url="https://jacobs-alumni.de/privacy/", permanent=False),
+        name="privacy",
+    ),
+    path(
+        "vote/",
+        RedirectView.as_view(pattern_name="registry_vote", permanent=False),
+        name="root_vote",
+    ),
     # And recursively go into all the apps
-    path('portal/', include('registry.urls')),
-    path('admin/', include('alumni.urls')),
-    path('impersonate/', include('impersonate.urls')),
-    path('auth/', include('custom_auth.urls')),
-    path('atlas/', include('atlas.urls')),
-    path('payments/', include('payments.urls')),
-    path('receipts/', include('donation_receipts.urls')),
-    path('donations/', include('donations.urls')),
+    path("portal/", include("registry.urls")),
+    path("admin/", include("alumni.urls")),
+    path("impersonate/", include("impersonate.urls")),
+    path("auth/", include("custom_auth.urls")),
+    path("atlas/", include("atlas.urls")),
+    path("payments/", include("payments.urls")),
+    path("receipts/", include("donation_receipts.urls")),
+    path("donations/", include("donations.urls")),
 ]
 
 # make an http 500 handler in case things go wrong
 error_handler = TemplateView.as_view(template_name="base/error.html")
-def handler500(request): return error_handler(request)
+
+
+def handler500(request):
+    return error_handler(request)

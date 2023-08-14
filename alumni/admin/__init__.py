@@ -10,7 +10,14 @@ from .list import AlumniListDisplay, AlumniListFilter
 from .actions import AlumniAdminActions
 
 
-class AlumniAdmin(AlumniSearch, AlumniListFilter, AlumniAdminInlines, AlumniListDisplay, AlumniAdminActions, admin.ModelAdmin):
+class AlumniAdmin(
+    AlumniSearch,
+    AlumniListFilter,
+    AlumniAdminInlines,
+    AlumniListDisplay,
+    AlumniAdminActions,
+    admin.ModelAdmin,
+):
     pass
 
 
