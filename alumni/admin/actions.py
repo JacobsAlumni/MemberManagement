@@ -133,6 +133,7 @@ def export_as_xslx_action(
 
         # Write the header (if desired)
         if header:
+
             def makeHeaderCell(field):
                 c = cell.Cell(ws, value=field)
                 c.font = styles.Font(bold=True)
@@ -143,19 +144,20 @@ def export_as_xslx_action(
         # Write each of the rows
         copy = queryset.all()
         for (raw, row) in zip(copy, queryset.values_list(*field_names)):
+
             def makeCell(prop):
                 try:
                     return to_excel(prop)
                 except:
                     return str(prop)
-                
+
             cells = [makeCell(c) for c in row]
             if extra_fields:
                 extra_cells = [makeCell(f(raw)) for (_, f) in extra_fields]
             else:
                 extra_cells = []
 
-            ws.append(cells+extra_cells)
+            ws.append(cells + extra_cells)
 
         # adjust column widths
         # adapted from https://stackoverflow.com/a/39530676
