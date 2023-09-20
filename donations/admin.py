@@ -19,7 +19,7 @@ class DonationAdmin(admin.ModelAdmin):
     actions = [
         export_as_xslx_action(
             "Export as XSLX",
-            fields=["completed", "target"],
+            fields=["payment_id", "external_id", "completed", "target"],
             extra_fields=[("amount", lambda x: x.amount)],
         ),
     ]
