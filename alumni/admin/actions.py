@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, List, Iterator, Optional, Callable
+    from typing import Any, List, Iterator, Optional, Callable, Tuple
     from django.contrib.admin import ModelAdmin
     from django.http import HttpRequest
     from django.db.models import QuerySet
@@ -94,6 +94,7 @@ def to_excel(value: Any) -> ExcelCellType:
 def export_as_xslx_action(
     description: str = "Export selected objects as XSLX file",
     fields: Optional[Iterator[str]] = None,
+    extra_fields: Optional[Iterator[Tuple[str, Callable]]] = None,
     header: bool = True,
 ) -> Callable[[ModelAdmin, HttpRequest, QuerySet], HttpResponse]:
     """
@@ -110,6 +111,12 @@ def export_as_xslx_action(
             field_names = [field.name for field in opts.fields]
         else:
             field_names = fields
+
+        # get the extra names
+        if not extra_fields:
+            extra_names = []
+        else:
+            extra_names = [n for (n, _) in extra_fields]
 
         # Create a response header
         response = HttpResponse(
@@ -132,10 +139,11 @@ def export_as_xslx_action(
                 c.font = styles.Font(bold=True)
                 return c
 
-            ws.append([makeHeaderCell(field) for field in field_names])
+            ws.append([makeHeaderCell(field) for field in field_names] + extra_names)
 
         # Write each of the rows
-        for row in queryset.values_list(*field_names):
+        copy = queryset.all()
+        for (raw, row) in zip(copy, queryset.values_list(*field_names)):
 
             def makeCell(prop):
                 try:
@@ -143,7 +151,13 @@ def export_as_xslx_action(
                 except:
                     return str(prop)
 
-            ws.append([makeCell(c) for c in row])
+            cells = [makeCell(c) for c in row]
+            if extra_fields:
+                extra_cells = [makeCell(f(raw)) for (_, f) in extra_fields]
+            else:
+                extra_cells = []
+
+            ws.append(cells + extra_cells)
 
         # adjust column widths
         # adapted from https://stackoverflow.com/a/39530676
