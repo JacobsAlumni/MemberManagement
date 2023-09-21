@@ -8,15 +8,15 @@ from MemberManagement.tests.integration import IntegrationTest
 
 
 class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
-    fixtures = ['registry/tests/fixtures/integration.json']
-    user = 'Mounfem'
+    fixtures = ["registry/tests/fixtures/integration.json"]
+    user = "Mounfem"
 
     def test_noedit(self) -> None:
-        """ Tests that entering nothing doesn't change anything """
+        """Tests that entering nothing doesn't change anything"""
 
         # enter nothing
-        self.submit_form('edit_job', 'input_id_submit')
-        self.assert_url_equal('edit_job')
+        self.submit_form("edit_job", "input_id_submit")
+        self.assert_url_equal("edit_job")
 
         # check that everything stayed the same
         job = self.user.alumni.job
@@ -27,14 +27,19 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_edit_complete(self) -> None:
         # enter nothing
-        self.submit_form('edit_job', 'input_id_submit', send_form_keys={
-            'id_employer': 'Problem Dream',
-            'id_position': 'Senior Production Consultant',
-        }, select_dropdowns={
-            'id_industry': 'Military',
-            'id_job': 'Retail',
-        })
-        self.assert_url_equal('edit_job')
+        self.submit_form(
+            "edit_job",
+            "input_id_submit",
+            send_form_keys={
+                "id_employer": "Problem Dream",
+                "id_position": "Senior Production Consultant",
+            },
+            select_dropdowns={
+                "id_industry": "Military",
+                "id_job": "Retail",
+            },
+        )
+        self.assert_url_equal("edit_job")
 
         # check that everything saved
         job = self.user.alumni.job
@@ -45,14 +50,19 @@ class EditJobTest(IntegrationTest, StaticLiveServerTestCase):
 
     def test_edit_empty(self) -> None:
         # enter nothing
-        self.submit_form('edit_job', 'input_id_submit', send_form_keys={
-            'id_employer': '',
-            'id_position': '',
-        }, select_dropdowns={
-            'id_industry': 'Other',
-            'id_job': 'Other',
-        })
-        self.assert_url_equal('edit_job')
+        self.submit_form(
+            "edit_job",
+            "input_id_submit",
+            send_form_keys={
+                "id_employer": "",
+                "id_position": "",
+            },
+            select_dropdowns={
+                "id_industry": "Other",
+                "id_job": "Other",
+            },
+        )
+        self.assert_url_equal("edit_job")
 
         # check that everything saved
         job = self.user.alumni.job

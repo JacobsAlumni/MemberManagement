@@ -13,26 +13,59 @@ jobs:
                 browser: ["chrome", "firefox"]
 
         steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
 
         - name: Install Python ${{ matrix.python }}
-          uses: actions/setup-python@v1
+          uses: actions/setup-python@v4
           with:
             python-version: ${{ matrix.python }}
         - name: Install Chrome Webdriver
           if: ${{ matrix.browser == 'chrome' }}
           run: |
+            python3 -m venv venv
+            source venv/bin/activate
+
             pip install seleniumbase
             sudo apt-get install -y google-chrome-stable
             seleniumbase install chromedriver
-            pip uninstall -y seleniumbase
+
+            deactivate
+            rm -rf venv
         - name: Install Firefox Webdriver
           if: ${{ matrix.browser == 'firefox' }}
           run: |
-            pip install seleniumbase
+            # Python by default installs from snap.
+            # This isn't supported by geckodriver.
+            #
+            # The clean solution would be to use a sane distribution
+            # that doesn't use snap-based firefox by default.
+            # But GitHub Actions doesn't offer this.
+
+            sudo add-apt-repository ppa:mozillateam/ppa
+            sudo apt-get -qq -y update
+
+            echo '
+            Package: *
+            Pin: release o=LP-PPA-mozillateam
+            Pin-Priority: 1001
+
+            Package: firefox
+            Pin: version 1:1snap1-0ubuntu2
+            Pin-Priority: -1
+            ' | sudo tee /etc/apt/preferences.d/mozilla-firefox > /dev/null
+            sudo apt-get -y install firefox
+
+
+            python3 -m venv venv
+            source venv/bin/activate
+
             sudo apt-get install -y firefox
+            
+            pip install seleniumbase
             seleniumbase install geckodriver
-            pip uninstall -y seleniumbase
+
+            deactivate
+            rm -rf venv
         - name: Run 'poetry install'
           run: |
             pip install poetry
@@ -48,6 +81,9 @@ jobs:
 
         - name: Run 'yarn build'
           run: yarn build
+        - name: Check if 'black' has been run
+          run:
+            black --exclude 'migrations' --check .
         - name: Run 'pytest'
           env:
             SELENIUM_WEBDRIVER: ${{ matrix.browser }}
@@ -58,7 +94,7 @@ jobs:
         name: Docker Smoke Test
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
         
         - name: 'Build Docker Container'
           run: docker build -t jacobsalumni/membermanagement .

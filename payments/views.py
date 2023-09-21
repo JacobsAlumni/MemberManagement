@@ -18,10 +18,15 @@ from registry.views.setup import SetupComponentView
 
 from MemberManagement.mixins import RedirectResponseMixin
 
-from .forms import MembershipInformationForm, PaymentMethodForm, CancellablePaymentMethodForm
+from .forms import (
+    MembershipInformationForm,
+    PaymentMethodForm,
+    CancellablePaymentMethodForm,
+)
 from .models import SubscriptionInformation, PaymentIntent
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Dict, Any, Optional, Tuple, List
     from .models import MembershipInformation
@@ -29,27 +34,28 @@ if TYPE_CHECKING:
 
 
 class SignupView(SetupComponentView):
-    setup_name = 'Tier Selection'
-    setup_subtitle = 'How much do you want to support us?'
+    setup_name = "Tier Selection"
+    setup_subtitle = "How much do you want to support us?"
     setup_form_class = MembershipInformationForm
 
-    template_name = 'payments/tier.html'
+    template_name = "payments/tier.html"
 
     def get_context(self, form: MembershipInformationForm) -> Dict[str, Any]:
         context = super().get_context(form)
-        context.update({
-            'confirm_text': 'Confirm Membership',
-            'updating': False
-        })
+        context.update({"confirm_text": "Confirm Membership", "updating": False})
         return context
 
-    def form_valid(self, form: MembershipInformationForm) -> Optional[MembershipInformation]:
+    def form_valid(
+        self, form: MembershipInformationForm
+    ) -> Optional[MembershipInformation]:
 
         # Create the stripe customer
         customer, err = stripewrapper.create_customer(self.request.user.alumni)
         if err is not None:
             form.add_error(
-                None, 'Something went wrong when talking to our payment service provider. Please try again later or contact support. ')
+                None,
+                "Something went wrong when talking to our payment service provider. Please try again later or contact support. ",
+            )
             return None
 
         # store the information
@@ -61,25 +67,28 @@ class SignupView(SetupComponentView):
         # if we selected the starter tier, create subscription information now
         if instance.tier == TierField.STARTER:
             SubscriptionInformation.create_starter_subscription(
-                self.request.user.alumni)
+                self.request.user.alumni
+            )
 
         return instance
 
 
 class SubscribeView(SetupComponentView):
-    setup_name = 'Payment Information'
-    setup_subtitle = ''
+    setup_name = "Payment Information"
+    setup_subtitle = ""
     setup_form_class = CancellablePaymentMethodForm
-    setup_next_text = 'CONFIRM MEMBERSHIP & AUTHORIZE PAYMENT NOW'
+    setup_next_text = "CONFIRM MEMBERSHIP & AUTHORIZE PAYMENT NOW"
 
-    template_name = 'payments/subscribe.html'
+    template_name = "payments/subscribe.html"
 
     def get_context(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context(*args, **kwargs)
-        context.update({
-            'alumni': self.request.user.alumni,
-            'allow_go_to_starter': True,
-        })
+        context.update(
+            {
+                "alumni": self.request.user.alumni,
+                "allow_go_to_starter": True,
+            }
+        )
         return context
 
     @classmethod
@@ -87,7 +96,7 @@ class SubscribeView(SetupComponentView):
         return SubscriptionInformation
 
     def should_setup_component(self) -> bool:
-        """ Check if we should setup this component """
+        """Check if we should setup this component"""
 
         # by default, we are not in payment update mode
         self.payment_update_mode = False
@@ -130,33 +139,47 @@ class SubscribeView(SetupComponentView):
 
         if self.payment_update_error is None:
             tier = self.request.user.alumni.membership.tier
-            messages.success(self.request, 'Tier has been changed to {}'.format(
-                TierField.get_description(tier)))
+            messages.success(
+                self.request,
+                "Tier has been changed to {}".format(TierField.get_description(tier)),
+            )
         else:
-            messages.error(self.request, 'Unable to change tier: {}. Please try again or contact support. '.format(
-                self.payment_update_error))
+            messages.error(
+                self.request,
+                "Unable to change tier: {}. Please try again or contact support. ".format(
+                    self.payment_update_error
+                ),
+            )
 
         # if the subscription was in update mode and we shouldn't set it up
         # then we should immediately redirect to the memebership page
-        return self.redirect_response('update_membership', reverse=True)
+        return self.redirect_response("update_membership", reverse=True)
 
     def dispatch_form(self, form: CancellablePaymentMethodForm) -> HttpResponse:
         if self.payment_update_mode:
             messages.info(
-                self.request, 'Please enter your payment details to complete the tier change. ')
+                self.request,
+                "Please enter your payment details to complete the tier change. ",
+            )
 
         return super().dispatch_form(form)
 
-    def form_valid(self, form: CancellablePaymentMethodForm) -> Optional[SubscriptionInformation]:
-        """ Form has been validated """
+    def form_valid(
+        self, form: CancellablePaymentMethodForm
+    ) -> Optional[SubscriptionInformation]:
+        """Form has been validated"""
 
         # if the membership is the starter
         membership = self.request.user.alumni.membership
-        if membership.member.category != AlumniCategoryField.REGULAR and form.user_go_to_starter:
+        if (
+            membership.member.category != AlumniCategoryField.REGULAR
+            and form.user_go_to_starter
+        ):
             form.add_error(
-                None, 'Non-regular Alumni are not allowed to use the free starter tier. ')
+                None,
+                "Non-regular Alumni are not allowed to use the free starter tier. ",
+            )
             return None
-
 
         # Attach the payment source to the customer
         _, err = form.attach_to_customer(membership.customer)
@@ -164,7 +187,9 @@ class SubscribeView(SetupComponentView):
         # if the error is not, return
         if err is not None:
             form.add_error(
-                None, 'Something went wrong when talking to our payment service provider. Please try again later or contact support. ')
+                None,
+                "Something went wrong when talking to our payment service provider. Please try again later or contact support. ",
+            )
             return None
 
         # we went to the starter tier
@@ -175,37 +200,45 @@ class SubscribeView(SetupComponentView):
 
         if instance is None:
             form.add_error(
-                None, 'Something went wrong trying to create the subscription. Please try again later or contact support. ')
+                None,
+                "Something went wrong trying to create the subscription. Please try again later or contact support. ",
+            )
 
         return instance
 
     def dispatch_success(self, validated: SubscriptionInformation) -> HttpResponse:
-        """ called upon successful setup """
+        """called upon successful setup"""
 
         # if this was not created from an update operation, do nothing
         if not validated.created_from_update:
             return super().dispatch_success(validated)
 
         # we suceeded
-        messages.success(self.request, 'Tier has been changed to {}'.format(
-            TierField.get_description(self.request.user.alumni.membership.tier)))
-        return self.redirect_response('update_membership', reverse=True)
+        messages.success(
+            self.request,
+            "Tier has been changed to {}".format(
+                TierField.get_description(self.request.user.alumni.membership.tier)
+            ),
+        )
+        return self.redirect_response("update_membership", reverse=True)
 
 
-@method_decorator(require_setup_completed, name='dispatch')
+@method_decorator(require_setup_completed, name="dispatch")
 class UpdatePaymentView(FormView):
-    template_name = 'payments/subscribe.html'
+    template_name = "payments/subscribe.html"
     form_class = PaymentMethodForm
 
     def get_context_data(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
-        context.update({
-            'title': 'Update Payment Information',
-            'updating': True,
-            'next_text': 'AUTHORIZE PAYMENT NOW',
-            'alumni': self.request.user.alumni,
-            'allow_go_to_starter': False,
-        })
+        context.update(
+            {
+                "title": "Update Payment Information",
+                "updating": True,
+                "next_text": "AUTHORIZE PAYMENT NOW",
+                "alumni": self.request.user.alumni,
+                "allow_go_to_starter": False,
+            }
+        )
         return context
 
     def form_valid(self, form: PaymentMethodForm) -> HttpResponse:
@@ -216,63 +249,67 @@ class UpdatePaymentView(FormView):
         # if the error is not, return
         if err is not None:
             form.add_error(
-                None, 'Something went wrong when talking to our payment service provider. Please try again later or contact support. ')
+                None,
+                "Something went wrong when talking to our payment service provider. Please try again later or contact support. ",
+            )
             return self.form_invalid(form)
 
-        messages.success(self.request, 'Payment method has been updated. ')
+        messages.success(self.request, "Payment method has been updated. ")
 
         return self.form_invalid(form)
 
 
-@method_decorator(require_setup_completed, name='dispatch')
+@method_decorator(require_setup_completed, name="dispatch")
 class UpdateTierView(RedirectResponseMixin, FormView):
-    template_name = 'payments/tier.html'
+    template_name = "payments/tier.html"
     form_class = MembershipInformationForm
 
     def get_context_data(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
-        context.update({
-            'title': 'Change Membership Tier',
-            'updating': True,
-            'next_text': 'Change Tier',
-            'confirm_text': 'Change Tier',
-            'alumni': self.request.user.alumni,
-        })
+        context.update(
+            {
+                "title": "Change Membership Tier",
+                "updating": True,
+                "next_text": "Change Tier",
+                "confirm_text": "Change Tier",
+                "alumni": self.request.user.alumni,
+            }
+        )
         return context
 
     def form_valid(self, form: MembershipInformationForm) -> HttpResponse:
         membership = self.request.user.alumni.membership
 
         # update the desired tier to what the user selected
-        desired_tier = form.cleaned_data['tier']
+        desired_tier = form.cleaned_data["tier"]
         membership.desired_tier = desired_tier
         membership.save()
 
         # redirect to the setup_subscription page
-        return self.redirect_response('setup_subscription', reverse=True)
+        return self.redirect_response("setup_subscription", reverse=True)
 
 
 class PaymentsTableMixin:
     @classmethod
-    def format_datetime(cls, epoch: int, format: str="DATETIME_FORMAT") -> str:
-        """ Formats seconds since epoch as a readable date """
+    def format_datetime(cls, epoch: int, format: str = "DATETIME_FORMAT") -> str:
+        """Formats seconds since epoch as a readable date"""
         date_joined = datetime.fromtimestamp(epoch)
         return formats.date_format(date_joined, format)
 
     @classmethod
     def format_description(cls, line: Dict[str, any]) -> str:
-        """ Formats the description line of an invoice """
+        """Formats the description line of an invoice"""
         # if we have a description, return it
         if line.description is not None:
             return line.description
 
         # if we have a subscription show {{Name}} x timeframe
         if line.type == "subscription":
-            name = "{} ({} - {})".format(line.plan.name,
-                                         cls.format_datetime(line.period.start,
-                                                             "DATE_FORMAT"),
-                                         cls.format_datetime(line.period.end,
-                                                             "DATE_FORMAT"))
+            name = "{} ({} - {})".format(
+                line.plan.name,
+                cls.format_datetime(line.period.start, "DATE_FORMAT"),
+                cls.format_datetime(line.period.end, "DATE_FORMAT"),
+            )
             return "{} x {}".format(line.quantity, name)
 
         # we have a normal line item, and there should have been a description
@@ -281,7 +318,7 @@ class PaymentsTableMixin:
 
     @classmethod
     def format_total(cls, amount: float, cur: str) -> str:
-        """ Formats the total """
+        """Formats the total"""
         if cur == "eur":
             return "%0.2f €" % (amount / 100)
         elif cur == "usd":
@@ -290,65 +327,79 @@ class PaymentsTableMixin:
             raise Exception("unknown currency {}".format(cur))
 
     @classmethod
-    def get_invoice_table(cls, customer: Dict[str, Any]) -> Tuple[Optional[List[Dict[str, Any]]], Optional[str]]:
+    def get_invoice_table(
+        cls, customer: Dict[str, Any]
+    ) -> Tuple[Optional[List[Dict[str, Any]]], Optional[str]]:
         invoices, err = stripewrapper.get_payment_table(customer)
         described = []
 
         if err is None:
             try:
-                invoices = [{
-                    'lines': [cls.format_description(l) for l in iv['lines']],
-                    'date': cls.format_datetime(iv['date']),
-                    'total': cls.format_total(iv['total'][0], iv['total'][1]),
-                    'paid': iv['paid'],
-                    'closed': iv['closed'],
-                    'upcoming': iv['upcoming']
-                } for iv in invoices]
+                invoices = [
+                    {
+                        "lines": [cls.format_description(l) for l in iv["lines"]],
+                        "date": cls.format_datetime(iv["date"]),
+                        "total": cls.format_total(iv["total"][0], iv["total"][1]),
+                        "paid": iv["paid"],
+                        "closed": iv["closed"],
+                        "upcoming": iv["upcoming"],
+                    }
+                    for iv in invoices
+                ]
             except Exception as e:
                 err = str(e)
         else:
-            err = 'Something went wrong. Please try again later or contact support. '
+            err = "Something went wrong. Please try again later or contact support. "
 
         return invoices, err
 
     @classmethod
     def format_method(cls, source: Dict[str, Any]) -> str:
-        if source['kind'] == 'card':
-            return '{} Card ending in {} (valid until {}/{})'.format(source['brand'], source['last4'], source['exp_month'], source['exp_year'])
-        elif source['kind'] == 'sepa':
-            return 'Bank Account ending in {} (<a href="{}" target="_blank">SEPA Mandate Reference {}</a>)'.format(source['last4'], source['mandate_url'], source['mandate_reference'])
+        if source["kind"] == "card":
+            return "{} Card ending in {} (valid until {}/{})".format(
+                source["brand"],
+                source["last4"],
+                source["exp_month"],
+                source["exp_year"],
+            )
+        elif source["kind"] == "sepa":
+            return 'Bank Account ending in {} (<a href="{}" target="_blank">SEPA Mandate Reference {}</a>)'.format(
+                source["last4"], source["mandate_url"], source["mandate_reference"]
+            )
         else:
-            return 'Unknown Payment Method. Please contact support. '
+            return "Unknown Payment Method. Please contact support. "
 
     @classmethod
-    def get_method_table(cls, customer: str) -> Tuple[Optional[List[Dict[str, Any]]], Optional[str]]:
+    def get_method_table(
+        cls, customer: str
+    ) -> Tuple[Optional[List[Dict[str, Any]]], Optional[str]]:
         methods, err = stripewrapper.get_methods_table(customer)
         if err is None:
             methods = [cls.format_method(method) for method in methods]
         else:
-            err = 'Something went wrong. Please try again later or contact support. '
+            err = "Something went wrong. Please try again later or contact support. "
 
         return methods, err
 
 
-@method_decorator(require_setup_completed, name='dispatch')
+@method_decorator(require_setup_completed, name="dispatch")
 class PaymentsView(PaymentsTableMixin, TemplateView):
-    template_name = 'payments/view.html'
+    template_name = "payments/view.html"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         customer = self.request.user.alumni.membership.customer
-        context['user'] = self.request.user
+        context["user"] = self.request.user
 
         invoices, error = self.__class__.get_invoice_table(customer)
-        context['invoices'] = invoices
+        context["invoices"] = invoices
 
         if error is None:
             methods, error = self.__class__.get_method_table(customer)
-            context['methods'] = methods
+            context["methods"] = methods
 
-        context['error'] = error
+        context["error"] = error
 
         return context
 
@@ -356,20 +407,24 @@ class PaymentsView(PaymentsTableMixin, TemplateView):
 @csrf_exempt
 def stripe_webhook(request):
     payload = request.body
-    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
 
-    event, error = stripewrapper.make_stripe_event(payload, sig_header, settings.STRIPE_WEBHOOK_SECRET)
-
+    event, error = stripewrapper.make_stripe_event(
+        payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+    )
 
     if error:
         print(error)
         return HttpResponseBadRequest()
 
     # Handle the event
-    if event.type.startswith('payment_intent.'):
-        payment_intent = event.data.object # contains a stripe.PaymentIntent
+    if event.type.startswith("payment_intent."):
+        payment_intent = event.data.object  # contains a stripe.PaymentIntent
 
         # Update the local database
-        PaymentIntent.objects.update_or_create(stripe_id=payment_intent.id, defaults={'data': stripewrapper._pi_to_dict(payment_intent)})
+        PaymentIntent.objects.update_or_create(
+            stripe_id=payment_intent.id,
+            defaults={"data": stripewrapper._pi_to_dict(payment_intent)},
+        )
 
     return HttpResponse()

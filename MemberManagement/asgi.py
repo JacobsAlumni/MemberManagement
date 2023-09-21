@@ -17,7 +17,7 @@ from django.urls import path
 from django.core.asgi import get_asgi_application
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MemberManagement.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "MemberManagement.settings")
 
 # Have to call before importing consumers as they depend on models
 django_asgi_app = get_asgi_application()
@@ -26,17 +26,19 @@ django_asgi_app = get_asgi_application()
 from donations.consumers import DonationUpdateConsumer
 
 
-
-application = ProtocolTypeRouter({
-    # Django's ASGI application to handle traditional HTTP requests
-    "http": django_asgi_app,
-
-    # WebSocket chat handler
-    "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack(
-            URLRouter([
-                path("donations/", DonationUpdateConsumer.as_asgi()),
-            ])
-        )
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        # Django's ASGI application to handle traditional HTTP requests
+        "http": django_asgi_app,
+        # WebSocket chat handler
+        "websocket": AllowedHostsOriginValidator(
+            AuthMiddlewareStack(
+                URLRouter(
+                    [
+                        path("donations/", DonationUpdateConsumer.as_asgi()),
+                    ]
+                )
+            )
+        ),
+    }
+)

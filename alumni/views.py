@@ -26,6 +26,7 @@ from .forms import UserApprovalForm
 from .models import Alumni
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Any, Dict, Optional
     from django.http import HttpResponse, HttpRequest
@@ -39,16 +40,18 @@ class EmailStatus(Enum):
 
     @staticmethod
     def message(value: EmailStatus) -> str:
-        return ({
-            EmailStatus.EMAIL_OK: '',
-            EmailStatus.EMAIL_DIFFERS: 'Differs from assigned address',
-            EmailStatus.EMAIL_DOESNOTEXIST: 'Does not exist on GSuite',
-            EmailStatus.EMAIL_LINKEDOTHER: 'Linked to another account'
-        })[value]
+        return (
+            {
+                EmailStatus.EMAIL_OK: "",
+                EmailStatus.EMAIL_DIFFERS: "Differs from assigned address",
+                EmailStatus.EMAIL_DOESNOTEXIST: "Does not exist on GSuite",
+                EmailStatus.EMAIL_LINKEDOTHER: "Linked to another account",
+            }
+        )[value]
 
 
 def check_existing_email(alumni: Alumni, candidate=None) -> EmailStatus:
-    """ Checks consistency with the existing email field """
+    """Checks consistency with the existing email field"""
 
     # canidate to compare with
     if candidate is None:
@@ -72,30 +75,42 @@ def check_existing_email(alumni: Alumni, candidate=None) -> EmailStatus:
 
 
 def generate_random_password() -> str:
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=settings.GSUITE_PASS_LENGTH))
+    return "".join(
+        random.choices(
+            string.ascii_uppercase + string.digits, k=settings.GSUITE_PASS_LENGTH
+        )
+    )
 
-@method_decorator(staff_member_required, name='dispatch')
+
+@method_decorator(staff_member_required, name="dispatch")
 class ApprovalView(FormView):
-    template_name = 'approval/index.html'
+    template_name = "approval/index.html"
     form_class = UserApprovalForm
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         context = super(ApprovalView, self).get_context_data(**kwargs)
 
         alumni = get_object_or_404(
-            Alumni, profile__id=self.request.resolver_match.kwargs['id'])
+            Alumni, profile__id=self.request.resolver_match.kwargs["id"]
+        )
         emailLinked = alumni.profile.googleassociation_set.exists()
         previousEmail = EmailStatus.message(check_existing_email(alumni))
 
-        jsAutoEmail = alumni.profile.username + '@jacobs-alumni.de'
+        jsAutoEmail = alumni.profile.username + "@jacobs-alumni.de"
         if alumni.existingEmail:
             jsAutoEmail = alumni.existingEmail
 
         context.update(
-            {'alumni': alumni, 'emailLinked': emailLinked, 'previousEmail': previousEmail, 'jsAutoEmail': json.dumps(jsAutoEmail)})
+            {
+                "alumni": alumni,
+                "emailLinked": emailLinked,
+                "previousEmail": previousEmail,
+                "jsAutoEmail": json.dumps(jsAutoEmail),
+            }
+        )
         return context
 
-    def form_valid(self, form: UserApprovalForm) -> HTTPResponse:
+    def form_valid(self, form: UserApprovalForm) -> HttpResponse:
         # grab the context
         context = self.get_context_data(form=form)
 
@@ -104,30 +119,35 @@ class ApprovalView(FormView):
             self.run_approval(self.request, context, form)
         except Exception as e:
             client.captureException()
-            form.add_error(None, 'Account approval failed: {}'.format(e))
+            form.add_error(None, "Account approval failed: {}".format(e))
 
         # grab the context *again*, as things might have changed
         return self.render_to_response(self.get_context_data(form=form))
 
-    def run_approval(self, request: HttpRequest, context: Dict[str, Any], form: UserApprovalForm) -> None:
-        """ Runs the approval process for a given user """
-        alumni = context['alumni']
+    def run_approval(
+        self, request: HttpRequest, context: Dict[str, Any], form: UserApprovalForm
+    ) -> None:
+        """Runs the approval process for a given user"""
+        alumni = context["alumni"]
 
         # if the user is already approved, error out
         if alumni.approval.approval:
             raise Exception("Can not approve: Already approved. ")
 
         # if the email is already linked, error out
-        if context['emailLinked']:
+        if context["emailLinked"]:
             raise Exception("User already has a linked account. ")
 
         # check that the existing email is ok
-        email = form.cleaned_data['email']
+        email = form.cleaned_data["email"]
         existingEmail = check_existing_email(alumni, candidate=email)
         if existingEmail != EmailStatus.EMAIL_OK:
 
-            raise Exception("Existing Email Field Problem: {}".format(
-                EmailStatus.message(existingEmail)))
+            raise Exception(
+                "Existing Email Field Problem: {}".format(
+                    EmailStatus.message(existingEmail)
+                )
+            )
 
         # decide what to do
         if not alumni.existingEmail:
@@ -137,123 +157,150 @@ class ApprovalView(FormView):
         else:
             return self.run_approval_unlock(request, email, alumni)
 
-    def run_approval_newaccount(self, request: HttpRequest, email: str, alumni: Alumni) -> None:
-        """ Creates a new account for email """
+    def run_approval_newaccount(
+        self, request: HttpRequest, email: str, alumni: Alumni
+    ) -> None:
+        """Creates a new account for email"""
 
-        messages.info(
-            request, 'Approving with a new account: {}'.format(email))
+        messages.info(request, "Approving with a new account: {}".format(email))
 
         # generate a random password to use for the user
         password = generate_random_password()
 
         # Create the new account
-        messages.info(request, 'Creating a new account {}'.format(email))
+        messages.info(request, "Creating a new account {}".format(email))
         uid = create_user(alumni, email, password)
         if uid is None:
-            raise ValueError(
-                'Something went wrong while creating user account')
-        messages.success(request, 'Created user with id {}'.format(uid))
+            raise ValueError("Something went wrong while creating user account")
+        messages.success(request, "Created user with id {}".format(uid))
 
         # Approve + Link
-        self.approve_and_link(request, email, alumni, uid = uid)
+        self.approve_and_link(request, email, alumni, uid=uid)
 
         # Send email
-        messages.info(request, 'Sending Welcome email')
+        messages.info(request, "Sending Welcome email")
         alumni.send_welcome_email(password=password)
-        messages.success(request, 'Sent welcome email')
+        messages.success(request, "Sent welcome email")
 
-    def run_approval_unlock(self, request: HttpRequest, email: str, alumni: Alumni) -> None:
-        """ Unlocks an existing account for alumni """
+    def run_approval_unlock(
+        self, request: HttpRequest, email: str, alumni: Alumni
+    ) -> None:
+        """Unlocks an existing account for alumni"""
 
-        messages.info(
-            request, 'Approving with existing account: {}'.format(email))
+        messages.info(request, "Approving with existing account: {}".format(email))
 
         # Patch existing account
-        messages.info(request, 'Patching account {}'.format(email))
+        messages.info(request, "Patching account {}".format(email))
         uid = patch_user(alumni, email)
         if uid is None:
-            raise ValueError(
-                'Something went wrong while patching user account')
-        messages.success(request, 'Patched user with id {}'.format(uid))
+            raise ValueError("Something went wrong while patching user account")
+        messages.success(request, "Patched user with id {}".format(uid))
 
         # Approve + Link
-        self.approve_and_link(request, email, alumni, uid = uid)
+        self.approve_and_link(request, email, alumni, uid=uid)
 
         # Send email
-        messages.info(request, 'Sending Welcome Back email')
+        messages.info(request, "Sending Welcome Back email")
         alumni.send_welcome_email(back=True)
-        messages.success(request, 'Sent Welcome Back email')
+        messages.success(request, "Sent Welcome Back email")
 
-    def run_approval_reset_and_unlock(self, request: HttpRequest, email: str, alumni: Alumni) -> None:
-        """ Unlocks and resets an existing account """
+    def run_approval_reset_and_unlock(
+        self, request: HttpRequest, email: str, alumni: Alumni
+    ) -> None:
+        """Unlocks and resets an existing account"""
 
         messages.info(
-            request, 'Approving with reset for existing account: {}'.format(email))
+            request, "Approving with reset for existing account: {}".format(email)
+        )
 
         # generate a random password to reset the password to
         password = generate_random_password()
 
         # Patch existing account
-        messages.info(request, 'Patching account + password {}'.format(email))
+        messages.info(request, "Patching account + password {}".format(email))
         uid = patch_user(alumni, email, password=password)
         if uid is None:
-            raise ValueError(
-                'Something went wrong while patching user account')
-        messages.success(request, 'Patched user with id {}'.format(uid))
+            raise ValueError("Something went wrong while patching user account")
+        messages.success(request, "Patched user with id {}".format(uid))
 
         # Approve + Link
-        self.approve_and_link(request, email, alumni, uid = uid)
+        self.approve_and_link(request, email, alumni, uid=uid)
 
         # Send email
-        messages.info(request, 'Sending Welcome Back email')
+        messages.info(request, "Sending Welcome Back email")
         alumni.send_welcome_email(password=password, back=True)
-        messages.success(request, 'Sent Welcome Back email')
+        messages.success(request, "Sent Welcome Back email")
 
-    def approve_and_link(self, request: HttpRequest, email: str, alumni: Alumni, uid: Optional[str] = None) -> None:
+    def approve_and_link(
+        self,
+        request: HttpRequest,
+        email: str,
+        alumni: Alumni,
+        uid: Optional[str] = None,
+    ) -> None:
         # Approve user
-        messages.info(request, 'Storing approval info')
+        messages.info(request, "Storing approval info")
         alumni.approval.approval = True
         alumni.approval.gsuite = email
         alumni.approval.time = timezone.now()
         alumni.approval.save()
-        messages.success(request, 'Stored approval info')
+        messages.success(request, "Stored approval info")
 
         # Link user
-        messages.info(request, 'Linking portal account')
-        link, err = GoogleAssociation.link_user(alumni.profile, uid = uid)
+        messages.info(request, "Linking portal account")
+        link, err = GoogleAssociation.link_user(alumni.profile, uid=uid)
         if link is not None:
-            messages.success(request, 'Linked portal account')
+            messages.success(request, "Linked portal account")
         else:
-            messages.warning(request, 'Could not link portal account: {}. Please relink manually using Django Admin. '.format(err))
+            messages.warning(
+                request,
+                "Could not link portal account: {}. Please relink manually using Django Admin. ".format(
+                    err
+                ),
+            )
 
-@method_decorator(staff_member_required, name='dispatch')
+
+@method_decorator(staff_member_required, name="dispatch")
 class StatsListView(TemplateView):
-    template_name = 'stats/list.html'
+    template_name = "stats/list.html"
 
-@method_decorator(staff_member_required, name='dispatch')
+
+@method_decorator(staff_member_required, name="dispatch")
 class StatsViewAll(View):
-    alumni_qualifer_text = 'existing'
+    alumni_qualifer_text = "existing"
+
     def get_querset(self) -> QuerySet:
         return Alumni.objects.all()
 
     def get(self, *args, **kwargs) -> HttpResponse:
-        return render_stats(self.request, self.get_querset(), alumni_qualifer_text=self.__class__.alumni_qualifer_text)
+        return render_stats(
+            self.request,
+            self.get_querset(),
+            alumni_qualifer_text=self.__class__.alumni_qualifer_text,
+        )
+
 
 class StatsViewApproved(StatsViewAll):
-    alumni_qualifer_text = 'approved'
+    alumni_qualifer_text = "approved"
+
     def get_querset(self) -> QuerySet:
-        return Alumni.objects.filter(approval__approval = True)
+        return Alumni.objects.filter(approval__approval=True)
+
 
 @staff_member_required
 def preview_welcome_email(request: HttpRequest, uid: str) -> HttpResponse:
     alumni = get_object_or_404(Alumni, profile__id=uid)
-    return alumni.render_welcome_email(request, password='PasswordWillBeHere', back=False)
+    return alumni.render_welcome_email(
+        request, password="PasswordWillBeHere", back=False
+    )
 
 
 @staff_member_required
 def preview_welcomeback_password_email(request: HttpRequest, uid: str) -> HttpResponse:
     alumni = get_object_or_404(Alumni, profile__id=uid)
-    return alumni.render_welcome_email(request, password='PasswordWillBeHere', back=True)
+    return alumni.render_welcome_email(
+        request, password="PasswordWillBeHere", back=True
+    )
 
 
 @staff_member_required

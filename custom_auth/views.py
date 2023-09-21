@@ -3,8 +3,7 @@ from __future__ import annotations
 from django.conf import settings
 from django.contrib.auth import authenticate, login, views
 from django.core.exceptions import SuspiciousOperation
-from django.http import (HttpResponse,
-                         HttpResponseForbidden, HttpResponseRedirect)
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -19,61 +18,65 @@ from MemberManagement import mailutils
 from . import forms
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
 class TokenEmailSentView(views.TemplateView):
-    template_name = 'auth/token_sent.html'
+    template_name = "auth/token_sent.html"
 
 
 def email_token_login(request: HttpRequest) -> HttpResponse:
-    """ Tries to login a user with a token they received via email """
-    if request.method != 'POST':
+    """Tries to login a user with a token they received via email"""
+    if request.method != "POST":
         # Render a template to cause a POST request
-        get_token = request.GET.get('token', None)
-        next_url = request.GET.get('next', None)
-        return render(request, 'auth/token_login.html', context={'token': get_token, 'next': next_url})
+        get_token = request.GET.get("token", None)
+        next_url = request.GET.get("next", None)
+        return render(
+            request,
+            "auth/token_login.html",
+            context={"token": get_token, "next": next_url},
+        )
 
-    token = request.POST.get('token', None)
+    token = request.POST.get("token", None)
 
-    # Naming of parameter is 'url_auth_token' to fit name used by django-sesame
-    res = authenticate(request, url_auth_token=token)
+    # Naming of parameter is 'sesame' to fit name used by django-sesame
+    res = authenticate(request, sesame=token)
 
     if res is not None:
         login(request, res)
-        next_url = request.POST.get('next', None)
+        next_url = request.POST.get("next", None)
         return HttpResponseRedirect(next_url)
     else:
-        return render(request, 'auth/token_login.html', context={'error': True})
+        return render(request, "auth/token_login.html", context={"error": True})
 
 
 def google_token_login(request: HttpRequest) -> HttpResponse:
-    """ Tries to log a user in using a token supplied by Google. Called only by AJAX """
-    if request.method != 'POST':
-        raise SuspiciousOperation('Wrong request method')
+    """Tries to log a user in using a token supplied by Google. Called only by AJAX"""
+    if request.method != "POST":
+        raise SuspiciousOperation("Wrong request method")
 
-    token = request.POST['token']
+    token = request.POST["token"]
 
     res = authenticate(request, token=token)
 
     if res is not None:
         login(request, res)
-        return HttpResponse('OK')
+        return HttpResponse("OK")
     else:
-        return HttpResponseForbidden('NOK')
+        return HttpResponseForbidden("NOK")
 
 
 class ClientIdLoginView(views.LoginView):
     # Injects the OAuth client ID into the template context
     extra_context = {
-        'client_id': settings.GSUITE_OAUTH_CLIENT_ID,
+        "client_id": settings.GSUITE_OAUTH_CLIENT_ID,
     }
 
     def get_context_data(self, **kwargs):
         context = super(views.LoginView, self).get_context_data(**kwargs)
-        context['googlefail'] = self.request.GET.get(
-            'error', '') == 'googlefail'
+        context["googlefail"] = self.request.GET.get("error", "") == "googlefail"
         context.update(self.extra_context)
 
         return context
@@ -98,19 +101,27 @@ class ClientIdLoginView(views.LoginView):
         return super(views.LoginView, self).get_form_kwargs()
 
     def form_valid(self, form):
-        """Forward the user, no matter if we found them or not. Don't want to leak email existance information. """
+        """Forward the user, no matter if we found them or not. Don't want to leak email existance information."""
         if form.is_valid():
             next_url = self.get_success_url()
-            email = form.cleaned_data['email']
+            email = form.cleaned_data["email"]
 
             try:
                 user = UserModel.objects.get(email=email)
                 token_str = generate_login_token(user.profile)
                 abs_url = "{}?token={}&next={}".format(
-                    self.request.build_absolute_uri(reverse(email_token_login)), token_str, next_url)
+                    self.request.build_absolute_uri(reverse(email_token_login)),
+                    token_str,
+                    next_url,
+                )
 
-                mailutils.send_email(user.email, 'Jacobs Alumni Association - Login Link',
-                                     'emails/token_email.html', name=user.givenName, login_url=abs_url)
+                mailutils.send_email(
+                    user.email,
+                    "Jacobs Alumni Association - Login Link",
+                    "emails/token_email.html",
+                    name=user.givenName,
+                    login_url=abs_url,
+                )
 
                 if settings.DEBUG:
                     print(abs_url)
@@ -118,4 +129,4 @@ class ClientIdLoginView(views.LoginView):
                 # Can't complain to the user here, or we'll give away that we don't know this address.
                 pass
 
-        return HttpResponseRedirect(reverse('token_sent'))
+        return HttpResponseRedirect(reverse("token_sent"))

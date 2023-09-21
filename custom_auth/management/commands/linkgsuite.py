@@ -9,6 +9,7 @@ from custom_auth.utils.gsuite import make_directory_service
 from custom_auth.models import GoogleAssociation
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Callable
     from django.contrib.auth.models import User
@@ -17,27 +18,37 @@ if TYPE_CHECKING:
 
 
 class Command(BaseCommand):
-    help = 'Links Google and Portal Accounts'
+    help = "Links Google and Portal Accounts"
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
-            'users', nargs='*', help='Usernames of user(s) to update. If empty, update all users. ')
-        parser.add_argument('--remove-password', '-r', action='store_true', dest='remove_password',
-                            help='If provided, remove password login for non-staff non-superuser users. ')
+            "users",
+            nargs="*",
+            help="Usernames of user(s) to update. If empty, update all users. ",
+        )
+        parser.add_argument(
+            "--remove-password",
+            "-r",
+            action="store_true",
+            dest="remove_password",
+            help="If provided, remove password login for non-staff non-superuser users. ",
+        )
 
     def handle(self, *args, **kwargs) -> None:
         # Get the user objects from the database
-        usernames = kwargs['users']
+        usernames = kwargs["users"]
         if len(usernames) == 0:
             users = get_user_model().objects.all()
         else:
             users = get_user_model().objects.filter(username__in=usernames)
 
-        link_gsuite_users(users, kwargs['remove_password'], lambda x: print(x))
+        link_gsuite_users(users, kwargs["remove_password"], lambda x: print(x))
 
 
-def link_gsuite_users(users: QuerySet, remove: bool, on_message: Callable[str, None]) -> None:
-    """ Links GSuite Users """
+def link_gsuite_users(
+    users: QuerySet, remove: bool, on_message: Callable[str, None]
+) -> None:
+    """Links GSuite Users"""
 
     # Create a GSuite Service
     service = make_directory_service()
@@ -46,20 +57,24 @@ def link_gsuite_users(users: QuerySet, remove: bool, on_message: Callable[str, N
         with transaction.atomic():
             # Remove their password if requested
             if remove:
-                if (not user.is_staff and not user.is_superuser):
-                    on_message(
-                        "Removed password for user {}".format(user.username))
+                if not user.is_staff and not user.is_superuser:
+                    on_message("Removed password for user {}".format(user.username))
                     user.set_unusable_password()
                     user.save()
                 else:
-                    on_message("Did not remove password for user {} (is a staff or superuser)".format(
-                        user.username))
+                    on_message(
+                        "Did not remove password for user {} (is a staff or superuser)".format(
+                            user.username
+                        )
+                    )
 
             # And link them
             link, err = GoogleAssociation.link_user(user, service=service)
             if link is None:
-                on_message("Unable to link user {}: {}".format(
-                    user.username, err))
+                on_message("Unable to link user {}: {}".format(user.username, err))
             else:
                 on_message(
-                    "Linked user {} to G-Suite ID {}".format(user.username, link.google_user_id))
+                    "Linked user {} to G-Suite ID {}".format(
+                        user.username, link.google_user_id
+                    )
+                )

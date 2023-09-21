@@ -6,33 +6,55 @@ import functools
 from . import operators as ops
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Dict, List, Optional, Any
     from django.db.models import QuerySet, Q
+
 
 class SearchFilter(object):
     def __init__(self, field_map: Dict[str, str], plain_search_fields: List[str]) -> Q:
         self.parser = PreJsPy()
         self.parser.setTertiaryOperatorEnabled(False)
-        self.parser.setUnaryOperators([
-            'not', '!', '~'
-        ])
-        self.parser.setBinaryOperators({
-            # LOGICAL CONNECTIVES
-            'and': 1, '&': 1, '&&': 1, '*': 1,
-            'or': 1, '|': 1, '||': 1, '+': 1,
-            'nand': 1, '!&': 1,
-            'xor': 1, '^': 1,
-
-            # Filters
-            'equals': 2, ':': 2, '=': 2, '==': 2, '===': 2,
-            'less than': 2, '<': 2,
-            'less than or equal': 2, '<=': 2, '=<': 2,
-            'greater than': 2, '>': 2,
-            'greater than or equal': 2, '>=': 2, '=>': 2,
-            'contains': 2, '::': 2,
-            'matches': 2, 'unicorn': 2, '@': 2,
-        })
+        self.parser.setUnaryOperators(["not", "!", "~"])
+        self.parser.setBinaryOperators(
+            {
+                # LOGICAL CONNECTIVES
+                "and": 1,
+                "&": 1,
+                "&&": 1,
+                "*": 1,
+                "or": 1,
+                "|": 1,
+                "||": 1,
+                "+": 1,
+                "nand": 1,
+                "!&": 1,
+                "xor": 1,
+                "^": 1,
+                # Filters
+                "equals": 2,
+                ":": 2,
+                "=": 2,
+                "==": 2,
+                "===": 2,
+                "less than": 2,
+                "<": 2,
+                "less than or equal": 2,
+                "<=": 2,
+                "=<": 2,
+                "greater than": 2,
+                ">": 2,
+                "greater than or equal": 2,
+                ">=": 2,
+                "=>": 2,
+                "contains": 2,
+                "::": 2,
+                "matches": 2,
+                "unicorn": 2,
+                "@": 2,
+            }
+        )
 
         self.builder = QueryBuilder(field_map, plain_search_fields)
 
@@ -40,7 +62,7 @@ class SearchFilter(object):
         try:
             parsed = self.parser.parse(query)
         except Exception as e:
-            return None, ParsingError('Unable to understand search', e)
+            return None, ParsingError("Unable to understand search", e)
 
         try:
             q = self.builder(parsed)
@@ -62,13 +84,13 @@ class QueryBuilder(object):
     def __call__(self, filter_obj: Any) -> Q:
         return self.translate(filter_obj, finalize=True)
 
-    def translate(self, filter_obj: any, finalize: bool=False) -> Q:
+    def translate(self, filter_obj: any, finalize: bool = False) -> Q:
         if not filter_obj:
             raise ValueError("Filter was empty")
 
         # Get filter type
         try:
-            obj_type = filter_obj['type']
+            obj_type = filter_obj["type"]
         except KeyError:
             raise ValueError("Filter has no type")
 
@@ -95,38 +117,40 @@ class QueryBuilder(object):
 
     def _generate_binary(self, filter_obj: Any) -> Q:
         try:
-            left = filter_obj['left']
-            right = filter_obj['right']
-            filter_type = filter_obj['operator']
+            left = filter_obj["left"]
+            right = filter_obj["right"]
+            filter_type = filter_obj["operator"]
         except KeyError as e:
             raise ValueError("Binary is incomplete: " + str(e))
 
         try:
-            op = self.ops['BIN_OPS'][filter_type]
+            op = self.ops["BIN_OPS"][filter_type]
         except KeyError as k:
-            raise ParsingError(
-                'Unknown binary operator {}'.format(filter_type), k)
+            raise ParsingError("Unknown binary operator {}".format(filter_type), k)
         except TypeError as t:
-            raise ParsingError('Cannot use binary operator {} on {} and {}'.format(
-                filter_type, left, right))
+            raise ParsingError(
+                "Cannot use binary operator {} on {} and {}".format(
+                    filter_type, left, right
+                )
+            )
 
         return op(self.translate(left), self.translate(right))
 
     def _generate_unary(self, filter_obj: Any) -> Q:
         try:
-            argument = filter_obj['argument']
-            filter_type = filter_obj['operator']
+            argument = filter_obj["argument"]
+            filter_type = filter_obj["operator"]
         except KeyError as e:
             raise ValueError("Unary is missing: " + str(e))
 
         try:
-            op = self.ops['UNARY_OPS'][filter_type]
+            op = self.ops["UNARY_OPS"][filter_type]
         except KeyError as k:
-            raise ParsingError(
-                'Unknown unary operator {}'.format(filter_type), k)
+            raise ParsingError("Unknown unary operator {}".format(filter_type), k)
         except TypeError as t:
             raise ParsingError(
-                'Cannot use unary operator {} on {}'.format(filter_type, argument))
+                "Cannot use unary operator {} on {}".format(filter_type, argument)
+            )
 
         return op(self.translate(argument))
 
@@ -135,30 +159,30 @@ class QueryBuilder(object):
         AND connected clauses."""
 
         try:
-            body = filter_obj['body']
+            body = filter_obj["body"]
         except KeyError as e:
             raise ValueError("Compound is missing: " + str(e))
 
         clauses = [self.translate(part, finalize=True) for part in body]
 
         if len(clauses) == 0:
-            raise ValueError('Empty search')
+            raise ValueError("Empty search")
 
-        return functools.reduce(self.ops['and_fn'], clauses)
+        return functools.reduce(self.ops["and_fn"], clauses)
 
     def _generate_literal(self, literal: Any) -> Any:
         try:
-            if literal['type'] == ops.IDENTITY_TYPE:
-                return literal['name']
-            elif literal['type'] == ops.STRING_TYPE:
-                return literal['value']
+            if literal["type"] == ops.IDENTITY_TYPE:
+                return literal["name"]
+            elif literal["type"] == ops.STRING_TYPE:
+                return literal["value"]
             else:
                 raise NotImplementedError
         except KeyError as e:
             raise ValueError("Invalid literal: " + str(e))
 
     def _finalize(self, s: str) -> Q:
-        """ Generates a string search """
+        """Generates a string search"""
         return ops.build_text_search(s, self.fields)
 
 

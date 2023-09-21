@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from .custom import CustomIntegerChoiceField
 
-__all__ = ['JobField']
+__all__ = ["JobField"]
 
 
 class JobField(CustomIntegerChoiceField):
@@ -55,11 +55,12 @@ class JobField(CustomIntegerChoiceField):
         (FACILITIES_GENERAL_LABOR, "Facilities / General Labor"),
         (HOSPITALITY, "Hospitality"),
         (HUMAN_RESOURCES, "Human Resources"),
-        (INSTALLATION_MAINTENANCE__REPAIR,
-         "Installation / Maintenance / Repair"),
+        (INSTALLATION_MAINTENANCE__REPAIR, "Installation / Maintenance / Repair"),
         (LEGAL, "Legal"),
-        (MANUFACTURING_PRODUCTION__CONSTRUCTION,
-         "Manufacturing / Production / Construction"),
+        (
+            MANUFACTURING_PRODUCTION__CONSTRUCTION,
+            "Manufacturing / Production / Construction",
+        ),
         (MARKETING_ADVERTISING__PR, "Marketing / Advertising / PR"),
         (MEDICAL_HEALTHCARE, "Medical / Healthcare"),
         (NON_PROFIT_VOLUNTEERING, "Non-Profit / Volunteering"),
