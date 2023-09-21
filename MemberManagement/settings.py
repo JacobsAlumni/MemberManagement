@@ -235,6 +235,8 @@ SIGNATURE_IMAGE = os.path.join(BASE_DIR, "donation_receipts/sig.png")
 # If true, will finalize donation receipts right when creating them
 FINALIZE_AUTOMATICALLY = True
 
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+
 # Portal Version from file added during Docker build. Also present in dev env
 try:
     with open(os.path.join(BASE_DIR, "PORTAL_VERSION")) as f:
