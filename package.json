@@ -41,8 +41,5 @@
   "scripts": {
     "build": "NODE_ENV=production webpack --config webpack.config.js",
     "dev": "NODE_ENV=development webpack --config webpack.config.js --watch"
-  },
-  "resolutions": {
-    "d3-color": "^3.1.0"
   }
 }
