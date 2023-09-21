@@ -80,6 +80,7 @@ ENV DJANGO_SECRET_KEY ""
 
 # A comma-seperated list of allowed hosts
 ENV DJANGO_ALLOWED_HOSTS "localhost"
+ENV DJANGO_CSRF_ORIGINS "http://localhost:8000"
 
 # Database settings
 ## Use SQLITE out of the box

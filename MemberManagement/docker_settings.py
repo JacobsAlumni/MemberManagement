@@ -12,6 +12,7 @@ ENABLE_DEVEL_WARNING = os.environ.setdefault("DJANGO_ENABLE_DEVEL_WARNING", "") 
 
 # we want to allow all hosts
 ALLOWED_HOSTS = os.environ.setdefault("DJANGO_ALLOWED_HOSTS", "").split(",")
+CSRF_TRUSTED_ORIGINS = os.environ.setdefault("DJANGO_CSRF_ORIGINS", "").split(",")
 
 # all our sessions be safe
 SECRET_KEY = os.environ.setdefault("DJANGO_SECRET_KEY", "")
