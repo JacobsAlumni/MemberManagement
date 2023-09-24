@@ -45,6 +45,7 @@ class AlumniParser(CSVParser):
 
         self.register(["birthday_de"], "birthday", self._parse_birthday_de)
         self.register(["birthday_us"], "birthday", self._parse_birthday_us)
+        self.register(["birthday_excel"], "birthday", self._parse_birthday_excel)
         self.register(["title"], "gender", self._parse_title)
         self.register(["name_1_3"], "given_name", self._parse_given_name)
         self.register(["name_1_3"], "middle_name", self._parse_middle_name)
@@ -67,6 +68,9 @@ class AlumniParser(CSVParser):
 
     def _parse_birthday_us(self, birthday_us) -> datetime:
         return datetime.strptime(birthday_us, "%m/%d/%y")
+
+    def _parse_birthday_excel(self, birthday_us) -> datetime:
+        return datetime.strptime(birthday_us, "%Y-%m-%d")
 
     def _parse_title(self, title: str) -> GenderField:
         title = title.lower().strip()
@@ -239,7 +243,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs) -> None:
         # create the parser and required arguments
         parser = AlumniParser()
-        required = ["given_name", "family_name", "email", "birthday", "nationality_1"]
+        required = ["given_name", "family_name", "email", "birthday"]
 
         # list all columns if requested
         columns = kwargs["list_columns"]
@@ -313,11 +317,13 @@ class Command(BaseCommand):
                         validate_email(email)
 
                         # read nationality
-                        nationality = person["nationality_1"]
-                        if "nationality_2" in targets:
-                            nationality_2 = person["nationality_2"]
-                            if nationality_2 is not None:
-                                nationality = [nationality, nationality_2]
+                        nationality = []
+                        if "nationality_1" in targets:
+                            nationality = person["nationality_1"]
+                            if "nationality_2" in targets:
+                                nationality_2 = person["nationality_2"]
+                                if nationality_2 is not None:
+                                    nationality = [nationality, nationality_2]
 
                         # read birthday
                         birthday = person["birthday"]
