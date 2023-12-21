@@ -608,7 +608,8 @@
             "graduation": 2011,
             "degree": "bsc",
             "major": "P",
-            "comments": "I am not real"
+            "comments": "I am not real",
+            "transferOptout": false
         }
     },
     {
@@ -620,7 +621,8 @@
             "graduation": 2009,
             "degree": "bsc",
             "major": "P",
-            "comments": ""
+            "comments": "",
+            "transferOptout": false
         }
     },
     {
@@ -632,7 +634,8 @@
             "graduation": 2010,
             "degree": "msc",
             "major": "DE",
-            "comments": ""
+            "comments": "",
+            "transferOptout": false
         }
     },
     {
@@ -644,7 +647,8 @@
             "graduation": 2012,
             "degree": "ma",
             "major": "IR",
-            "comments": ""
+            "comments": "",
+            "transferOptout": false
         }
     },
     {
@@ -656,7 +660,8 @@
             "graduation": 2013,
             "degree": "bsc",
             "major": "BACB",
-            "comments": ""
+            "comments": "",
+            "transferOptout": false
         }
     },
     {
@@ -668,7 +673,8 @@
             "graduation": 2014,
             "degree": "ba",
             "major": "H",
-            "comments": ""
+            "comments": "",
+            "transferOptout": false
         }
     },
     {
@@ -680,7 +686,8 @@
             "graduation": 2015,
             "degree": "ba",
             "major": "IR",
-            "comments": ""
+            "comments": "",
+            "transferOptout": false
         }
     },
     {
@@ -692,7 +699,8 @@
             "graduation": 2016,
             "degree": "phd",
             "major": "PSY",
-            "comments": ""
+            "comments": "",
+            "transferOptout": false
         }
     },
     {
@@ -704,7 +712,8 @@
             "graduation": 2017,
             "degree": "msc",
             "major": "SCEAM",
-            "comments": ""
+            "comments": "",
+            "transferOptout": false
         }
     },
     {
@@ -716,7 +725,8 @@
             "graduation": 2018,
             "degree": "bsc",
             "major": "CS",
-            "comments": ""
+            "comments": "",
+            "transferOptout": true
         }
     },
     {

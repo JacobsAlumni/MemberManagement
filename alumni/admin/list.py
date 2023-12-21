@@ -65,6 +65,13 @@ class AlumniListDisplay:
     atlas_included.boolean = True
     atlas_included.admin_order_field = "atlas__included"
 
+    def jacobs_transferOptout(self, x: Alumni) -> bool:
+        return x.jacobs.transferOptout
+
+    jacobs_transferOptout.short_description = "Data Transfer Optout"
+    jacobs_transferOptout.boolean = True
+    jacobs_transferOptout.admin_order_field = "jacobs__transferOptout"
+
     def jacobs_degree(self, x: Alumni) -> str:
         return x.jacobs.degree
 
@@ -103,9 +110,10 @@ class AlumniListDisplay:
         # category + subscription
         "category",
         "membership_tier",
-        # visible in atalas
+        # visible in atlas
         "atlas_included",
         # Jacobs Information
+        "jacobs_transferOptout",
         "jacobs_degree",
         "jacobs_graduation",
         "jacobs_major",
@@ -150,6 +158,7 @@ class AlumniListFilter:
         ("approval__autocreated", custom_titled_filter("Automatically Imported")),
         ("category", custom_titled_filter("Alumni Category")),
         ("membership__tier", custom_titled_filter("Alumni Tier")),
+        ("jacobs__transferOptout", custom_titled_filter("Data Transfer Optout")),
         ("atlas__included", custom_titled_filter("Included in Alumni Atlas")),
         ("jacobs__degree", custom_titled_filter("Jacobs Degree")),
         ("jacobs__graduation", custom_titled_filter("Jacobs Class")),

@@ -202,6 +202,12 @@ class JacobsData(AlumniComponentMixin, models.Model):
         null=True, blank=True, help_text="e.g. exchange semester, several degrees etc."
     )
 
+    transferOptout: bool = models.BooleanField(
+        default=False,
+        blank=False,
+        help_text="person has opted out of data transfer to the university. ",
+    )
+
 
 class Approval(models.Model):
     """The approval status of a member"""
