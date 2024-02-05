@@ -260,6 +260,7 @@ class AlumniAdminActions:
         "jacobs__degree",
         "jacobs__major",
         "jacobs__comments",
+        "jacobs__transferOptout",
         # 'Approval' Data
         "approval__autocreated",
         "approval__approval",
