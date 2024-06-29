@@ -74,7 +74,7 @@ If you'd like to also receive Stripe webhooks: Install the Stripe CLI.
 
 Then run
 ```bash
- stripe listen --forward-to=http://localhost:8080/payments/webhook/
+ stripe listen --forward-to=http://localhost:8000/payments/webhook/
 ```
 
 ### Further Settings

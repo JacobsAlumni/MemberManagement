@@ -11,7 +11,9 @@ from django.db.models import signals
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.template import Context
-from datetime import timezone, datetime
+
+from datetime import datetime
+from django.utils.timezone import get_current_timezone
 
 from djmoney.models import fields
 from django.conf import settings
@@ -177,7 +179,7 @@ def _maybe_generate_donation_receipt(sender, instance, created, **kwargs):
     if not donation_sender.address.is_filled():
         return
 
-    create_date = timezone.datetime.fromtimestamp(data["created"])
+    create_date = datetime.fromtimestamp(data["created"], tz=get_current_timezone())
     if not create_date:
         return
 
