@@ -21,7 +21,7 @@
     "mini-css-extract-plugin": "^1.6.0",
     "nodep-date-input-polyfill": "^5.2.0",
     "ol": "^5.0.0",
-    "pug": "^3.0.2",
+    "pug": "^3.0.3",
     "pug-plain-loader": "^1.1.0",
     "sass": "~1.32.0",
     "sass-loader": "^11.0.1",
