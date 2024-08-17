@@ -562,7 +562,7 @@ class AdminExportTest(IntegrationTest, StaticLiveServerTestCase):
             len(EXPECT_EXPORT),
             "check that the workbook contains the sheet number of columns",
         )
-        for (i, (got, expected)) in enumerate(zip(values, EXPECT_EXPORT)):
+        for i, (got, expected) in enumerate(zip(values, EXPECT_EXPORT)):
             self.assertListEqual(
                 got, expected, "check that column {} is correct".format(i)
             )
