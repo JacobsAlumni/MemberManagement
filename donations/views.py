@@ -27,8 +27,15 @@ class DonateView(CreateView):
     model = Donation
     fields = ["amount", "target"]
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         # Create a Stripe Checkout Session
+        stripe_customer = user_to_stripe_customer_id(self.request.user)
+
+        if stripe_customer:
+            payment_method_options = {"card": {"setup_future_usage": "off_session"}}
+        else:
+            payment_method_options = None
+
         session: stripe.checkout.Session = stripe.checkout.Session.create(
             customer=user_to_stripe_customer_id(self.request.user),
             mode="payment",
@@ -47,7 +54,7 @@ class DonateView(CreateView):
             success_url=self.request.build_absolute_uri(
                 reverse("donation-detail", args=(str(self.object.external_id),))
             ),
-            payment_method_options={"card": {"setup_future_usage": "off_session"}},
+            payment_method_options=payment_method_options,
             submit_type="donate",
         )
 
