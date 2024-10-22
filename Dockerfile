@@ -1,11 +1,11 @@
-FROM alpine/git:v2.26.2-amd64 as version
+FROM alpine/git:v2.26.2-amd64 AS version
 
 ADD .git .git
 RUN git describe --always > /PORTAL_VERSION
 RUN echo "Saved version file containing '$(cat /PORTAL_VERSION)'"
 
 # image for building node dependencies
-FROM node:16-alpine as frontend
+FROM node:16-alpine AS frontend
 
 RUN apk add --no-cache \
     git
@@ -68,40 +68,40 @@ COPY --from=frontend /app/webpack-stats.json /app/webpack-stats.json
 COPY --from=frontend /app/assets/bundles /app/assets/bundles/
 
 # default settings are in MemberManagement
-ENV DJANGO_SETTINGS_MODULE "MemberManagement.docker_settings"
+ENV DJANGO_SETTINGS_MODULE="MemberManagement.docker_settings"
 
 ### ALL THE CONFIGURATION
 
 # disable / enable the devel warning shown on the page
-ENV DJANGO_ENABLE_DEVEL_WARNING "1"
+ENV DJANGO_ENABLE_DEVEL_WARNING="1"
 
 # The secret key used for django
-ENV DJANGO_SECRET_KEY ""
+ENV DJANGO_SECRET_KEY=""
 
 # A comma-seperated list of allowed hosts
-ENV DJANGO_ALLOWED_HOSTS "localhost"
-ENV DJANGO_CSRF_ORIGINS "http://localhost:8000"
+ENV DJANGO_ALLOWED_HOSTS="localhost"
+ENV DJANGO_CSRF_ORIGINS="http://localhost:8000"
 
 # Database settings
 ## Use SQLITE out of the box
-ENV DJANGO_DB_ENGINE "django.db.backends.sqlite3"
-ENV DJANGO_DB_NAME "/data/MemberManagment.db"
-ENV DJANGO_DB_USER ""
-ENV DJANGO_DB_PASSWORD ""
-ENV DJANG_DB_HOST ""
-ENV DJANGO_DB_PORT ""
+ENV DJANGO_DB_ENGINE="django.db.backends.sqlite3"
+ENV DJANGO_DB_NAME="/data/MemberManagment.db"
+ENV DJANGO_DB_USER=""
+ENV DJANGO_DB_PASSWORD=""
+ENV DJANG_DB_HOST=""
+ENV DJANGO_DB_PORT=""
 
 # Stripe keys -- required
-ENV STRIPE_SECRET_KEY ""
-ENV STRIPE_PUBLISHABLE_KEY ""
+ENV STRIPE_SECRET_KEY=""
+ENV STRIPE_PUBLISHABLE_KEY=""
 
-ENV FINALIZE_AUTOMATICALLY "1"
+ENV FINALIZE_AUTOMATICALLY="1"
 
 # GSuite Auth file should be in the data volume
-ENV GSUITE_AUTH_FILE /data/credentials.json
+ENV GSUITE_AUTH_FILE=/data/credentials.json
 
 # Raven -- optional
-ENV DJANGO_RAVEN_DSN ""
+ENV DJANGO_RAVEN_DSN=""
 
 # Collect all the static files at build time
 RUN DJANGO_SECRET_KEY=setup python manage.py collectstatic --noinput
