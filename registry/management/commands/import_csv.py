@@ -135,7 +135,6 @@ class AlumniParser(CSVParser):
     def _parse_nationalities(self, countries: str) -> Optional[list[CountryField]]:
         nationalities = countries.split(",")
 
-
     def _parse_country(self, country: str) -> Optional[CountryField]:
         if country == "":
             return None
