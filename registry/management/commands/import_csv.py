@@ -45,10 +45,13 @@ class AlumniParser(CSVParser):
 
         self.register(["birthday_de"], "birthday", self._parse_birthday_de)
         self.register(["birthday_us"], "birthday", self._parse_birthday_us)
+        self.register(["birthday_dmy_us"], "birthday", self._parse_birthday_dmy_us)
         self.register(["birthday_excel"], "birthday", self._parse_birthday_excel)
         self.register(["title"], "gender", self._parse_title)
         self.register(["name_1_3"], "given_name", self._parse_given_name)
         self.register(["name_1_3"], "middle_name", self._parse_middle_name)
+        self.register(["name_1_3"], "family_name", self._parse_family_name)
+        self.register(["sex"], "gender", self._parse_sex)
 
         self.register(["name_1"], "given_name", self._parse_required)
         self.register(["name_2"], "family_name", self._parse_required)
@@ -72,11 +75,23 @@ class AlumniParser(CSVParser):
     def _parse_birthday_excel(self, birthday_us) -> datetime:
         return datetime.strptime(birthday_us, "%Y-%m-%d")
 
+    def _parse_birthday_dmy_us(self, birthday_dmy_us) -> datetime:
+        return datetime.strptime(birthday_us, "%d/%m/%Y")
+
     def _parse_title(self, title: str) -> GenderField:
         title = title.lower().strip()
         if title == "mr.":
             return GenderField.MALE
         elif title == "ms.":
+            return GenderField.FEMALE
+
+        return GenderField.UNSPECIFIED
+
+    def _parse_sex(self, sex: str) -> GenderField:
+        sex = sex.lower().strip()
+        if sex == "ma":
+            return GenderField.MALE
+        elif sex == "fe":
             return GenderField.FEMALE
 
         return GenderField.UNSPECIFIED
@@ -92,7 +107,11 @@ class AlumniParser(CSVParser):
 
     def _parse_middle_name(self, value: str) -> str:
         value = self._parse_required(value.strip())
-        return " ".join(value.split(" ")[1:])
+        return " ".join(value.split(" ")[1:-1])
+
+    def _parse_family_name(self, value: str) -> str:
+        value = self._parse_required(value.strip())
+        return value.split(" ")[-1]
 
     def _parse_required(self, value: str) -> str:
         if value == "":
@@ -112,6 +131,10 @@ class AlumniParser(CSVParser):
         "Kolda (Senegal)": "Senegal",
         "Czech Republic": "Czechia",
     }
+
+    def _parse_nationalities(self, countries: str) -> Optional[list[CountryField]]:
+        nationalities = countries.split(",")
+
 
     def _parse_country(self, country: str) -> Optional[CountryField]:
         if country == "":
