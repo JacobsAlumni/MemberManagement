@@ -44,9 +44,9 @@ class AlumniComponentMixin:
 
 
 class AlumniRegistryMixin:
-    components: List[
-        Type[AlumniComponentMixin]
-    ] = []  # the list of components used by the alumni model
+    components: List[Type[AlumniComponentMixin]] = (
+        []
+    )  # the list of components used by the alumni model
     component_prios: List[int] = []  # the corresponding alumni priority mixin
 
     @classmethod

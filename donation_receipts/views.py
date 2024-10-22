@@ -18,9 +18,9 @@ def download_receipt(request, receipt_id):
     )
 
     response = FileResponse(receipt.receipt_pdf)
-    response[
-        "Content-Disposition"
-    ] = f"filename=Zuwendungsbestätigung vom {receipt.received_on}.pdf"
+    response["Content-Disposition"] = (
+        f"filename=Zuwendungsbestätigung vom {receipt.received_on}.pdf"
+    )
 
     return response
 

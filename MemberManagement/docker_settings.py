@@ -2,6 +2,7 @@
 Django Docker settings for MemberManagement project.
 Reads all relevant setting from the environment
 """
+
 from .settings import *
 
 # No Debugging

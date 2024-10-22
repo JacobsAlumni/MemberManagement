@@ -25,9 +25,9 @@ class UpgradeNoopTestBase(StripeFrontendTestMixin):
         super().setUp()
 
         self.start_tier: str = self.user.alumni.membership.tier
-        self.start_subscription: Optional[
-            str
-        ] = self.user.alumni.subscription.subscription
+        self.start_subscription: Optional[str] = (
+            self.user.alumni.subscription.subscription
+        )
         self.start_time: datetime = self.user.alumni.subscription.start
         self.end_time: Optional[datetime] = self.user.alumni.subscription.end
 
