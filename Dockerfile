@@ -1,5 +1,6 @@
 FROM alpine/git:v2.26.2-amd64 AS version
 
+
 ADD .git .git
 RUN git describe --always > /PORTAL_VERSION
 RUN echo "Saved version file containing '$(cat /PORTAL_VERSION)'"
@@ -23,7 +24,7 @@ ADD assets/ /app/assets/
 RUN yarn build
 
 # image for python
-FROM python:3.10-alpine
+FROM python:3.12-alpine
 
 # Install binary python dependencies
 RUN apk add --no-cache \
