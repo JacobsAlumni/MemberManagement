@@ -145,7 +145,7 @@ class AlumniParser(CSVParser):
             country = self.__class__.COUNTRY_ALTS[country]
 
         # lookup the country
-        for (key, desc) in CountryField.COUNTRY_CHOICES:
+        for key, desc in CountryField.COUNTRY_CHOICES:
             if country == desc:
                 return key
 
@@ -162,7 +162,7 @@ class AlumniParser(CSVParser):
             )
 
         year = int(matches[0]) + 2000
-        for (value, _) in ClassField.CHOICES:
+        for value, _ in ClassField.CHOICES:
             if value == year:
                 return year
 
@@ -178,7 +178,7 @@ class AlumniParser(CSVParser):
             )
 
         year = int(matches[0])
-        for (value, _) in ClassField.CHOICES:
+        for value, _ in ClassField.CHOICES:
             if value == year:
                 return year
 
@@ -196,7 +196,7 @@ class AlumniParser(CSVParser):
         # lookup the degree
         org_degree = degree
         degree = degree.lower()
-        for (key, description) in DegreeField.CHOICES:
+        for key, description in DegreeField.CHOICES:
             if description.lower() == degree:
                 return key
         raise Exception("Unknown degree: {}".format(org_degree))
@@ -225,7 +225,7 @@ class AlumniParser(CSVParser):
 
         org_major = major
         major = major.lower()
-        for (key, description) in MajorField.CHOICES:
+        for key, description in MajorField.CHOICES:
             if description.lower() == major:
                 return key
 

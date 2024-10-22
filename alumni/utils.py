@@ -6,8 +6,7 @@ from typing import Protocol
 class ParsingCallback(Protocol):
     """A callback for parsing"""
 
-    def __call__(self, *args: str) -> Any:
-        ...
+    def __call__(self, *args: str) -> Any: ...
 
 
 class CSVParser(object):
@@ -133,7 +132,7 @@ class CSVParser(object):
 
         # check that the values are of the correct length
         count = len(fields)
-        for (i, v) in enumerate(values):
+        for i, v in enumerate(values):
             if len(v) != count:
                 raise Exception(
                     "Malformed values: Index {} is not of expected length".format(i)
@@ -145,11 +144,11 @@ class CSVParser(object):
         # prepare a list of results
         results: List[Dict[str, Any]] = [{} for _ in values]
 
-        for (target, idxs) in indexes.items():
+        for target, idxs in indexes.items():
             mapper = mappers[target]
 
             # apply the mapper to each target and save it!
-            for (index, value) in enumerate(values):
+            for index, value in enumerate(values):
                 params: Iterable[str] = map(lambda i: value[i], idxs)
                 results[index][target] = mapper(*params)
 

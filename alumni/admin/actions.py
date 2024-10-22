@@ -143,7 +143,7 @@ def export_as_xslx_action(
 
         # Write each of the rows
         copy = queryset.all()
-        for (raw, row) in zip(copy, queryset.values_list(*field_names)):
+        for raw, row in zip(copy, queryset.values_list(*field_names)):
 
             def makeCell(prop):
                 try:

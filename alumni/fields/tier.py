@@ -24,7 +24,7 @@ class TierField(CustomTextChoiceField):
 
     @staticmethod
     def get_description(value):
-        for (k, v) in TierField.CHOICES:
+        for k, v in TierField.CHOICES:
             if k == value:
                 return v
 
