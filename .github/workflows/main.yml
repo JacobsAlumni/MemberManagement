@@ -60,7 +60,7 @@ jobs:
             source venv/bin/activate
 
             sudo apt-get install -y firefox
-            
+
             pip install seleniumbase
             seleniumbase install geckodriver
 
@@ -88,22 +88,22 @@ jobs:
           env:
             SELENIUM_WEBDRIVER: ${{ matrix.browser }}
             ENABLE_GEOCACHE_TEST: '1'
-          run: pytest
-    
+          run: pytest --timeout=300
+
     smoke:
         name: Docker Smoke Test
         runs-on: ubuntu-latest
         steps:
         - uses: actions/checkout@v3
-        
+
         - name: 'Build Docker Container'
           run: docker build -t jacobsalumni/membermanagement .
-        
+
         - name: 'Run Docker Container'
           run: |
             docker run --rm -d --name=smoke -e DJANGO_SECRET_KEY=smoke -p 8080:80 jacobsalumni/membermanagement
             sleep 10
-        
+
         - name: 'Check that the healthcheck API responds'
           run: |
             curl http://localhost:8080/healthcheck/
