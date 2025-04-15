@@ -2,57 +2,62 @@
 {% load uikit_tags %}
 
 {% block head %}
-    {% if not object.completed or not receipt.finalized %}
-        <meta http-equiv="refresh" content="3">
-    {% endif %}
+{% if not object.completed or not receipt.finalized %}
+<meta http-equiv="refresh" content="3">
+{% endif %}
 {% endblock %}
 
 {% block title %}Thank You{% endblock %}
 
 {% block content %}
-    <div class="uk-clearfix">
-        <h1>Thank You</h1>
-        {% if object.completed %}
-            {% if receipt.finalized %}
-                {# If we have a logged in user, and a receipt exists, offer it #}
-                {% if user.alumni %}
-                    <h3>Your contributions enable our continued work!</h3>
-                    <h4>You may <a href="{% url 'download' receipt %}">download your receipt</a> now</h4>
-                {# Anonymous users only get one e-mail #}
-                {% else %}
-                    <h3>We've emailed your donation receipt.</h3>
-                {% endif %}
-            {% elif receipt %}
-                {# This case is when the receipt wasn't finalized, but was created #}
-                <h3>We will e-mail your donation receipt once it's ready. You may still <a href="{% url 'receipt-create' object.external_id %}">update your receipt</a>.</h3>
-            {% else %}
-                {% if user.alumni %}
-                    {# If we're logged in, but no receipt exists, the user needs to fill in their address. #}
-                    {% if not user.alumni.address.is_filled %}
-                        <h3>
-                            We tried issuing your donation receipt, but have no address on file.
-                            Please <a href="{% url 'edit_address' %}?next={% url 'donation-detail' object.external_id %}">
-                            provide your address</a>.
-                        </h3>
-                    {% else %}
-                        <h3>If you'd like a donation receipt (for the tax authorities), please contact support.</h3>
-                    {% endif %}
-                {% else %}
-                    {# These are anonymous users, who may have just donated, or may have come back from an e-mail. #}
-                    <h3>
-                        Your contribution was successfully processed! If you would like a donation receipt (for the tax authorities), please
-                        <a href="{% url 'receipt-create' object.external_id %}">provide your address</a>.
-                    </h3>
-                {% endif %}
-            {% endif %}
-        {% else %}
-            <h3>
-                Once your contribution is fully processed, you'll hear from us by e-mail.
-                {% if object.target %}
-                    Your donation towards {{ object.target.label }} will be taken into consideration regardless.
-                {% endif %}
-            </h3>
+<div class="uk-clearfix">
+    <h1>Thank You</h1>
+    {% if object.completed %}
+    {% if receipt.finalized %}
+    {# If we have a logged in user, and a receipt exists, offer it #}
+    {% if user.alumni %}
+    <h3>Your contributions enable our continued work!</h3>
+    <h4>You may <a href="{% url 'download' receipt %}">download your receipt</a> now</h4>
+    {# Anonymous users only get one e-mail #}
+    {% else %}
+    <h3>We've emailed your donation receipt.</h3>
+    {% endif %}
+    {% elif receipt %}
+    {# This case is when the receipt wasn't finalized, but was created #}
+    <h3>Your receipt is awaiting approval by the treasurer. We will let you know by e-mail once it's ready, you don't need to wait here. Made a typo? You can still <a href="{% url 'receipt-create' object.external_id %}">update your name and address for this receipt</a>.</h3>
+    {% else %}
+    {% if user.alumni %}
+    {# If we're logged in, but no receipt exists, the user needs to fill in their address. #}
+    {% if not user.alumni.address.is_filled %}
+    <h3>
+        We tried issuing your donation receipt, but have no address on file.
+        Please <a href="{% url 'edit_address' %}?next={% url 'donation-detail' object.external_id %}">
+            provide your address</a>.
+    </h3>
+    {% else %}
+    <h3>If you'd like a donation receipt (for the tax authorities), please contact support.</h3>
+    {% endif %}
+    {% else %}
+    {# These are anonymous users, who may have just donated, or may have come back from an e-mail. #}
+    <h3>
+        Your contribution was successfully processed! If you need a donation receipt (for the tax authorities), please
+        <a href="{% url 'receipt-create' object.external_id %}">provide your name and address</a>.
+        In case you'd like to continue later, we've sent a link for that to your e-mail address.
+    </h3>
+    {% endif %}
+    {% endif %}
+    {% else %}
+    <h3>
+        If you donated by card, please wait a moment for the payment to be processed.
+        This page will refresh automatically.
+    </h3>
+    <h3>
+        If you donated by bank transfer, you will receive an e-mail once your transfer is complete. You will then be able to request a donation receipt. This usually takes 1-3 working days.
+        {% if object.target %}
+        Your donation towards {{ object.target.label }} will be taken into consideration regardless.
         {% endif %}
-        <p>In case of questions or problems, please contact <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a></p>
-    </div>
+    </h3>
+    {% endif %}
+    <p>In case of questions or problems, please contact <a href="mailto:support@jacobs-alumni.de">support@jacobs-alumni.de</a></p>
+</div>
 {% endblock %}
