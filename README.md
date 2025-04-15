@@ -66,7 +66,7 @@ python manage.py runserver
 If you'd like to generate donation receipts PDFs, also run this
 
 ```bash
- docker run -p 3000:3000 ghcr.io/kuboschek/pdf-render-server
+ docker run -p 3000:3000 ghcr.io/kuboschek/pdf-render-server:master
 ```
 
 If you'd like to also receive Stripe webhooks: Install the Stripe CLI.

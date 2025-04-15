@@ -2,6 +2,15 @@
 {% load uikit_tags %}
 
 {% block content %}
+    <h1>Donation Receipt - Address Entry</h1>
+    <p>Please provide your full name and address below. We will use this information to generate your donation receipt. Please include the following minimum information:</p>
+    <p>
+        GivenName FamilyName<br />
+        Example Street 1<br />
+        12345 Example City<br />
+        Country<br />
+    </p>
+
     <form class="uk-form-horizontal" method="POST">
         {% csrf_token %}
         {{ form | as_uikit_form }}
